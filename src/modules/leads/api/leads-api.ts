@@ -1,6 +1,6 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES } from '../types/types';
+import { isStatusTransitionAllowed } from '../utils/lead-utils';
 
 // Create a new lead
 export const createLead = async (leadData: LeadFormValues, userId: string): Promise<Lead> => {
@@ -104,19 +104,40 @@ export const getCompanyLeads = async (companyId: string): Promise<Lead[]> => {
   return data as Lead[] || [];
 };
 
-// Update lead status
-export const updateLeadStatus = async (leadId: string, status: LeadStatus): Promise<Lead> => {
+/**
+ * Update lead status with transition validation
+ * Only allows status changes that are permitted by the transition rules
+ */
+export const updateLeadStatus = async (leadId: string, newStatus: LeadStatus): Promise<Lead> => {
+  // First, fetch the current lead to check current status
+  const { data: currentLead, error: fetchError } = await supabase
+    .from('leads')
+    .select('*')
+    .eq('id', leadId)
+    .single();
+  
+  if (fetchError) throw new Error(`Failed to fetch lead: ${fetchError.message}`);
+  if (!currentLead) throw new Error(`Lead with ID ${leadId} not found`);
+  
+  // Validate the status transition
+  if (!isStatusTransitionAllowed(currentLead.status as LeadStatus, newStatus)) {
+    throw new Error(
+      `Invalid status transition: Cannot change from '${currentLead.status}' to '${newStatus}'`
+    );
+  }
+
+  // If transition is allowed, update the status
   const { data, error } = await supabase
     .from('leads')
     .update({ 
-      status, 
+      status: newStatus, 
       updated_at: new Date().toISOString() 
     })
     .eq('id', leadId)
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) throw new Error(`Failed to update lead status: ${error.message}`);
   return data as Lead;
 };
 

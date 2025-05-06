@@ -1,30 +1,27 @@
 
-import { LeadInsertTest } from '../tests/LeadInsertTest';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import LeadInsertTest from '../tests/LeadInsertTest';
+import LeadStatusUpdateTest from '../tests/LeadStatusUpdateTest';
 
 export const LeadTestPage = () => {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div className="container mx-auto py-8">Laster inn...</div>;
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
   return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Lead Module Tests</h1>
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">insertLead() Function Test</h2>
-            <LeadInsertTest />
-          </div>
-        </div>
-      </div>
+    <div className="container mx-auto py-6 space-y-6">
+      <h1 className="text-2xl font-bold">Lead Testing</h1>
+      
+      <Tabs defaultValue="insert">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="insert">Insert Lead Tests</TabsTrigger>
+          <TabsTrigger value="status">Status Update Tests</TabsTrigger>
+        </TabsList>
+        <TabsContent value="insert" className="mt-6">
+          <LeadInsertTest />
+        </TabsContent>
+        <TabsContent value="status" className="mt-6">
+          <LeadStatusUpdateTest />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
+
+export default LeadTestPage;
