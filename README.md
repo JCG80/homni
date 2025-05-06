@@ -156,7 +156,7 @@ await insertLead({
 #### 🔹 Forberedelse
 1. Logg inn med bruker som har `user` rolle
 2. Identifiser gyldig `company_id` og `user_id` for testing
-3. Naviger til Lead Test-siden (/leads/test)
+3. Naviger til Lead Test-siden (/test/leads)
 
 #### 🔹 Test Scenario 1: Opprette lead som vanlig bruker
 **Forutsetning:** Innlogget som bruker med `user` rolle
@@ -181,4 +181,3 @@ await insertLead({
 3. Verifiser at filtreringsfunksjonaliteten i `useLeadList()` respekterer RLS-begrensninger
 
 📌 Sist oppdatert: `2025-05-06 OB`
-

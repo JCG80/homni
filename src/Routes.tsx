@@ -23,12 +23,6 @@ const AppRoutes = () => {
       element: <Unauthenticated />
     },
     {
-      path: '/leads/test',
-      element: <LeadTestPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin']
-    },
-    {
       path: '/leads/company',
       element: <CompanyLeadsPage />,
       requiresAuth: true
@@ -42,12 +36,12 @@ const AppRoutes = () => {
       path: '/unauthorized',
       element: <UnauthorizedPage />
     },
-    // Example route matching your format
+    // Standardized route for Lead Test Page
     {
       path: '/test/leads',
       element: <LeadTestPage />,
       requiresAuth: true,
-      roles: ['admin']
+      roles: ['admin', 'master-admin']
     }
   ];
 
