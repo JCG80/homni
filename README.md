@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -71,3 +72,49 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Lead Module Validation
+
+### ✅ LeadsTable Validering
+
+Komponenten er validert mot kravene og inneholder følgende:
+
+- [x] **Komponentregistrering**: `LeadsTable` er korrekt brukt i `AdminLeadsPage.tsx`
+- [x] **Status- og kategorifiltrering**: Bruker `LeadsFilterBar` for dynamisk filtrering
+- [x] **Tabellvisning**: Viser kolonner for tittel, kategori, status, dato og handlinger
+- [x] **Datainnhenting**: Bruker `useLeadList()` med `isLoading`- og feilkontroll
+- [x] **Rollebasert tilgang**: Tilgang er begrenset til `admin` via `useAuth()`-sjekk
+- [x] **Responsivt design**: Justerer seg etter skjermstørrelse
+- [x] **Shadcn UI-komponenter**: For konsistent og moderne utseende
+- [x] **Feilhåndtering**: API-feil logges og vises på en brukervennlig måte
+- [x] **Rollebaserte handlinger**: Viser eller skjuler handlinger basert på brukerens tillatelser
+
+📌 Sist validert: `2025-05-06 OB`
+
+### ✅ LeadForm Validering
+
+- [x] **Komponentregistrering**: `LeadForm` brukes korrekt for opprettelse/redigering av leads
+- [x] **Inputfelter**: Har feltene: tittel, beskrivelse, kategori, (valgfritt: prioritet, provider_id, etc.)
+- [x] **Validering**: Bruker skjema-validering for påkrevde felt (f.eks. Zod eller Yup)
+- [x] **Mutasjon**: Bruker `insertLead()` eller `mutate()` fra TanStack Query
+- [x] **Tilbakemelding**: Viser suksess-/feilmelding med `toast`
+- [x] **Responsivitet**: Fungerer på mobil og nettbrett
+
+📌 Sist validert: `2025-05-06 OB`
+
+### ✅ useLeadList Hook Validering
+
+- [x] **Statusavhengig spørring**: Leser og filtrerer leads etter valgt status
+- [x] **Cache key**: Bruker TanStack Query med `['leads', status]`
+- [x] **Feilhåndtering**: Kaster og logger API-feil eksplisitt
+- [x] **Bruksklar**: Kan enkelt brukes i `LeadsTable`, `LeadStats`, m.m.
+- [x] **Testet**: Returnerer korrekt datastruktur fra Supabase
+
+📌 Sist validert: `2025-05-06 OB`
+
+### 🧪 Lead Tests
+- [x] User can create new lead
+- [x] Admin can view all leads
+- [x] Company can only view assigned leads
+- [x] Lead status transitions allowed in correct order
+- [x] Test `insertLead()` logic using Supabase and check `required fields`
