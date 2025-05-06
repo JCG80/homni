@@ -51,6 +51,21 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## Getting Started
+
+### Quick Dev Login
+
+For development purposes, you can use the Quick Dev Login feature to quickly switch between test users with different roles:
+
+1. In development mode, look for the "Quick Dev Login" button in the bottom right of the screen
+2. Click on it and select one of the available test users:
+   - Admin User (admin role)
+   - Provider User (company role)
+   - Regular User (user role)
+3. You'll be automatically logged in and redirected to the appropriate dashboard for that user role
+
+This feature only works in development mode and simplifies testing user-specific features without manual login.
+
 ## What technologies are used for this project?
 
 This project is built with:
