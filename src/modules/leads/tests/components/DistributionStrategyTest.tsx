@@ -12,6 +12,9 @@ import {
 import { distributeLeadToProvider, DistributionStrategy, DISTRIBUTION_STRATEGIES } from '../../strategies/strategyFactory';
 import { Input } from '@/components/ui/input';
 import { processUnassignedLeads } from '../../utils/processLeads';
+import { processLeads } from '../../utils/leadDistributor';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export const DistributionStrategyTest = () => {
   const [selectedStrategy, setSelectedStrategy] = useState<DistributionStrategy>('roundRobin');
@@ -19,6 +22,7 @@ export const DistributionStrategyTest = () => {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [processResult, setProcessResult] = useState<number | null>(null);
+  const [useEnhanced, setUseEnhanced] = useState(true);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategory(e.target.value);
@@ -40,7 +44,20 @@ export const DistributionStrategyTest = () => {
   const runProcessUnassigned = async () => {
     setLoading(true);
     try {
-      const count = await processUnassignedLeads(selectedStrategy);
+      let count;
+      
+      if (useEnhanced) {
+        // Use enhanced implementation
+        count = await processLeads({
+          strategy: selectedStrategy,
+          showToasts: true,
+          onlyNew: true
+        });
+      } else {
+        // Use legacy implementation
+        count = await processUnassignedLeads(selectedStrategy);
+      }
+      
       setProcessResult(count);
     } catch (error) {
       console.error('Error processing leads:', error);
@@ -85,6 +102,15 @@ export const DistributionStrategyTest = () => {
             />
           </div>
         )}
+        
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="use-enhanced" 
+            checked={useEnhanced} 
+            onCheckedChange={setUseEnhanced} 
+          />
+          <Label htmlFor="use-enhanced">Use enhanced lead distributor</Label>
+        </div>
 
         <div className="space-y-2 pt-2 flex gap-2">
           <Button 
