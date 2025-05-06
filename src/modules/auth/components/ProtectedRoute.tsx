@@ -10,6 +10,12 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
+// Extended component type that includes our custom properties
+type ComponentWithAuthRequirements = React.ComponentType<any> & {
+  requireAuth?: boolean;
+  allowedRoles?: UserRole[];
+};
+
 export const ProtectedRoute = ({ 
   children, 
   allowedRoles, 
@@ -31,4 +37,12 @@ export const ProtectedRoute = ({
   }
   
   return <>{children}</>;
+};
+
+// Helper function to get allowed roles from a component
+export const getAuthRequirements = (Component: ComponentWithAuthRequirements) => {
+  return {
+    requireAuth: Component.requireAuth === true,
+    allowedRoles: Component.allowedRoles || []
+  };
 };

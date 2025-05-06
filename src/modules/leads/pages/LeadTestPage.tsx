@@ -66,3 +66,8 @@ export const LeadTestPage = () => {
     </div>
   );
 };
+
+// Add authorization requirements
+LeadTestPage.requireAuth = true;
+LeadTestPage.allowedRoles = ['admin', 'master-admin'];
+
