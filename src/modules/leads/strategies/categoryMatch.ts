@@ -17,32 +17,31 @@ export async function selectProviderByCategory(category: string): Promise<string
   }
 
   try {
-    // For now, we're adapting to use the existing leads table since we don't have 
-    // a company_profiles table with tags. In a real implementation, this would query
-    // the company_profiles table with a tags filter.
-    
-    // Query leads with the same category and get the company_id
-    const { data: leads, error } = await supabase
-      .from('leads')
-      .select('company_id, category')
-      .eq('category', category)
-      .not('company_id', 'is', null)
-      .order('updated_at', { ascending: true }) // Load balancing
-      .limit(1);
+    // Query company_profiles table for companies with matching tags
+    const { data: companies, error } = await supabase
+      .from('company_profiles')
+      .select('id, tags')
+      .eq('status', 'active');
     
     if (error) {
       console.error('Error finding provider by category:', error);
       return null;
     }
     
-    // If we found a matching company, return their ID
-    if (leads && leads.length > 0 && leads[0].company_id) {
-      // In a real implementation, we would update a last_lead_assigned_at timestamp
-      return leads[0].company_id;
+    // Find the first company that has the category in their tags
+    const matchingCompany = companies?.find((company) => 
+      company.tags?.includes(category)
+    );
+    
+    if (matchingCompany) {
+      console.log(`Found provider ${matchingCompany.id} matching category: ${category}`);
+      return matchingCompany.id;
     }
     
     console.log(`No provider found for category: ${category}`);
-    return null;
+    
+    // If no match found by tags, fall back to the old method
+    return fallbackCategoryMatch(category);
   } catch (err) {
     console.error('Unexpected error in category matching:', err);
     return null;
@@ -50,22 +49,32 @@ export async function selectProviderByCategory(category: string): Promise<string
 }
 
 /**
- * Future implementation when company_profiles table with tags is available:
- * 
- * async function selectProviderByCategory(category: string): Promise<string | null> {
- *   if (!category) return null;
- *   
- *   const { data: companies, error } = await supabase
- *     .from('company_profiles')
- *     .select('id, tags')
- *     .eq('status', 'active');
- *   
- *   if (error) return null;
- *   
- *   const matchingCompany = companies?.find((company) => 
- *     company.tags?.includes(category)
- *   );
- *   
- *   return matchingCompany?.id ?? null;
- * }
+ * Fallback method that uses the leads table when no match is found
+ * in the company_profiles table. This ensures backward compatibility.
  */
+async function fallbackCategoryMatch(category: string): Promise<string | null> {
+  try {
+    const { data: leads, error } = await supabase
+      .from('leads')
+      .select('company_id, category')
+      .eq('category', category)
+      .not('company_id', 'is', null)
+      .order('updated_at', { ascending: true })
+      .limit(1);
+    
+    if (error) {
+      console.error('Error in fallback category matching:', error);
+      return null;
+    }
+    
+    if (leads && leads.length > 0 && leads[0].company_id) {
+      console.log(`Using fallback method, found provider: ${leads[0].company_id}`);
+      return leads[0].company_id;
+    }
+    
+    return null;
+  } catch (err) {
+    console.error('Error in fallback category matching:', err);
+    return null;
+  }
+}

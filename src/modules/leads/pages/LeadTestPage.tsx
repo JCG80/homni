@@ -2,6 +2,7 @@
 import { LeadInsertTest } from '../tests/LeadInsertTest';
 import { LeadStatusUpdateTest } from '../tests/LeadStatusUpdateTest';
 import { DistributionStrategyTest } from '../tests/components/DistributionStrategyTest';
+import { CompanyProfilesTest } from '../tests/components/CompanyProfilesTest';
 
 export const LeadTestPage = () => {
   return (
@@ -12,6 +13,7 @@ export const LeadTestPage = () => {
       </div>
 
       <div className="space-y-6">
+        <CompanyProfilesTest />
         <DistributionStrategyTest />
         <LeadInsertTest />
         <LeadStatusUpdateTest />
