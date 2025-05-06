@@ -41,30 +41,36 @@ export type Database = {
       }
       lead_settings: {
         Row: {
+          agents_paused: boolean
           budget: number | null
           daily_budget: number | null
           filters: Json
           global_pause: boolean
+          globally_paused: boolean
           id: string
           monthly_budget: number | null
           strategy: string
           updated_at: string
         }
         Insert: {
+          agents_paused?: boolean
           budget?: number | null
           daily_budget?: number | null
           filters?: Json
           global_pause?: boolean
+          globally_paused?: boolean
           id?: string
           monthly_budget?: number | null
           strategy?: string
           updated_at?: string
         }
         Update: {
+          agents_paused?: boolean
           budget?: number | null
           daily_budget?: number | null
           filters?: Json
           global_pause?: boolean
+          globally_paused?: boolean
           id?: string
           monthly_budget?: number | null
           strategy?: string

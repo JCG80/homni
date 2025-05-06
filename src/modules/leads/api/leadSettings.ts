@@ -34,6 +34,8 @@ export async function updateLeadSettings(updates: {
   budget?: number | null;
   strategy?: string;
   global_pause?: boolean;
+  agents_paused?: boolean;
+  globally_paused?: boolean;
 }): Promise<void> {
   const { error } = await supabase
     .from('lead_settings')

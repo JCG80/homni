@@ -21,6 +21,8 @@ export const LeadSettingsForm = () => {
   const [dailyBudget, setDailyBudget] = useState<string>('');
   const [monthlyBudget, setMonthlyBudget] = useState<string>('');
   const [globalPause, setGlobalPause] = useState(false);
+  const [agentsPaused, setAgentsPaused] = useState(false);
+  const [globallyPaused, setGloballyPaused] = useState(false);
   
   useEffect(() => {
     const loadSettings = async () => {
@@ -36,6 +38,8 @@ export const LeadSettingsForm = () => {
           setDailyBudget(data.daily_budget?.toString() || '');
           setMonthlyBudget(data.monthly_budget?.toString() || '');
           setGlobalPause(data.global_pause);
+          setAgentsPaused(data.agents_paused);
+          setGloballyPaused(data.globally_paused);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load settings');
@@ -60,6 +64,8 @@ export const LeadSettingsForm = () => {
         daily_budget: dailyBudget ? parseFloat(dailyBudget) : null,
         monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
         global_pause: globalPause,
+        agents_paused: agentsPaused,
+        globally_paused: globallyPaused,
         filters: filtersRecord
       });
       
@@ -146,6 +152,24 @@ export const LeadSettingsForm = () => {
                 onCheckedChange={setGlobalPause}
               />
               <Label htmlFor="global-pause">Global Pause</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="agents-paused"
+                checked={agentsPaused}
+                onCheckedChange={setAgentsPaused}
+              />
+              <Label htmlFor="agents-paused">Pause Agents</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="globally-paused"
+                checked={globallyPaused}
+                onCheckedChange={setGloballyPaused}
+              />
+              <Label htmlFor="globally-paused">System-wide Pause</Label>
             </div>
             
             <Button 
