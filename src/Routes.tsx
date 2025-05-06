@@ -36,12 +36,12 @@ const AppRoutes = () => {
       path: '/unauthorized',
       element: <UnauthorizedPage />
     },
-    // Allow all roles to access this page
+    // Allow all authenticated users to access test pages
     {
       path: '/leads/test',
       element: <LeadTestPage />,
       requiresAuth: true,
-      allowAnyRole: true // New flag to indicate any authenticated user can access
+      allowAnyRole: true // This will be translated to allowAnyAuthenticated
     }
   ];
 
@@ -54,7 +54,9 @@ const AppRoutes = () => {
         return {
           path: route.path,
           element: (
-            <Authenticated>{route.element}</Authenticated>
+            <ProtectedRoute allowAnyAuthenticated={true}>
+              {route.element}
+            </ProtectedRoute>
           )
         };
       }

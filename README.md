@@ -1,4 +1,3 @@
-
 # Welcome to your Lovable project
 
 ## Project info
@@ -53,42 +52,67 @@ npm run dev
 
 ## Getting Started
 
-### 🎟️ Dev-login og seeding
+### 🎟️ Authentication System
 
-#### Development Test Users
+#### Development Authentication
 
-The application uses predefined test users with fixed credentials for development purposes.
+The application offers two authentication methods for development:
 
-To set up test users in your Supabase database, run the following SQL:
+1. **Quick Role-Based Login**
+   - Located in the bottom-right corner of the application (in development mode only)
+   - Direct buttons for each role: "Login as User", "Login as Provider", "Login as Admin", "Login as Master Admin"
+   - Automatically logs in with pre-configured test users for each role
+
+2. **Individual Test User Login**
+   - Use the "Quick Dev Login" dropdown menu
+   - Shows all available test users with their roles
+   - Uses password-based authentication with the fixed password "password"
+
+These authentication tools make it simple to test role-specific functionality without manual login, and only work in development mode.
+
+#### Route Protection System
+
+The application uses a protection system for routes:
+
+1. **Routes With `allowAnyAuthenticated`**
+   - Accessible to any authenticated user regardless of role
+   - Used for test routes and general authenticated features
+   - Example: `/leads/test`
+
+2. **Routes With `allowedRoles`**
+   - Require specific user roles to access
+   - Redirects to "Unauthorized" page if the user's role is not in the allowed list
+   - Example: Administrative routes requiring admin access
+
+3. **Regular Authenticated Routes**
+   - Require any valid authentication 
+   - Redirect to login if not authenticated
+
+#### Adding New Test Users
+
+To add new test users to your Supabase database:
 
 ```sql
--- Sett inn 3 testbrukere
+-- Add a new test user
 INSERT INTO auth.users (id, email, password, raw_user_meta_data)
 VALUES
-  ('11111111-1111-1111-1111-111111111111', 'admin@test.local', crypt('password','generated_salt'), '{"role":"master-admin"}'),
-  ('22222222-2222-2222-2222-222222222222', 'provider@test.local', crypt('password','generated_salt'), '{"role":"provider"}'),
-  ('33333333-3333-3333-3333-333333333333', 'user@test.local', crypt('password','generated_salt'), '{"role":"user"}')
+  (gen_random_uuid(), 'company@test.local', crypt('password','generated_salt'), '{"role":"company"}')
 ON CONFLICT DO NOTHING;
 
--- Seed tilhørende profiler
+-- Add corresponding profile
 INSERT INTO user_profiles (id, full_name)
-VALUES
-  ('11111111-1111-1111-1111-111111111111', 'Master Admin'),
-  ('22222222-2222-2222-2222-222222222222', 'Test Provider'),
-  ('33333333-3333-3333-3333-333333333333', 'Test User')
+SELECT id, 'Test Company' FROM auth.users WHERE email = 'company@test.local'
 ON CONFLICT DO NOTHING;
 ```
 
-#### Password-based Quick Login (dev)
+Then add the user to the `TEST_USERS` array in `src/modules/auth/utils/devLogin.ts`:
 
-In development mode, you can use the Quick Dev Login button located in the bottom-right corner of the application. This allows you to sign in as any of the test users with a single click, using the predefined password.
-
-The login feature:
-1. Only works in `development` mode
-2. Uses password-based authentication with the fixed password "password"
-3. Automatically sets the appropriate user role based on the selected user
-
-This feature simplifies testing user-specific features without manual login.
+```typescript
+export const TEST_USERS: TestUser[] = [
+  // existing users...
+  { email: 'company@test.local', role: 'company', name: 'Test Company' }
+];
+```
 
 ## What technologies are used for this project?
 

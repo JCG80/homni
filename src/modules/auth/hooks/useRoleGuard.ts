@@ -7,11 +7,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 interface UseRoleGuardOptions {
   allowedRoles?: UserRole[];
   redirectTo?: string;
+  allowAnyAuthenticated?: boolean; // New option
 }
 
 export const useRoleGuard = ({ 
   allowedRoles = [], // Make optional with empty array default 
-  redirectTo = '/unauthorized' 
+  redirectTo = '/unauthorized',
+  allowAnyAuthenticated = false // Default to false for backward compatibility
 }: UseRoleGuardOptions) => {
   const { isAuthenticated, role, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -24,7 +26,9 @@ export const useRoleGuard = ({
       return;
     }
 
-    console.log('useRoleGuard - isAuthenticated:', isAuthenticated, 'role:', role, 'path:', location.pathname, 'allowedRoles:', allowedRoles);
+    console.log('useRoleGuard - isAuthenticated:', isAuthenticated, 'role:', role, 
+      'path:', location.pathname, 'allowedRoles:', allowedRoles, 
+      'allowAnyAuthenticated:', allowAnyAuthenticated);
 
     if (!isAuthenticated) {
       console.log('Not authenticated, redirecting to /login');
@@ -33,9 +37,9 @@ export const useRoleGuard = ({
       return;
     }
 
-    // Special case for /leads/test route - allow all authenticated users to access
-    if (location.pathname === '/leads/test') {
-      console.log('Accessing /leads/test - bypassing role check for testing purposes');
+    // If allowAnyAuthenticated is true, grant access to any authenticated user
+    if (allowAnyAuthenticated) {
+      console.log('allowAnyAuthenticated is true, granting access to authenticated user');
       setIsAllowed(true);
       setLoading(false);
       return;
@@ -60,7 +64,7 @@ export const useRoleGuard = ({
 
     setIsAllowed(true);
     setLoading(false);
-  }, [isAuthenticated, role, isLoading, allowedRoles, redirectTo, navigate, location.pathname]);
+  }, [isAuthenticated, role, isLoading, allowedRoles, redirectTo, navigate, location.pathname, allowAnyAuthenticated]);
 
   return { isAllowed, loading, redirect: () => navigate(redirectTo) };
 };

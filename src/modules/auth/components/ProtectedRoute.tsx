@@ -8,12 +8,14 @@ interface ProtectedRouteProps {
   children: ReactNode;
   allowedRoles?: UserRole[];
   redirectTo?: string;
+  allowAnyAuthenticated?: boolean; // New prop to allow any authenticated user
 }
 
 export const ProtectedRoute = ({ 
   children, 
   allowedRoles = [], // Make this optional with empty array default
-  redirectTo = '/login' 
+  redirectTo = '/login',
+  allowAnyAuthenticated = false // Default to false for backward compatibility
 }: ProtectedRouteProps) => {
   const { isAuthenticated, role, isLoading } = useAuth();
 
@@ -28,17 +30,18 @@ export const ProtectedRoute = ({
     );
   }
   
-  console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', role, 'allowedRoles:', allowedRoles);
+  console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', role, 
+    'allowedRoles:', allowedRoles, 'allowAnyAuthenticated:', allowAnyAuthenticated);
   
+  // First check if user is authenticated at all
   if (!isAuthenticated) {
     console.log('Not authenticated, redirecting to', redirectTo);
     return <Navigate to={redirectTo} replace />;
   }
   
-  // Special case for /leads/test route - allow all authenticated users to access
-  const currentPath = window.location.pathname;
-  if (currentPath === '/leads/test') {
-    console.log('Accessing /leads/test - bypassing role check for testing purposes');
+  // If allowAnyAuthenticated is true, grant access to any authenticated user
+  if (allowAnyAuthenticated) {
+    console.log('allowAnyAuthenticated is true, granting access to authenticated user');
     return <>{children}</>;
   }
   

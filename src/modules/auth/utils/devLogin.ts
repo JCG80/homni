@@ -38,6 +38,39 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
   }
 };
 
+/**
+ * Direct role-based login for development purposes.
+ * Allows logging in as a specific role without needing a pre-existing user.
+ */
+export async function devLoginAs(role: UserRole, customName?: string): Promise<{success: boolean, error?: string}> {
+  try {
+    // For security, only allow this in development environments
+    if (import.meta.env.MODE !== 'development') {
+      console.error('Dev login only allowed in development mode');
+      return { success: false, error: 'Dev login only allowed in development mode' };
+    }
+    
+    // Find a matching test user for the role or use the first one
+    const matchingUser = TEST_USERS.find(user => user.role === role);
+    
+    if (!matchingUser) {
+      console.error(`No test user found with role: ${role}`);
+      return { success: false, error: `No test user found with role: ${role}` };
+    }
+    
+    console.log(`Attempting dev login as ${role} role with user:`, matchingUser.email);
+    
+    // Use the matching test user to login
+    const result = await devLogin(matchingUser.email);
+    
+    return result;
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error during role-based dev login';
+    console.error('Dev login error:', error);
+    return { success: false, error };
+  }
+}
+
 // Available test users
 export interface TestUser {
   email: string;
