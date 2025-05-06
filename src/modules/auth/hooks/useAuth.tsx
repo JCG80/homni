@@ -1,6 +1,6 @@
-
 import { useState, useEffect, createContext, useContext } from 'react';
-import { supabase, getProfile } from '../api/auth-api';
+import { supabase } from '@/integrations/supabase/client';
+import { getProfile } from '../api/auth-api';
 import { AuthState, Profile, UserRole } from '../types/types';
 
 const initialState: AuthState = {

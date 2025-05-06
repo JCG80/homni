@@ -1,5 +1,5 @@
 
-import { supabase } from '@/modules/auth/api/auth-api';
+import { supabase } from '@/integrations/supabase/client';
 import { Lead, LeadFormValues, LeadStatus } from '../types/types';
 
 // Create a new lead
