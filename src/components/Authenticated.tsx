@@ -8,14 +8,23 @@ interface AuthenticatedProps {
 }
 
 export const Authenticated = ({ children }: AuthenticatedProps) => {
-  const { user, isLoading } = useAuth();
+  const { user, profile, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Laster inn...</div>;
+    return <div>Laster inn bruker...</div>;
   }
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+  
+  if (!profile) {
+    return (
+      <div className="p-4 text-center">
+        🚫 Fant ikke brukerprofil i databasen.<br />
+        Vennligst kontakt administrator eller prøv å logge inn på nytt.
+      </div>
+    );
   }
 
   return <>{children}</>;
