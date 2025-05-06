@@ -42,7 +42,7 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
  * Direct role-based login for development purposes.
  * Allows logging in as a specific role without needing a pre-existing user.
  */
-export async function devLoginAs(role: UserRole, customName?: string): Promise<{success: boolean, error?: string}> {
+export async function devLoginAs(role: UserRole): Promise<{success: boolean, error?: string}> {
   try {
     // For security, only allow this in development environments
     if (import.meta.env.MODE !== 'development') {
@@ -81,5 +81,6 @@ export interface TestUser {
 export const TEST_USERS: TestUser[] = [
   { email: 'admin@test.local', role: 'master-admin', name: 'Master Admin' },
   { email: 'provider@test.local', role: 'provider', name: 'Test Provider' },
-  { email: 'user@test.local', role: 'user', name: 'Test User' }
+  { email: 'user@test.local', role: 'user', name: 'Test User' },
+  { email: 'company@test.local', role: 'company', name: 'Test Company' }
 ];

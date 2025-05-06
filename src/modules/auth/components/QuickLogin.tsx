@@ -99,9 +99,9 @@ export const QuickLogin = () => {
             size="sm"
             className="bg-blue-100 border-blue-300 hover:bg-blue-200"
             disabled={loading !== null}
-            onClick={() => handleLoginByRole('provider')}
+            onClick={() => handleLoginByRole('company')}
           >
-            Login as Provider
+            Login as Company
           </Button>
           <Button 
             variant="outline" 

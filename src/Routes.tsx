@@ -8,6 +8,8 @@ import { LeadTestPage } from './modules/leads/pages/LeadTestPage';
 import { CompanyLeadsPage } from './modules/leads/pages/CompanyLeadsPage';
 import { UserLeadsPage } from './modules/leads/pages/UserLeadsPage';
 import { UnauthorizedPage } from './modules/auth/pages/UnauthorizedPage';
+import { LoginPage } from './modules/auth/pages/LoginPage';
+import { RegisterPage } from './modules/auth/pages/RegisterPage';
 import { RouteConfig, UserRole } from './modules/auth/types/types';
 
 const AppRoutes = () => {
@@ -16,21 +18,28 @@ const AppRoutes = () => {
     {
       path: '/',
       element: <AdminLeadsPage />,
-      requiresAuth: true
+      requiresAuth: true,
+      allowAnyRole: true // Allow any authenticated user to access the home page
     },
     {
       path: '/login',
-      element: <Unauthenticated />
+      element: <LoginPage />
+    },
+    {
+      path: '/register',
+      element: <RegisterPage />
     },
     {
       path: '/leads/company',
       element: <CompanyLeadsPage />,
-      requiresAuth: true
+      requiresAuth: true,
+      roles: ['company', 'admin', 'master-admin'] // Allow company and admin roles
     },
     {
       path: '/leads/my',
       element: <UserLeadsPage />,
-      requiresAuth: true
+      requiresAuth: true,
+      allowAnyRole: true // Allow any authenticated user
     },
     {
       path: '/unauthorized',
@@ -41,7 +50,7 @@ const AppRoutes = () => {
       path: '/leads/test',
       element: <LeadTestPage />,
       requiresAuth: true,
-      allowAnyRole: true // This will be translated to allowAnyAuthenticated
+      allowAnyRole: true
     }
   ];
 

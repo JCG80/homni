@@ -1,17 +1,24 @@
 
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LeadsTable } from '../components/LeadsTable';
-import { Navigate } from 'react-router-dom';
+import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
 
 export const CompanyLeadsPage = () => {
-  const { isCompany, isLoading } = useAuth();
+  const { isLoading } = useAuth();
+  const { loading } = useRoleGuard({
+    allowedRoles: ['company', 'admin', 'master-admin'],
+    redirectTo: '/unauthorized'
+  });
 
-  if (isLoading) {
-    return <div>Laster inn...</div>;
-  }
-
-  if (!isCompany) {
-    return <Navigate to="/unauthorized" replace />;
+  if (isLoading || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg">Laster inn...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

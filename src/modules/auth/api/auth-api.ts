@@ -56,19 +56,26 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     const userMeta = authUser?.user?.user_metadata;
     console.log('User metadata from auth:', userMeta);
     
+    // Check for role in metadata
+    let userRole: UserRole | null = null;
+    
+    // Try to extract role from metadata (handle various ways it could be stored)
+    if (userMeta) {
+      if (typeof userMeta.role === 'string') {
+        userRole = userMeta.role as UserRole;
+      } else if (userMeta['role']) {
+        userRole = userMeta['role'] as UserRole;
+      }
+      console.log('Extracted role from metadata:', userRole);
+    }
+    
     if (profile) {
       console.log('Found profile in database:', profile);
-      
-      // Use role from metadata if available, otherwise fallback to a default
-      // Check both methods of storing role in metadata
-      const metaRole = userMeta?.role || userMeta?.["role"];
-      const role = (metaRole as UserRole) || 'user';
-      console.log('Using role:', role);
       
       return {
         id: userId,
         full_name: profile.full_name,
-        role: role,
+        role: userRole || 'user',
         created_at: profile.created_at,
       };
     }
@@ -76,15 +83,12 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     // If no profile in database but we have user metadata
     if (userMeta) {
       console.log('Using profile from user metadata:', userMeta);
-      // Check both methods of storing role in metadata
-      const metaRole = userMeta?.role || userMeta?.["role"];
-      const role = (metaRole as UserRole) || 'user';
       
       // Create a profile from user metadata
       return {
         id: userId,
-        role: role,
-        full_name: userMeta.full_name || userMeta?.["full_name"],
+        role: userRole || 'user',
+        full_name: userMeta.full_name || userMeta?.['full_name'],
         created_at: new Date().toISOString(),
       };
     }
@@ -93,7 +97,7 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     console.log('No profile found, returning default with user role');
     return {
       id: userId,
-      role: 'user' as UserRole,
+      role: 'user',
       created_at: new Date().toISOString(),
     };
   } catch (error) {
@@ -101,7 +105,7 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     // Return minimal profile rather than null to avoid auth failures
     return {
       id: userId,
-      role: 'user' as UserRole,
+      role: 'user',
       created_at: new Date().toISOString(),
     };
   }

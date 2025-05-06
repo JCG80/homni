@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -60,7 +61,7 @@ The application offers two authentication methods for development:
 
 1. **Quick Role-Based Login**
    - Located in the bottom-right corner of the application (in development mode only)
-   - Direct buttons for each role: "Login as User", "Login as Provider", "Login as Admin", "Login as Master Admin"
+   - Direct buttons for each role: "Login as User", "Login as Company", "Login as Admin", "Login as Master Admin"
    - Automatically logs in with pre-configured test users for each role
 
 2. **Individual Test User Login**
@@ -77,12 +78,12 @@ The application uses a protection system for routes:
 1. **Routes With `allowAnyAuthenticated`**
    - Accessible to any authenticated user regardless of role
    - Used for test routes and general authenticated features
-   - Example: `/leads/test`
+   - Examples: `/leads/test`, `/leads/my`, `/`
 
 2. **Routes With `allowedRoles`**
    - Require specific user roles to access
    - Redirects to "Unauthorized" page if the user's role is not in the allowed list
-   - Example: Administrative routes requiring admin access
+   - Example: `/leads/company` requires 'company', 'admin', or 'master-admin' roles
 
 3. **Regular Authenticated Routes**
    - Require any valid authentication 
@@ -113,6 +114,23 @@ export const TEST_USERS: TestUser[] = [
   { email: 'company@test.local', role: 'company', name: 'Test Company' }
 ];
 ```
+
+#### Troubleshooting Authentication Issues
+
+1. **Quick Dev Login not working**
+   - Check that your development environment is properly set up (`import.meta.env.MODE === 'development'`)
+   - Verify that the test users in `TEST_USERS` exist in your Supabase database
+   - Make sure the 'password' set for test users in `devLogin` matches what's in the database
+
+2. **Unauthorized Access**
+   - Check the user's role in the console logs compared to the required roles for the route
+   - Verify that `allowAnyAuthenticated` is set correctly for routes that should be accessible to any logged-in user
+   - Use the browser developer console to view the authentication flow and role assignments
+
+3. **Role Consistency Issues**
+   - Make sure the roles in the code match exactly with the roles in Supabase user metadata
+   - Use the console logs to debug what role is being detected for the current user
+   - If needed, manually update a user's role in Supabase using the RoleSwitcher component or directly in the database
 
 ## What technologies are used for this project?
 

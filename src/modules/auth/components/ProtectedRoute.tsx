@@ -8,14 +8,14 @@ interface ProtectedRouteProps {
   children: ReactNode;
   allowedRoles?: UserRole[];
   redirectTo?: string;
-  allowAnyAuthenticated?: boolean; // New prop to allow any authenticated user
+  allowAnyAuthenticated?: boolean;
 }
 
 export const ProtectedRoute = ({ 
   children, 
-  allowedRoles = [], // Make this optional with empty array default
+  allowedRoles = [], 
   redirectTo = '/login',
-  allowAnyAuthenticated = false // Default to false for backward compatibility
+  allowAnyAuthenticated = false
 }: ProtectedRouteProps) => {
   const { isAuthenticated, role, isLoading } = useAuth();
 
@@ -45,8 +45,8 @@ export const ProtectedRoute = ({
     return <>{children}</>;
   }
   
-  // If no specific roles are required, or if the array is empty, allow access
-  if (!allowedRoles || allowedRoles.length === 0) {
+  // If no specific roles are required, allow access
+  if (allowedRoles.length === 0) {
     console.log('No specific roles required, granting access');
     return <>{children}</>;
   }

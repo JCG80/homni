@@ -7,13 +7,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 interface UseRoleGuardOptions {
   allowedRoles?: UserRole[];
   redirectTo?: string;
-  allowAnyAuthenticated?: boolean; // New option
+  allowAnyAuthenticated?: boolean;
 }
 
 export const useRoleGuard = ({ 
-  allowedRoles = [], // Make optional with empty array default 
+  allowedRoles = [],
   redirectTo = '/unauthorized',
-  allowAnyAuthenticated = false // Default to false for backward compatibility
+  allowAnyAuthenticated = false
 }: UseRoleGuardOptions) => {
   const { isAuthenticated, role, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ export const useRoleGuard = ({
     }
 
     // If no specific roles are required, allow access
-    if (!allowedRoles || allowedRoles.length === 0) {
+    if (allowedRoles.length === 0) {
       console.log('No specific roles required, granting access');
       setIsAllowed(true);
       setLoading(false);
