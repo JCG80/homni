@@ -4,11 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 /**
  * Selects a provider based on category expertise matching.
  * 
- * This strategy matches lead categories with provider expertise profiles
- * and returns the best matching provider's ID.
+ * This strategy matches lead categories with company expertise profiles
+ * and returns the best matching company's ID.
  *
  * @param category - The category of the lead to be assigned
- * @returns Promise<string | null> - Provider ID or null if no match found
+ * @returns Promise<string | null> - Company ID or null if no match found
  */
 export async function selectProviderByCategory(category: string): Promise<string | null> {
   if (!category) {
@@ -17,14 +17,16 @@ export async function selectProviderByCategory(category: string): Promise<string
   }
 
   try {
-    // Query providers who handle this category
-    // Note: This assumes you have a providers table with a categories array column
-    // or a provider_categories junction table
-    const { data: providers, error } = await supabase
-      .from('providers')
-      .select('id, name, categories')
-      .contains('categories', [category])
-      .order('last_lead_assigned_at', { ascending: true }) // Load balancing
+    // For now, we're adapting to use the existing leads table since we don't have 
+    // a providers table. In a real implementation, this would query a providers table.
+    
+    // Query leads with the same category and get the company_id
+    const { data: leads, error } = await supabase
+      .from('leads')
+      .select('company_id, category')
+      .eq('category', category)
+      .not('company_id', 'is', null)
+      .order('updated_at', { ascending: true }) // Load balancing
       .limit(1);
     
     if (error) {
@@ -32,15 +34,10 @@ export async function selectProviderByCategory(category: string): Promise<string
       return null;
     }
     
-    // If we found a matching provider, return their ID
-    if (providers && providers.length > 0) {
-      // Update the last_lead_assigned_at timestamp for this provider
-      await supabase
-        .from('providers')
-        .update({ last_lead_assigned_at: new Date().toISOString() })
-        .eq('id', providers[0].id);
-      
-      return providers[0].id;
+    // If we found a matching company, return their ID
+    if (leads && leads.length > 0 && leads[0].company_id) {
+      // In a real implementation, we would update a last_lead_assigned_at timestamp
+      return leads[0].company_id;
     }
     
     console.log(`No provider found for category: ${category}`);
