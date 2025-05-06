@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Lead } from '../types/types';
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
 import { toast } from '@/hooks/use-toast';
+import { Database } from '@/integrations/supabase/types';
 
 /**
  * Fetches the current distribution strategy from lead_settings table
@@ -10,9 +11,9 @@ import { toast } from '@/hooks/use-toast';
  */
 export async function getCurrentStrategy(): Promise<DistributionStrategy> {
   try {
-    // Use a more generic approach with type assertions since lead_settings isn't in the TypeScript types
-    const { data, error } = await (supabase
-      .from('lead_settings') as any)
+    // Using proper typing with the Database interface
+    const { data, error } = await supabase
+      .from('lead_settings')
       .select('strategy')
       .order('updated_at', { ascending: false })
       .limit(1);
@@ -40,9 +41,9 @@ export async function getCurrentStrategy(): Promise<DistributionStrategy> {
  */
 export async function updateDistributionStrategy(strategy: DistributionStrategy): Promise<boolean> {
   try {
-    // Use a more generic approach with type assertions
-    const { error } = await (supabase
-      .from('lead_settings') as any)
+    // Using proper typing with the Database interface
+    const { error } = await supabase
+      .from('lead_settings')
       .insert({
         strategy: strategy,
         updated_at: new Date().toISOString()
