@@ -4,9 +4,11 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { insertLead } from '../api/leads-api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lead } from '../types/types';
+import { Lead, LeadStatus } from '../types/types';
 import { toast } from '@/hooks/use-toast';
 import { Loader } from 'lucide-react';
+import { LEAD_STATUSES } from '../constants/lead-constants';
+import { createTestLead } from './utils';
 
 export const LeadInsertTest = () => {
   const { user } = useAuth();
@@ -28,13 +30,13 @@ export const LeadInsertTest = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const requiredData = {
+      const requiredData = createTestLead({
         title: 'Test Required Fields Only',
         description: 'Testing insertLead with only required fields',
         category: 'bolig',
-        status: 'new',
+        status: 'new' as LeadStatus,
         submitted_by: user.id,
-      };
+      });
       
       const result = await insertLead(requiredData);
       setResult(result);
@@ -68,16 +70,16 @@ export const LeadInsertTest = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const allFieldsData = {
+      const allFieldsData = createTestLead({
         title: 'Test All Fields',
         description: 'Testing insertLead with all fields including optional ones',
         category: 'næring',
-        status: 'new',
+        status: LEAD_STATUSES[0], // Using the 'new' status from the constants
         submitted_by: user.id,
         priority: 'high',
         content: { additionalInfo: 'This is some extra content data' },
         provider_id: 'test-provider-id',
-      };
+      });
       
       const result = await insertLead(allFieldsData);
       setResult(result);
