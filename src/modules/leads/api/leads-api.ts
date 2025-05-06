@@ -17,6 +17,28 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
   return data;
 };
 
+// Insert a lead directly (for testing purposes)
+export const insertLead = async (leadData: {
+  id?: string;
+  title: string;
+  description: string;
+  category: string;
+  status: string;
+  company_id?: string;
+  created_by?: string; // Accept created_by for backward compatibility
+}) => {
+  // Map created_by to submitted_by if it exists
+  const { created_by, ...restData } = leadData;
+  
+  return await supabase
+    .from('leads')
+    .insert({
+      ...restData,
+      submitted_by: created_by, // Use created_by as submitted_by
+    })
+    .select();
+};
+
 // Get leads with optional filters
 export const getLeads = async (filters: { status?: LeadStatus; category?: string } = {}): Promise<Lead[]> => {
   let query = supabase

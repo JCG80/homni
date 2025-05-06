@@ -22,7 +22,7 @@ export interface Lead {
   created_at: string;
   updated_at?: string;
   company_id?: string | null;
-  created_by: string;
+  submitted_by: string; // This matches the database column
   provider_id?: string | null;
   property_id?: string | null;
   gdpr_deletion_date?: string | null;
