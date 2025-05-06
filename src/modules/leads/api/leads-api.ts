@@ -14,7 +14,7 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
     .single();
 
   if (error) throw error;
-  return data;
+  return data as Lead;
 };
 
 // Insert a lead directly (for testing purposes)
@@ -57,7 +57,7 @@ export const getLeads = async (filters: { status?: LeadStatus; category?: string
   const { data, error } = await query;
   
   if (error) throw error;
-  return data || [];
+  return data as Lead[] || [];
 };
 
 // Get leads for a specific user
@@ -68,7 +68,7 @@ export const getUserLeads = async (userId: string): Promise<Lead[]> => {
     .eq('submitted_by', userId);
   
   if (error) throw error;
-  return data || [];
+  return data as Lead[] || [];
 };
 
 // Get leads for a specific company
@@ -79,7 +79,7 @@ export const getCompanyLeads = async (companyId: string): Promise<Lead[]> => {
     .eq('company_id', companyId);
   
   if (error) throw error;
-  return data || [];
+  return data as Lead[] || [];
 };
 
 // Update lead status
@@ -95,7 +95,7 @@ export const updateLeadStatus = async (leadId: string, status: LeadStatus): Prom
     .single();
   
   if (error) throw error;
-  return data;
+  return data as Lead;
 };
 
 // Assign lead to company
@@ -112,7 +112,7 @@ export const assignLeadToCompany = async (leadId: string, companyId: string): Pr
     .single();
   
   if (error) throw error;
-  return data;
+  return data as Lead;
 };
 
 // Get a specific lead by ID
@@ -124,5 +124,5 @@ export const getLeadById = async (leadId: string): Promise<Lead> => {
     .single();
   
   if (error) throw error;
-  return data;
+  return data as Lead;
 };
