@@ -2,8 +2,11 @@
 import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '../types/types';
 
-// This function is only meant to be used during development for quick testing
-export const devLogin = async (email: string): Promise<{success: boolean, error?: string}> => {
+/**
+ * Sender en magic-link på e-post ved dev-login.
+ * @param email Testbrukerens e-post
+ */
+export async function devLogin(email: string): Promise<{success: boolean, error?: string}> {
   try {
     // For security, only allow this in development environments
     if (import.meta.env.MODE !== 'development') {
@@ -11,17 +14,15 @@ export const devLogin = async (email: string): Promise<{success: boolean, error?
       return { success: false, error: 'Dev login only allowed in development mode' };
     }
     
-    // Sign in with the test account - uses password from SQL migration
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password: 'Test1234!' // This is the password we set in the SQL migration
-    });
+    // Send a magic link to the email
+    const { error } = await supabase.auth.signInWithOtp({ email });
     
     if (error) {
       console.error('Error during dev login:', error.message);
       return { success: false, error: error.message };
     }
     
+    console.log('Magic link sent! Check network tab or Supabase logs for the login URL.');
     return { success: true };
   } catch (err) {
     const error = err instanceof Error ? err.message : 'Unknown error during dev login';

@@ -11,12 +11,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TEST_USERS, devLogin, TestUser } from '../utils/devLogin';
 import { toast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 import { Key } from 'lucide-react';
 
 export const QuickLogin = () => {
   const [loading, setLoading] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const handleLogin = async (user: TestUser) => {
     setLoading(user.email);
@@ -26,25 +24,9 @@ export const QuickLogin = () => {
       
       if (result.success) {
         toast({
-          title: 'Dev login successful',
-          description: `Logged in as ${user.name} (${user.role})`,
+          title: 'Magic link sent',
+          description: `Check your console, network tab or Supabase logs for the login URL for ${user.name} (${user.role})`,
         });
-        
-        // Navigate based on role
-        switch (user.role) {
-          case 'admin':
-          case 'master-admin':
-            navigate('/test/leads');
-            break;
-          case 'company':
-            navigate('/leads/company');
-            break;
-          case 'user':
-            navigate('/leads/my');
-            break;
-          default:
-            navigate('/');
-        }
       } else {
         toast({
           title: 'Dev login failed',

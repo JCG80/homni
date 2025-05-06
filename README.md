@@ -55,14 +55,17 @@ npm run dev
 
 ### Quick Dev Login
 
-For development purposes, you can use the Quick Dev Login feature to quickly switch between test users with different roles:
+#### OTP-based Quick Login (dev)
 
-1. In development mode, look for the "Quick Dev Login" button in the bottom right of the screen
-2. Click on it and select one of the available test users:
-   - Admin User (admin role)
+We now use magic-link (OTP) for dev-login:
+1. Click on "Quick Dev Login" button in the bottom right corner and select one of the available test users:
+   - Admin User (master-admin role)
    - Provider User (company role)
    - Regular User (user role)
-3. You'll be automatically logged in and redirected to the appropriate dashboard for that user role
+2. A magic link will be sent (check network tab or Supabase logs for the login URL)
+3. Open the link to log in immediately
+
+**devLogin** is only active in `development` mode and uses OTP for authentication.
 
 This feature only works in development mode and simplifies testing user-specific features without manual login.
 
