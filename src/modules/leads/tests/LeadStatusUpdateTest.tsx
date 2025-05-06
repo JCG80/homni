@@ -4,11 +4,12 @@ import { toast } from '@/hooks/use-toast';
 import { updateLeadStatus } from '../api/leads-api';
 import { Button } from '@/components/ui/button';
 import { LEAD_STATUSES } from '../constants/lead-constants';
+import { LeadStatus } from '../types/types';
 
 export function LeadStatusUpdateTest() {
   const [loading, setLoading] = useState(false);
 
-  async function testUpdate(status: typeof LEAD_STATUSES[number]) {
+  async function testUpdate(status: LeadStatus) {
     setLoading(true);
     try {
       const result = await updateLeadStatus('test-lead-id', status);
@@ -49,7 +50,7 @@ export function LeadStatusUpdateTest() {
           try {
             const result = await updateLeadStatus(
               'db7e8d51-2a8d-4a8d-a3c5-d4e8ea551122',
-              'completed'
+              'completed' as LeadStatus
             );
             toast({
               title: 'Status Updated',
