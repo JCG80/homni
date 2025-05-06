@@ -33,6 +33,7 @@ export const QuickLogin = () => {
         // Navigate based on role
         switch (user.role) {
           case 'admin':
+          case 'master-admin':
             navigate('/test/leads');
             break;
           case 'company':

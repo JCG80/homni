@@ -11,10 +11,10 @@ export const devLogin = async (email: string): Promise<{success: boolean, error?
       return { success: false, error: 'Dev login only allowed in development mode' };
     }
     
-    // Sign in with the test account - uses Admin API to bypass password
+    // Sign in with the test account - uses password from SQL migration
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password: 'testadmin123' // This is the password we set in the SQL migration
+      password: 'Test1234!' // This is the password we set in the SQL migration
     });
     
     if (error) {
@@ -38,7 +38,7 @@ export interface TestUser {
 }
 
 export const TEST_USERS: TestUser[] = [
-  { email: 'admin@test.local', role: 'admin', name: 'Admin User' },
+  { email: 'admin@test.local', role: 'master-admin', name: 'Admin User' },
   { email: 'provider@test.local', role: 'company', name: 'Provider User' },
   { email: 'user@test.local', role: 'user', name: 'Regular User' }
 ];
