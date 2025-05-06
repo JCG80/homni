@@ -5,6 +5,8 @@ import { TestResultDisplay } from './components/TestResultDisplay';
 import { useLeadStatusUpdateTest } from './hooks/useLeadStatusUpdateTest';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
+import { updateLeadStatus } from '../api/leads-api';
+import { toast } from '@/hooks/use-toast';
 
 export function LeadStatusUpdateTest() {
   const {
@@ -19,6 +21,31 @@ export function LeadStatusUpdateTest() {
     statusCode,
     testUpdateStatus
   } = useLeadStatusUpdateTest();
+
+  const testKnownLead = async () => {
+    if (!user) {
+      toast({
+        title: 'Error',
+        description: 'User must be logged in to test',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    try {
+      const result = await updateLeadStatus('db7e8d51-2a8d-4a8d-a3c5-d4e8ea551122', 'completed');
+      toast({
+        title: 'Status Updated',
+        description: '✅ Lead ble oppdatert til "completed"',
+      });
+    } catch (err) {
+      toast({
+        title: 'Update Failed',
+        description: '🚫 Klarte ikke å oppdatere lead-status',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -39,7 +66,7 @@ export function LeadStatusUpdateTest() {
           result={result}
         />
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex flex-wrap gap-2">
         <Button
           onClick={testUpdateStatus}
           disabled={isLoading || !user || !leadId}
@@ -53,6 +80,14 @@ export function LeadStatusUpdateTest() {
           ) : (
             'Test Status Update'
           )}
+        </Button>
+
+        <Button
+          variant="secondary"
+          onClick={testKnownLead}
+          disabled={!user}
+        >
+          Test "completed" status på known-lead
         </Button>
       </CardFooter>
     </Card>
