@@ -47,6 +47,3 @@ export function LeadInsertTest() {
     </Card>
   );
 }
-
-// Explicitly adding a named export to match the import in LeadTestPage.tsx
-export { LeadInsertTest };

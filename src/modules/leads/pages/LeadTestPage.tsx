@@ -1,7 +1,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LeadInsertTest } from '../tests/LeadInsertTest';
-import LeadStatusUpdateTest from '../tests/LeadStatusUpdateTest';
+import { LeadStatusUpdateTest } from '../tests/LeadStatusUpdateTest';
 
 export const LeadTestPage = () => {
   return (
