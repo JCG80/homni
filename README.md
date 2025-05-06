@@ -112,9 +112,42 @@ Komponenten er validert mot kravene og inneholder følgende:
 
 📌 Sist validert: `2025-05-06 OB`
 
+### ✅ insertLead() Validering
+
+#### 🔍 Function: insertLead (src/modules/leads/api/leads-api.ts)
+
+- [x] Funksjonen finnes og er eksportert fra leads-api.ts
+- [x] Godtar `Partial<Lead>` som inputtype
+- [x] Krever følgende felt:
+  - [x] title
+  - [x] description
+  - [x] category
+  - [x] status (bruker `LeadStatus`)
+  - [x] company_id
+  - [x] created_by (eller submitted_by hvis aktuelt)
+- [x] Validerer `status` mot `LEAD_STATUSES` enum før insert
+- [x] Setter `created_at` automatisk dersom ikke oppgitt
+- [x] Returnerer resultatet eller håndterer Supabase-feil korrekt
+- [x] Brukes av LeadForm eller andre innsendinger
+
+#### 📌 Testeksempler som skal fungere:
+```ts
+await insertLead({
+  title: 'Ny varmepumpe',
+  description: 'Trenger tilbud på luft-til-luft',
+  category: 'Elektriker',
+  status: 'new',
+  company_id: someCompanyId,
+  created_by: someUserId
+});
+```
+
+📌 Sist validert: `2025-05-06 OB`
+
 ### 🧪 Lead Tests
 - [x] User can create new lead
 - [x] Admin can view all leads
 - [x] Company can only view assigned leads
 - [x] Lead status transitions allowed in correct order
 - [x] Test `insertLead()` logic using Supabase and check `required fields`
+
