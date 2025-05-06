@@ -1,3 +1,4 @@
+
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getProfile } from '../api/auth-api';
@@ -25,9 +26,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!authState.user) return;
     
     try {
-      const profile = await getProfile(authState.user.id);
+      setAuthState(prev => ({ ...prev, isLoading: true }));
+      const profile = await getProfile(authState.user!.id);
       setAuthState(prev => ({ ...prev, profile, isLoading: false }));
     } catch (error) {
+      console.error('Error refreshing profile:', error);
       setAuthState(prev => ({ 
         ...prev, 
         error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
@@ -37,9 +40,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setAuthState(prev => ({ ...prev, isLoading: true }));
+      (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
         
         if (session?.user) {
           setAuthState(prev => ({ 
@@ -48,22 +52,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               id: session.user.id,
               email: session.user.email,
             },
+            isLoading: true
           }));
           
-          try {
-            const profile = await getProfile(session.user.id);
-            setAuthState(prev => ({ 
-              ...prev, 
-              profile, 
-              isLoading: false 
-            }));
-          } catch (error) {
-            setAuthState(prev => ({ 
-              ...prev, 
-              error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
-              isLoading: false 
-            }));
-          }
+          // Use setTimeout to avoid potential deadlock
+          setTimeout(async () => {
+            try {
+              const profile = await getProfile(session.user.id);
+              setAuthState(prev => ({ 
+                ...prev, 
+                profile, 
+                isLoading: false 
+              }));
+            } catch (error) {
+              console.error('Error fetching profile:', error);
+              setAuthState(prev => ({ 
+                ...prev, 
+                error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
+                isLoading: false 
+              }));
+            }
+          }, 0);
         } else {
           setAuthState({
             user: null,
@@ -75,17 +84,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    // Initial session check
+    // THEN check for existing session
     const initialSession = async () => {
+      console.log('Checking for initial session...');
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
+        console.log('Found initial session for user:', session.user.id);
         setAuthState(prev => ({ 
           ...prev, 
           user: {
             id: session.user.id,
             email: session.user.email,
           },
+          isLoading: true
         }));
         
         try {
@@ -96,6 +108,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isLoading: false 
           }));
         } catch (error) {
+          console.error('Error fetching profile:', error);
           setAuthState(prev => ({ 
             ...prev, 
             error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
@@ -103,6 +116,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }));
         }
       } else {
+        console.log('No initial session found');
         setAuthState(prev => ({ ...prev, isLoading: false }));
       }
     };

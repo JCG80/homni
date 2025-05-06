@@ -18,8 +18,14 @@ export const ProtectedRoute = ({
   const { isAuthenticated, role, isLoading } = useAuth();
 
   if (isLoading) {
-    // You could show a loading component here instead
-    return <div>Laster...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg">Sjekker tilgangsrettigheter...</p>
+        </div>
+      </div>
+    );
   }
   
   if (!isAuthenticated) {

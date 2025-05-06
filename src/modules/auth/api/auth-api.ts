@@ -17,12 +17,18 @@ export const signUpWithEmail = async (email: string, password: string) => {
 };
 
 export const signInWithEmail = async (email: string, password: string) => {
+  console.log('Attempting login with email:', email);
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
   
-  if (error) throw error;
+  if (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+  
+  console.log('Login successful, user:', data.user);
   return data;
 };
 
@@ -33,6 +39,7 @@ export const signOut = async () => {
 
 export const getProfile = async (userId: string): Promise<Profile | null> => {
   try {
+    console.log('Fetching profile for user:', userId);
     // First try to get profile from the user_profiles table
     const { data: profile, error } = await supabase
       .from('user_profiles')
@@ -40,7 +47,12 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
       .eq('id', userId)
       .single();
     
+    if (error) {
+      console.error('Error fetching profile from DB:', error);
+    }
+    
     if (profile) {
+      console.log('Found profile in database:', profile);
       // Get user metadata for role information
       const { data: authUser } = await supabase.auth.getUser();
       const userMeta = authUser?.user?.user_metadata;
@@ -58,6 +70,7 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     const userMeta = authUser?.user?.user_metadata;
     
     if (userMeta && (userMeta.role || userMeta.full_name)) {
+      console.log('Using profile from user metadata:', userMeta);
       // Create a profile from user metadata if any info exists
       return {
         id: userId,
@@ -67,9 +80,15 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
       };
     }
     
-    return null;
+    // If no profile found, create a default one
+    console.log('No profile found, returning default');
+    return {
+      id: userId,
+      role: 'user' as UserRole,
+      created_at: new Date().toISOString(),
+    };
   } catch (error) {
-    console.error('Error fetching profile:', error);
+    console.error('Error in getProfile:', error);
     return null;
   }
 };

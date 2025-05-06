@@ -26,18 +26,24 @@ export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
     setIsSubmitting(true);
 
     try {
-      await signInWithEmail(email, password);
-      toast({
-        title: 'Innlogget',
-        description: 'Du er nå logget inn',
-      });
+      const { user } = await signInWithEmail(email, password);
       
-      if (onSuccess) {
-        onSuccess();
+      if (user) {
+        toast({
+          title: 'Innlogget',
+          description: 'Du er nå logget inn',
+        });
+        
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate(redirectTo);
+        }
       } else {
-        navigate(redirectTo);
+        throw new Error('Kunne ikke logge inn');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Feil ved innlogging');
       toast({
         title: 'Innloggingsfeil',
