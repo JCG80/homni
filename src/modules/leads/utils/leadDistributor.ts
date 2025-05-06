@@ -10,8 +10,9 @@ import { toast } from '@/hooks/use-toast';
  */
 export async function getCurrentStrategy(): Promise<DistributionStrategy> {
   try {
-    const { data, error } = await supabase
-      .from('lead_settings')
+    // Use a more generic approach with type assertions since lead_settings isn't in the TypeScript types
+    const { data, error } = await (supabase
+      .from('lead_settings') as any)
       .select('strategy')
       .order('updated_at', { ascending: false })
       .limit(1);
@@ -39,8 +40,9 @@ export async function getCurrentStrategy(): Promise<DistributionStrategy> {
  */
 export async function updateDistributionStrategy(strategy: DistributionStrategy): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('lead_settings')
+    // Use a more generic approach with type assertions
+    const { error } = await (supabase
+      .from('lead_settings') as any)
       .insert({
         strategy: strategy,
         updated_at: new Date().toISOString()

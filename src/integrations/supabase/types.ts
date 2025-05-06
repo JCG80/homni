@@ -39,6 +39,30 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_settings: {
+        Row: {
+          budget: number | null
+          global_pause: boolean
+          id: string
+          strategy: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          global_pause?: boolean
+          id?: string
+          strategy?: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          global_pause?: boolean
+          id?: string
+          strategy?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           category: string
