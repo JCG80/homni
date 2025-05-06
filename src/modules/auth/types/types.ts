@@ -1,0 +1,22 @@
+
+export type UserRole = 'user' | 'company' | 'admin' | 'master-admin';
+
+export interface Profile {
+  id: string;
+  full_name?: string;
+  role: UserRole;
+  company_id?: string;
+  created_at: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email?: string;
+}
+
+export interface AuthState {
+  user: AuthUser | null;
+  profile: Profile | null;
+  isLoading: boolean;
+  error: Error | null;
+}
