@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
  * Selects a provider based on category expertise matching.
  * 
  * This strategy matches lead categories with company expertise profiles
- * and returns the best matching company's ID.
+ * by checking if the company's tags include the lead category.
  *
  * @param category - The category of the lead to be assigned
  * @returns Promise<string | null> - Company ID or null if no match found
@@ -18,7 +18,8 @@ export async function selectProviderByCategory(category: string): Promise<string
 
   try {
     // For now, we're adapting to use the existing leads table since we don't have 
-    // a providers table. In a real implementation, this would query a providers table.
+    // a company_profiles table with tags. In a real implementation, this would query
+    // the company_profiles table with a tags filter.
     
     // Query leads with the same category and get the company_id
     const { data: leads, error } = await supabase
@@ -47,3 +48,24 @@ export async function selectProviderByCategory(category: string): Promise<string
     return null;
   }
 }
+
+/**
+ * Future implementation when company_profiles table with tags is available:
+ * 
+ * async function selectProviderByCategory(category: string): Promise<string | null> {
+ *   if (!category) return null;
+ *   
+ *   const { data: companies, error } = await supabase
+ *     .from('company_profiles')
+ *     .select('id, tags')
+ *     .eq('status', 'active');
+ *   
+ *   if (error) return null;
+ *   
+ *   const matchingCompany = companies?.find((company) => 
+ *     company.tags?.includes(category)
+ *   );
+ *   
+ *   return matchingCompany?.id ?? null;
+ * }
+ */
