@@ -51,12 +51,16 @@ export const LeadSettingsForm = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      
+      // Create a proper Record<string, any> for filters
+      const filtersRecord: Record<string, any> = settings?.filters as Record<string, any> || {};
+      
       await updateLeadSettings({
         strategy,
         daily_budget: dailyBudget ? parseFloat(dailyBudget) : null,
         monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
         global_pause: globalPause,
-        filters: settings?.filters || {}
+        filters: filtersRecord
       });
       
       toast({
