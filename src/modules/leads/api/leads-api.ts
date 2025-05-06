@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, LeadFormValues, LeadStatus } from '../types/types';
+import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES } from '../types/types';
 
 // Create a new lead
 export const createLead = async (leadData: LeadFormValues, userId: string): Promise<Lead> => {
@@ -18,9 +18,14 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
 };
 
 /**
- * Insert a new lead into Supabase with improved field handling
+ * Insert a new lead into Supabase with improved field handling and status validation
  */
 export async function insertLead(lead: Partial<Lead>) {
+  // Validate the status if provided
+  if (lead.status && !LEAD_STATUSES.includes(lead.status)) {
+    throw new Error(`Invalid status: ${lead.status}. Must be one of: ${LEAD_STATUSES.join(', ')}`);
+  }
+
   const { data, error } = await supabase
     .from('leads')
     .insert([

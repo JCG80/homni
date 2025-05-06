@@ -62,16 +62,59 @@ export const LeadInsertTest = () => {
     }
   };
 
+  // Test with invalid status
+  const testInvalidStatus = async () => {
+    if (!user) {
+      toast({
+        title: 'Error',
+        description: 'User must be logged in to test',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    try {
+      const testData = {
+        title: 'Feil status',
+        description: 'Tester feil enum',
+        category: 'Elektriker',
+        status: 'invalid-status' as any, // This should trigger our validation
+        submitted_by: user.id,
+        company_id: user.id,
+      };
+      
+      console.log('Testing insertLead with invalid status:', testData);
+      const result = await insertLead(testData);
+      setResult(result);
+      setStatusCode(201);
+      toast({
+        title: 'Success',
+        description: 'Lead inserted successfully (but this should not happen)',
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      toast({
+        title: 'Validation Working',
+        description: err instanceof Error ? err.message : 'Invalid status was correctly rejected',
+        variant: 'default',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
-        <CardTitle>Test insertLead() Function with Valid Data</CardTitle>
+        <CardTitle>Test insertLead() Function</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <h3 className="font-medium">Test with Valid Data</h3>
+          <h3 className="font-medium">Test with Valid and Invalid Data</h3>
           <p className="text-sm text-muted-foreground">
-            This test will run insertLead with valid data and verify it works correctly.
+            These tests will run insertLead with different data to verify its functionality.
           </p>
         </div>
 
@@ -100,19 +143,34 @@ export const LeadInsertTest = () => {
           </div>
         )}
       </CardContent>
-      <CardFooter className="gap-2">
+      <CardFooter className="gap-2 flex flex-wrap">
         <Button
           onClick={testValidData}
           disabled={isLoading || !user}
-          className="w-full"
+          className="w-full sm:w-auto"
         >
           {isLoading ? (
             <>
               <Loader className="mr-2 h-4 w-4 animate-spin" />
-              Testing insertLead...
+              Testing...
             </>
           ) : (
-            'Test insertLead with Valid Data'
+            'Test Valid Data'
+          )}
+        </Button>
+        <Button
+          onClick={testInvalidStatus}
+          disabled={isLoading || !user}
+          variant="outline"
+          className="w-full sm:w-auto"
+        >
+          {isLoading ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Testing...
+            </>
+          ) : (
+            'Test Invalid Status'
           )}
         </Button>
       </CardFooter>
