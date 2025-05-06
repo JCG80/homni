@@ -17,27 +17,31 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
   return data as Lead;
 };
 
-// Insert a lead directly (for testing purposes)
-export const insertLead = async (leadData: {
-  id?: string;
-  title: string;
-  description: string;
-  category: string;
-  status: string;
-  company_id?: string;
-  created_by?: string; // Accept created_by for backward compatibility
-}) => {
-  // Map created_by to submitted_by if it exists
-  const { created_by, ...restData } = leadData;
-  
-  return await supabase
+/**
+ * Insert a new lead into Supabase with improved field handling
+ */
+export async function insertLead(lead: Partial<Lead>) {
+  const { data, error } = await supabase
     .from('leads')
-    .insert({
-      ...restData,
-      submitted_by: created_by, // Use created_by as submitted_by
-    })
-    .select();
-};
+    .insert([
+      {
+        title: lead.title,
+        description: lead.description,
+        category: lead.category,
+        status: lead.status ?? 'new',
+        company_id: lead.company_id,
+        submitted_by: lead.submitted_by,
+        created_at: new Date().toISOString(),
+        ...(lead.priority && { priority: lead.priority }),
+        ...(lead.content && { content: lead.content }),
+      }
+    ])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Lead;
+}
 
 // Get leads with optional filters
 export const getLeads = async (filters: { status?: LeadStatus; category?: string } = {}): Promise<Lead[]> => {
