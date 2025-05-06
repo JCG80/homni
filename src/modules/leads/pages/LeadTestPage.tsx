@@ -1,27 +1,36 @@
 
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LeadInsertTest } from '../tests/LeadInsertTest';
 import { LeadStatusUpdateTest } from '../tests/LeadStatusUpdateTest';
-import { DistributionStrategyTest } from '../tests/components/DistributionStrategyTest';
-import { CompanyProfilesTest } from '../tests/components/CompanyProfilesTest';
-import { TestDataInserter } from '../tests/components/TestDataInserter';
+import { LeadSettingsTest } from '../tests/components/LeadSettingsTest';
 
 export const LeadTestPage = () => {
-  return (
-    <div className="container mx-auto py-8 space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Lead Testing</h1>
-          <p className="text-gray-600 mt-2">Page for testing lead functionality</p>
-        </div>
-        <TestDataInserter />
-      </div>
+  const [activeTab, setActiveTab] = useState('insert');
 
-      <div className="space-y-6">
-        <CompanyProfilesTest />
-        <DistributionStrategyTest />
-        <LeadInsertTest />
-        <LeadStatusUpdateTest />
-      </div>
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">Lead Test Page</h1>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-3 mb-8">
+          <TabsTrigger value="insert">Insert Test</TabsTrigger>
+          <TabsTrigger value="status">Status Update</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="insert" className="space-y-4">
+          <LeadInsertTest />
+        </TabsContent>
+        
+        <TabsContent value="status" className="space-y-4">
+          <LeadStatusUpdateTest />
+        </TabsContent>
+
+        <TabsContent value="settings" className="space-y-4">
+          <LeadSettingsTest />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
