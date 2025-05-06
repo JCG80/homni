@@ -2,9 +2,9 @@
 import { selectProviderByRoundRobin } from './roundRobin';
 import { selectProviderByCategory } from './categoryMatch';
 
-export type DistributionStrategy = 'roundRobin' | 'categoryMatch';
+export type DistributionStrategy = 'roundRobin' | 'category_match';
 
-export const DISTRIBUTION_STRATEGIES = ['roundRobin', 'categoryMatch'] as const;
+export const DISTRIBUTION_STRATEGIES = ['roundRobin', 'category_match'] as const;
 
 /**
  * Factory function that returns the appropriate lead distribution strategy
@@ -20,9 +20,9 @@ export async function distributeLeadToProvider(
     case 'roundRobin':
       return selectProviderByRoundRobin();
     
-    case 'categoryMatch':
+    case 'category_match':
       if (!category) {
-        console.error('Category is required for categoryMatch strategy');
+        console.error('Category is required for category_match strategy');
         return null;
       }
       return selectProviderByCategory(category);

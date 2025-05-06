@@ -20,17 +20,17 @@ export async function getCurrentStrategy(): Promise<DistributionStrategy> {
     
     if (error) {
       console.error('Error fetching strategy from lead_settings:', error);
-      return 'categoryMatch'; // Default fallback
+      return 'category_match'; // Default fallback
     }
     
     if (data && data.length > 0 && data[0].strategy) {
       return data[0].strategy as DistributionStrategy;
     }
     
-    return 'categoryMatch'; // Default fallback if no settings found
+    return 'category_match'; // Default fallback if no settings found
   } catch (err) {
     console.error('Unexpected error fetching strategy:', err);
-    return 'categoryMatch'; // Default fallback
+    return 'category_match'; // Default fallback
   }
 }
 

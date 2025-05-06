@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LeadsTable } from '../components/LeadsTable';
 import { Navigate } from 'react-router-dom';

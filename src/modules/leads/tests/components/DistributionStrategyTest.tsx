@@ -139,7 +139,7 @@ export const DistributionStrategyTest = () => {
           </div>
         </div>
 
-        {selectedStrategy === 'categoryMatch' && (
+        {selectedStrategy === 'category_match' && (
           <div className="space-y-2">
             <label className="text-sm font-medium">Category</label>
             <Input
@@ -162,7 +162,7 @@ export const DistributionStrategyTest = () => {
         <div className="space-y-2 pt-2 flex flex-wrap gap-2">
           <Button 
             onClick={testStrategy} 
-            disabled={loading || (selectedStrategy === 'categoryMatch' && !category)}
+            disabled={loading || (selectedStrategy === 'category_match' && !category)}
           >
             {loading ? 'Testing...' : 'Test Strategy'}
           </Button>
