@@ -12,6 +12,12 @@ import { RegisterPage } from "./modules/auth/pages/RegisterPage";
 import { UnauthorizedPage } from "./modules/auth/pages/UnauthorizedPage";
 import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
 
+// Import the lead pages
+import { UserLeadsPage } from "./modules/leads/pages/UserLeadsPage";
+import { AdminLeadsPage } from "./modules/leads/pages/AdminLeadsPage";
+import { CompanyLeadsPage } from "./modules/leads/pages/CompanyLeadsPage";
+import { LeadDetailsPage } from "./modules/leads/pages/LeadDetailsPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -33,6 +39,43 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['user', 'company', 'admin', 'master-admin']}>
                   <Index />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Leads routes */}
+            <Route 
+              path="/leads" 
+              element={
+                <ProtectedRoute allowedRoles={['user', 'company', 'admin', 'master-admin']}>
+                  <UserLeadsPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/leads/:leadId" 
+              element={
+                <ProtectedRoute allowedRoles={['user', 'company', 'admin', 'master-admin']}>
+                  <LeadDetailsPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/admin/leads" 
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+                  <AdminLeadsPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/company/leads" 
+              element={
+                <ProtectedRoute allowedRoles={['company']}>
+                  <CompanyLeadsPage />
                 </ProtectedRoute>
               } 
             />
