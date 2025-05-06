@@ -49,3 +49,17 @@ export async function updateLeadSettings(updates: {
     throw error;
   }
 }
+
+/**
+ * Specifically toggles the pause state for agents
+ */
+export async function pauseForAgents(paused: boolean) {
+  await updateLeadSettings({ agents_paused: paused });
+}
+
+/**
+ * Specifically toggles the global pause state for the entire lead system
+ */
+export async function globalPause(paused: boolean) {
+  await updateLeadSettings({ globally_paused: paused });
+}
