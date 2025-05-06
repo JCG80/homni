@@ -5,6 +5,60 @@ import { distributeLeadToProvider, DistributionStrategy } from '../strategies/st
 import { toast } from '@/hooks/use-toast';
 
 /**
+ * Fetches the current distribution strategy from lead_settings table
+ * @returns The current distribution strategy or fallback strategy if none found
+ */
+export async function getCurrentStrategy(): Promise<DistributionStrategy> {
+  try {
+    const { data, error } = await supabase
+      .from('lead_settings')
+      .select('strategy')
+      .order('updated_at', { ascending: false })
+      .limit(1);
+    
+    if (error) {
+      console.error('Error fetching strategy from lead_settings:', error);
+      return 'categoryMatch'; // Default fallback
+    }
+    
+    if (data && data.length > 0 && data[0].strategy) {
+      return data[0].strategy as DistributionStrategy;
+    }
+    
+    return 'categoryMatch'; // Default fallback if no settings found
+  } catch (err) {
+    console.error('Unexpected error fetching strategy:', err);
+    return 'categoryMatch'; // Default fallback
+  }
+}
+
+/**
+ * Updates the distribution strategy in lead_settings table
+ * @param strategy The strategy to set as current
+ * @returns Success status of the operation
+ */
+export async function updateDistributionStrategy(strategy: DistributionStrategy): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('lead_settings')
+      .insert({
+        strategy: strategy,
+        updated_at: new Date().toISOString()
+      });
+    
+    if (error) {
+      console.error('Error updating strategy in lead_settings:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Unexpected error updating strategy:', err);
+    return false;
+  }
+}
+
+/**
  * Process and distribute leads using the specified strategy
  * @param options Configuration options for lead processing
  * @returns Promise with count of processed leads 
@@ -15,12 +69,14 @@ export async function processLeads(options: {
   onlyNew?: boolean;
 } = {}): Promise<number> {
   const {
-    strategy = 'categoryMatch',
     showToasts = true,
     onlyNew = true
   } = options;
   
   try {
+    // Get strategy from options or from database if not provided
+    const strategy = options.strategy || await getCurrentStrategy();
+    
     // Build query for leads
     let query = supabase
       .from('leads')

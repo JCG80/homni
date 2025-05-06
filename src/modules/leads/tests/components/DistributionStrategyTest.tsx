@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -12,9 +12,10 @@ import {
 import { distributeLeadToProvider, DistributionStrategy, DISTRIBUTION_STRATEGIES } from '../../strategies/strategyFactory';
 import { Input } from '@/components/ui/input';
 import { processUnassignedLeads } from '../../utils/processLeads';
-import { processLeads } from '../../utils/leadDistributor';
+import { processLeads, getCurrentStrategy, updateDistributionStrategy } from '../../utils/leadDistributor';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { toast } from '@/hooks/use-toast';
 
 export const DistributionStrategyTest = () => {
   const [selectedStrategy, setSelectedStrategy] = useState<DistributionStrategy>('roundRobin');
@@ -23,6 +24,19 @@ export const DistributionStrategyTest = () => {
   const [loading, setLoading] = useState(false);
   const [processResult, setProcessResult] = useState<number | null>(null);
   const [useEnhanced, setUseEnhanced] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [currentDbStrategy, setCurrentDbStrategy] = useState<DistributionStrategy | null>(null);
+
+  // Fetch current strategy on mount
+  useEffect(() => {
+    const fetchCurrentStrategy = async () => {
+      const strategy = await getCurrentStrategy();
+      setCurrentDbStrategy(strategy);
+      setSelectedStrategy(strategy);
+    };
+    
+    fetchCurrentStrategy();
+  }, []);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategory(e.target.value);
@@ -67,6 +81,36 @@ export const DistributionStrategyTest = () => {
     }
   };
 
+  const saveAsDefaultStrategy = async () => {
+    setIsSaving(true);
+    try {
+      const success = await updateDistributionStrategy(selectedStrategy);
+      if (success) {
+        setCurrentDbStrategy(selectedStrategy);
+        toast({
+          title: 'Strategy updated',
+          description: `Default strategy set to ${selectedStrategy}`,
+          variant: 'default',
+        });
+      } else {
+        toast({
+          title: 'Update failed',
+          description: 'Failed to update default strategy',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error saving strategy:', error);
+      toast({
+        title: 'Error saving strategy',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <Card className="mb-6">
       <CardHeader>
@@ -85,11 +129,15 @@ export const DistributionStrategyTest = () => {
             <SelectContent>
               {DISTRIBUTION_STRATEGIES.map((strategy) => (
                 <SelectItem key={strategy} value={strategy}>
-                  {strategy}
+                  {strategy} {currentDbStrategy === strategy ? '(Current Default)' : ''}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          
+          <div className="text-sm text-gray-500 mt-1">
+            {currentDbStrategy && `Current default strategy: ${currentDbStrategy}`}
+          </div>
         </div>
 
         {selectedStrategy === 'categoryMatch' && (
@@ -112,7 +160,7 @@ export const DistributionStrategyTest = () => {
           <Label htmlFor="use-enhanced">Use enhanced lead distributor</Label>
         </div>
 
-        <div className="space-y-2 pt-2 flex gap-2">
+        <div className="space-y-2 pt-2 flex flex-wrap gap-2">
           <Button 
             onClick={testStrategy} 
             disabled={loading || (selectedStrategy === 'categoryMatch' && !category)}
@@ -126,6 +174,14 @@ export const DistributionStrategyTest = () => {
             disabled={loading}
           >
             Process Unassigned Leads
+          </Button>
+          
+          <Button 
+            variant="secondary" 
+            onClick={saveAsDefaultStrategy} 
+            disabled={loading || isSaving || selectedStrategy === currentDbStrategy}
+          >
+            {isSaving ? 'Saving...' : 'Set as Default Strategy'}
           </Button>
         </div>
 
