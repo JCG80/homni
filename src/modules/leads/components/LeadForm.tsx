@@ -24,7 +24,7 @@ interface LeadFormProps {
 }
 
 export const LeadForm = ({ onSuccess }: LeadFormProps) => {
-  const { mutate: createLead, isLoading } = useCreateLead();
+  const { mutate: createLead, isPending: isLoading } = useCreateLead();
   
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(formSchema),

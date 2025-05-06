@@ -8,7 +8,7 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
     .from('leads')
     .insert({
       ...leadData,
-      created_by: userId,
+      submitted_by: userId,
     })
     .select()
     .single();
@@ -43,7 +43,7 @@ export const getUserLeads = async (userId: string): Promise<Lead[]> => {
   const { data, error } = await supabase
     .from('leads')
     .select('*')
-    .eq('created_by', userId);
+    .eq('submitted_by', userId);
   
   if (error) throw error;
   return data || [];
