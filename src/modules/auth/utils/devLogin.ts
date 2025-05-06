@@ -39,7 +39,7 @@ export interface TestUser {
 }
 
 export const TEST_USERS: TestUser[] = [
-  { email: 'admin@test.local', role: 'master-admin', name: 'Admin User' },
-  { email: 'company@test.local', role: 'company', name: 'Provider User' },
-  { email: 'user@test.local', role: 'user', name: 'Regular User' }
+  { email: 'admin@test.local', role: 'master-admin', name: 'Master Admin' },
+  { email: 'provider@test.local', role: 'company', name: 'Test Provider' },
+  { email: 'user@test.local', role: 'user', name: 'Test User' }
 ];
