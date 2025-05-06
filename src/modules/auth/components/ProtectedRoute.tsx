@@ -6,13 +6,13 @@ import { UserRole } from '../types/types';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  allowedRoles: UserRole[];
+  allowedRoles?: UserRole[];
   redirectTo?: string;
 }
 
 export const ProtectedRoute = ({ 
   children, 
-  allowedRoles, 
+  allowedRoles = [], // Make this optional with empty array default
   redirectTo = '/login' 
 }: ProtectedRouteProps) => {
   const { isAuthenticated, role, isLoading } = useAuth();
@@ -28,7 +28,7 @@ export const ProtectedRoute = ({
     );
   }
   
-  console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', role);
+  console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', role, 'allowedRoles:', allowedRoles);
   
   if (!isAuthenticated) {
     console.log('Not authenticated, redirecting to', redirectTo);
@@ -39,6 +39,12 @@ export const ProtectedRoute = ({
   const currentPath = window.location.pathname;
   if (currentPath === '/leads/test') {
     console.log('Accessing /leads/test - bypassing role check for testing purposes');
+    return <>{children}</>;
+  }
+  
+  // If no specific roles are required, or if the array is empty, allow access
+  if (!allowedRoles || allowedRoles.length === 0) {
+    console.log('No specific roles required, granting access');
     return <>{children}</>;
   }
   

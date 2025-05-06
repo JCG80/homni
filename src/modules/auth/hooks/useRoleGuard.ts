@@ -5,12 +5,12 @@ import { UserRole } from '../types/types';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface UseRoleGuardOptions {
-  allowedRoles: UserRole[];
+  allowedRoles?: UserRole[];
   redirectTo?: string;
 }
 
 export const useRoleGuard = ({ 
-  allowedRoles, 
+  allowedRoles = [], // Make optional with empty array default 
   redirectTo = '/unauthorized' 
 }: UseRoleGuardOptions) => {
   const { isAuthenticated, role, isLoading } = useAuth();
@@ -24,7 +24,7 @@ export const useRoleGuard = ({
       return;
     }
 
-    console.log('useRoleGuard - isAuthenticated:', isAuthenticated, 'role:', role, 'path:', location.pathname);
+    console.log('useRoleGuard - isAuthenticated:', isAuthenticated, 'role:', role, 'path:', location.pathname, 'allowedRoles:', allowedRoles);
 
     if (!isAuthenticated) {
       console.log('Not authenticated, redirecting to /login');
@@ -36,6 +36,14 @@ export const useRoleGuard = ({
     // Special case for /leads/test route - allow all authenticated users to access
     if (location.pathname === '/leads/test') {
       console.log('Accessing /leads/test - bypassing role check for testing purposes');
+      setIsAllowed(true);
+      setLoading(false);
+      return;
+    }
+
+    // If no specific roles are required, allow access
+    if (!allowedRoles || allowedRoles.length === 0) {
+      console.log('No specific roles required, granting access');
       setIsAllowed(true);
       setLoading(false);
       return;

@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Profile, UserRole } from '../types/types';
 
@@ -59,7 +60,9 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
       console.log('Found profile in database:', profile);
       
       // Use role from metadata if available, otherwise fallback to a default
-      const role = (userMeta?.role as UserRole) || 'user';
+      // Check both methods of storing role in metadata
+      const metaRole = userMeta?.role || userMeta?.["role"];
+      const role = (metaRole as UserRole) || 'user';
       console.log('Using role:', role);
       
       return {
@@ -73,11 +76,15 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     // If no profile in database but we have user metadata
     if (userMeta) {
       console.log('Using profile from user metadata:', userMeta);
+      // Check both methods of storing role in metadata
+      const metaRole = userMeta?.role || userMeta?.["role"];
+      const role = (metaRole as UserRole) || 'user';
+      
       // Create a profile from user metadata
       return {
         id: userId,
-        role: (userMeta.role as UserRole) || 'user',
-        full_name: userMeta.full_name,
+        role: role,
+        full_name: userMeta.full_name || userMeta?.["full_name"],
         created_at: new Date().toISOString(),
       };
     }

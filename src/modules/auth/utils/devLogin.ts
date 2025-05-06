@@ -5,7 +5,6 @@ import { UserRole } from '../types/types';
 /**
  * Development login utility that directly authenticates a test user with password.
  * Only works in development mode for testing purposes.
- * @param email Predefined test user email
  */
 export async function devLogin(email: string): Promise<{success: boolean, error?: string}> {
   try {

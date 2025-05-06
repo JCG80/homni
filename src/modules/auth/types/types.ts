@@ -26,4 +26,5 @@ export interface RouteConfig {
   element: React.ReactNode;
   requiresAuth?: boolean;
   roles?: UserRole[];
+  allowAnyRole?: boolean; // New flag to indicate any authenticated user can access
 }

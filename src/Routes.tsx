@@ -36,12 +36,12 @@ const AppRoutes = () => {
       path: '/unauthorized',
       element: <UnauthorizedPage />
     },
-    // Allow all roles to access this page - we want any authenticated user to be able to access this
+    // Allow all roles to access this page
     {
       path: '/leads/test',
       element: <LeadTestPage />,
-      requiresAuth: true
-      // No specific roles defined - we'll handle it in ProtectedRoute component
+      requiresAuth: true,
+      allowAnyRole: true // New flag to indicate any authenticated user can access
     }
   ];
 
@@ -49,6 +49,15 @@ const AppRoutes = () => {
   const routes = routesConfig.map(route => {
     // If route requires authentication
     if (route.requiresAuth) {
+      // Special case for routes that allow any authenticated user
+      if (route.allowAnyRole) {
+        return {
+          path: route.path,
+          element: (
+            <Authenticated>{route.element}</Authenticated>
+          )
+        };
+      }
       // If route has specific roles
       if (route.roles && route.roles.length > 0) {
         return {
