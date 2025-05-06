@@ -1,6 +1,8 @@
 
 import { LEAD_STATUSES } from '../types/types';
 
+export { LEAD_STATUSES };
+
 export const LEAD_CATEGORIES = [
   'bolig',
   'hytter',
