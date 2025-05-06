@@ -2,13 +2,16 @@
 import './App.css'
 import AppRoutes from './Routes'
 import { Toaster } from './components/ui/toaster'
+import { AuthProvider } from './modules/auth/hooks/useAuth'
 
 function App() {
   return (
-    <div className="App">
-      <AppRoutes />
-      <Toaster />
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <AppRoutes />
+        <Toaster />
+      </div>
+    </AuthProvider>
   );
 }
 

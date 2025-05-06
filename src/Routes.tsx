@@ -2,6 +2,7 @@
 import { useRoutes } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
 import { Unauthenticated } from './components/Unauthenticated';
+import { ProtectedRoute } from './modules/auth/components/ProtectedRoute';
 import { AdminLeadsPage } from './modules/leads/pages/AdminLeadsPage';
 import { LeadTestPage } from './modules/leads/pages/LeadTestPage';
 import { CompanyLeadsPage } from './modules/leads/pages/CompanyLeadsPage';
@@ -23,7 +24,11 @@ const AppRoutes = () => {
     },
     {
       path: '/leads/test',
-      element: <LeadTestPage />
+      element: (
+        <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+          <LeadTestPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: '/leads/company',
