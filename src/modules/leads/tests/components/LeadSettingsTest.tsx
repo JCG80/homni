@@ -1,8 +1,10 @@
 
 import { useState, useEffect } from 'react';
-import { loadSettings, LeadSettings } from '../../utils/loadSettings';
+import { fetchLeadSettings } from '../../api/leadSettings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
+import { LeadSettings } from '../../api/leadSettings';
 
 export const LeadSettingsTest = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);
@@ -14,10 +16,15 @@ export const LeadSettingsTest = () => {
     setError(null);
     
     try {
-      const data = await loadSettings();
+      const data = await fetchLeadSettings();
       setSettings(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      toast({
+        title: 'Error fetching settings',
+        description: err instanceof Error ? err.message : 'An unknown error occurred',
+        variant: 'destructive',
+      });
       console.error('Error fetching settings:', err);
     } finally {
       setLoading(false);
@@ -59,6 +66,12 @@ export const LeadSettingsTest = () => {
               
               <span className="text-gray-500">Global Pause:</span>
               <span className="font-medium">{settings.global_pause ? 'Yes' : 'No'}</span>
+              
+              <span className="text-gray-500">Agents Paused:</span>
+              <span className="font-medium">{settings.agents_paused ? 'Yes' : 'No'}</span>
+              
+              <span className="text-gray-500">Globally Paused:</span>
+              <span className="font-medium">{settings.globally_paused ? 'Yes' : 'No'}</span>
               
               <span className="text-gray-500">Last Updated:</span>
               <span className="font-medium">

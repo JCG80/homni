@@ -13,7 +13,7 @@ export async function fetchLeadSettings(): Promise<LeadSettings | null> {
     .select('*')
     .order('updated_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
     
   if (error) {
     console.error('Error fetching lead settings:', error);

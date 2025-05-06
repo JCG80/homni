@@ -43,6 +43,11 @@ export const LeadSettingsForm = () => {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load settings');
+        toast({
+          title: 'Error loading settings',
+          description: err instanceof Error ? err.message : 'An unknown error occurred',
+          variant: 'destructive',
+        });
         console.error('Error loading settings:', err);
       } finally {
         setLoading(false);
@@ -101,6 +106,14 @@ export const LeadSettingsForm = () => {
         ) : error ? (
           <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded">
             <p className="text-sm">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline" 
+              size="sm" 
+              className="mt-2"
+            >
+              Retry
+            </Button>
           </div>
         ) : (
           <div className="space-y-4">
