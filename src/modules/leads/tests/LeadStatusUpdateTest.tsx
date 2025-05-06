@@ -8,7 +8,7 @@ import { LEAD_STATUSES } from '../constants/lead-constants';
 export function LeadStatusUpdateTest() {
   const [loading, setLoading] = useState(false);
 
-  async function testUpdate(status: string) {
+  async function testUpdate(status: typeof LEAD_STATUSES[number]) {
     setLoading(true);
     try {
       const result = await updateLeadStatus('test-lead-id', status);
