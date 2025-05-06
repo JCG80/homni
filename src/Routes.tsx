@@ -1,3 +1,4 @@
+
 import { useRoutes } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
 import { Unauthenticated } from './components/Unauthenticated';
@@ -35,12 +36,12 @@ const AppRoutes = () => {
       path: '/unauthorized',
       element: <UnauthorizedPage />
     },
-    // Only keep the /leads/test route
+    // Allow all roles to access this page
     {
       path: '/leads/test',
       element: <LeadTestPage />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin', 'provider', 'user'] // Allow all roles to access
+      roles: ['admin', 'master-admin', 'provider', 'company', 'user'] // Allow all roles to access
     }
   ];
 

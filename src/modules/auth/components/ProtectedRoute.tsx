@@ -32,7 +32,10 @@ export const ProtectedRoute = ({
     return <Navigate to={redirectTo} replace />;
   }
   
+  console.log('Current role:', role, 'Allowed roles:', allowedRoles);
+  
   if (!role || !allowedRoles.includes(role)) {
+    console.error('Access denied. User role:', role, 'Required roles:', allowedRoles);
     return <Navigate to="/unauthorized" replace />;
   }
   

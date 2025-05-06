@@ -29,7 +29,10 @@ export const useRoleGuard = ({
       return;
     }
 
+    console.log('Role check in useRoleGuard:', role, allowedRoles);
+
     if (!role || !allowedRoles.includes(role)) {
+      console.error('Access denied in useRoleGuard. User role:', role, 'Required roles:', allowedRoles);
       navigate(redirectTo);
       setLoading(false);
       return;
