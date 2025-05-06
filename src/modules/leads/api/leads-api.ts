@@ -26,6 +26,19 @@ export async function insertLead(lead: Partial<Lead>) {
     throw new Error(`Invalid status: ${lead.status}. Must be one of: ${LEAD_STATUSES.join(', ')}`);
   }
 
+  // Ensure the lead is being submitted by the authenticated user
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('Authentication required: You must be logged in to submit a lead');
+  }
+
+  const currentUserId = session.user.id;
+  
+  // If submitted_by is provided, ensure it matches the current user
+  if (lead.submitted_by && lead.submitted_by !== currentUserId) {
+    throw new Error('Unauthorized: You can only submit leads under your own user ID');
+  }
+
   const { data, error } = await supabase
     .from('leads')
     .insert([
@@ -35,7 +48,7 @@ export async function insertLead(lead: Partial<Lead>) {
         category: lead.category,
         status: lead.status ?? 'new',
         company_id: lead.company_id,
-        submitted_by: lead.submitted_by,
+        submitted_by: currentUserId, // Always use the current authenticated user's ID
         created_at: new Date().toISOString(),
         ...(lead.priority && { priority: lead.priority }),
         ...(lead.content && { content: lead.content }),

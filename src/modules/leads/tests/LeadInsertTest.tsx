@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { insertLead } from '../api/leads-api';
@@ -105,6 +104,49 @@ export const LeadInsertTest = () => {
     }
   };
 
+  // Test unauthorized submission (trying to submit as another user)
+  const testUnauthorizedSubmission = async () => {
+    if (!user) {
+      toast({
+        title: 'Error',
+        description: 'User must be logged in to test',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    try {
+      const testData = {
+        title: 'Uautorisert innsending',
+        description: 'Skal feile pga. policy',
+        category: 'Maler',
+        status: 'new' as LeadStatus,
+        company_id: 'known-company-id',
+        submitted_by: 'some-other-user-id' // Not the same as auth.uid()
+      };
+      
+      console.log('Testing unauthorized submission:', testData);
+      const result = await insertLead(testData);
+      setResult(result);
+      setStatusCode(201);
+      toast({
+        title: 'Success',
+        description: 'Lead inserted successfully (but this should not happen)',
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      toast({
+        title: 'Authorization Working',
+        description: err instanceof Error ? err.message : 'Unauthorized submission was correctly rejected',
+        variant: 'default',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
@@ -171,6 +213,21 @@ export const LeadInsertTest = () => {
             </>
           ) : (
             'Test Invalid Status'
+          )}
+        </Button>
+        <Button
+          onClick={testUnauthorizedSubmission}
+          disabled={isLoading || !user}
+          variant="outline"
+          className="w-full sm:w-auto"
+        >
+          {isLoading ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Testing...
+            </>
+          ) : (
+            'Test Unauthorized Submission'
           )}
         </Button>
       </CardFooter>
