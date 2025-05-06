@@ -20,3 +20,10 @@ export interface AuthState {
   isLoading: boolean;
   error: Error | null;
 }
+
+export interface RouteConfig {
+  path: string;
+  element: React.ReactNode;
+  requiresAuth?: boolean;
+  roles?: UserRole[];
+}

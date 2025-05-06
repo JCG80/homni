@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { LeadSettingsForm } from '../components/LeadSettingsForm';
 import { LeadSettingsTest } from '../tests/components/LeadSettingsTest';
@@ -66,8 +65,3 @@ export const LeadTestPage = () => {
     </div>
   );
 };
-
-// Add authorization requirements
-LeadTestPage.requireAuth = true;
-LeadTestPage.allowedRoles = ['admin', 'master-admin'];
-
