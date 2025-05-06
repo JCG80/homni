@@ -122,7 +122,6 @@ export function useStatusTransitionTest() {
     leadId,
     setLeadId,
     currentStatus,
-    setCurrentStatus,
     targetStatus,
     setTargetStatus,
     result,
