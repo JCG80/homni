@@ -1,32 +1,21 @@
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LeadInsertTest } from '../tests/LeadInsertTest';
 import { LeadStatusUpdateTest } from '../tests/LeadStatusUpdateTest';
-import { StatusTransitionTest } from '../tests/components/StatusTransitionTest';
+import { DistributionStrategyTest } from '../tests/components/DistributionStrategyTest';
 
 export const LeadTestPage = () => {
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <h1 className="text-2xl font-bold">Lead Testing</h1>
-      
-      <Tabs defaultValue="insert">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="insert">Insert Lead Tests</TabsTrigger>
-          <TabsTrigger value="status">Status Update Tests</TabsTrigger>
-          <TabsTrigger value="transition">Status Transition Rules</TabsTrigger>
-        </TabsList>
-        <TabsContent value="insert" className="mt-6">
-          <LeadInsertTest />
-        </TabsContent>
-        <TabsContent value="status" className="mt-6">
-          <LeadStatusUpdateTest />
-        </TabsContent>
-        <TabsContent value="transition" className="mt-6">
-          <StatusTransitionTest />
-        </TabsContent>
-      </Tabs>
+    <div className="container mx-auto py-8 space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">Lead Testing</h1>
+        <p className="text-gray-600 mt-2">Page for testing lead functionality</p>
+      </div>
+
+      <div className="space-y-6">
+        <DistributionStrategyTest />
+        <LeadInsertTest />
+        <LeadStatusUpdateTest />
+      </div>
     </div>
   );
 };
-
-export default LeadTestPage;
