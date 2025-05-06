@@ -3,6 +3,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { StatusUpdateForm } from './components/StatusUpdateForm';
 import { TestResultDisplay } from './components/TestResultDisplay';
 import { useLeadStatusUpdateTest } from './hooks/useLeadStatusUpdateTest';
+import { Button } from '@/components/ui/button';
+import { Loader } from 'lucide-react';
 
 export function LeadStatusUpdateTest() {
   const {
@@ -38,39 +40,23 @@ export function LeadStatusUpdateTest() {
         />
       </CardContent>
       <CardFooter>
-        <StatusUpdateButton 
-          isLoading={isLoading} 
-          isUserLoggedIn={!!user} 
-          leadId={leadId} 
-          onTestUpdateStatus={testUpdateStatus} 
-        />
+        <Button
+          onClick={testUpdateStatus}
+          disabled={isLoading || !user || !leadId}
+          className="w-full sm:w-auto"
+        >
+          {isLoading ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Updating...
+            </>
+          ) : (
+            'Test Status Update'
+          )}
+        </Button>
       </CardFooter>
     </Card>
   );
 }
-
-// Let's create a simple button component
-function StatusUpdateButton({ isLoading, isUserLoggedIn, leadId, onTestUpdateStatus }) {
-  return (
-    <Button
-      onClick={onTestUpdateStatus}
-      disabled={isLoading || !isUserLoggedIn || !leadId}
-      className="w-full sm:w-auto"
-    >
-      {isLoading ? (
-        <>
-          <Loader className="mr-2 h-4 w-4 animate-spin" />
-          Updating...
-        </>
-      ) : (
-        'Test Status Update'
-      )}
-    </Button>
-  );
-}
-
-// Missing import for Button and Loader
-import { Button } from '@/components/ui/button';
-import { Loader } from 'lucide-react';
 
 export default LeadStatusUpdateTest;
