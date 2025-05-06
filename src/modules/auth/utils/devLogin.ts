@@ -15,8 +15,10 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
       return { success: false, error: 'Dev login only allowed in development mode' };
     }
     
+    console.log('Attempting dev login with email:', email);
+    
     // Sign in with predefined password for test users
-    const { error } = await supabase.auth.signInWithPassword({ 
+    const { data, error } = await supabase.auth.signInWithPassword({ 
       email, 
       password: 'password' 
     });
@@ -26,7 +28,9 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
       return { success: false, error: error.message };
     }
     
-    console.log('Dev login successful for:', email);
+    console.log('Dev login successful for:', email, 'User:', data.user);
+    console.log('User metadata:', data.user?.user_metadata);
+    
     return { success: true };
   } catch (err) {
     const error = err instanceof Error ? err.message : 'Unknown error during dev login';
@@ -44,6 +48,6 @@ export interface TestUser {
 
 export const TEST_USERS: TestUser[] = [
   { email: 'admin@test.local', role: 'master-admin', name: 'Master Admin' },
-  { email: 'provider@test.local', role: 'company', name: 'Test Provider' },
+  { email: 'provider@test.local', role: 'provider', name: 'Test Provider' },
   { email: 'user@test.local', role: 'user', name: 'Test User' }
 ];

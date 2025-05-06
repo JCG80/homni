@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Profile, UserRole } from '../types/types';
 
@@ -51,27 +50,30 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
       console.error('Error fetching profile from DB:', error);
     }
     
+    // Get user metadata for role information
+    const { data: authUser } = await supabase.auth.getUser();
+    const userMeta = authUser?.user?.user_metadata;
+    console.log('User metadata from auth:', userMeta);
+    
     if (profile) {
       console.log('Found profile in database:', profile);
-      // Get user metadata for role information
-      const { data: authUser } = await supabase.auth.getUser();
-      const userMeta = authUser?.user?.user_metadata;
+      
+      // Use role from metadata if available, otherwise fallback to a default
+      const role = (userMeta?.role as UserRole) || 'user';
+      console.log('Using role:', role);
       
       return {
         id: userId,
         full_name: profile.full_name,
-        role: (userMeta?.role as UserRole) || 'user',
+        role: role,
         created_at: profile.created_at,
       };
     }
     
-    // Fallback: Check for profile in user metadata
-    const { data: authUser } = await supabase.auth.getUser();
-    const userMeta = authUser?.user?.user_metadata;
-    
-    if (userMeta && (userMeta.role || userMeta.full_name)) {
+    // If no profile in database but we have user metadata
+    if (userMeta) {
       console.log('Using profile from user metadata:', userMeta);
-      // Create a profile from user metadata if any info exists
+      // Create a profile from user metadata
       return {
         id: userId,
         role: (userMeta.role as UserRole) || 'user',
@@ -80,8 +82,8 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
       };
     }
     
-    // If no profile found, create a default one
-    console.log('No profile found, returning default');
+    // If no profile found anywhere, create a minimal default one
+    console.log('No profile found, returning default with user role');
     return {
       id: userId,
       role: 'user' as UserRole,
@@ -89,7 +91,12 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     };
   } catch (error) {
     console.error('Error in getProfile:', error);
-    return null;
+    // Return minimal profile rather than null to avoid auth failures
+    return {
+      id: userId,
+      role: 'user' as UserRole,
+      created_at: new Date().toISOString(),
+    };
   }
 };
 

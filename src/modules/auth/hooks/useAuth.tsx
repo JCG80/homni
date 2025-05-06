@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
+        console.log('User metadata:', session?.user?.user_metadata);
         
         if (session?.user) {
           setAuthState(prev => ({ 
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setTimeout(async () => {
             try {
               const profile = await getProfile(session.user.id);
+              console.log('Retrieved profile:', profile);
               setAuthState(prev => ({ 
                 ...prev, 
                 profile, 
@@ -91,6 +93,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (session?.user) {
         console.log('Found initial session for user:', session.user.id);
+        console.log('User metadata:', session?.user?.user_metadata);
+        
         setAuthState(prev => ({ 
           ...prev, 
           user: {
@@ -102,6 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         try {
           const profile = await getProfile(session.user.id);
+          console.log('Retrieved profile:', profile);
           setAuthState(prev => ({ 
             ...prev, 
             profile, 
@@ -151,5 +156,6 @@ export const useAuth = () => {
     isCompany: profile?.role === 'company',
     isAdmin: profile?.role === 'admin' || profile?.role === 'master-admin',
     isMasterAdmin: profile?.role === 'master-admin',
+    isProvider: profile?.role === 'provider',
   };
 };

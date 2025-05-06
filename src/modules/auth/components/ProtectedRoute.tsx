@@ -28,13 +28,23 @@ export const ProtectedRoute = ({
     );
   }
   
+  console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', role);
+  
   if (!isAuthenticated) {
+    console.log('Not authenticated, redirecting to', redirectTo);
     return <Navigate to={redirectTo} replace />;
   }
   
-  console.log('Current role:', role, 'Allowed roles:', allowedRoles);
+  // Special case for /leads/test route - allow all authenticated users to access
+  const currentPath = window.location.pathname;
+  if (currentPath === '/leads/test') {
+    console.log('Accessing /leads/test - bypassing role check for testing purposes');
+    return <>{children}</>;
+  }
   
-  if (!role || !allowedRoles.includes(role)) {
+  console.log('Role check - Current role:', role, 'Allowed roles:', allowedRoles);
+  
+  if (!role || !allowedRoles.includes(role as UserRole)) {
     console.error('Access denied. User role:', role, 'Required roles:', allowedRoles);
     return <Navigate to="/unauthorized" replace />;
   }

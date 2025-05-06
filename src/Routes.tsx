@@ -36,12 +36,12 @@ const AppRoutes = () => {
       path: '/unauthorized',
       element: <UnauthorizedPage />
     },
-    // Allow all roles to access this page
+    // Allow all roles to access this page - we want any authenticated user to be able to access this
     {
       path: '/leads/test',
       element: <LeadTestPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin', 'provider', 'company', 'user'] // Allow all roles to access
+      requiresAuth: true
+      // No specific roles defined - we'll handle it in ProtectedRoute component
     }
   ];
 
