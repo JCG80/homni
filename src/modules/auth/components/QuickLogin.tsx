@@ -24,8 +24,8 @@ export const QuickLogin = () => {
       
       if (result.success) {
         toast({
-          title: 'Magic link sent',
-          description: `Check your console, network tab or Supabase logs for the login URL for ${user.name} (${user.role})`,
+          title: 'Login successful',
+          description: `Logged in as ${user.name} (${user.role})`,
         });
       } else {
         toast({

@@ -5,7 +5,6 @@ import { LeadSettingsTest } from '../tests/components/LeadSettingsTest';
 import { Button } from '@/components/ui/button';
 import { fetchLeadSettings, pauseForAgents, globalPause, LeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
-import { QuickLogin } from '@/modules/auth/components/QuickLogin';
 
 export const LeadTestPage = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);
@@ -64,9 +63,6 @@ export const LeadTestPage = () => {
           <LeadSettingsTest />
         </div>
       </div>
-      
-      {/* Dev Quick Login Component */}
-      <QuickLogin />
     </div>
   );
 };

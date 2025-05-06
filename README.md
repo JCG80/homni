@@ -53,21 +53,42 @@ npm run dev
 
 ## Getting Started
 
-### Quick Dev Login
+### 🎟️ Dev-login og seeding
 
-#### OTP-based Quick Login (dev)
+#### Development Test Users
 
-We now use magic-link (OTP) for dev-login:
-1. Click on "Quick Dev Login" button in the bottom right corner and select one of the available test users:
-   - Admin User (master-admin role)
-   - Provider User (company role)
-   - Regular User (user role)
-2. A magic link will be sent (check network tab or Supabase logs for the login URL)
-3. Open the link to log in immediately
+The application uses predefined test users with fixed credentials for development purposes.
 
-**devLogin** is only active in `development` mode and uses OTP for authentication.
+To set up test users in your Supabase database, run the following SQL:
 
-This feature only works in development mode and simplifies testing user-specific features without manual login.
+```sql
+-- Sett inn 3 testbrukere
+INSERT INTO auth.users (id, email, password, raw_user_meta_data)
+VALUES
+  ('11111111-1111-1111-1111-111111111111', 'admin@test.local', crypt('password','generated_salt'), '{"role":"master-admin"}'),
+  ('22222222-2222-2222-2222-222222222222', 'provider@test.local', crypt('password','generated_salt'), '{"role":"provider"}'),
+  ('33333333-3333-3333-3333-333333333333', 'user@test.local', crypt('password','generated_salt'), '{"role":"user"}')
+ON CONFLICT DO NOTHING;
+
+-- Seed tilhørende profiler
+INSERT INTO user_profiles (id, full_name)
+VALUES
+  ('11111111-1111-1111-1111-111111111111', 'Master Admin'),
+  ('22222222-2222-2222-2222-222222222222', 'Test Provider'),
+  ('33333333-3333-3333-3333-333333333333', 'Test User')
+ON CONFLICT DO NOTHING;
+```
+
+#### Password-based Quick Login (dev)
+
+In development mode, you can use the Quick Dev Login button located in the bottom-right corner of the application. This allows you to sign in as any of the test users with a single click, using the predefined password.
+
+The login feature:
+1. Only works in `development` mode
+2. Uses password-based authentication with the fixed password "password"
+3. Automatically sets the appropriate user role based on the selected user
+
+This feature simplifies testing user-specific features without manual login.
 
 ## What technologies are used for this project?
 
@@ -174,7 +195,7 @@ await insertLead({
 #### 🔹 Forberedelse
 1. Logg inn med bruker som har `user` rolle
 2. Identifiser gyldig `company_id` og `user_id` for testing
-3. Naviger til Lead Test-siden (/test/leads)
+3. Naviger til Lead Test-siden (/leads/test)
 
 #### 🔹 Test Scenario 1: Opprette lead som vanlig bruker
 **Forutsetning:** Innlogget som bruker med `user` rolle

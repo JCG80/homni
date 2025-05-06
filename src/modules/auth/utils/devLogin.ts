@@ -3,8 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '../types/types';
 
 /**
- * Sender en magic-link på e-post ved dev-login.
- * @param email Testbrukerens e-post
+ * Development login utility that directly authenticates a test user with password.
+ * Only works in development mode for testing purposes.
+ * @param email Predefined test user email
  */
 export async function devLogin(email: string): Promise<{success: boolean, error?: string}> {
   try {
@@ -14,15 +15,18 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
       return { success: false, error: 'Dev login only allowed in development mode' };
     }
     
-    // Send a magic link to the email
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    // Sign in with predefined password for test users
+    const { error } = await supabase.auth.signInWithPassword({ 
+      email, 
+      password: 'password' 
+    });
     
     if (error) {
       console.error('Error during dev login:', error.message);
       return { success: false, error: error.message };
     }
     
-    console.log('Magic link sent! Check network tab or Supabase logs for the login URL.');
+    console.log('Dev login successful for:', email);
     return { success: true };
   } catch (err) {
     const error = err instanceof Error ? err.message : 'Unknown error during dev login';
