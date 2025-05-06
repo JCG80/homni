@@ -18,8 +18,9 @@ export async function selectProviderByCategory(category: string): Promise<string
 
   try {
     // Query company_profiles table for companies with matching tags
-    const { data: companies, error } = await supabase
-      .from('company_profiles')
+    // Using type assertion to avoid TypeScript errors until Supabase types are updated
+    const { data: companies, error } = await (supabase
+      .from('company_profiles') as any)
       .select('id, tags')
       .eq('status', 'active');
     

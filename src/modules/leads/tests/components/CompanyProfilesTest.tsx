@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,8 +25,9 @@ export const CompanyProfilesTest = () => {
       // Parse tags string into array
       const tagsArray = tags.split(',').map(tag => tag.trim()).filter(Boolean);
       
-      const { data, error } = await supabase
-        .from('company_profiles')
+      // Using type assertion to avoid TypeScript errors until Supabase types are updated
+      const { data, error } = await (supabase
+        .from('company_profiles') as any)
         .insert([
           {
             name,
@@ -59,8 +60,9 @@ export const CompanyProfilesTest = () => {
   
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('company_profiles')
+      // Using type assertion to avoid TypeScript errors until Supabase types are updated
+      const { data, error } = await (supabase
+        .from('company_profiles') as any)
         .select('*');
         
       if (error) throw error;
@@ -71,9 +73,9 @@ export const CompanyProfilesTest = () => {
   };
   
   // Fetch profiles on component mount
-  useState(() => {
+  useEffect(() => {
     fetchProfiles();
-  });
+  }, []);
 
   return (
     <div className="border rounded-md p-4 space-y-4">
