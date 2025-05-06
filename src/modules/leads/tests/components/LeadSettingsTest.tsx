@@ -51,12 +51,25 @@ export const LeadSettingsTest = () => {
               <span className="text-gray-500">Budget:</span>
               <span className="font-medium">{settings.budget || 'Not set'}</span>
               
+              <span className="text-gray-500">Daily Budget:</span>
+              <span className="font-medium">{settings.daily_budget || 'Not set'}</span>
+              
+              <span className="text-gray-500">Monthly Budget:</span>
+              <span className="font-medium">{settings.monthly_budget || 'Not set'}</span>
+              
               <span className="text-gray-500">Global Pause:</span>
               <span className="font-medium">{settings.global_pause ? 'Yes' : 'No'}</span>
               
               <span className="text-gray-500">Last Updated:</span>
               <span className="font-medium">
                 {new Date(settings.updated_at).toLocaleString()}
+              </span>
+              
+              <span className="text-gray-500">Filters:</span>
+              <span className="font-medium">
+                {Object.keys(settings.filters).length > 0 
+                  ? JSON.stringify(settings.filters, null, 2) 
+                  : 'No filters'}
               </span>
             </div>
           </div>

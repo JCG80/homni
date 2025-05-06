@@ -42,22 +42,31 @@ export type Database = {
       lead_settings: {
         Row: {
           budget: number | null
+          daily_budget: number | null
+          filters: Json
           global_pause: boolean
           id: string
+          monthly_budget: number | null
           strategy: string
           updated_at: string
         }
         Insert: {
           budget?: number | null
+          daily_budget?: number | null
+          filters?: Json
           global_pause?: boolean
           id?: string
+          monthly_budget?: number | null
           strategy?: string
           updated_at?: string
         }
         Update: {
           budget?: number | null
+          daily_budget?: number | null
+          filters?: Json
           global_pause?: boolean
           id?: string
+          monthly_budget?: number | null
           strategy?: string
           updated_at?: string
         }
