@@ -151,3 +151,34 @@ await insertLead({
 - [x] Lead status transitions allowed in correct order
 - [x] Test `insertLead()` logic using Supabase and check `required fields`
 
+### 🧪 insertLead() og Supabase RLS-policy Testplan
+
+#### 🔹 Forberedelse
+1. Logg inn med bruker som har `user` rolle
+2. Identifiser gyldig `company_id` og `user_id` for testing
+3. Naviger til Lead Test-siden (/leads/test)
+
+#### 🔹 Test Scenario 1: Opprette lead som vanlig bruker
+**Forutsetning:** Innlogget som bruker med `user` rolle
+1. Bruk `insertLead()` med eget `user_id` som `submitted_by`
+2. **Forventet:** Vellykket innsending, lead opprettes med status `new`
+3. **Supabase RLS-test:** Kontroller at brukeren bare kan se sin egen lead
+
+#### 🔹 Test Scenario 2: Rollebasert tilgangskontroll
+**Forutsetning:** Brukere med forskjellige roller
+1. Logg inn som `admin` - skal kunne se alle leads
+2. Logg inn som `company` - skal kun kunne se leads tildelt til sin company_id
+3. Logg inn som `user` - skal kun kunne se leads opprettet av brukeren selv
+
+#### 🔹 Test Scenario 3: Valideringstester
+1. Test med manglende obligatoriske felter (skal feile)
+2. Test med ugyldig status (skal feile eller falle tilbake til standard)
+3. Test med valgfrie felter (priority, content) (skal fungere)
+
+#### 🔹 Feilsøking og Verifikasjon
+1. Bruk konsolllogger for å bekrefte API-kall og respons
+2. Sjekk at RLS-policies fungerer som forventet
+3. Verifiser at filtreringsfunksjonaliteten i `useLeadList()` respekterer RLS-begrensninger
+
+📌 Sist oppdatert: `2025-05-06 OB`
+
