@@ -1,42 +1,20 @@
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { StatusUpdateForm } from './components/StatusUpdateForm';
-import { TestResultDisplay } from './components/TestResultDisplay';
-import { useLeadStatusUpdateTest } from './hooks/useLeadStatusUpdateTest';
-import { Button } from '@/components/ui/button';
-import { Loader } from 'lucide-react';
-import { updateLeadStatus } from '../api/leads-api';
+import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { updateLeadStatus } from '../api/leads-api';
+import { Button } from '@/components/ui/button';
+import { LEAD_STATUSES } from '../constants/lead-constants';
 
 export function LeadStatusUpdateTest() {
-  const {
-    user,
-    isLoading,
-    leadId,
-    setLeadId,
-    status,
-    setStatus,
-    result,
-    error,
-    statusCode,
-    testUpdateStatus
-  } = useLeadStatusUpdateTest();
+  const [loading, setLoading] = useState(false);
 
-  const testKnownLead = async () => {
-    if (!user) {
-      toast({
-        title: 'Error',
-        description: 'User must be logged in to test',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
+  async function testUpdate(status: string) {
+    setLoading(true);
     try {
-      const result = await updateLeadStatus('db7e8d51-2a8d-4a8d-a3c5-d4e8ea551122', 'completed');
+      const result = await updateLeadStatus('test-lead-id', status);
       toast({
         title: 'Status Updated',
-        description: '✅ Lead ble oppdatert til "completed"',
+        description: `✅ Lead ble oppdatert til "${status}"`,
       });
     } catch (err) {
       toast({
@@ -44,53 +22,51 @@ export function LeadStatusUpdateTest() {
         description: '🚫 Klarte ikke å oppdatere lead-status',
         variant: 'destructive',
       });
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Test Lead Status Update</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <StatusUpdateForm
-          leadId={leadId}
-          setLeadId={setLeadId}
-          status={status}
-          setStatus={setStatus}
-        />
-        
-        <TestResultDisplay 
-          error={error}
-          statusCode={statusCode}
-          result={result}
-        />
-      </CardContent>
-      <CardFooter className="flex flex-wrap gap-2">
-        <Button
-          onClick={testUpdateStatus}
-          disabled={isLoading || !user || !leadId}
-          className="w-full sm:w-auto"
-        >
-          {isLoading ? (
-            <>
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-              Updating...
-            </>
-          ) : (
-            'Test Status Update'
-          )}
-        </Button>
-
-        <Button
-          variant="secondary"
-          onClick={testKnownLead}
-          disabled={!user}
-        >
-          Test "completed" status på known-lead
-        </Button>
-      </CardFooter>
-    </Card>
+    <div className="space-y-2">
+      <h2 className="text-lg font-semibold">🔁 Test oppdatering av lead-status</h2>
+      <div className="flex flex-wrap gap-2">
+        {LEAD_STATUSES.map((status) => (
+          <Button
+            key={status}
+            variant="outline"
+            disabled={loading}
+            onClick={() => testUpdate(status)}
+          >
+            Oppdater til "{status}"
+          </Button>
+        ))}
+      </div>
+      <Button
+        className="mt-4"
+        variant="secondary"
+        onClick={async () => {
+          try {
+            const result = await updateLeadStatus(
+              'db7e8d51-2a8d-4a8d-a3c5-d4e8ea551122',
+              'completed'
+            );
+            toast({
+              title: 'Status Updated',
+              description: '✅ Lead ble oppdatert til "completed"',
+            });
+          } catch (err) {
+            toast({
+              title: 'Update Failed',
+              description: '🚫 Klarte ikke å oppdatere lead-status',
+              variant: 'destructive',
+            });
+          }
+        }}
+      >
+        Test "completed" status på known-lead
+      </Button>
+    </div>
   );
 }
 
