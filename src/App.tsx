@@ -17,6 +17,7 @@ import { UserLeadsPage } from "./modules/leads/pages/UserLeadsPage";
 import { AdminLeadsPage } from "./modules/leads/pages/AdminLeadsPage";
 import { CompanyLeadsPage } from "./modules/leads/pages/CompanyLeadsPage";
 import { LeadDetailsPage } from "./modules/leads/pages/LeadDetailsPage";
+import { LeadTestPage } from "./modules/leads/pages/LeadTestPage";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,16 @@ const App = () => (
                   <CompanyLeadsPage />
                 </ProtectedRoute>
               } 
+            />
+            
+            {/* Test routes */}
+            <Route
+              path="/lead-tests"
+              element={
+                <ProtectedRoute allowedRoles={['user', 'company', 'admin', 'master-admin']}>
+                  <LeadTestPage />
+                </ProtectedRoute>
+              }
             />
             
             {/* Catch-all route */}
