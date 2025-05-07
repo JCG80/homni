@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   getLeads, 
@@ -21,20 +20,29 @@ export const useLeadList = (filters: LeadFilter = {}) => {
     queryFn: async () => {
       if (!user) return [];
       
+      console.log('Fetching leads with role:', profile?.role);
+      
       // Admin sees all leads, with optional filters
       if (isAdmin) {
+        console.log('Admin user, fetching all leads with filters:', filters);
         return getLeads(filters);
       }
       
       // Company sees assigned leads
       if (isCompany && profile?.company_id) {
+        console.log('Company user, fetching leads for company ID:', profile.company_id);
         return getCompanyLeads(profile.company_id);
+      } else if (isCompany) {
+        console.log('Company user without company_id, returning empty array');
+        return [];
       }
       
       // Regular user sees own leads
+      console.log('Regular user, fetching leads for user ID:', user.id);
       return getUserLeads(user.id);
     },
-    enabled: !!user
+    enabled: !!user,
+    retry: false // Prevent retrying on permission errors
   });
 };
 

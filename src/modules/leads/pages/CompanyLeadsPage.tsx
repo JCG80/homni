@@ -2,9 +2,11 @@
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LeadsTable } from '../components/LeadsTable';
 import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 export const CompanyLeadsPage = () => {
-  const { isLoading } = useAuth();
+  const { isLoading, profile } = useAuth();
   const { loading } = useRoleGuard({
     allowedRoles: ['company', 'admin', 'master-admin'],
     redirectTo: '/unauthorized'
@@ -21,11 +23,24 @@ export const CompanyLeadsPage = () => {
     );
   }
 
+  // Check if company user has a company_id
+  const isCompanyUserWithoutCompany = profile?.role === 'company' && !profile?.company_id;
+  
   return (
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Bedrift: Tildelte leads</h1>
       </div>
+
+      {isCompanyUserWithoutCompany && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Manglende bedriftskobling</AlertTitle>
+          <AlertDescription>
+            Din brukerkonto er ikke koblet til en bedrift. Kontakt administrator for å få dette fikset.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div>
         <h2 className="text-xl font-semibold mb-4">Dine leads</h2>

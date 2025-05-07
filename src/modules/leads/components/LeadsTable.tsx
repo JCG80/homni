@@ -13,6 +13,8 @@ import { isStatusTransitionAllowed } from '../utils/lead-utils';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LeadsFilterBar } from './LeadsFilterBar';
 import { LeadsTableBody } from './LeadsTableBody';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 interface LeadsTableProps {
   initialFilter?: {
@@ -45,14 +47,18 @@ export const LeadsTable = ({ initialFilter = {} }: LeadsTableProps) => {
   };
 
   if (isLoading) {
-    return <div>Laster inn...</div>;
+    return <div className="py-4 text-center">Laster inn...</div>;
   }
 
   if (error) {
     return (
-      <div className="text-red-500">
-        Feil ved lasting av leads: {(error as Error).message}
-      </div>
+      <Alert variant="destructive" className="my-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Feil ved lasting av leads</AlertTitle>
+        <AlertDescription>
+          {(error as Error).message}
+        </AlertDescription>
+      </Alert>
     );
   }
 
@@ -65,26 +71,32 @@ export const LeadsTable = ({ initialFilter = {} }: LeadsTableProps) => {
         onCategoryFilterChange={setCategoryFilter}
       />
 
-      <div className="rounded-md border">
-        <Table>
-          <TableCaption>Liste over alle leads</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tittel</TableHead>
-              <TableHead>Kategori</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Dato</TableHead>
-              <TableHead className="text-right">Handlinger</TableHead>
-            </TableRow>
-          </TableHeader>
-          <LeadsTableBody 
-            leads={leads}
-            canChangeStatus={canChangeStatus}
-            isAdmin={isAdmin}
-            isCompany={isCompany}
-          />
-        </Table>
-      </div>
+      {leads.length === 0 ? (
+        <div className="text-center py-8 border rounded-md">
+          <p className="text-gray-500">Ingen leads funnet.</p>
+        </div>
+      ) : (
+        <div className="rounded-md border">
+          <Table>
+            <TableCaption>Liste over alle leads</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tittel</TableHead>
+                <TableHead>Kategori</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Dato</TableHead>
+                <TableHead className="text-right">Handlinger</TableHead>
+              </TableRow>
+            </TableHeader>
+            <LeadsTableBody 
+              leads={leads}
+              canChangeStatus={canChangeStatus}
+              isAdmin={isAdmin}
+              isCompany={isCompany}
+            />
+          </Table>
+        </div>
+      )}
     </div>
   );
 };

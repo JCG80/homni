@@ -63,45 +63,81 @@ export async function insertLead(lead: Partial<Lead>) {
 
 // Get leads with optional filters
 export const getLeads = async (filters: { status?: LeadStatus; category?: string } = {}): Promise<Lead[]> => {
-  let query = supabase
-    .from('leads')
-    .select('*');
+  console.log('Fetching all leads with filters:', filters);
   
-  // Apply filters
-  if (filters.status) {
-    query = query.eq('status', filters.status);
+  try {
+    let query = supabase
+      .from('leads')
+      .select('*');
+    
+    // Apply filters
+    if (filters.status) {
+      query = query.eq('status', filters.status);
+    }
+    
+    if (filters.category) {
+      query = query.eq('category', filters.category);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error('Error fetching leads:', error);
+      throw error;
+    }
+    
+    console.log(`Found ${data?.length || 0} leads`);
+    return data as Lead[] || [];
+  } catch (error) {
+    console.error('Exception in getLeads:', error);
+    throw error;
   }
-  
-  if (filters.category) {
-    query = query.eq('category', filters.category);
-  }
-  
-  const { data, error } = await query;
-  
-  if (error) throw error;
-  return data as Lead[] || [];
 };
 
 // Get leads for a specific user
 export const getUserLeads = async (userId: string): Promise<Lead[]> => {
-  const { data, error } = await supabase
-    .from('leads')
-    .select('*')
-    .eq('submitted_by', userId);
+  console.log('Fetching leads for user:', userId);
   
-  if (error) throw error;
-  return data as Lead[] || [];
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('submitted_by', userId);
+    
+    if (error) {
+      console.error('Error fetching user leads:', error);
+      throw error;
+    }
+    
+    console.log(`Found ${data?.length || 0} leads for user ${userId}`);
+    return data as Lead[] || [];
+  } catch (error) {
+    console.error('Exception in getUserLeads:', error);
+    throw error;
+  }
 };
 
 // Get leads for a specific company
 export const getCompanyLeads = async (companyId: string): Promise<Lead[]> => {
-  const { data, error } = await supabase
-    .from('leads')
-    .select('*')
-    .eq('company_id', companyId);
+  console.log('Fetching leads for company:', companyId);
   
-  if (error) throw error;
-  return data as Lead[] || [];
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('company_id', companyId);
+    
+    if (error) {
+      console.error('Error fetching company leads:', error);
+      throw error;
+    }
+    
+    console.log(`Found ${data?.length || 0} leads for company ${companyId}`);
+    return data as Lead[] || [];
+  } catch (error) {
+    console.error('Exception in getCompanyLeads:', error);
+    throw error;
+  }
 };
 
 /**
