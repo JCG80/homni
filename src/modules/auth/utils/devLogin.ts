@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '../types/types';
 
 /**
- * Development login utility that directly authenticates a test user with password.
+ * Development login utility that directly authenticates a test user.
  * Only works in development mode for testing purposes.
  */
 export async function devLogin(email: string): Promise<{success: boolean, error?: string}> {
@@ -16,7 +16,22 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
     
     console.log('Attempting dev login with email:', email);
     
-    // Sign in with predefined password for test users
+    // Try sign in with OTP first (passwordless)
+    const { error: otpError } = await supabase.auth.signInWithOtp({ 
+      email,
+      options: {
+        shouldCreateUser: false // Only sign in existing users
+      }
+    });
+    
+    if (!otpError) {
+      console.log('Dev OTP login sent for:', email);
+      return { success: true };
+    }
+    
+    console.warn('OTP login failed, trying password:', otpError.message);
+    
+    // Fall back to password login
     const { data, error } = await supabase.auth.signInWithPassword({ 
       email, 
       password: 'password' 
@@ -50,7 +65,7 @@ export async function devLoginAs(role: UserRole): Promise<{success: boolean, err
       return { success: false, error: 'Dev login only allowed in development mode' };
     }
     
-    // Find a matching test user for the role or use the first one
+    // Find a matching test user for the role
     const matchingUser = TEST_USERS.find(user => user.role === role);
     
     if (!matchingUser) {

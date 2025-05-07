@@ -63,19 +63,48 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     if (userMeta) {
       if (typeof userMeta.role === 'string') {
         userRole = userMeta.role as UserRole;
+      } else if (typeof userMeta['custom_claims'] === 'object' && userMeta['custom_claims']?.role) {
+        userRole = userMeta['custom_claims'].role as UserRole;
       } else if (userMeta['role']) {
         userRole = userMeta['role'] as UserRole;
+      } else if (typeof authUser?.user?.app_metadata?.role === 'string') {
+        userRole = authUser.user.app_metadata.role as UserRole;
       }
+      
+      // For admin@test.local, override as master-admin for dev purposes
+      if (authUser?.user?.email === 'admin@test.local' && import.meta.env.MODE === 'development') {
+        userRole = 'master-admin';
+        console.log('Overriding role to master-admin for admin@test.local in development');
+      }
+      
       console.log('Extracted role from metadata:', userRole);
     }
     
     if (profile) {
       console.log('Found profile in database:', profile);
       
+      // If we're in development mode and this is a test user, use the role from TEST_USERS
+      if (import.meta.env.MODE === 'development' && authUser?.user?.email) {
+        const email = authUser.user.email;
+        if (email.endsWith('@test.local')) {
+          let devRole: UserRole | null = null;
+          
+          if (email === 'admin@test.local') devRole = 'master-admin';
+          else if (email === 'company@test.local') devRole = 'company';
+          else if (email === 'provider@test.local') devRole = 'provider';
+          else if (email === 'user@test.local') devRole = 'user';
+          
+          if (devRole) {
+            console.log(`Development mode: Setting role for ${email} to ${devRole}`);
+            userRole = devRole;
+          }
+        }
+      }
+      
       return {
         id: userId,
         full_name: profile.full_name,
-        role: userRole || 'user',
+        role: userRole || 'user', // Default to user role if no role is found
         created_at: profile.created_at,
       };
     }
@@ -87,7 +116,7 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
       // Create a profile from user metadata
       return {
         id: userId,
-        role: userRole || 'user',
+        role: userRole || 'user', // Default to user role if no role is found
         full_name: userMeta.full_name || userMeta?.['full_name'],
         created_at: new Date().toISOString(),
       };

@@ -20,7 +20,7 @@ When in development mode (`import.meta.env.MODE === 'development'`), the followi
 
 Located at the bottom-right corner of the screen, these buttons allow instant login as specific roles:
 - "Login as User" - For testing user-specific features
-- "Login as Provider" - For testing provider-specific features
+- "Login as Company" - For testing company-specific features
 - "Login as Admin" - For testing admin features
 - "Login as Master Admin" - For testing master admin features
 
