@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 import { MemoryRouter } from 'react-router-dom';
+import { UserRole } from '../types/types';
 
 // Mock the useAuth hook
 vi.mock('../hooks/useAuth', () => ({
@@ -47,7 +48,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'anonymous'
+      role: 'guest' as UserRole
     });
 
     const { getByTestId } = render(
@@ -65,7 +66,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      role: 'user'
+      role: 'member' as UserRole
     });
 
     const { getByText } = render(
@@ -83,12 +84,12 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      role: 'admin'
+      role: 'admin' as UserRole
     });
 
     const { getByText } = render(
       <MemoryRouter>
-        <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+        <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
           <div>Admin Content</div>
         </ProtectedRoute>
       </MemoryRouter>
@@ -101,12 +102,12 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      role: 'user'
+      role: 'member' as UserRole
     });
 
     const { getByTestId } = render(
       <MemoryRouter>
-        <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+        <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
           <div>Admin Content</div>
         </ProtectedRoute>
       </MemoryRouter>
@@ -119,7 +120,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      role: 'user' // Any role will do
+      role: 'member' as UserRole // Any role will do
     });
 
     const { getByText } = render(
@@ -137,7 +138,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'anonymous'
+      role: 'guest' as UserRole
     });
 
     const { getByText } = render(
@@ -155,7 +156,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'anonymous'
+      role: 'guest' as UserRole
     });
 
     const { getByTestId } = render(

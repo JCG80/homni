@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { UserRole } from '../types/types';
+import { UserRole, isUserRole } from '../utils/roles';
 
 interface UserWithProfile {
   id: string;
@@ -42,11 +42,15 @@ export const AuthManagementPage = () => {
         const formattedUsers = data.map(profile => {
           const user = profile.users as any;
           const userMetadata = user.user_metadata;
+          const rawRole = userMetadata ? userMetadata.role : 'member';
+          
+          // Ensure role is a valid UserRole
+          const role = isUserRole(rawRole) ? rawRole : 'member';
           
           return {
             id: profile.id,
             email: user.email,
-            role: userMetadata ? (userMetadata.role as UserRole) : 'user',
+            role,
             full_name: profile.full_name,
             created_at: user.created_at
           };
@@ -141,7 +145,7 @@ export const AuthManagementPage = () => {
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
-                        {user.role || 'user'}
+                        {user.role || 'member'}
                       </Badge>
                     </TableCell>
                     <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
@@ -150,18 +154,20 @@ export const AuthManagementPage = () => {
                         <Select
                           value={user.role}
                           onValueChange={(value) => handleRoleChange(user.id, value as UserRole)}
-                          disabled={!isMasterAdmin && user.role === 'master-admin'} // Only master-admin can change another master-admin
+                          disabled={!isMasterAdmin && user.role === 'master_admin'} // Only master_admin can change another master_admin
                         >
                           <SelectTrigger className="w-32">
                             <SelectValue placeholder="Select role" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="member">Member</SelectItem>
                             <SelectItem value="company">Company</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
                             {isMasterAdmin && (
-                              <SelectItem value="master-admin">Master Admin</SelectItem>
+                              <SelectItem value="master_admin">Master Admin</SelectItem>
                             )}
+                            <SelectItem value="provider">Provider</SelectItem>
+                            <SelectItem value="editor">Editor</SelectItem>
                           </SelectContent>
                         </Select>
                         

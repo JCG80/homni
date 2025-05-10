@@ -12,7 +12,7 @@ export const CompanyProfilePage = () => {
   const { profile, refreshProfile, isLoading } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const { loading } = useRoleGuard({
-    allowedRoles: ['company', 'admin', 'master-admin'],
+    allowedRoles: ['company', 'admin', 'master_admin'],
     redirectTo: '/unauthorized'
   });
 

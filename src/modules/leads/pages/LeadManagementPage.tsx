@@ -1,36 +1,32 @@
 
-import React, { useState } from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import React from 'react';
+import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
 import { AdminLeadsPage } from './AdminLeadsPage';
 import { CompanyLeadsPage } from './CompanyLeadsPage';
 import { UserLeadsPage } from './UserLeadsPage';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { UserRole } from '@/modules/auth/types/types';
 
 export const LeadManagementPage = () => {
-  const { isAdmin, isCompany, isLoading } = useAuth();
-  const { loading } = useRoleGuard({
-    allowedRoles: ['admin', 'master-admin', 'company', 'user'],
-    redirectTo: '/unauthorized'
-  });
-
-  if (isLoading || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg">Laster inn...</p>
-        </div>
-      </div>
-    );
-  }
+  const { role } = useAuth();
   
-  // Render appropriate view based on role
-  if (isAdmin) {
-    return <AdminLeadsPage />;
-  } else if (isCompany) {
-    return <CompanyLeadsPage />;
-  } else {
-    return <UserLeadsPage />;
-  }
+  // Render the appropriate leads page based on user role
+  const renderLeadsPage = () => {
+    if (role === 'admin' || role === 'master_admin') {
+      return <AdminLeadsPage />;
+    } else if (role === 'company') {
+      return <CompanyLeadsPage />;
+    } else if (role === 'member') {
+      return <UserLeadsPage />;
+    }
+    
+    // Fallback - should not happen due to ProtectedRoute
+    return <div>Unauthorized</div>;
+  };
+  
+  return (
+    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member']}>
+      {renderLeadsPage()}
+    </ProtectedRoute>
+  );
 };

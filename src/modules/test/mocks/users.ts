@@ -14,7 +14,7 @@ export interface MockUser {
 export const mockUsers: MockUser[] = [
   { 
     email: 'user@test.local', 
-    role: 'user',
+    role: 'member', // Changed from 'user' to 'member'
     name: 'Test User'
   },
   { 
@@ -29,7 +29,7 @@ export const mockUsers: MockUser[] = [
   },
   { 
     email: 'master-admin@test.local', 
-    role: 'master-admin',
+    role: 'master_admin', // Changed from 'master-admin' to 'master_admin'
     name: 'Test Master Admin'
   },
   { 
