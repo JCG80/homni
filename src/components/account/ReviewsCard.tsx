@@ -1,29 +1,27 @@
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useUserReviews } from '@/hooks/useUserReviews';
 
 export const ReviewsCard = () => {
-  // In a real implementation, we would fetch actual review data
   const { reviews, isLoading } = useUserReviews();
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300">
-      <CardHeader className="pb-2">
+    <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="p-5 pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+          <h3 className="text-xl flex items-center gap-2">
+            <FileText className="h-5 w-5 text-blue-600" />
             Mine omtaler
             {reviews.length > 0 && (
-              <Badge className="ml-2">{reviews.length}</Badge>
+              <Badge variant="secondary" className="ml-2">{reviews.length}</Badge>
             )}
-          </CardTitle>
+          </h3>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="px-5 py-4">
         {isLoading ? (
           <p className="text-gray-500">Laster omtaler...</p>
         ) : reviews.length > 0 ? (
@@ -43,15 +41,15 @@ export const ReviewsCard = () => {
         ) : (
           <p className="text-gray-500">Du har ingen omtaler ennå.</p>
         )}
-      </CardContent>
-      <CardFooter>
+      </div>
+      <div className="px-5 pb-5 pt-2">
         <Button 
           className="w-full" 
           variant="outline"
         >
           <Plus className="h-4 w-4 mr-2" /> Skriv ny omtale
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };

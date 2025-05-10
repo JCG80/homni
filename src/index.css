@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 210 100% 50%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -98,4 +92,34 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom Card Styles */
+.account-card {
+  @apply bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300;
+}
+
+.account-card-header {
+  @apply p-5 pb-3;
+}
+
+.account-card-content {
+  @apply px-5 py-4;
+}
+
+.account-card-footer {
+  @apply px-5 pb-5 pt-2;
+}
+
+.account-card-title {
+  @apply text-xl flex items-center gap-2;
+}
+
+.account-card-icon {
+  @apply h-5 w-5 text-blue-600;
+}
+
+/* Custom transitions */
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
 }

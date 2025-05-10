@@ -15,16 +15,16 @@ export const ProfileCard = () => {
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300">
-      <CardHeader className="pb-2">
+    <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="p-5 pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <User className="h-5 w-5" />
+          <h3 className="text-xl flex items-center gap-2">
+            <User className="h-5 w-5 text-blue-600" />
             Mine detaljer
-          </CardTitle>
+          </h3>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="px-5 py-4">
         {profile ? (
           <div className="space-y-2 text-sm">
             <p><span className="font-medium">Navn:</span> {profile.full_name || 'Ikke angitt'}</p>
@@ -35,8 +35,8 @@ export const ProfileCard = () => {
         ) : (
           <p className="text-gray-500">Laster profil...</p>
         )}
-      </CardContent>
-      <CardFooter>
+      </div>
+      <div className="px-5 pb-5 pt-2">
         <Button 
           onClick={handleEditProfile} 
           className="w-full"
@@ -44,7 +44,7 @@ export const ProfileCard = () => {
         >
           <Edit className="h-4 w-4 mr-2" /> Rediger profil
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };
