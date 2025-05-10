@@ -1,7 +1,7 @@
 
 import { UserRole } from '../utils/roles';
 
-export { UserRole };
+export type { UserRole };
 
 export interface Profile {
   id: string;
