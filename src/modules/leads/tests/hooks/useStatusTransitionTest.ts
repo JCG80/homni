@@ -1,10 +1,10 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { getLeadById, updateLeadStatus } from '../../api/leads-api';
+import { getLeadById, updateLeadStatus } from '../../api';
 import { LeadStatus } from '../../types/types';
+import { isStatusTransitionAllowed } from '../../utils/lead-utils';
 import { toast } from '@/hooks/use-toast';
-import { ALLOWED_STATUS_TRANSITIONS } from '../../constants/lead-constants';
 
 export function useStatusTransitionTest() {
   const { user } = useAuth();
@@ -15,8 +15,8 @@ export function useStatusTransitionTest() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusCode, setStatusCode] = useState<number | null>(null);
-  
-  // Fetch current lead status
+
+  // Fetch a lead to see its current status
   const fetchLeadStatus = async () => {
     if (!leadId) {
       toast({
@@ -26,31 +26,37 @@ export function useStatusTransitionTest() {
       });
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
-    
     try {
       const lead = await getLeadById(leadId);
       setCurrentStatus(lead.status as LeadStatus);
-      setTargetStatus(lead.status as LeadStatus); // Reset target status to current
+      setTargetStatus(lead.status as LeadStatus);
       toast({
         title: 'Lead Found',
-        description: `Current status is: ${lead.status}`,
+        description: `Current status: ${lead.status}`,
       });
     } catch (err) {
+      setCurrentStatus(null);
       setError(err instanceof Error ? err.message : 'Failed to fetch lead');
       toast({
         title: 'Error',
-        description: 'Failed to fetch lead status',
+        description: 'Failed to fetch lead with the provided ID',
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
   };
-  
-  // Test status transition
+
+  // Check if transition is allowed based on lead-utils rules
+  const isTransitionAllowed = (status: LeadStatus) => {
+    if (!currentStatus) return false;
+    return isStatusTransitionAllowed(currentStatus, status);
+  };
+
+  // Test the status transition
   const testStatusTransition = async () => {
     if (!user) {
       toast({
@@ -61,10 +67,10 @@ export function useStatusTransitionTest() {
       return;
     }
 
-    if (!leadId || !currentStatus) {
+    if (!leadId || !currentStatus || !targetStatus) {
       toast({
         title: 'Error',
-        description: 'Please fetch lead status first',
+        description: 'Please enter a lead ID and select status',
         variant: 'destructive',
       });
       return;
@@ -72,30 +78,29 @@ export function useStatusTransitionTest() {
 
     setIsLoading(true);
     setError(null);
-    
+    setResult(null);
+    setStatusCode(null);
+
     try {
-      // Check if transition is allowed using our rules
-      const allowedTransitions = ALLOWED_STATUS_TRANSITIONS[currentStatus] || [];
-      const isAllowed = currentStatus === targetStatus || allowedTransitions.includes(targetStatus);
-      
       console.log(`Testing transition from ${currentStatus} to ${targetStatus}`);
-      console.log(`Allowed transitions for ${currentStatus}:`, allowedTransitions);
-      console.log(`Is this transition allowed? ${isAllowed}`);
       
-      // Attempt the status update
       const result = await updateLeadStatus(leadId, targetStatus);
       
       setResult(result);
       setStatusCode(200);
-      setCurrentStatus(targetStatus); // Update current status on success
       
       toast({
         title: 'Status Updated',
-        description: `Lead status updated successfully to ${targetStatus}`,
+        description: `Successfully updated status to ${targetStatus}`,
       });
+      
+      // Update current status to reflect the new status
+      setCurrentStatus(targetStatus);
+      
     } catch (err) {
-      setStatusCode(400);
+      console.error('Error in status transition test:', err);
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      setStatusCode(400);
       
       toast({
         title: 'Update Failed',
@@ -107,22 +112,12 @@ export function useStatusTransitionTest() {
     }
   };
 
-  // Check if a transition to the target status is allowed
-  const isTransitionAllowed = (status: LeadStatus): boolean => {
-    if (!currentStatus) return false;
-    if (currentStatus === status) return true;
-    
-    const allowedTransitions = ALLOWED_STATUS_TRANSITIONS[currentStatus] || [];
-    return allowedTransitions.includes(status);
-  };
-  
   return {
     user,
     isLoading,
     leadId,
     setLeadId,
     currentStatus,
-    setCurrentStatus, // Adding this back as it seems to be needed
     targetStatus,
     setTargetStatus,
     result,
