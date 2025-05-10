@@ -1,5 +1,6 @@
+
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes as ReactRoutes } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
 import { Dashboard } from './pages/Dashboard';
 import { LeadCapturePage } from './modules/leads/pages/LeadCapturePage';
@@ -11,11 +12,11 @@ import { LeadSettingsPage } from './modules/leads/pages/LeadSettingsPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { InsuranceRequestSuccessPage } from './pages/InsuranceRequestSuccessPage';
 
-export const Routes = () => {
+export const AppRoutes = () => {
   return (
     <Router>
       <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
+        <ReactRoutes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/lead-capture" element={<LeadCapturePage />} />
@@ -26,7 +27,7 @@ export const Routes = () => {
           <Route path="/admin/settings" element={<LeadSettingsPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
-        </Routes>
+        </ReactRoutes>
       </Suspense>
     </Router>
   );

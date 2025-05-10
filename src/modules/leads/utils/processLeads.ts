@@ -110,11 +110,13 @@ export async function processUnassignedLeads(
         
         // Filter by zip codes
         if (settings.zipCodes && settings.zipCodes.length > 0) {
+          // Fixed postcode access - properly handle different ways it might be stored
           const zipCode = 
-            (lead as any).postal_code || 
-            (lead as any).zip_code || 
-            (lead as any).zipCode ||
-            (lead.metadata?.postcode);
+            typeof lead.postal_code === 'string' ? lead.postal_code : 
+            typeof lead.zip_code === 'string' ? lead.zip_code : 
+            typeof lead.zipCode === 'string' ? lead.zipCode : 
+            typeof lead.metadata === 'object' && lead.metadata && 
+            typeof lead.metadata.postcode === 'string' ? lead.metadata.postcode : null;
             
           if (zipCode && !settings.zipCodes.includes(zipCode)) {
             console.log(`Lead ${lead.id} skipped due to zip code filter`);
