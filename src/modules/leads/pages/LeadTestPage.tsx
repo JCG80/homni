@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { LeadSettingsForm } from '../components/LeadSettingsForm';
 import { LeadSettingsTest } from '../tests/components/LeadSettingsTest';
 import { Button } from '@/components/ui/button';
-import { fetchLeadSettings, pauseForAgents, globalPause, LeadSettings } from '../api/leadSettings';
+import { fetchLeadSettings, pauseForAgents, globalPause } from '../api/leadSettings';
+import { LeadSettings } from '../types/lead-settings';
 import { toast } from '@/hooks/use-toast';
 
 export const LeadTestPage = () => {

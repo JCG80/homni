@@ -1,12 +1,6 @@
 
 import { Json } from "@/integrations/supabase/types";
-
-// Base LeadSettings interface to match what's in src/types/leads.ts
-export interface BaseLeadSettings {
-  paused: boolean;
-  categories: string[];
-  zipCodes?: string[];
-}
+import { LeadSettings as BaseLeadSettings } from "@/types/leads";
 
 // Extended LeadSettings that includes database fields while maintaining compatibility with base type
 export interface LeadSettings extends BaseLeadSettings {

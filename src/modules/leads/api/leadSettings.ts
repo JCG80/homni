@@ -1,6 +1,6 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { LeadSettings, mapDbToLeadSettings } from '../types/lead-settings';
+import { mapDbToLeadSettings } from '../types/lead-settings';
+import { LeadSettings } from '../types/lead-settings';
 
 /**
  * Fetches the latest lead settings from the database
@@ -65,3 +65,5 @@ export async function pauseForAgents(paused: boolean) {
 export async function globalPause(paused: boolean) {
   await updateLeadSettings({ globally_paused: paused });
 }
+
+export { LeadSettings };
