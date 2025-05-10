@@ -17,6 +17,7 @@ import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { PowerComparisonPage } from './pages/PowerComparisonPage';
+import { ProfilePage } from './modules/auth/pages/ProfilePage';
 
 export function AppRoutes() {
   return (
@@ -34,6 +35,13 @@ export function AppRoutes() {
       <Route path="/dashboard" element={
         <Authenticated>
           <HomePage />
+        </Authenticated>
+      } />
+      
+      {/* User profile page */}
+      <Route path="/profile" element={
+        <Authenticated>
+          <ProfilePage />
         </Authenticated>
       } />
       

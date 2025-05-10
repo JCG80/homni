@@ -63,6 +63,34 @@ export const createProfile = async (profile: Partial<Profile> & { id: string }):
 };
 
 /**
+ * Update a user profile
+ */
+export const updateProfile = async (profileData: Partial<Profile> & { id: string }): Promise<Profile | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update(profileData)
+      .eq('id', profileData.id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error("Error updating profile:", error);
+      showErrorToast(
+        "Oppdateringsfeil",
+        "Kunne ikke oppdatere brukerprofil. Vennligst prøv igjen senere."
+      );
+      return null;
+    }
+    
+    return parseUserProfile(data);
+  } catch (error) {
+    console.error("Unexpected error updating profile:", error);
+    return null;
+  }
+};
+
+/**
  * Update user role
  */
 export const updateUserRole = async (userId: string, role: UserRole): Promise<boolean> => {
