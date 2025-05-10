@@ -24,8 +24,7 @@ export async function getLeads(filters: LeadFilter = {}): Promise<Lead[]> {
   const { data, error } = await query;
   
   if (error) throw error;
-  // Break the type recursion by explicitly typing each item
-  return (data || []).map((item) => parseLead(item as any));
+  return (data || []).map((item) => parseLead(item));
 }
 
 /**
@@ -38,8 +37,7 @@ export async function getUserLeads(userId: string): Promise<Lead[]> {
     .eq('submitted_by', userId);
   
   if (error) throw error;
-  // Break the type recursion by explicitly typing each item
-  return (data || []).map((item) => parseLead(item as any));
+  return (data || []).map((item) => parseLead(item));
 }
 
 /**
@@ -52,8 +50,7 @@ export async function getCompanyLeads(companyId: string): Promise<Lead[]> {
     .eq('company_id', companyId);
   
   if (error) throw error;
-  // Break the type recursion by explicitly typing each item
-  return (data || []).map((item) => parseLead(item as any));
+  return (data || []).map((item) => parseLead(item));
 }
 
 /**
@@ -67,7 +64,7 @@ export async function getLeadById(leadId: string): Promise<Lead> {
     .single();
   
   if (error) throw error;
-  return parseLead(data as any);
+  return parseLead(data);
 }
 
 /**
@@ -83,6 +80,5 @@ export async function loadLeads(): Promise<Lead[]> {
     return [];
   }
 
-  // Break the type recursion by explicitly typing each item
-  return data.map((item) => parseLead(item as any));
+  return (data || []).map((item) => parseLead(item));
 }

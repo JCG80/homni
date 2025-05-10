@@ -34,7 +34,7 @@ export const ProtectedRoute = ({
   }
   
   // Determine the current role - use 'anonymous' if not authenticated
-  const currentRole: UserRole = isAuthenticated && role ? role as UserRole : 'anonymous';
+  const currentRole: UserRole = isAuthenticated && role ? role : 'anonymous';
   
   console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', currentRole, 
     'allowedRoles:', allowedRoles, 'allowAnyAuthenticated:', allowAnyAuthenticated,

@@ -1,6 +1,26 @@
 
 export type UserRole = 'anonymous' | 'user' | 'company' | 'admin' | 'master-admin' | 'provider' | 'editor';
 
+export const ALL_ROLES: UserRole[] = [
+  'user',
+  'company',
+  'admin',
+  'master-admin',
+  'provider', 
+  'editor'
+];
+
+export const PUBLIC_ROLES: UserRole[] = ['anonymous'];
+
+export const AUTHENTICATED_ROLES: UserRole[] = [
+  'user',
+  'company',
+  'admin',
+  'master-admin',
+  'provider',
+  'editor'
+];
+
 /**
  * Get all modules a specific role has access to
  */
