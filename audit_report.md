@@ -69,23 +69,28 @@
 
 ## 6. Recommendations for Improvement
 
-### 1. API Layer Consistency
+### 1. Authentication Module Consolidation
+- Merge the duplicate `useAuthState` implementations into a single, comprehensive hook
+- Create a clear separation between authentication state management and role-based permissions
+- Implement consistent error handling for authentication failures
+
+### 2. API Layer Consistency
 - Implement a consistent pattern for API calls across modules
 - Consider using custom hooks for data fetching that leverage React Query consistently
 
-### 2. Authentication Flow Enhancement
+### 3. Authentication Flow Enhancement
 - Consolidate auth state management into a single, well-tested implementation
 - Create clear documentation for role-based permissions system
 
-### 3. Component Organization
+### 4. Component Organization
 - Consider breaking large components into smaller, focused components
 - Implement a consistent pattern for form handling across the application
 
-### 4. Database Schema Optimization
+### 5. Database Schema Optimization
 - Ensure consistent naming conventions across tables
 - Review foreign key relationships for integrity
 
-### 5. Performance Optimizations
+### 6. Performance Optimizations
 - Implement proper data caching strategies with React Query
 - Review component re-rendering patterns to minimize unnecessary updates
 
@@ -94,3 +99,4 @@
 2. Consolidate routing configuration in a single location
 3. Complete a thorough review of Row Level Security policies
 4. Standardize API calling patterns across modules
+5. Create consolidated role utility module to eliminate duplication
