@@ -62,7 +62,7 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
 
 export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
   try {
-    // Remove the generic parameter entirely to avoid the deep instantiation error
+    // Completely remove the generic parameter to avoid the deep instantiation error
     const { data: rawData, error } = await supabase
       .from('leads')
       .select('id, submitted_by, status, created_at, title, description, category')
