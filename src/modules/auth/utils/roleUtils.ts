@@ -2,49 +2,58 @@
 import { UserRole } from '../types/types';
 
 /**
- * Determines the user's role based on metadata and email
- * Extracted and adapted from auth-api.ts for testability
- * 
- * @param authUser Auth user data containing metadata and email
- * @returns The determined UserRole
+ * Checks if a user has at least one of the required roles
  */
-export function determineUserRole(authUser: any): UserRole {
-  let userRole: UserRole = 'user'; // Default role
+export const hasRequiredRole = (userRole: UserRole | null, allowedRoles: UserRole[]): boolean => {
+  if (!userRole) return false;
+  if (allowedRoles.length === 0) return true;
+  return allowedRoles.includes(userRole);
+};
+
+/**
+ * Get a display name for a role
+ */
+export const getRoleDisplayName = (role: UserRole): string => {
+  const displayNames: Record<UserRole, string> = {
+    'user': 'Bruker',
+    'company': 'Bedrift',
+    'admin': 'Administrator',
+    'master-admin': 'Master Administrator',
+    'provider': 'Tjenesteleverandør'
+  };
   
-  if (!authUser?.user) return userRole;
-  
-  const userMeta = authUser.user.user_metadata;
-  const email = authUser.user.email;
-  
-  // Try to extract role from metadata
-  if (userMeta) {
-    if (typeof userMeta.role === 'string') {
-      userRole = userMeta.role as UserRole;
-    } else if (typeof userMeta['custom_claims'] === 'object' && userMeta['custom_claims']?.role) {
-      userRole = userMeta['custom_claims'].role as UserRole;
-    } else if (userMeta['role']) {
-      userRole = userMeta['role'] as UserRole;
-    } else if (typeof authUser.user.app_metadata?.role === 'string') {
-      userRole = authUser.user.app_metadata.role as UserRole;
-    }
+  return displayNames[role] || role;
+};
+
+/**
+ * Determines if a role has admin privileges
+ */
+export const isAdminRole = (role: UserRole | null): boolean => {
+  if (!role) return false;
+  return ['admin', 'master-admin'].includes(role);
+};
+
+/**
+ * Checks if a role can access a specific module
+ */
+export const canAccessModule = (
+  role: UserRole | null, 
+  moduleName: string,
+  moduleAccess: Record<string, UserRole[]> = {
+    'leads': ['user', 'company', 'admin', 'master-admin'],
+    'admin': ['admin', 'master-admin'],
+    'company': ['company', 'admin', 'master-admin'],
+    'geo': ['user', 'company', 'admin', 'master-admin', 'provider']
   }
+): boolean => {
+  if (!role) return false;
   
-  // Special case for development test users based on email
-  if (import.meta.env.MODE === 'development' && email) {
-    if (email === 'admin@test.local') {
-      userRole = 'master-admin';
-      console.log('Development mode: Setting role for admin@test.local to master-admin');
-    } else if (email === 'company@test.local') {
-      userRole = 'company';
-      console.log('Development mode: Setting role for company@test.local to company');
-    } else if (email === 'provider@test.local') {
-      userRole = 'provider';
-      console.log('Development mode: Setting role for provider@test.local to provider');
-    } else if (email === 'user@test.local') {
-      userRole = 'user';
-      console.log('Development mode: Setting role for user@test.local to user');
-    }
-  }
+  // Master admin can access everything
+  if (role === 'master-admin') return true;
   
-  return userRole;
-}
+  // Check if module has specific access rules
+  const allowedRoles = moduleAccess[moduleName];
+  if (!allowedRoles) return false;
+  
+  return allowedRoles.includes(role);
+};

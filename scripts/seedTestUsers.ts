@@ -1,19 +1,20 @@
 
 import { createClient } from '@supabase/supabase-js';
+import { TestUser } from '../src/modules/auth/types/types';
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-const users = [
-  { email: 'user@test.local', role: 'user', name: 'Test User' },
-  { email: 'company@test.local', role: 'company', name: 'Test Company' },
-  { email: 'admin@test.local', role: 'admin', name: 'Test Admin' },
-  { email: 'master-admin@test.local', role: 'master-admin', name: 'Test Master Admin' },
-  { email: 'provider@test.local', role: 'provider', name: 'Test Provider' },
+const users: TestUser[] = [
+  { email: 'user@test.local', role: 'user', password: 'Test1234!', name: 'Test User' },
+  { email: 'company@test.local', role: 'company', password: 'Test1234!', name: 'Test Company' },
+  { email: 'admin@test.local', role: 'admin', password: 'Test1234!', name: 'Test Admin' },
+  { email: 'master-admin@test.local', role: 'master-admin', password: 'Test1234!', name: 'Test Master Admin' },
+  { email: 'provider@test.local', role: 'provider', password: 'Test1234!', name: 'Test Provider' },
 ];
 
-async function createUser(email: string, role: string, name: string) {
+async function createUser(email: string, role: string, password: string, name: string) {
   // First check if user already exists
   const { data: existingUsers } = await supabase.auth.admin.listUsers();
   const userExists = existingUsers?.users.some(user => user.email === email);
@@ -27,7 +28,7 @@ async function createUser(email: string, role: string, name: string) {
   
   const { data, error } = await supabase.auth.admin.createUser({
     email,
-    password: 'Test1234!',
+    password,
     user_metadata: { 
       role,
       full_name: name
@@ -73,7 +74,7 @@ async function createUser(email: string, role: string, name: string) {
 (async () => {
   console.log('Starting test user creation...');
   for (const user of users) {
-    await createUser(user.email, user.role, user.name);
+    await createUser(user.email, user.role, user.password, user.name);
   }
   console.log('Test user creation complete!');
 })();

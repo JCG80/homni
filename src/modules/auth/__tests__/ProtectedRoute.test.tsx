@@ -1,6 +1,6 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 import { MemoryRouter } from 'react-router-dom';
@@ -32,7 +32,7 @@ describe('ProtectedRoute Component', () => {
       role: null
     });
 
-    render(
+    const { getByText } = render(
       <MemoryRouter>
         <ProtectedRoute>
           <div>Protected Content</div>
@@ -40,7 +40,7 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Sjekker tilgangsrettigheter...')).toBeInTheDocument();
+    expect(getByText('Sjekker tilgangsrettigheter...')).toBeInTheDocument();
   });
 
   test('should redirect to login when user is not authenticated', () => {
@@ -50,7 +50,7 @@ describe('ProtectedRoute Component', () => {
       role: null
     });
 
-    render(
+    const { getByTestId } = render(
       <MemoryRouter>
         <ProtectedRoute>
           <div>Protected Content</div>
@@ -58,7 +58,7 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByTestId('navigate')).toHaveAttribute('data-to', '/login');
+    expect(getByTestId('navigate')).toHaveAttribute('data-to', '/login');
   });
 
   test('should render children when user is authenticated and no specific roles are required', () => {
@@ -68,7 +68,7 @@ describe('ProtectedRoute Component', () => {
       role: 'user'
     });
 
-    render(
+    const { getByText } = render(
       <MemoryRouter>
         <ProtectedRoute>
           <div>Protected Content</div>
@@ -76,7 +76,7 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Protected Content')).toBeInTheDocument();
+    expect(getByText('Protected Content')).toBeInTheDocument();
   });
 
   test('should render children when user has the required role', () => {
@@ -86,7 +86,7 @@ describe('ProtectedRoute Component', () => {
       role: 'admin'
     });
 
-    render(
+    const { getByText } = render(
       <MemoryRouter>
         <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
           <div>Admin Content</div>
@@ -94,7 +94,7 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Admin Content')).toBeInTheDocument();
+    expect(getByText('Admin Content')).toBeInTheDocument();
   });
 
   test('should redirect to unauthorized when user does not have the required role', () => {
@@ -104,7 +104,7 @@ describe('ProtectedRoute Component', () => {
       role: 'user'
     });
 
-    render(
+    const { getByTestId } = render(
       <MemoryRouter>
         <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
           <div>Admin Content</div>
@@ -112,7 +112,7 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByTestId('navigate')).toHaveAttribute('data-to', '/unauthorized');
+    expect(getByTestId('navigate')).toHaveAttribute('data-to', '/unauthorized');
   });
 
   test('should render children when allowAnyAuthenticated is true', () => {
@@ -122,7 +122,7 @@ describe('ProtectedRoute Component', () => {
       role: 'user' // Any role will do
     });
 
-    render(
+    const { getByText } = render(
       <MemoryRouter>
         <ProtectedRoute allowAnyAuthenticated={true}>
           <div>Authenticated Content</div>
@@ -130,6 +130,6 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Authenticated Content')).toBeInTheDocument();
+    expect(getByText('Authenticated Content')).toBeInTheDocument();
   });
 });
