@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { setupMFA, verifyMFA } from '../api/auth-api';
+import { setupMFA, verifyMFA } from '../api/auth-mfa';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export const MFASetup = () => {
   const [step, setStep] = useState<'initial' | 'setup' | 'verify' | 'success'>('initial');
