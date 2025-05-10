@@ -8,7 +8,7 @@ import {
   updateLeadStatus, 
   assignLeadToCompany, 
   getLeadById 
-} from '../api/leads-api';
+} from '../api';
 import { Lead, LeadFormValues, LeadStatus, LeadFilter } from '@/types/leads';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 
