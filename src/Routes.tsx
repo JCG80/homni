@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
@@ -19,6 +20,7 @@ import { PowerComparisonPage } from './pages/PowerComparisonPage';
 import { ProfilePage } from './modules/auth/pages/ProfilePage';
 import { PropertiesPage } from './modules/property/pages/PropertiesPage';
 import { PropertyDetailsPage } from './modules/property/pages/PropertyDetailsPage';
+import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionPage';
 
 export function AppRoutes() {
   return (
@@ -28,6 +30,7 @@ export function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/strom" element={<PowerComparisonPage />} />
+      <Route path="/tjenester" element={<ServiceSelectionPage />} />
       
       {/* Redirect from /strøm to /strom for consistency */}
       <Route path="/strøm" element={<Navigate to="/strom" replace />} />

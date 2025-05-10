@@ -69,8 +69,8 @@ export const ProjectPlanViewer: React.FC = () => {
             </Badge>
           </CardTitle>
           <div className="mt-2 flex gap-2">
-            <Badge variant="secondary">Fase 11</Badge>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Auth Module</Badge>
+            <Badge variant="secondary">Fase 12</Badge>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Service Selection Module</Badge>
           </div>
         </div>
         {isAdmin && (
@@ -89,7 +89,7 @@ export const ProjectPlanViewer: React.FC = () => {
         <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-md">
           <h3 className="font-semibold text-amber-800">Nåværende fokus</h3>
           <p className="text-amber-700 mt-1">
-            Refaktorering av autentiseringsmodulen for bedre typesikkerhet og feilhåndtering.
+            Implementering av servicevalgmodulen for brukerpreferanser og lead-generering.
             Prioritet: Høy
           </p>
         </div>

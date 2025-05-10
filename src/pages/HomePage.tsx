@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Sidebar } from '@/components/ui/sidebar';
+import { ServiceSelectionFlow } from '@/modules/services/components/ServiceSelectionFlow';
 
 export const HomePage = () => {
   return (
@@ -10,11 +11,16 @@ export const HomePage = () => {
       </aside>
       <main className="flex-1 p-6">
         <h1 className="text-3xl font-bold mb-6">Velkommen</h1>
-        <p className="text-muted-foreground mb-4">
-          Velg en modul fra sidemenyen for å komme i gang.
+        <p className="text-muted-foreground mb-6">
+          Velg en modul fra sidemenyen for å komme i gang eller velg tjenester du er interessert i nedenfor.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div className="mb-10">
+          <ServiceSelectionFlow />
+        </div>
+        
+        <h2 className="text-2xl font-semibold mb-4">Andre tjenester</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
           <div className="bg-card border rounded-lg p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-2">Prosjektdokumentasjon</h2>
             <p className="text-muted-foreground mb-4">Se prosjektplanen og dokumentasjon</p>
