@@ -15,8 +15,8 @@ interface LoginFormProps {
 
 export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@test.local');
+  const [password, setPassword] = useState('password');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +34,16 @@ export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
       const { user, error: signInError } = await signInWithEmail(email, password);
       
       if (signInError) {
-        throw new Error(signInError instanceof Error ? signInError.message : 'Feil ved innlogging');
+        console.error('Detailed login error:', JSON.stringify(signInError));
+        
+        // Handle specific error cases
+        if (signInError instanceof Error) {
+          throw signInError;
+        } else if (signInError.message) {
+          throw new Error(signInError.message);
+        } else {
+          throw new Error('Feil ved innlogging');
+        }
       }
       
       if (user) {
