@@ -42,7 +42,7 @@ export const CompanyProfilePage = () => {
             
             <div>
               <p className="text-sm font-medium text-muted-foreground">E-post</p>
-              <p>{profile.email || 'Ikke angitt'}</p>
+              <p>{profile.id || 'Ikke angitt'}</p>
             </div>
           </div>
         ) : (
