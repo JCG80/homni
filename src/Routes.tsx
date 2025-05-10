@@ -1,3 +1,4 @@
+
 import { useRoutes } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
 import { Unauthenticated } from './components/Unauthenticated';
@@ -12,7 +13,7 @@ import { LoginPage } from './modules/auth/pages/LoginPage';
 import { RegisterPage } from './modules/auth/pages/RegisterPage';
 import { ContentDashboard } from './modules/content/pages/ContentDashboard';
 import { EditContentPage } from './modules/content/pages/EditContentPage';
-import { UserRole } from './modules/auth/types/types';
+import { UserRole } from './modules/auth/utils/roles';
 
 const AppRoutes = () => {
   // Define routes with their auth requirements
@@ -35,7 +36,7 @@ const AppRoutes = () => {
       path: '/leads/company',
       element: <CompanyLeadsPage />,
       requiresAuth: true,
-      roles: ['company', 'admin', 'master-admin'] // Allow company and admin roles
+      roles: ['company', 'admin', 'master-admin'] as UserRole[] // Allow company and admin roles
     },
     {
       path: '/leads/my',
@@ -47,7 +48,7 @@ const AppRoutes = () => {
       path: '/leads/reports',
       element: <LeadReportsPage />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin'] // Only allow admin roles
+      roles: ['admin', 'master-admin'] as UserRole[] // Only allow admin roles
     },
     {
       path: '/unauthorized',

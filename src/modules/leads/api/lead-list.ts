@@ -24,7 +24,7 @@ export async function getLeads(filters: LeadFilter = {}): Promise<Lead[]> {
   const { data, error } = await query;
   
   if (error) throw error;
-  return (data || []).map(item => parseLead(item));
+  return (data || []).map(parseLead);
 }
 
 /**
@@ -37,7 +37,7 @@ export async function getUserLeads(userId: string): Promise<Lead[]> {
     .eq('submitted_by', userId);
   
   if (error) throw error;
-  return (data || []).map(item => parseLead(item));
+  return (data || []).map(parseLead);
 }
 
 /**
@@ -50,7 +50,7 @@ export async function getCompanyLeads(companyId: string): Promise<Lead[]> {
     .eq('company_id', companyId);
   
   if (error) throw error;
-  return (data || []).map(item => parseLead(item));
+  return (data || []).map(parseLead);
 }
 
 /**
@@ -80,5 +80,5 @@ export async function loadLeads(): Promise<Lead[]> {
     return [];
   }
 
-  return data.map(item => parseLead(item));
+  return data.map(parseLead);
 }
