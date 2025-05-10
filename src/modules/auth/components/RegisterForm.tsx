@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signUpWithEmail, createProfile } from '../api';
 import { toast } from '@/hooks/use-toast';
+import { UserRole } from '../utils/roles';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -37,8 +38,8 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
         const profileData = {
           id: user.id,
           full_name: fullName,
-          // For business users, set role to 'company', otherwise 'user'
-          role: userType === 'business' ? 'company' : 'user',
+          // For business users, set role to 'company', otherwise 'user' - using proper UserRole type
+          role: userType === 'business' ? 'company' as UserRole : 'user' as UserRole,
           // Only include company_name for business users
           ...(userType === 'business' ? { company_name: companyName } : {}),
           // Include phone_number if provided
@@ -50,7 +51,7 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
         // If it's a business account, also create a company profile entry
         if (userType === 'business') {
           try {
-            const { data, error } = await (window as any).supabase
+            const { data, error } = await supabase
               .from('company_profiles')
               .insert([
                 {
@@ -65,7 +66,7 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
             
             // Add company_id to user profile if company profile was created
             if (data && data[0]) {
-              await (window as any).supabase
+              await supabase
                 .from('user_profiles')
                 .update({ company_id: data[0].id })
                 .eq('id', user.id);
