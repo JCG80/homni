@@ -1,4 +1,5 @@
 
+import { Link } from 'react-router-dom';
 import { LoginForm } from '../components/LoginForm';
 import { devLogin } from '../utils/devLogin';
 import { toast } from '@/hooks/use-toast';
@@ -27,6 +28,17 @@ export const LoginPage = () => {
         </div>
         
         <LoginForm />
+        
+        <div className="text-center space-y-1 text-sm">
+          <p>
+            Etter innlogging kan du:
+          </p>
+          <ul className="text-muted-foreground">
+            <li>Se din brukerprofil</li>
+            <li>Administrere dine eiendommer</li>
+            <li>Få oversikt over utgifter</li>
+          </ul>
+        </div>
 
         {import.meta.env.MODE === 'development' && (
           <div className="mt-8 text-center space-x-2">

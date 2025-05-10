@@ -18,6 +18,8 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { PowerComparisonPage } from './pages/PowerComparisonPage';
 import { ProfilePage } from './modules/auth/pages/ProfilePage';
+import { PropertiesPage } from './modules/property/pages/PropertiesPage';
+import { PropertyDetailsPage } from './modules/property/pages/PropertyDetailsPage';
 
 export function AppRoutes() {
   return (
@@ -42,6 +44,19 @@ export function AppRoutes() {
       <Route path="/profile" element={
         <Authenticated>
           <ProfilePage />
+        </Authenticated>
+      } />
+      
+      {/* Property management pages */}
+      <Route path="/properties" element={
+        <Authenticated>
+          <PropertiesPage />
+        </Authenticated>
+      } />
+      
+      <Route path="/properties/:propertyId" element={
+        <Authenticated>
+          <PropertyDetailsPage />
         </Authenticated>
       } />
       

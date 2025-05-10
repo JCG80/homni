@@ -186,6 +186,159 @@ export type Database = {
         }
         Relationships: []
       }
+      properties: {
+        Row: {
+          address: string | null
+          created_at: string
+          id: string
+          name: string
+          purchase_date: string | null
+          size: number | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          purchase_date?: string | null
+          size?: number | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          purchase_date?: string | null
+          size?: number | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      property_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          file_path: string | null
+          id: string
+          name: string
+          property_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          file_path?: string | null
+          id?: string
+          name: string
+          property_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          file_path?: string | null
+          id?: string
+          name?: string
+          property_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_documents_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_expenses: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          id: string
+          name: string
+          property_id: string
+          recurring: boolean | null
+          recurring_frequency: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date: string
+          id?: string
+          name: string
+          property_id: string
+          recurring?: boolean | null
+          recurring_frequency?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+          name?: string
+          property_id?: string
+          recurring?: boolean | null
+          recurring_frequency?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_expenses_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_transfers: {
+        Row: {
+          id: string
+          new_owner_id: string
+          notes: string | null
+          previous_owner_id: string
+          property_id: string
+          transfer_date: string
+        }
+        Insert: {
+          id?: string
+          new_owner_id: string
+          notes?: string | null
+          previous_owner_id: string
+          property_id: string
+          transfer_date?: string
+        }
+        Update: {
+          id?: string
+          new_owner_id?: string
+          notes?: string | null
+          previous_owner_id?: string
+          property_id?: string
+          transfer_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_transfers_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profiles: {
         Row: {
           created_at: string | null
