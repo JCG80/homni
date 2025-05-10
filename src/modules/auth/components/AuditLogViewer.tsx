@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { getAuditLogs } from '../api/auth-api';
+import { getAuditLogs } from '../api';
 import { useAuth } from '../hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';

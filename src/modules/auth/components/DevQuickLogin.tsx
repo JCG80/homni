@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { signInWithEmail } from '../api/auth-api';
+import { signInWithEmail } from '../api';
 import { toast } from '@/hooks/use-toast';
 import { TEST_USERS } from '../__tests__/utils/testAuth';
 

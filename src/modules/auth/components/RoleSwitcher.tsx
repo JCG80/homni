@@ -9,7 +9,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { updateUserRole } from '../api/auth-api';
+import { updateUserRole } from '../api';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types/types';
 import { toast } from '@/hooks/use-toast';
