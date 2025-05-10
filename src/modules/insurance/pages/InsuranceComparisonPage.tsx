@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { InsuranceCompanyCard } from '../components/InsuranceCompanyCard';
 import { InsuranceTypeTag } from '../components/InsuranceTypeTag';
@@ -8,9 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Search, Filter, SlidersHorizontal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
+import { InsuranceCompanyWithTypes } from '../types/insurance-types';
 
 export const InsuranceComparisonPage = () => {
-  const { data: companies = [], isLoading } = useInsuranceQueries.useInsuranceCompanies();
+  const { data: companies = [], isLoading } = useInsuranceQueries.useInsuranceCompaniesWithTypes();
   const { data: types = [] } = useInsuranceQueries.useInsuranceTypes();
   const [filterType, setFilterType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
