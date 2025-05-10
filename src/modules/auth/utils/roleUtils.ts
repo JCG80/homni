@@ -75,3 +75,27 @@ export const determineUserRole = (metadata: Record<string, any> | null): UserRol
   
   return 'user'; // Default fallback role
 };
+
+/**
+ * Get all modules a role can access
+ */
+export const getAllowedModulesForRole = (
+  role: UserRole | null,
+  moduleAccess: Record<string, UserRole[]> = {
+    'leads': ['user', 'company', 'admin', 'master-admin'],
+    'admin': ['admin', 'master-admin'],
+    'company': ['company', 'admin', 'master-admin'],
+    'geo': ['user', 'company', 'admin', 'master-admin', 'provider'],
+    'settings': ['admin', 'master-admin']
+  }
+): string[] => {
+  if (!role) return [];
+  
+  // Master admin can access everything
+  if (role === 'master-admin') return Object.keys(moduleAccess);
+  
+  // Find all modules this role can access
+  return Object.entries(moduleAccess)
+    .filter(([_, allowedRoles]) => allowedRoles.includes(role))
+    .map(([moduleName, _]) => moduleName);
+};
