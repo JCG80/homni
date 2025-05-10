@@ -9,7 +9,7 @@ const LEAD_FIELDS = 'id, submitted_by, status, created_at, title, description, c
 
 export const listLeads = async (): Promise<Lead[]> => {
   try {
-    // Avoid generic type parameters completely
+    // Use simple select without generic type parameters
     const { data: rawData, error } = await supabase
       .from('leads')
       .select(LEAD_FIELDS);
@@ -31,7 +31,7 @@ export const listLeads = async (): Promise<Lead[]> => {
 
 export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => {
   try {
-    // Avoid generic type parameters completely
+    // Use simple select without generic type parameters
     const { data: rawData, error } = await supabase
       .from('leads')
       .select(LEAD_FIELDS)
@@ -54,7 +54,7 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
 
 export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
   try {
-    // Use raw query approach to completely avoid TypeScript recursion
+    // Use simple select without generic type parameters
     const { data: rawData, error } = await supabase
       .from('leads')
       .select(LEAD_FIELDS)
@@ -105,7 +105,7 @@ export const getUserLeads = listLeadsByUser;
 export const getCompanyLeads = listLeadsByCompany;
 export const getLeadById = async (leadId: string): Promise<Lead | null> => {
   try {
-    // Avoid generic type parameters completely
+    // Use simple select without generic type parameters
     const { data: rawData, error } = await supabase
       .from('leads')
       .select(LEAD_FIELDS)

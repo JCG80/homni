@@ -1,11 +1,19 @@
 
 import { LoginForm } from '../components/LoginForm';
 import { devLogin } from '../utils/devLogin';
+import { toast } from '@/hooks/use-toast';
 
 export const LoginPage = () => {
   const handleDevLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin') => {
     const result = await devLogin(role);
-    // No need to handle the result here as devLogin already displays toasts
+    if (result.error) {
+      toast({
+        title: 'Login failed',
+        description: result.error.message,
+        variant: 'destructive',
+      });
+    }
+    // Success notifications are already handled in devLogin
   };
 
   return (

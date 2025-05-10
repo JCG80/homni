@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { TEST_USERS, TestUser, devLogin } from '../utils/devLogin';
+import { TEST_USERS, TestUser, devLogin, DevLoginResult } from '../utils/devLogin';
 import { toast } from '@/hooks/use-toast';
 import { Key } from 'lucide-react';
 

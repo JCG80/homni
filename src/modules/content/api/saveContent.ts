@@ -21,7 +21,6 @@ export async function saveContent(contentData: ContentFormValues): Promise<Conte
 
 /**
  * Create new content
- * ⚡️ FIX: Added export to function
  */
 export async function createContent(contentData: ContentFormValues): Promise<Content | null> {
   const { data: userData } = await supabase.auth.getUser();
@@ -53,7 +52,6 @@ export async function createContent(contentData: ContentFormValues): Promise<Con
 
 /**
  * Update existing content
- * ⚡️ FIX: Added export to function
  */
 export async function updateContent(id: string, contentData: Partial<ContentFormValues>): Promise<Content | null> {
   // Remove id from the update data

@@ -27,7 +27,7 @@ export const AUTHENTICATED_ROLES: UserRole[] = [
 export function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
     case 'anonymous':
-      return ['home', 'leads/submit', 'info'];
+      return ['home', 'leads/submit', 'info', 'login', 'register'];
     case 'user':
       return ['dashboard', 'leads'];
     case 'company':

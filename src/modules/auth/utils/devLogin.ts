@@ -1,73 +1,127 @@
 
-import { signInWithEmail } from '../api';
-import { TEST_USERS } from '../__tests__/utils/testAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { UserRole } from '../types/types';
+import { UserRole } from './roles';
 
-// Re-export TestUser type from our own types file to avoid importing from test utils
+// Define TestUser type and export it
 export interface TestUser {
   email: string;
   password: string;
   role: UserRole;
-  name: string;
-  description?: string;
+  name?: string;
 }
 
-// Re-export TEST_USERS for components that need them
-export { TEST_USERS };
+// Export test users
+export const TEST_USERS: TestUser[] = [
+  {
+    email: 'user@test.local',
+    password: 'test123',
+    role: 'user',
+    name: 'Test User'
+  },
+  {
+    email: 'company@test.local',
+    password: 'test123',
+    role: 'company',
+    name: 'Test Company'
+  },
+  {
+    email: 'admin@test.local',
+    password: 'test123',
+    role: 'admin',
+    name: 'Test Admin'
+  },
+  {
+    email: 'master-admin@test.local',
+    password: 'test123',
+    role: 'master-admin',
+    name: 'Test Master Admin'
+  },
+  {
+    email: 'provider@test.local',
+    password: 'test123',
+    role: 'provider',
+    name: 'Test Provider'
+  },
+  {
+    email: 'editor@test.local',
+    password: 'test123',
+    role: 'editor',
+    name: 'Test Editor'
+  }
+];
+
+// Define the return type for devLogin
+export interface DevLoginResult {
+  success?: boolean;
+  error?: {
+    message: string;
+  };
+}
 
 /**
- * Helper function for development testing to quickly login as different user roles
- * @returns An object with success and error properties
+ * Development-only login function
+ * This bypasses the normal login flow to enable testing with different roles
+ * Only works in development mode
  */
-export const devLogin = async (role: UserRole) => {
-  // Only enable in development mode
+export async function devLogin(role: UserRole): Promise<DevLoginResult> {
+  // Ensure we're in development mode for security
   if (import.meta.env.MODE !== 'development') {
-    console.error('Development login is only available in development mode');
-    return { success: false, error: new Error('Development login is only available in development mode') };
-  }
-
-  const testUser = TEST_USERS.find(user => user.role === role);
-  
-  if (!testUser) {
-    console.error(`No test user found for role: ${role}`);
-    toast({
-      title: 'Login error',
-      description: `No test user found for role: ${role}`,
-      variant: 'destructive',
-    });
-    return { success: false, error: new Error(`No test user found for role: ${role}`) };
+    console.error('Dev login is only available in development mode');
+    return {
+      error: {
+        message: 'Dev login is only available in development mode'
+      }
+    };
   }
 
   try {
-    const { user, error } = await signInWithEmail(testUser.email, testUser.password);
+    // Find the test user with the requested role
+    const testUser = TEST_USERS.find(user => user.role === role);
+    
+    if (!testUser) {
+      console.error(`No test user found for role: ${role}`);
+      return {
+        error: {
+          message: `No test user found for role: ${role}`
+        }
+      };
+    }
+    
+    // Sign in with email and password
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: testUser.email,
+      password: testUser.password
+    });
     
     if (error) {
-      console.error('Development login error:', error);
-      toast({
-        title: 'Login failed',
-        description: error.message,
-        variant: 'destructive',
-      });
-      return { success: false, error };
+      console.error('Dev login error:', error);
+      return {
+        error: {
+          message: error.message
+        }
+      };
     }
     
-    if (user) {
-      toast({
-        title: 'Development login successful',
-        description: `Logged in as ${role} (${testUser.email})`,
-      });
-      return { success: true, user, error: null };
+    if (!data.user) {
+      console.error('Dev login failed: No user returned');
+      return {
+        error: {
+          message: 'Login failed: No user returned'
+        }
+      };
     }
     
-    return { success: false, user: null, error: new Error('Unknown error during login') };
+    console.log(`Dev login success: Logged in as ${role} (${testUser.email})`);
+    return {
+      success: true
+    };
   } catch (err) {
-    console.error('Development login error:', err);
-    toast({
-      title: 'Login error',
-      description: err instanceof Error ? err.message : 'Unknown error occurred',
-      variant: 'destructive',
-    });
-    return { success: false, error: err instanceof Error ? err : new Error('Unknown error occurred') };
+    console.error('Unexpected error during dev login:', err);
+    return {
+      error: {
+        message: err instanceof Error ? err.message : 'Unknown error occurred'
+      }
+    };
   }
-};
+}
