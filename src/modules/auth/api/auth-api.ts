@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '../types/types';
 import { determineUserRole } from '../utils/roleUtils';
@@ -119,7 +118,10 @@ export const updateUserRole = async (userId: string, role: UserRole): Promise<bo
     }
     
     // Get current metadata or initialize as empty object if it doesn't exist
-    const currentMetadata = profileData?.metadata || {};
+    // Ensure it's treated as an object type by using type assertion and checking for null/undefined
+    const currentMetadata = profileData?.metadata && typeof profileData.metadata === 'object' 
+      ? profileData.metadata 
+      : {};
     
     // Update the role in the metadata field, preserving other metadata
     const updatedMetadata = { 
