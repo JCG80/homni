@@ -14,7 +14,7 @@ export const CompanyLeadsPage = () => {
   const { isLoading, profile, refreshProfile } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const { loading } = useRoleGuard({
-    allowedRoles: ['company', 'admin', 'master-admin'],
+    allowedRoles: ['company', 'admin', 'master_admin'],
     redirectTo: '/unauthorized'
   });
 
@@ -48,8 +48,8 @@ export const CompanyLeadsPage = () => {
     );
   }
 
-  // Check if company user has a company_id (now from metadata)
-  const companyId = profile?.company_id || (profile?.metadata as any)?.company_id;
+  // Check if company user has a company_id
+  const companyId = profile?.company_id;
   const isCompanyUserWithoutCompany = profile?.role === 'company' && !companyId;
   
   return (

@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signUpWithEmail, createProfile } from '../api';
 import { toast } from '@/hooks/use-toast';
-import { UserRole } from '../utils/roles';
+import { UserRole, isUserRole } from '../utils/roles';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { Profile } from '../types/types';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -36,16 +37,21 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
       const { user } = await signUpWithEmail(email, password);
       
       if (user) {
-        // Create company profile with appropriate role and company details
-        const profileData = {
+        // Set the appropriate role using type guard
+        const role: UserRole = userType === 'business' ? 'company' : 'member';
+        
+        if (!isUserRole(role)) {
+          throw new Error("Invalid role type");
+        }
+        
+        // Create profile data with correct types
+        const profileData: Partial<Profile> & { id: string } = {
           id: user.id,
           full_name: fullName,
-          // For business users, set role to 'company', otherwise 'user' - using proper UserRole type
-          role: userType === 'business' ? 'company' as UserRole : 'user' as UserRole,
-          // Only include company_name for business users
-          ...(userType === 'business' ? { company_name: companyName } : {}),
-          // Include phone_number if provided
-          ...(phoneNumber ? { phone_number: phoneNumber } : {}),
+          role: role,
+          email: email,
+          phone: phoneNumber || undefined,
+          metadata: {}
         };
         
         await createProfile(profileData);
@@ -70,18 +76,21 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
               
             if (error) throw error;
             
-            // Add company_id to user profile if company profile was created
+            // Add company_id to user profile metadata if company profile was created
             if (data && data[0]) {
               // The company profile was created successfully
               const companyProfile = data[0];
               
-              // Use metadata field to store company ID since company_id isn't in the schema
+              // Update profile with company_id in metadata
               await supabase
                 .from('user_profiles')
                 .update({ 
                   metadata: { company_id: companyProfile.id } 
                 })
                 .eq('id', user.id);
+                
+              // Update the profileData object to include company_id in metadata
+              profileData.metadata = { company_id: companyProfile.id };
             }
           } catch (companyError) {
             console.error("Error creating company profile:", companyError);

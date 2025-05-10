@@ -7,8 +7,12 @@ export interface Profile {
   id: string;
   full_name?: string;
   role: UserRole;
-  company_id?: string; // We'll derive this from metadata in our application code
+  company_id?: string;
   created_at: string;
+  metadata?: Record<string, any>; // Add metadata property
+  email?: string;
+  phone?: string;
+  updated_at?: string;
 }
 
 export interface AuthUser {

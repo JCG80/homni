@@ -1,12 +1,12 @@
 
-import { UserRole, ALL_ROLES } from './roles';
+import { UserRole, ALL_ROLES, isUserRole } from './roles';
 
 /**
- * Determine user role based on metadata or default to basic user
+ * Determine user role based on metadata or default to member
  */
 export function determineUserRole(userData: Record<string, any> | null): UserRole {
   if (!userData) {
-    return 'user';
+    return 'member';
   }
 
   // Extract role from user metadata
@@ -17,16 +17,16 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
     const email = userData.user.email.toLowerCase();
     
     // Map test emails to roles in development
-    if (email === 'admin@test.local') return 'master-admin';
+    if (email === 'admin@test.local') return 'master_admin';
     if (email === 'company@test.local') return 'company';
     if (email === 'provider@test.local') return 'provider';
     if (email === 'editor@test.local') return 'editor';
   }
   
   // Validate if the role is a valid UserRole
-  if (role && ALL_ROLES.includes(role as UserRole)) {
+  if (role && isUserRole(role)) {
     return role as UserRole;
   }
   
-  return 'user'; // Default fallback role
+  return 'member'; // Default fallback role
 }

@@ -1,34 +1,40 @@
-
-export type UserRole = 'anonymous' | 'user' | 'company' | 'admin' | 'master-admin' | 'provider' | 'editor';
+export type UserRole = 'guest' | 'member' | 'company' | 'admin' | 'master_admin' | 'provider' | 'editor';
 
 export const ALL_ROLES: UserRole[] = [
-  'user',
+  'member',
   'company',
   'admin',
-  'master-admin',
+  'master_admin',
   'provider', 
   'editor'
 ];
 
-export const PUBLIC_ROLES: UserRole[] = ['anonymous'];
+export const PUBLIC_ROLES: UserRole[] = ['guest'];
 
 export const AUTHENTICATED_ROLES: UserRole[] = [
-  'user',
+  'member',
   'company',
   'admin',
-  'master-admin',
+  'master_admin',
   'provider',
   'editor'
 ];
+
+/**
+ * Type guard to check if a value is a valid UserRole
+ */
+export function isUserRole(value: any): value is UserRole {
+  return ALL_ROLES.includes(value as UserRole) || value === 'guest';
+}
 
 /**
  * Get all modules a specific role has access to
  */
 export function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
-    case 'anonymous':
+    case 'guest':
       return ['home', 'leads/submit', 'info', 'login', 'register'];
-    case 'user':
+    case 'member':
       return ['dashboard', 'leads'];
     case 'company':
       return ['dashboard', 'leads', 'settings', 'reports'];
@@ -36,7 +42,7 @@ export function getAllowedModulesForRole(role: UserRole): string[] {
       return ['admin', 'leads', 'companies', 'reports', 'content'];
     case 'editor':
       return ['content', 'dashboard'];
-    case 'master-admin':
+    case 'master_admin':
       return ['*']; // access to all modules
     case 'provider':
       return ['dashboard', 'leads', 'services'];
@@ -58,11 +64,11 @@ export function canAccessModule(role: UserRole, module: string): boolean {
  */
 export function getRoleDisplayName(role: UserRole): string {
   const displayNames: Record<UserRole, string> = {
-    'anonymous': 'Gjest',
-    'user': 'Bruker',
+    'guest': 'Gjest',
+    'member': 'Bruker',
     'company': 'Bedrift',
     'admin': 'Administrator',
-    'master-admin': 'Master Administrator',
+    'master_admin': 'Master Administrator',
     'provider': 'Tjenesteleverandør',
     'editor': 'Redaktør'
   };
@@ -84,7 +90,7 @@ export function hasRequiredRole(userRole: UserRole | null, allowedRoles: UserRol
  */
 export function isAdminRole(role: UserRole | null): boolean {
   if (!role) return false;
-  return ['admin', 'master-admin'].includes(role);
+  return ['admin', 'master_admin'].includes(role);
 }
 
 /**
@@ -92,25 +98,25 @@ export function isAdminRole(role: UserRole | null): boolean {
  */
 export function isContentEditorRole(role: UserRole | null): boolean {
   if (!role) return false;
-  return ['admin', 'master-admin', 'editor'].includes(role);
+  return ['admin', 'master_admin', 'editor'].includes(role);
 }
 
 /**
- * Determine user role based on metadata or default to basic user
+ * Determine user role based on metadata or default to member
  */
 export function determineUserRole(metadata: Record<string, any> | null): UserRole {
   if (!metadata || !metadata.role) {
-    return 'user';
+    return 'member';
   }
 
   const role = metadata.role as string;
   
   // Validate if the role is a valid UserRole
-  if (ALL_ROLES.includes(role as UserRole)) {
-    return role as UserRole;
+  if (isUserRole(role)) {
+    return role;
   }
   
-  return 'user'; // Default fallback role
+  return 'member'; // Default fallback role
 }
 
 /**
@@ -119,18 +125,18 @@ export function determineUserRole(metadata: Record<string, any> | null): UserRol
 export function getAccessibleModules(
   role: UserRole | null,
   moduleAccessMap: Record<string, UserRole[]> = {
-    'leads': ['user', 'company', 'admin', 'master-admin'],
-    'admin': ['admin', 'master-admin'],
-    'company': ['company', 'admin', 'master-admin'],
-    'geo': ['user', 'company', 'admin', 'master-admin', 'provider'],
-    'content': ['admin', 'master-admin', 'editor'],
-    'settings': ['admin', 'master-admin']
+    'leads': ['member', 'company', 'admin', 'master_admin'],
+    'admin': ['admin', 'master_admin'],
+    'company': ['company', 'admin', 'master_admin'],
+    'geo': ['member', 'company', 'admin', 'master_admin', 'provider'],
+    'content': ['admin', 'master_admin', 'editor'],
+    'settings': ['admin', 'master_admin']
   }
 ): string[] {
   if (!role) return [];
   
   // Master admin can access everything
-  if (role === 'master-admin') return Object.keys(moduleAccessMap);
+  if (role === 'master_admin') return Object.keys(moduleAccessMap);
   
   // Find all modules this role can access
   return Object.entries(moduleAccessMap)

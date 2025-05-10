@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { UserRole } from '../types/types';
+import { UserRole, isUserRole } from '../utils/roles';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface UseRoleGuardOptions {
@@ -55,7 +55,10 @@ export const useRoleGuard = ({
 
     console.log('Role check in useRoleGuard - Current role:', role, 'Allowed roles:', allowedRoles);
 
-    if (!role || !allowedRoles.includes(role as UserRole)) {
+    // Use type guard to ensure role is a valid UserRole
+    const validRole = role && isUserRole(role) ? role : null;
+    
+    if (!validRole || !allowedRoles.includes(validRole)) {
       console.error('Access denied in useRoleGuard. User role:', role, 'Required roles:', allowedRoles);
       navigate(redirectTo);
       setLoading(false);

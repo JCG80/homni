@@ -2,7 +2,7 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { UserRole, canAccessModule } from '../utils/roles';
+import { UserRole, isUserRole, canAccessModule } from '../utils/roles';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -33,8 +33,9 @@ export const ProtectedRoute = ({
     );
   }
   
-  // Determine the current role - use 'anonymous' if not authenticated
-  const currentRole: UserRole = isAuthenticated && role ? role : 'anonymous';
+  // Determine the current role - use 'guest' if not authenticated
+  // Use type guard to ensure role is a valid UserRole
+  const currentRole: UserRole = isAuthenticated && role && isUserRole(role) ? role : 'guest';
   
   console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', currentRole, 
     'allowedRoles:', allowedRoles, 'allowAnyAuthenticated:', allowAnyAuthenticated,
@@ -43,8 +44,8 @@ export const ProtectedRoute = ({
   // If module is specified, check if user has access to that module
   if (module) {
     if (!canAccessModule(currentRole, module)) {
-      // If not anonymous, redirect to unauthorized. If anonymous, redirect to login.
-      const redirectPath = currentRole === 'anonymous' ? '/login' : '/unauthorized';
+      // If not guest, redirect to unauthorized. If guest, redirect to login.
+      const redirectPath = currentRole === 'guest' ? '/login' : '/unauthorized';
       console.log(`User does not have access to module: ${module}, redirecting to: ${redirectPath}`);
       return <Navigate to={redirectPath} replace state={{ from: location }} />;
     }
