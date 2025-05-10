@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthUser, Profile, AuthState } from '../types/types';
-import { isUserRole } from '../utils/roles';
+import { UserRole, isUserRole } from '../utils/roles';
 
 /**
  * Hook that manages the authentication state
@@ -174,7 +174,10 @@ export const useAuthState = () => {
   const isUser = role === 'member';
 
   return {
-    ...authState,
+    user: authState.user,
+    profile: authState.profile,
+    isLoading: authState.isLoading,
+    error: authState.error,
     refreshProfile,
     isAuthenticated,
     isAdmin,

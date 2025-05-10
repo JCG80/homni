@@ -1,13 +1,15 @@
 
 import { createContext, useContext, ReactNode } from 'react';
-import { useAuthState } from './useAuthState';
-import { AuthState } from '../types/types';
+import { useAuth } from './useAuth';
+import { AuthUser, AuthState, Profile } from '../types/types';
 
+// For backward compatibility, maintain the old interface
 interface AuthContextType {
   authState: AuthState;
   refreshProfile: () => Promise<void>;
 }
 
+// Create a backward compatibility context
 const AuthContext = createContext<AuthContextType>({
   authState: {
     user: null,
@@ -18,14 +20,25 @@ const AuthContext = createContext<AuthContextType>({
   refreshProfile: async () => {},
 });
 
+// AuthProvider component - redirects to the main AuthProvider in useAuth.tsx
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { authState, refreshProfile } = useAuthState();
-
+  // Use the main auth hook
+  const auth = useAuth();
+  
+  // Map to the old format for backward compatibility
+  const authState: AuthState = {
+    user: auth.user,
+    profile: auth.profile,
+    isLoading: auth.isLoading,
+    error: auth.error,
+  };
+  
   return (
-    <AuthContext.Provider value={{ authState, refreshProfile }}>
+    <AuthContext.Provider value={{ authState, refreshProfile: auth.refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// For backward compatibility
 export const useAuthContext = () => useContext(AuthContext);

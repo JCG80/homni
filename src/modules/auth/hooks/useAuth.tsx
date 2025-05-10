@@ -2,8 +2,10 @@
 import { createContext, ReactNode, useContext } from 'react';
 import { AuthUser, Profile } from '../types/types';
 import { useAuthState } from './useAuthState';
+import { UserRole } from '../utils/roles';
 
-interface AuthContextType {
+// Define a comprehensive AuthContextType with all required fields
+export interface AuthContextType {
   user: AuthUser | null;
   profile: Profile | null;
   isLoading: boolean;
@@ -14,7 +16,7 @@ interface AuthContextType {
   isMasterAdmin: boolean;
   isCompany: boolean;
   isUser: boolean;
-  role: string | undefined;
+  role: UserRole | undefined;
 }
 
 // Create context with default values
@@ -35,22 +37,26 @@ const AuthContext = createContext<AuthContextType>({
 // AuthProvider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Get the auth state from useAuthState
-  const { authState, refreshProfile } = useAuthState();
+  const { 
+    user,
+    profile,
+    isLoading,
+    error,
+    refreshProfile,
+    isAuthenticated,
+    isAdmin,
+    isMasterAdmin,
+    isCompany,
+    isUser,
+    role 
+  } = useAuthState();
   
-  // Derive all required values from authState
-  const isAuthenticated = !!authState.user;
-  const role = authState.profile?.role;
-  const isAdmin = role === 'admin' || role === 'master_admin';
-  const isMasterAdmin = role === 'master_admin';
-  const isCompany = role === 'company';
-  const isUser = role === 'member';
-  
-  // Map the values from authState to match the AuthContextType
+  // Map the values directly from useAuthState to match the AuthContextType
   const authContextValue: AuthContextType = {
-    user: authState.user,
-    profile: authState.profile,
-    isLoading: authState.isLoading,
-    error: authState.error,
+    user,
+    profile,
+    isLoading,
+    error,
     refreshProfile,
     isAuthenticated,
     isAdmin,

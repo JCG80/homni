@@ -14,6 +14,7 @@ import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { InsuranceRequestSuccessPage } from './pages/InsuranceRequestSuccessPage';
 import { ProtectedRoute } from './modules/auth/components/ProtectedRoute';
 import { PowerComparisonPage } from './pages/PowerComparisonPage';
+import { InsuranceQuotePage } from './modules/insurance/pages/InsuranceQuotePage';
 
 export const AppRoutes = () => {
   return (
@@ -38,6 +39,7 @@ export const AppRoutes = () => {
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
         <Route path="/strom" element={<PowerComparisonPage />} />
+        <Route path="/forsikring" element={<InsuranceQuotePage />} />
       </Routes>
     </Suspense>
   );
