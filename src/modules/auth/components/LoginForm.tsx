@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { signInWithEmail } from '../api';
+import { signInWithEmail } from '../api'; // Updated import path to use the index re-export
 import { toast } from '@/hooks/use-toast';
 
 interface LoginFormProps {
