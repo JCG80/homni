@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Property, PropertyDocument, PropertyExpense } from '../types/propertyTypes';
+import { Property, PropertyDocument, PropertyExpense, PropertyType } from '../types/propertyTypes';
 import { toast } from '@/hooks/use-toast';
 
 /**
@@ -23,7 +23,11 @@ export const getUserProperties = async (): Promise<Property[]> => {
       return [];
     }
     
-    return data || [];
+    // Ensure we're returning properly typed data
+    return data?.map(item => ({
+      ...item,
+      type: item.type as PropertyType
+    })) || [];
   } catch (error) {
     console.error("Unexpected error fetching properties:", error);
     return [];
@@ -46,7 +50,7 @@ export const getPropertyById = async (id: string): Promise<Property | null> => {
       return null;
     }
     
-    return data;
+    return data ? { ...data, type: data.type as PropertyType } : null;
   } catch (error) {
     console.error("Unexpected error fetching property:", error);
     return null;
@@ -79,7 +83,7 @@ export const createProperty = async (property: Omit<Property, 'id' | 'created_at
       description: `${property.name} ble lagt til i din portefølje.`,
     });
     
-    return data;
+    return { ...data, type: data.type as PropertyType };
   } catch (error) {
     console.error("Unexpected error creating property:", error);
     return null;
@@ -113,7 +117,7 @@ export const updateProperty = async (id: string, updates: Partial<Property>): Pr
       description: "Eiendommen ble oppdatert.",
     });
     
-    return data;
+    return { ...data, type: data.type as PropertyType };
   } catch (error) {
     console.error("Unexpected error updating property:", error);
     return null;

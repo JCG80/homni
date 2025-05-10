@@ -35,6 +35,12 @@ export const Authenticated = ({ children }: AuthenticatedProps) => {
         
         // Refresh the profile in the auth state
         await refreshProfile();
+      } else {
+        toast({
+          title: "Feil ved opprettelse",
+          description: "Kunne ikke opprette brukerprofil. Vennligst prøv igjen.",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error("Error creating profile:", error);
