@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { TEST_USERS, devLogin, TestUser } from '../utils/devLogin';
+import { TEST_USERS, TestUser, devLogin } from '../utils/devLogin';
 import { toast } from '@/hooks/use-toast';
 import { Key } from 'lucide-react';
 
@@ -54,7 +54,7 @@ export const QuickLogin = () => {
         <DropdownMenuSeparator />
         {TEST_USERS.map((user) => (
           <DropdownMenuItem key={user.role} onClick={() => handleLogin(user)}>
-            {user.description || user.role}
+            {user.name || user.role}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

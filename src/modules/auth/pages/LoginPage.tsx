@@ -4,7 +4,8 @@ import { devLogin } from '../utils/devLogin';
 
 export const LoginPage = () => {
   const handleDevLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin') => {
-    await devLogin(role);
+    const result = await devLogin(role);
+    // No need to handle the result here as devLogin already displays toasts
   };
 
   return (

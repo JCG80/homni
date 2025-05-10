@@ -3,10 +3,18 @@ import { signInWithEmail } from '../api';
 import { TEST_USERS } from '../__tests__/utils/testAuth';
 import { toast } from '@/hooks/use-toast';
 import { UserRole } from '../types/types';
-import { TestUser } from '../__tests__/utils/testAuth';
 
-// Re-export TEST_USERS and TestUser for components that need them
-export { TEST_USERS, TestUser };
+// Re-export TestUser type from our own types file to avoid importing from test utils
+export interface TestUser {
+  email: string;
+  password: string;
+  role: UserRole;
+  name: string;
+  description?: string;
+}
+
+// Re-export TEST_USERS for components that need them
+export { TEST_USERS };
 
 /**
  * Helper function for development testing to quickly login as different user roles
