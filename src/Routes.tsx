@@ -11,7 +11,9 @@ import { LeadReportsPage } from './modules/leads/pages/LeadReportsPage';
 import { UnauthorizedPage } from './modules/auth/pages/UnauthorizedPage';
 import { LoginPage } from './modules/auth/pages/LoginPage';
 import { RegisterPage } from './modules/auth/pages/RegisterPage';
-import { RouteConfig, UserRole } from './modules/auth/types/types';
+import { ContentDashboard } from './modules/content/pages/ContentDashboard';
+import { EditContentPage } from './modules/content/pages/EditContentPage';
+import { RouteConfig } from './modules/auth/types/types';
 
 const AppRoutes = () => {
   // Define routes with their auth requirements
@@ -58,6 +60,25 @@ const AppRoutes = () => {
       element: <LeadTestPage />,
       requiresAuth: true,
       allowAnyRole: true
+    },
+    // Content module routes
+    {
+      path: '/admin/content',
+      element: <ContentDashboard />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin', 'editor'] // Only allow admin and editor roles
+    },
+    {
+      path: '/admin/content/new',
+      element: <EditContentPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin', 'editor'] // Only allow admin and editor roles
+    },
+    {
+      path: '/admin/content/edit/:id',
+      element: <EditContentPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin', 'editor'] // Only allow admin and editor roles
     }
   ];
 
@@ -81,7 +102,7 @@ const AppRoutes = () => {
         return {
           path: route.path,
           element: (
-            <ProtectedRoute allowedRoles={route.roles as UserRole[]}>
+            <ProtectedRoute allowedRoles={route.roles}>
               {route.element}
             </ProtectedRoute>
           )

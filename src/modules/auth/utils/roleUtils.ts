@@ -19,7 +19,8 @@ export const getRoleDisplayName = (role: UserRole): string => {
     'company': 'Bedrift',
     'admin': 'Administrator',
     'master-admin': 'Master Administrator',
-    'provider': 'Tjenesteleverandør'
+    'provider': 'Tjenesteleverandør',
+    'editor': 'Redaktør'
   };
   
   return displayNames[role] || role;
@@ -43,7 +44,9 @@ export const canAccessModule = (
     'leads': ['user', 'company', 'admin', 'master-admin'],
     'admin': ['admin', 'master-admin'],
     'company': ['company', 'admin', 'master-admin'],
-    'geo': ['user', 'company', 'admin', 'master-admin', 'provider']
+    'geo': ['user', 'company', 'admin', 'master-admin', 'provider'],
+    'content': ['admin', 'master-admin', 'editor'],
+    'settings': ['admin', 'master-admin']
   }
 ): boolean => {
   if (!role) return false;
@@ -69,7 +72,7 @@ export const determineUserRole = (metadata: Record<string, any> | null): UserRol
   const role = metadata.role as string;
   
   // Validate if the role is a valid UserRole
-  if (['user', 'company', 'admin', 'master-admin', 'provider'].includes(role)) {
+  if (['user', 'company', 'admin', 'master-admin', 'provider', 'editor'].includes(role)) {
     return role as UserRole;
   }
   
@@ -86,6 +89,7 @@ export const getAllowedModulesForRole = (
     'admin': ['admin', 'master-admin'],
     'company': ['company', 'admin', 'master-admin'],
     'geo': ['user', 'company', 'admin', 'master-admin', 'provider'],
+    'content': ['admin', 'master-admin', 'editor'],
     'settings': ['admin', 'master-admin']
   }
 ): string[] => {
@@ -98,4 +102,12 @@ export const getAllowedModulesForRole = (
   return Object.entries(moduleAccess)
     .filter(([_, allowedRoles]) => allowedRoles.includes(role))
     .map(([moduleName, _]) => moduleName);
+};
+
+/**
+ * Determines if a role has content editor privileges
+ */
+export const isContentEditorRole = (role: UserRole | null): boolean => {
+  if (!role) return false;
+  return ['admin', 'master-admin', 'editor'].includes(role);
 };

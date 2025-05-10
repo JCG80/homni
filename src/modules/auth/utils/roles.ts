@@ -1,5 +1,5 @@
 
-export type UserRole = 'user' | 'company' | 'admin' | 'master-admin';
+export type UserRole = 'user' | 'company' | 'admin' | 'master-admin' | 'editor';
 
 /**
  * Get all modules a specific role has access to
@@ -11,7 +11,9 @@ export function getAllowedModulesForRole(role: UserRole): string[] {
     case 'company':
       return ['dashboard', 'leads', 'settings', 'reports'];
     case 'admin':
-      return ['admin', 'leads', 'companies', 'reports'];
+      return ['admin', 'leads', 'companies', 'reports', 'content'];
+    case 'editor':
+      return ['content', 'dashboard'];
     case 'master-admin':
       return ['*']; // access to all modules
     default:
@@ -35,7 +37,8 @@ export function getRoleDisplayName(role: UserRole): string {
     'user': 'Bruker',
     'company': 'Bedrift',
     'admin': 'Administrator',
-    'master-admin': 'Master Administrator'
+    'master-admin': 'Master Administrator',
+    'editor': 'Redaktør'
   };
   
   return displayNames[role] || role;
@@ -56,4 +59,12 @@ export function hasRequiredRole(userRole: UserRole | null, allowedRoles: UserRol
 export function isAdminRole(role: UserRole | null): boolean {
   if (!role) return false;
   return ['admin', 'master-admin'].includes(role);
+}
+
+/**
+ * Determine if a role has content editor privileges
+ */
+export function isContentEditorRole(role: UserRole | null): boolean {
+  if (!role) return false;
+  return ['admin', 'master-admin', 'editor'].includes(role);
 }
