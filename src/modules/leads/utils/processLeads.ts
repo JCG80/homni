@@ -3,6 +3,7 @@ import { distributeLeadToProvider, DistributionStrategy } from '../strategies/st
 import { supabase } from "@/integrations/supabase/client";
 import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
+import { isValidLeadStatus } from '../types/types';
 
 /**
  * Processes unassigned leads using the specified distribution strategy
@@ -62,6 +63,12 @@ export async function processUnassignedLeads(
     
     // Process each lead
     for (const lead of unassignedLeads) {
+      // Validate lead status - if it's not valid, skip this lead
+      if (!isValidLeadStatus(lead.status)) {
+        console.warn(`Lead ${lead.id} has invalid status ${lead.status}, skipping`);
+        continue;
+      }
+
       // Apply filters from lead settings if they exist
       if (settings?.categories && settings.categories.length > 0) {
         // Simple filtering logic based on category
@@ -92,12 +99,12 @@ export async function processUnassignedLeads(
       );
       
       if (providerId) {
-        // Update lead with the selected provider
+        // Update lead with the selected provider and ensure valid status
         const { error: updateError } = await supabase
           .from('leads')
           .update({
             company_id: providerId,
-            status: 'assigned',
+            status: 'assigned', // This is a validated status from our constants
             updated_at: new Date().toISOString()
           })
           .eq('id', lead.id);

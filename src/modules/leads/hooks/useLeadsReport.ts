@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Lead } from '../types/types';
+import { Lead, isValidLeadStatus } from '../types/types';
 import { toast } from '@/hooks/use-toast';
 
 export const useLeadsReport = () => {
@@ -28,8 +28,17 @@ export const useLeadsReport = () => {
           throw new Error(error.message);
         }
         
-        // Cast the data to Lead[] to ensure type safety
-        setLeads(data as Lead[]);
+        // Safely validate and map each lead to ensure status is valid
+        if (data) {
+          const validatedLeads = data.map(item => ({
+            ...item,
+            status: isValidLeadStatus(item.status) ? item.status : 'new',
+          })) as Lead[];
+          
+          setLeads(validatedLeads);
+        } else {
+          setLeads([]);
+        }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
         setError(errorMessage);

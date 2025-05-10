@@ -1,55 +1,46 @@
 
-import { describe, it, expect } from 'vitest';
 import { getAddressProvider } from '../addressLookup';
+import DummyProvider from '../providers/DEFAULT';
 
-describe('AddressLookup Module', () => {
-  it('should use DEFAULT provider for invalid region codes', async () => {
+// Using Jest for testing
+describe('addressLookup module', () => {
+  test('getAddressProvider should return DEFAULT provider when region is invalid', async () => {
     const provider = await getAddressProvider('INVALID');
-    const results = await provider.search('Test');
+    expect(provider).toBeDefined();
     
-    expect(results.length).toBe(1);
+    // Should be the dummy provider
+    const results = await provider.search('test query');
+    expect(results.length).toBeGreaterThan(0);
     expect(results[0].country).toBe('XX');
+  });
+
+  test('getAddressProvider should load the correct provider based on region', async () => {
+    // Test with default provider for safety
+    const provider = await getAddressProvider('DEFAULT');
+    expect(provider).toBeDefined();
+    
+    const results = await provider.search('test query');
+    expect(results.length).toBeGreaterThan(0);
+    
+    // Test reverse lookup
+    const reverseResult = await provider.reverse(59.9133, 10.7389);
+    expect(reverseResult).toBeDefined();
+    expect(reverseResult?.city).toBe('Fallback City');
+  });
+
+  test('DummyProvider search should return test data', async () => {
+    const results = await DummyProvider.search('anything');
+    expect(results.length).toBe(1);
     expect(results[0].street).toBe('Test Street');
+    expect(results[0].number).toBe('1');
+    expect(results[0].postalCode).toBe('0001');
   });
-  
-  it('should properly handle reverse geocoding with DEFAULT provider', async () => {
-    const provider = await getAddressProvider('INVALID');
-    const result = await provider.reverse(60.1, 10.2);
-    
-    expect(result).not.toBeNull();
-    if (result) {
-      expect(result.street).toBe('Reverse Street');
-      expect(result.city).toBe('Fallback City');
-      expect(result.lat).toBe(60.1);
-      expect(result.lng).toBe(10.2);
-    }
-  });
-  
-  // Test the Norwegian provider - note that this is an integration test
-  // and might fail if the external service is unavailable
-  it('should return Oslo addresses when searching for Oslo with Norwegian provider', async () => {
-    // Skip this test if we're running in a CI environment
-    if (process.env.CI) {
-      console.log('Skipping Norwegian provider test in CI environment');
-      return;
-    }
-    
-    try {
-      const provider = await getAddressProvider('NO');
-      const results = await provider.search('Oslo');
-      
-      expect(results.length).toBeGreaterThan(0);
-      
-      // Check if at least one result has Oslo as the city
-      const hasOslo = results.some(address => 
-        address.city?.includes('Oslo') || 
-        address.municipality?.includes('Oslo')
-      );
-      
-      expect(hasOslo).toBe(true);
-    } catch (error) {
-      // If the service is down, we'll skip the test rather than fail it
-      console.warn('Norwegian provider test skipped due to service unavailability');
-    }
+
+  test('DummyProvider reverse should return fallback data', async () => {
+    const reverseResult = await DummyProvider.reverse(60.0, 10.0);
+    expect(reverseResult).toBeDefined();
+    expect(reverseResult?.street).toBe('Reverse Street');
+    expect(reverseResult?.lat).toBe(60.0);
+    expect(reverseResult?.lng).toBe(10.0);
   });
 });

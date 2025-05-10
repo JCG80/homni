@@ -1,4 +1,5 @@
 
+// Define allowed lead statuses as a constant
 export const LEAD_STATUSES = [
   'new',
   'assigned',
@@ -8,7 +9,13 @@ export const LEAD_STATUSES = [
   'archived'
 ] as const;
 
+// Define LeadStatus type from the constant
 export type LeadStatus = typeof LEAD_STATUSES[number];
+
+// Validation function to check if a value is a valid lead status
+export function isValidLeadStatus(value: any): value is LeadStatus {
+  return LEAD_STATUSES.includes(value);
+}
 
 export type LeadPriority = 'low' | 'medium' | 'high';
 
