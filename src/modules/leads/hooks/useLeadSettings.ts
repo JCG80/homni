@@ -1,72 +1,83 @@
-
 import { useState, useEffect } from 'react';
-import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
-import { LeadSettings } from '@/types/leads';
-import { toast } from '@/hooks/use-toast';
+import { LeadSettings } from '../types/lead-settings';
+import { supabase } from '@/integrations/supabase/client';
+import { parseLeadSettings } from '../utils/parseLeadSettings';
 
 export const useLeadSettings = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-
-  // Load settings on hook initialization
+  
+  // Load settings from database
   useEffect(() => {
-    loadSettings();
+    const fetchSettings = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('lead_settings')
+          .select('*')
+          .maybeSingle();
+        
+        if (error) throw new Error(error.message);
+        
+        const parsedSettings = parseLeadSettings(data);
+        setSettings(parsedSettings);
+      } catch (err) {
+        console.error('Error fetching lead settings:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchSettings();
   }, []);
-
-  // Function to load settings
-  const loadSettings = async () => {
+  
+  // Update settings in database
+  const saveSettings = async (updatedSettings: Partial<LeadSettings>): Promise<boolean> => {
     try {
       setIsLoading(true);
-      setError(null);
-      const data = await fetchLeadSettings();
-      setSettings(data);
+      
+      // If we have existing settings, update them
+      if (settings?.id) {
+        const { error } = await supabase
+          .from('lead_settings')
+          .update({
+            ...updatedSettings,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', settings.id);
+        
+        if (error) throw new Error(error.message);
+      } 
+      // Otherwise, insert new settings
+      else {
+        const { error } = await supabase
+          .from('lead_settings')
+          .insert([{
+            ...updatedSettings,
+            updated_at: new Date().toISOString()
+          }]);
+        
+        if (error) throw new Error(error.message);
+      }
+      
+      // Update local state with new settings
+      setSettings(prev => prev ? { ...prev, ...updatedSettings } : updatedSettings as LeadSettings);
+      return true;
     } catch (err) {
-      console.error('Error loading lead settings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load settings');
+      console.error('Error saving lead settings:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
-
-  // Function to save settings
-  const saveSettings = async (updatedSettings: Partial<LeadSettings>) => {
-    try {
-      setIsSaving(true);
-      await updateLeadSettings(updatedSettings);
-      
-      // Refresh settings after update
-      await loadSettings();
-      
-      toast({
-        title: "Settings updated",
-        description: "Lead distribution settings have been saved",
-      });
-      
-      return true;
-    } catch (err) {
-      console.error('Error saving lead settings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to save settings');
-      
-      toast({
-        title: "Update failed",
-        description: "Could not save lead distribution settings",
-        variant: "destructive"
-      });
-      
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
+  
   return {
     settings,
     isLoading,
     error,
-    isSaving,
-    loadSettings,
     saveSettings
   };
 };
