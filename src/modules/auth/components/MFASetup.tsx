@@ -1,187 +1,198 @@
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { setupMFA, verifyMFA } from '../api/auth-api';
 import { toast } from '@/hooks/use-toast';
 
 export const MFASetup = () => {
-  const [isEnrolling, setIsEnrolling] = useState(false);
-  const [enrollmentData, setEnrollmentData] = useState<{
-    factorId: string | null;
-    qr: string | null;
-    uri: string | null;
-  }>({ factorId: null, qr: null, uri: null });
+  const [step, setStep] = useState<'initial' | 'setup' | 'verify' | 'success'>('initial');
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [uri, setUri] = useState<string | null>(null);
+  const [factorId, setFactorId] = useState<string | null>(null);
+  const [challengeId, setChallengeId] = useState<string | null>(null);
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
 
-  const handleStartEnrollment = async () => {
+  const handleSetupMFA = async () => {
     setIsLoading(true);
+    
     try {
-      const { factorId, qr, uri, error } = await setupMFA();
+      const result = await setupMFA();
       
-      if (error || !factorId) {
+      if (result.error) {
         toast({
-          title: "Feil ved MFA-oppsett",
-          description: "Kunne ikke starte MFA-oppsett. Vennligst prøv igjen senere.",
-          variant: "destructive",
+          title: 'MFA Setup Failed',
+          description: 'Could not set up MFA. Please try again.',
+          variant: 'destructive'
         });
         return;
       }
       
-      setEnrollmentData({ factorId, qr, uri });
-      setIsEnrolling(true);
+      if (result.factorId && result.qr) {
+        setFactorId(result.factorId);
+        setQrCode(result.qr);
+        setUri(result.uri);
+        setStep('setup');
+        
+        // After setup, create a challenge to verify
+        const { data, error } = await supabase.auth.mfa.challenge({
+          factorId: result.factorId
+        });
+        
+        if (!error && data) {
+          setChallengeId(data.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error setting up MFA:', error);
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred.',
+        variant: 'destructive'
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleVerify = async () => {
-    if (!enrollmentData.factorId) {
-      toast({
-        title: "Manglende data",
-        description: "MFA-oppsettet mangler nødvendig informasjon. Vennligst start på nytt.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!factorId || !challengeId) return;
     
     setIsLoading(true);
+    
     try {
-      // Updated to match our fixed verifyMFA function
-      const { verified, error } = await verifyMFA(
-        enrollmentData.factorId,
-        "", // Challenge ID will be created inside the function
-        verificationCode
-      );
+      const result = await verifyMFA(factorId, challengeId, verificationCode);
       
-      if (error || !verified) {
+      if (result.verified) {
+        setStep('success');
         toast({
-          title: "Verifiseringsfeil",
-          description: "Koden er ugyldig. Vennligst prøv igjen.",
-          variant: "destructive",
+          title: 'MFA Activated',
+          description: 'Multi-factor authentication has been successfully set up.'
         });
-        return;
+      } else {
+        toast({
+          title: 'Verification Failed',
+          description: 'The code you entered is invalid. Please try again.',
+          variant: 'destructive'
+        });
       }
-      
+    } catch (error) {
+      console.error('Error verifying MFA:', error);
       toast({
-        title: "MFA aktivert",
-        description: "Tofaktorautentisering er nå aktivert for din konto.",
+        title: 'Error',
+        description: 'An unexpected error occurred during verification.',
+        variant: 'destructive'
       });
-      
-      setIsEnrolling(false);
-      setIsVerifying(false);
-      setVerificationCode('');
-      setEnrollmentData({ factorId: null, qr: null, uri: null });
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (!isEnrolling) {
+  if (step === 'initial') {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>To-faktor autentisering</CardTitle>
+          <CardTitle>Set Up Two-Factor Authentication</CardTitle>
           <CardDescription>
-            Øk sikkerheten på kontoen din med to-faktor autentisering. Du vil trenge en 
-            autentiseringsapp som Google Authenticator eller Authy.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button 
-            onClick={handleStartEnrollment} 
-            disabled={isLoading}
-          >
-            {isLoading ? 'Laster...' : 'Aktiver to-faktor autentisering'}
-          </Button>
-        </CardFooter>
-      </Card>
-    );
-  }
-
-  if (isEnrolling && !isVerifying && enrollmentData.qr) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Sett opp autentiseringsappen din</CardTitle>
-          <CardDescription>
-            Skann QR-koden med autentiseringsappen din eller skriv inn nøkkelen manuelt.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center space-y-4">
-          {enrollmentData.qr && (
-            <div className="border border-gray-200 p-2 rounded">
-              <img 
-                src={enrollmentData.qr} 
-                alt="QR Code for MFA" 
-                className="w-64 h-64"
-              />
-            </div>
-          )}
-          
-          {enrollmentData.uri && (
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-500 mb-2">Eller skriv inn denne koden manuelt:</p>
-              <code className="bg-gray-100 p-2 rounded text-xs break-all">
-                {enrollmentData.uri.split('=').pop()}
-              </code>
-            </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsEnrolling(false)} 
-            disabled={isLoading}
-          >
-            Avbryt
-          </Button>
-          <Button 
-            onClick={() => setIsVerifying(true)} 
-            disabled={isLoading}
-          >
-            Fortsett
-          </Button>
-        </CardFooter>
-      </Card>
-    );
-  }
-
-  if (isVerifying) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Verifiser autentiseringsapp</CardTitle>
-          <CardDescription>
-            Skriv inn den 6-sifrede koden fra autentiseringsappen din for å bekrefte oppsettet.
+            Enhance your account security with two-factor authentication
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Input
-            type="text"
-            placeholder="Skriv inn 6-sifret kode"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-            maxLength={6}
-            className="text-center text-lg tracking-widest"
-          />
+          <p className="mb-4 text-sm text-muted-foreground">
+            Two-factor authentication adds an extra layer of security to your account. 
+            In addition to your password, you'll need a code from your authentication app.
+          </p>
         </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter>
           <Button 
-            variant="outline" 
-            onClick={() => setIsVerifying(false)} 
+            onClick={handleSetupMFA} 
             disabled={isLoading}
+            className="w-full"
           >
-            Tilbake
+            {isLoading ? 'Setting up...' : 'Set up 2FA'}
           </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  if (step === 'setup') {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Scan QR Code</CardTitle>
+          <CardDescription>
+            Scan this code with your authentication app
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center">
+          {qrCode && (
+            <div className="mb-4">
+              <img src={qrCode} alt="QR Code for 2FA" width={200} height={200} />
+            </div>
+          )}
+          
+          {uri && (
+            <div className="w-full mb-6">
+              <p className="text-xs text-muted-foreground mb-1">Or enter this code manually:</p>
+              <code className="text-xs bg-muted p-2 rounded block w-full break-all overflow-x-auto">
+                {uri}
+              </code>
+            </div>
+          )}
+          
+          <div className="w-full">
+            <p className="text-sm text-muted-foreground mb-2">Enter the 6-digit code from your authentication app:</p>
+            <Input 
+              type="text" 
+              placeholder="000000"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              className="text-center text-lg tracking-widest"
+              maxLength={6}
+            />
+          </div>
+        </CardContent>
+        <CardFooter>
           <Button 
-            onClick={handleVerify} 
+            onClick={handleVerify}
             disabled={isLoading || verificationCode.length !== 6}
+            className="w-full"
           >
-            {isLoading ? 'Verifiserer...' : 'Bekreft'}
+            {isLoading ? 'Verifying...' : 'Verify'}
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  if (step === 'success') {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Two-Factor Authentication Activated</CardTitle>
+          <CardDescription>
+            Your account is now more secure
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center py-4">
+            <div className="rounded-full bg-green-100 p-3 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <p className="text-center text-muted-foreground">
+              Two-factor authentication has been successfully set up. You'll now need to enter a code from your authentication app when signing in.
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button onClick={() => setStep('initial')} variant="outline" className="w-full">
+            Done
           </Button>
         </CardFooter>
       </Card>
