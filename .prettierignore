@@ -1,0 +1,10 @@
+
+node_modules
+dist
+build
+coverage
+public
+*.yml
+*.yaml
+*.lock
+package-lock.json
