@@ -24,8 +24,8 @@ export async function getLeads(filters: LeadFilter = {}): Promise<Lead[]> {
   const { data, error } = await query;
   
   if (error) throw error;
-  // Explicitly type data as any[] to avoid TS2589 error
-  return ((data || []) as any[]).map(parseLead);
+  // Use type assertion to avoid deep instantiation issue
+  return (data || []).map((item: any) => parseLead(item));
 }
 
 /**
@@ -38,8 +38,8 @@ export async function getUserLeads(userId: string): Promise<Lead[]> {
     .eq('submitted_by', userId);
   
   if (error) throw error;
-  // Explicitly type data as any[] to avoid TS2589 error
-  return ((data || []) as any[]).map(parseLead);
+  // Use type assertion to avoid deep instantiation issue
+  return (data || []).map((item: any) => parseLead(item));
 }
 
 /**
@@ -52,8 +52,8 @@ export async function getCompanyLeads(companyId: string): Promise<Lead[]> {
     .eq('company_id', companyId);
   
   if (error) throw error;
-  // Explicitly type data as any[] to avoid TS2589 error
-  return ((data || []) as any[]).map(parseLead);
+  // Use type assertion to avoid deep instantiation issue
+  return (data || []).map((item: any) => parseLead(item));
 }
 
 /**
@@ -83,6 +83,6 @@ export async function loadLeads(): Promise<Lead[]> {
     return [];
   }
 
-  // Explicitly type data as any[] to avoid TS2589 error
-  return (data as any[]).map(parseLead);
+  // Use type assertion to avoid deep instantiation issue
+  return data.map((item: any) => parseLead(item));
 }
