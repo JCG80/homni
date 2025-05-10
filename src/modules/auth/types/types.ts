@@ -7,7 +7,7 @@ export interface Profile {
   id: string;
   full_name?: string;
   role: UserRole;
-  company_id?: string;
+  company_id?: string; // We'll derive this from metadata in our application code
   created_at: string;
 }
 

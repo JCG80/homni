@@ -48,8 +48,9 @@ export const CompanyLeadsPage = () => {
     );
   }
 
-  // Check if company user has a company_id
-  const isCompanyUserWithoutCompany = profile?.role === 'company' && !profile?.company_id;
+  // Check if company user has a company_id (now from metadata)
+  const companyId = profile?.company_id || (profile?.metadata as any)?.company_id;
+  const isCompanyUserWithoutCompany = profile?.role === 'company' && !companyId;
   
   return (
     <div className="container mx-auto py-8 space-y-8">

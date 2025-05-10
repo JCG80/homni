@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { signUpWithEmail, createProfile } from '../api';
 import { toast } from '@/hooks/use-toast';
 import { UserRole } from '../utils/roles';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -51,24 +53,34 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
         // If it's a business account, also create a company profile entry
         if (userType === 'business') {
           try {
+            // Define the type for company profiles insertion
+            type CompanyProfileInsert = Database['public']['Tables']['company_profiles']['Insert'];
+            
             const { data, error } = await supabase
               .from('company_profiles')
-              .insert([
+              .insert<CompanyProfileInsert>([
                 {
                   name: companyName,
                   user_id: user.id,
                   tags: [],
                   status: 'active'
                 }
-              ]);
+              ])
+              .select('*');
               
             if (error) throw error;
             
             // Add company_id to user profile if company profile was created
             if (data && data[0]) {
+              // The company profile was created successfully
+              const companyProfile = data[0];
+              
+              // Use metadata field to store company ID since company_id isn't in the schema
               await supabase
                 .from('user_profiles')
-                .update({ company_id: data[0].id })
+                .update({ 
+                  metadata: { company_id: companyProfile.id } 
+                })
                 .eq('id', user.id);
             }
           } catch (companyError) {
