@@ -54,11 +54,11 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
 
 export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
   try {
-    // Avoid generic type parameters completely
+    // Use raw query approach to completely avoid TypeScript recursion
     const { data: rawData, error } = await supabase
       .from('leads')
       .select(LEAD_FIELDS)
-      .eq('created_by', userId);
+      .eq('submitted_by', userId);
     
     if (error) {
       throw new ApiError('listLeadsByUser', error);
