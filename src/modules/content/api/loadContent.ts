@@ -21,6 +21,37 @@ export async function loadAllContent(): Promise<Content[]> {
 }
 
 /**
+ * Load a single content item by ID or slug
+ * This is used by the ContentEditor and other components
+ */
+export async function loadContent(idOrSlug: string): Promise<Content | null> {
+  // Try to load by ID first
+  const { data: byId, error: errorId } = await supabase
+    .from('content')
+    .select('*')
+    .eq('id', idOrSlug)
+    .maybeSingle() as any;
+  
+  if (byId) {
+    return parseContent(byId);
+  }
+  
+  // If not found by ID, try by slug
+  const { data: bySlug, error: errorSlug } = await supabase
+    .from('content')
+    .select('*')
+    .eq('slug', idOrSlug)
+    .maybeSingle() as any;
+  
+  if (errorId && errorSlug) {
+    console.error('Error loading content:', errorId, errorSlug);
+    return null;
+  }
+  
+  return bySlug ? parseContent(bySlug) : null;
+}
+
+/**
  * Load a single content item by ID
  */
 export async function loadContentById(id: string): Promise<Content | null> {
@@ -41,19 +72,18 @@ export async function loadContentById(id: string): Promise<Content | null> {
 /**
  * Load a single content item by slug
  */
-export async function loadContentBySlug(slug: string): Promise<Content | null> {
+export async function loadContentBySlug(slug: string): Promise<Content[]> {
   const { data, error } = await supabase
     .from('content')
     .select('*')
-    .eq('slug', slug)
-    .single() as any; // Using type assertion until types are updated
+    .eq('slug', slug) as any; // Using type assertion until types are updated
   
   if (error) {
     console.error('Error loading content by slug:', error);
-    return null;
+    return [];
   }
   
-  return parseContent(data);
+  return (data || []).map(parseContent);
 }
 
 /**
@@ -64,8 +94,7 @@ export async function loadPublishedContent(type?: string): Promise<Content[]> {
     .from('content')
     .select('*')
     .eq('published', true)
-    .lte('published_at', new Date().toISOString())
-    .order('published_at', { ascending: false }) as any; // Using type assertion until types are updated
+    .order('created_at', { ascending: false }) as any; // Using type assertion until types are updated
   
   if (type) {
     query = query.eq('type', type);

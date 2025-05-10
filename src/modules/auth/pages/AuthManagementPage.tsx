@@ -1,81 +1,77 @@
 
-import { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { RefreshCw } from 'lucide-react';
-import { ALL_ROLES, UserRole } from '../utils/roles';
-import { updateUserRole } from '../api/auth-api';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
+import { UserRole } from '../types/types';
 
-interface UserProfile {
+interface UserWithProfile {
   id: string;
+  email: string;
+  role?: UserRole;
   full_name?: string;
-  email?: string;
-  role: UserRole;
+  created_at: string;
 }
 
 export const AuthManagementPage = () => {
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const { isAdmin, isMasterAdmin } = useAuth();
+  const [users, setUsers] = useState<UserWithProfile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  const loadUserData = async () => {
-    try {
-      setLoading(true);
-      
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*');
-      
-      if (error) throw error;
-      
-      // Transform the data
-      const userData = (data || []).map(profile => ({
-        id: profile.id,
-        full_name: profile.full_name || 'Ukjent bruker',
-        email: profile.email || 'Ingen e-post',
-        role: profile.metadata?.role || 'user' as UserRole
-      }));
-      
-      setUsers(userData);
-    } catch (err) {
-      console.error('Error loading user data:', err);
-      setError('Kunne ikke laste brukerdata. Vennligst prøv igjen senere.');
-      
-      toast({
-        title: 'Feil ved lasting av data',
-        description: 'Kunne ikke hente brukerdata. Prøv igjen senere.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  
   useEffect(() => {
-    loadUserData();
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Load users with their profiles
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*, users:id(email, user_metadata, created_at)')
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        // Map to our UserWithProfile format
+        const formattedUsers = data.map(profile => {
+          const user = profile.users as any;
+          const userMetadata = user.user_metadata;
+          
+          return {
+            id: profile.id,
+            email: user.email,
+            role: userMetadata ? (userMetadata.role as UserRole) : 'user',
+            full_name: profile.full_name,
+            created_at: user.created_at
+          };
+        });
+        
+        setUsers(formattedUsers);
+      } catch (err: any) {
+        console.error('Failed to load users:', err);
+        setError('Could not load users. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadUsers();
   }, []);
-
+  
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
-      // Update user role in database
-      await updateUserRole(userId, newRole);
+      const { data, error } = await supabase.auth.admin.updateUserById(
+        userId,
+        { user_metadata: { role: newRole } }
+      );
+      
+      if (error) throw error;
       
       // Update local state
       setUsers(prev => 
@@ -85,95 +81,94 @@ export const AuthManagementPage = () => {
       );
       
       toast({
-        title: 'Rolle oppdatert',
-        description: 'Brukerens rolle er oppdatert.',
+        title: 'Role updated',
+        description: `User role has been updated to ${newRole}.`
       });
-      
-    } catch (err) {
-      console.error('Error updating user role:', err);
-      
+    } catch (err: any) {
+      console.error('Failed to update role:', err);
       toast({
-        title: 'Feil ved oppdatering',
-        description: 'Kunne ikke oppdatere brukerens rolle. Prøv igjen senere.',
-        variant: 'destructive',
+        title: 'Error updating role',
+        description: 'Could not update user role. Please try again later.',
+        variant: 'destructive'
       });
     }
   };
-
-  if (loading) {
+  
+  // If not admin, show unauthorized message
+  if (!isAdmin && !isMasterAdmin) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg">Laster brukerdata...</p>
-        </div>
+      <div className="container mx-auto py-8">
+        <h1 className="text-2xl font-bold mb-4">Unauthorized</h1>
+        <p>You do not have permission to access this page.</p>
       </div>
     );
   }
-
+  
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Brukeradministrasjon</h1>
-        <Button onClick={loadUserData} variant="outline">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Oppdater
-        </Button>
-      </div>
-
+    <div className="container mx-auto py-8">
+      <h1 className="text-2xl font-bold mb-6">User Management</h1>
+      
       {error && (
-        <div className="bg-red-50 border border-red-200 p-4 rounded-md mb-6">
+        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
           <p className="text-red-700">{error}</p>
         </div>
       )}
-
+      
       <Card>
         <CardHeader>
-          <CardTitle>Brukere og roller</CardTitle>
+          <CardTitle>Users & Roles</CardTitle>
         </CardHeader>
         <CardContent>
-          {users.length === 0 ? (
-            <p>Ingen brukere funnet.</p>
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+            </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Navn</TableHead>
-                  <TableHead>E-post</TableHead>
-                  <TableHead>Rolle</TableHead>
-                  <TableHead className="text-right">Handlinger</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.full_name}</TableCell>
+                    <TableCell className="font-medium">{user.full_name || 'N/A'}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Select
-                        defaultValue={user.role}
-                        onValueChange={(value) => handleRoleChange(user.id, value as UserRole)}
-                      >
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Velg rolle" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {ALL_ROLES.map((role) => (
-                            <SelectItem key={role} value={role}>
-                              {role}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
+                        {user.role || 'user'}
+                      </Badge>
                     </TableCell>
+                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleRoleChange(user.id, user.role)}
-                      >
-                        Oppdater
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Select
+                          value={user.role}
+                          onValueChange={(value) => handleRoleChange(user.id, value as UserRole)}
+                          disabled={!isMasterAdmin && user.role === 'master-admin'} // Only master-admin can change another master-admin
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue placeholder="Select role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="company">Company</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            {isMasterAdmin && (
+                              <SelectItem value="master-admin">Master Admin</SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                        
+                        <Button variant="outline" size="sm">
+                          Details
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

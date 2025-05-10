@@ -4,9 +4,25 @@ import { Content, ContentFormValues } from '../types/content-types';
 import { parseContent } from '../utils/parseContent';
 
 /**
+ * Save content - creates new or updates existing
+ */
+export async function saveContent(contentData: ContentFormValues): Promise<Content | null> {
+  try {
+    if (contentData.id) {
+      return updateContent(contentData.id, contentData);
+    } else {
+      return createContent(contentData);
+    }
+  } catch (error) {
+    console.error('Error saving content:', error);
+    throw error;
+  }
+}
+
+/**
  * Create new content
  */
-export async function createContent(contentData: ContentFormValues): Promise<Content | null> {
+async function createContent(contentData: ContentFormValues): Promise<Content | null> {
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData?.user?.id;
   
@@ -34,7 +50,7 @@ export async function createContent(contentData: ContentFormValues): Promise<Con
 /**
  * Update existing content
  */
-export async function updateContent(id: string, contentData: Partial<ContentFormValues>): Promise<Content | null> {
+async function updateContent(id: string, contentData: Partial<ContentFormValues>): Promise<Content | null> {
   const { data, error } = await supabase
     .from('content')
     .update({
@@ -49,5 +65,5 @@ export async function updateContent(id: string, contentData: Partial<ContentForm
     return null;
   }
   
-  return parseContent(data[0]);
+  return data && data.length > 0 ? parseContent(data[0]) : null;
 }

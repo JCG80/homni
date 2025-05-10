@@ -9,14 +9,16 @@ import { toast } from '@/hooks/use-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { loadContent } from '../api/loadContent';
 import { saveContent } from '../api/saveContent';
+import { ContentFormValues } from '../types/content-types';
 
 export interface ContentEditorProps {
   contentId?: string;
   contentType?: string;
   onSave?: () => void;
+  isLoading?: boolean;
 }
 
-export const ContentEditor = ({ contentId, contentType = 'article', onSave }: ContentEditorProps) => {
+export const ContentEditor = ({ contentId, contentType = 'article', onSave, isLoading: externalLoading }: ContentEditorProps) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const actualId = contentId || id;
@@ -31,27 +33,38 @@ export const ContentEditor = ({ contentId, contentType = 'article', onSave }: Co
   // Load existing content if we have an ID
   useEffect(() => {
     if (actualId) {
-      setInitialLoading(true);
-      loadContent(actualId)
-        .then(content => {
+      let retryCount = 0;
+      const maxRetries = 3;
+      
+      const fetchContent = async () => {
+        try {
+          setInitialLoading(true);
+          const content = await loadContent(actualId);
           if (content) {
             setTitle(content.title || '');
             setBody(content.body || '');
             setSlug(content.slug || '');
             setPublished(content.published || false);
           }
-        })
-        .catch(error => {
+        } catch (error) {
           console.error('Failed to load content:', error);
-          toast({
-            title: 'Feil ved lasting',
-            description: 'Kunne ikke laste innholdet. Vennligst prøv igjen senere.',
-            variant: 'destructive',
-          });
-        })
-        .finally(() => {
+          if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`Retrying content load (${retryCount}/${maxRetries})...`);
+            setTimeout(fetchContent, 1000 * retryCount);
+          } else {
+            toast({
+              title: 'Feil ved lasting',
+              description: 'Kunne ikke laste innholdet. Vennligst prøv igjen senere.',
+              variant: 'destructive',
+            });
+          }
+        } finally {
           setInitialLoading(false);
-        });
+        }
+      };
+      
+      fetchContent();
     }
   }, [actualId]);
 
@@ -65,41 +78,55 @@ export const ContentEditor = ({ contentId, contentType = 'article', onSave }: Co
       return;
     }
 
-    try {
-      setLoading(true);
-      
-      await saveContent({
-        id: actualId,
-        title,
-        body,
-        slug,
-        type: contentType,
-        published,
-      });
+    let retryCount = 0;
+    const maxRetries = 3;
+    const attemptSave = async () => {
+      try {
+        setLoading(true);
+        
+        const contentData: ContentFormValues = {
+          id: actualId,
+          title,
+          body,
+          slug,
+          type: contentType,
+          published,
+        };
+        
+        await saveContent(contentData);
 
-      toast({
-        title: 'Innhold lagret',
-        description: 'Innholdet ble lagret.',
-      });
+        toast({
+          title: 'Innhold lagret',
+          description: 'Innholdet ble lagret.',
+        });
 
-      if (onSave) {
-        onSave();
-      } else {
-        navigate('/admin/content');
+        if (onSave) {
+          onSave();
+        } else {
+          navigate('/admin/content');
+        }
+      } catch (error) {
+        console.error('Error saving content:', error);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Retrying save (${retryCount}/${maxRetries})...`);
+          setTimeout(attemptSave, 1000 * retryCount);
+        } else {
+          toast({
+            title: 'Feil ved lagring',
+            description: 'Kunne ikke lagre innholdet. Vennligst prøv igjen senere.',
+            variant: 'destructive',
+          });
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error saving content:', error);
-      toast({
-        title: 'Feil ved lagring',
-        description: 'Kunne ikke lagre innholdet. Vennligst prøv igjen senere.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
+    };
+    
+    await attemptSave();
   };
 
-  if (initialLoading) {
+  if (initialLoading || externalLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
@@ -138,8 +165,8 @@ export const ContentEditor = ({ contentId, contentType = 'article', onSave }: Co
           id="body"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Skriv innholdet her..."
           className="min-h-[200px]"
+          placeholder="Skriv innholdet her..."
         />
       </div>
 

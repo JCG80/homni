@@ -5,28 +5,35 @@ import { Toaster } from './components/ui/toaster'
 import { AuthProvider } from './modules/auth/hooks/useAuth'
 import { QuickLogin } from './modules/auth/components/QuickLogin'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
-// Create a client
+// Create a client with retry logic
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
+      retry: 3, // Retry failed queries up to 3 times
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    },
+    mutations: {
+      retry: 2, // Retry failed mutations up to 2 times
     },
   },
 })
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="App">
-          <AppRoutes />
-          <Toaster />
-          <QuickLogin />
-        </div>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <div className="App">
+            <AppRoutes />
+            <Toaster />
+            <QuickLogin />
+          </div>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

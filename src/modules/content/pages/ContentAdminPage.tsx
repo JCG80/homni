@@ -1,134 +1,204 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { loadAllContent } from '../api/loadContent';
+import { deleteContent } from '../api/deleteContent';
+import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Edit, FileText, Newspaper, Info } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Content } from '../types/content-types';
+import { MoreHorizontal, Pencil, Trash } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-import { ContentEditor } from '../components/ContentEditor';
-import { loadContent } from '../api/loadContent';
+export const ContentAdminPage: React.FC = () => {
+  const [content, setContent] = useState<Content[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-type ContentItem = {
-  id: string;
-  title: string;
-  slug: string;
-  type: string;
-  published: boolean;
-  created_at: string;
-};
+  const fetchContent = async () => {
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    const attemptFetch = async (): Promise<Content[]> => {
+      try {
+        const data = await loadAllContent();
+        return data;
+      } catch (error) {
+        console.error('Error loading content:', error);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Retrying content load (${retryCount}/${maxRetries})...`);
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+          return attemptFetch();
+        }
+        throw error;
+      }
+    };
 
-export const ContentAdminPage = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>('news');
-  const [selectedContentId, setSelectedContentId] = useState<string | null>(null);
-  
-  const { data: contentItems, isLoading } = useQuery({
-    queryKey: ['content'],
-    queryFn: () => loadContent(),
-  });
-
-  const filteredContent = contentItems?.filter(
-    (item) => item.type === activeTab
-  );
-
-  const contentTypes = [
-    { id: 'news', label: 'Nyheter', icon: <Newspaper className="h-4 w-4" /> },
-    { id: 'info', label: 'Infosider', icon: <Info className="h-4 w-4" /> },
-    { id: 'document', label: 'Dokumenter', icon: <FileText className="h-4 w-4" /> },
-  ];
-
-  const handleContentSelect = (id: string) => {
-    setSelectedContentId(id);
+    try {
+      setLoading(true);
+      setError(null);
+      const contentData = await attemptFetch();
+      setContent(contentData);
+    } catch (err) {
+      console.error('Failed to load content:', err);
+      setError('Kunne ikke laste innhold. Vennligst prøv igjen senere.');
+      toast({
+        title: 'Feil ved lasting',
+        description: 'Kunne ikke laste innhold. Vennligst prøv igjen senere.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleContentSave = () => {
-    setSelectedContentId(null);
-    // Refresh data after save if needed
-  };
+  useEffect(() => {
+    fetchContent();
+  }, []);
 
-  const handleCreateNew = () => {
-    navigate(`/admin/content/new?type=${activeTab}`);
-  };
+  const handleDelete = async (id: string) => {
+    if (!confirm('Er du sikker på at du vil slette dette innholdet?')) return;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg">Laster innhold...</p>
-        </div>
-      </div>
-    );
-  }
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    const attemptDelete = async (): Promise<boolean> => {
+      try {
+        const success = await deleteContent(id);
+        return success;
+      } catch (error) {
+        console.error('Error deleting content:', error);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Retrying delete (${retryCount}/${maxRetries})...`);
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+          return attemptDelete();
+        }
+        return false;
+      }
+    };
+    
+    try {
+      const success = await attemptDelete();
+      
+      if (success) {
+        setContent(content.filter((item) => item.id !== id));
+        toast({
+          title: 'Innhold slettet',
+          description: 'Innholdet ble slettet.',
+        });
+      } else {
+        toast({
+          title: 'Feil ved sletting',
+          description: 'Kunne ikke slette innholdet. Vennligst prøv igjen senere.',
+          variant: 'destructive',
+        });
+      }
+    } catch (err) {
+      console.error('Failed to delete content:', err);
+      toast({
+        title: 'Feil ved sletting',
+        description: 'Kunne ikke slette innholdet. Vennligst prøv igjen senere.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Innholdsadministrasjon</h1>
-        <Button onClick={handleCreateNew}>Opprett nytt innhold</Button>
+        <Link to="/admin/content/new">
+          <Button>Nytt innhold</Button>
+        </Link>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-6">
-          {contentTypes.map((type) => (
-            <TabsTrigger key={type.id} value={type.id} className="flex items-center">
-              <span className="mr-2">{type.icon}</span>
-              {type.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {contentTypes.map((type) => (
-          <TabsContent key={type.id} value={type.id} className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">{type.label}</h2>
-            
-            {filteredContent?.length === 0 ? (
-              <p>Ingen {type.label.toLowerCase()} funnet.</p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredContent?.map((item: ContentItem) => (
-                  <Card key={item.id} className="overflow-hidden">
-                    <CardHeader className="pb-3">
-                      <CardTitle>{item.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {new Date(item.created_at).toLocaleDateString('nb-NO')}
-                      </p>
-                      <div className="flex justify-between items-center mt-4">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          item.published ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
-                        }`}>
-                          {item.published ? 'Publisert' : 'Utkast'}
-                        </span>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleContentSelect(item.id)}
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Rediger
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
-
-      {selectedContentId && (
-        <div className="mt-8">
-          <Separator className="my-4" />
-          <h2 className="text-xl font-semibold mb-4">Rediger innhold</h2>
-          <ContentEditor contentId={selectedContentId} onSave={handleContentSave} />
+      {error && (
+        <div className="bg-red-50 border border-red-200 p-4 rounded-md mb-6">
+          <p className="text-red-700">{error}</p>
         </div>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Innholdsoversikt</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tittel</TableHead>
+                  <TableHead>Slug</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Dato</TableHead>
+                  <TableHead className="text-right">Handlinger</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {content.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8">
+                      Ingen innhold funnet. Opprett nytt innhold for å komme i gang.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  content.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{item.title}</TableCell>
+                      <TableCell>{item.slug}</TableCell>
+                      <TableCell>{item.type}</TableCell>
+                      <TableCell>
+                        <Badge variant={item.published ? 'default' : 'outline'}>
+                          {item.published ? 'Publisert' : 'Utkast'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(item.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Åpne meny</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <Link to={`/admin/content/edit/${item.id}`}>
+                              <DropdownMenuItem>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Rediger
+                              </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuItem onClick={() => handleDelete(item.id)}>
+                              <Trash className="mr-2 h-4 w-4" />
+                              Slett
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
