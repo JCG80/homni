@@ -4,16 +4,28 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/hooks/use-toast';
 import { updateProfile } from '../api';
 import { useAuth } from '../hooks/useAuth';
-import { Profile } from '../types/types';
 
 export const ProfileInfo: React.FC = () => {
   const { user, profile, refreshProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [fullName, setFullName] = useState(profile?.full_name || '');
+  const [formData, setFormData] = useState({
+    fullName: profile?.full_name || '',
+    phone: profile?.phone || '',
+    address: profile?.address || '',
+    region: profile?.region || '',
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
   
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +36,10 @@ export const ProfileInfo: React.FC = () => {
     try {
       await updateProfile({
         id: user.id,
-        full_name: fullName,
+        full_name: formData.fullName,
+        phone: formData.phone,
+        address: formData.address,
+        region: formData.region,
       });
       
       await refreshProfile();
@@ -45,17 +60,35 @@ export const ProfileInfo: React.FC = () => {
     }
   };
   
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    return name.split(' ')
+      .map(part => part.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join('');
+  };
+  
   if (!user || !profile) {
     return null;
   }
   
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Din brukerprofil</CardTitle>
-        <CardDescription>
-          Se og rediger din profilinformasjon
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center gap-4">
+        <Avatar className="h-16 w-16">
+          <AvatarImage src={profile.profile_picture_url} alt={profile.full_name} />
+          <AvatarFallback>{getInitials(profile.full_name)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <CardTitle>{profile.full_name || 'Anonym bruker'}</CardTitle>
+          <CardDescription>
+            {profile.role === 'member' ? 'Bruker' : 
+              profile.role === 'company' ? 'Bedrift' : 
+              profile.role === 'admin' ? 'Administrator' : 
+              profile.role === 'master_admin' ? 'Hoved-administrator' : 
+              'Gjest'}
+          </CardDescription>
+        </div>
       </CardHeader>
       
       <CardContent>
@@ -65,10 +98,9 @@ export const ProfileInfo: React.FC = () => {
               <Label htmlFor="fullName">Fullt navn</Label>
               <Input 
                 id="fullName" 
-                value={fullName} 
-                onChange={(e) => setFullName(e.target.value)}
+                value={formData.fullName} 
+                onChange={handleChange}
                 placeholder="Ditt fulle navn"
-                required
               />
             </div>
             
@@ -81,6 +113,36 @@ export const ProfileInfo: React.FC = () => {
                 className="bg-gray-100"
               />
               <p className="text-xs text-gray-500 mt-1">E-postadresse kan ikke endres</p>
+            </div>
+            
+            <div>
+              <Label htmlFor="phone">Telefon</Label>
+              <Input 
+                id="phone" 
+                value={formData.phone} 
+                onChange={handleChange}
+                placeholder="Ditt telefonnummer"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="address">Adresse</Label>
+              <Input 
+                id="address" 
+                value={formData.address} 
+                onChange={handleChange}
+                placeholder="Din adresse"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="region">Region</Label>
+              <Input 
+                id="region" 
+                value={formData.region} 
+                onChange={handleChange}
+                placeholder="Din region"
+              />
             </div>
             
             <div>
@@ -106,6 +168,21 @@ export const ProfileInfo: React.FC = () => {
             </div>
             
             <div>
+              <p className="text-sm font-medium">Telefon</p>
+              <p>{profile.phone || 'Ikke angitt'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium">Adresse</p>
+              <p>{profile.address || 'Ikke angitt'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium">Region</p>
+              <p>{profile.region || 'Ikke angitt'}</p>
+            </div>
+            
+            <div>
               <p className="text-sm font-medium">Rolle</p>
               <p>{profile.role}</p>
             </div>
@@ -114,6 +191,15 @@ export const ProfileInfo: React.FC = () => {
               <p className="text-sm font-medium">Bruker-ID</p>
               <p className="text-xs text-gray-500">{user.id}</p>
             </div>
+            
+            {profile.preferences && Object.keys(profile.preferences).length > 0 && (
+              <div>
+                <p className="text-sm font-medium">Preferanser</p>
+                <div className="text-xs text-gray-500 mt-1 p-2 bg-gray-50 rounded border">
+                  <pre className="whitespace-pre-wrap">{JSON.stringify(profile.preferences, null, 2)}</pre>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
@@ -125,7 +211,12 @@ export const ProfileInfo: React.FC = () => {
               variant="outline" 
               onClick={() => {
                 setIsEditing(false);
-                setFullName(profile.full_name || '');
+                setFormData({
+                  fullName: profile.full_name || '',
+                  phone: profile.phone || '',
+                  address: profile.address || '',
+                  region: profile.region || '',
+                });
               }}
               disabled={isSubmitting}
             >

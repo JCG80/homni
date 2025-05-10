@@ -27,6 +27,10 @@ export function parseUserProfile(item: any): Profile {
     metadata: item.metadata || {},
     email: item.email,
     phone: item.phone,
+    address: item.address,
+    region: item.region,
+    profile_picture_url: item.profile_picture_url,
+    preferences: item.preferences || {},
     updated_at: item.updated_at,
   };
 }

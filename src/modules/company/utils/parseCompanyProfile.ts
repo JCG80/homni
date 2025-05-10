@@ -14,5 +14,11 @@ export function parseCompanyProfile(item: any): CompanyProfile {
     created_at: item.created_at || new Date().toISOString(),
     updated_at: item.updated_at || null,
     tags: Array.isArray(item.tags) ? item.tags : [],
+    contact_name: item.contact_name || '',
+    email: item.email || '',
+    phone: item.phone || '',
+    industry: item.industry || '',
+    subscription_plan: item.subscription_plan || 'free',
+    modules_access: Array.isArray(item.modules_access) ? item.modules_access : [],
   };
 }

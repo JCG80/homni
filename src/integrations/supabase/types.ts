@@ -11,28 +11,46 @@ export type Database = {
     Tables: {
       company_profiles: {
         Row: {
+          contact_name: string | null
           created_at: string | null
+          email: string | null
           id: string
+          industry: string | null
+          modules_access: string[] | null
           name: string
+          phone: string | null
           status: string | null
+          subscription_plan: string | null
           tags: string[] | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          contact_name?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
+          industry?: string | null
+          modules_access?: string[] | null
           name: string
+          phone?: string | null
           status?: string | null
+          subscription_plan?: string | null
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          contact_name?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
+          industry?: string | null
+          modules_access?: string[] | null
           name?: string
+          phone?: string | null
           status?: string | null
+          subscription_plan?: string | null
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string | null
@@ -341,6 +359,7 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          address: string | null
           created_at: string | null
           display_name: string | null
           email: string | null
@@ -348,10 +367,14 @@ export type Database = {
           id: string
           metadata: Json
           phone: string | null
+          preferences: Json | null
+          profile_picture_url: string | null
+          region: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          address?: string | null
           created_at?: string | null
           display_name?: string | null
           email?: string | null
@@ -359,10 +382,14 @@ export type Database = {
           id: string
           metadata?: Json
           phone?: string | null
+          preferences?: Json | null
+          profile_picture_url?: string | null
+          region?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          address?: string | null
           created_at?: string | null
           display_name?: string | null
           email?: string | null
@@ -370,6 +397,9 @@ export type Database = {
           id?: string
           metadata?: Json
           phone?: string | null
+          preferences?: Json | null
+          profile_picture_url?: string | null
+          region?: string | null
           updated_at?: string
           user_id?: string | null
         }

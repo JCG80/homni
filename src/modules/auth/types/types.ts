@@ -9,9 +9,13 @@ export interface Profile {
   role: UserRole;
   company_id?: string;
   created_at: string;
-  metadata?: Record<string, any>; // Add metadata property
+  metadata?: Record<string, any>;
   email?: string;
   phone?: string;
+  address?: string;
+  region?: string;
+  profile_picture_url?: string;
+  preferences?: Record<string, any>;
   updated_at?: string;
 }
 
