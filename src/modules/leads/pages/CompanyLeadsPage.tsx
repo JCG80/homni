@@ -4,6 +4,8 @@ import { LeadsTable } from '../components/LeadsTable';
 import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { CompanyLeadSettings } from '../components/CompanyLeadSettings';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const CompanyLeadsPage = () => {
   const { isLoading, profile } = useAuth();
@@ -42,10 +44,20 @@ export const CompanyLeadsPage = () => {
         </Alert>
       )}
 
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Dine leads</h2>
-        <LeadsTable />
-      </div>
+      <Tabs defaultValue="leads" className="w-full">
+        <TabsList>
+          <TabsTrigger value="leads">Dine leads</TabsTrigger>
+          <TabsTrigger value="settings">Innstillinger</TabsTrigger>
+        </TabsList>
+        <TabsContent value="leads">
+          <h2 className="text-xl font-semibold mb-4">Dine leads</h2>
+          <LeadsTable />
+        </TabsContent>
+        <TabsContent value="settings">
+          <h2 className="text-xl font-semibold mb-4">Innstillinger for leads</h2>
+          <CompanyLeadSettings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

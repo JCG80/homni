@@ -7,6 +7,7 @@ import { AdminLeadsPage } from './modules/leads/pages/AdminLeadsPage';
 import { LeadTestPage } from './modules/leads/pages/LeadTestPage';
 import { CompanyLeadsPage } from './modules/leads/pages/CompanyLeadsPage';
 import { UserLeadsPage } from './modules/leads/pages/UserLeadsPage';
+import { LeadReportsPage } from './modules/leads/pages/LeadReportsPage';
 import { UnauthorizedPage } from './modules/auth/pages/UnauthorizedPage';
 import { LoginPage } from './modules/auth/pages/LoginPage';
 import { RegisterPage } from './modules/auth/pages/RegisterPage';
@@ -40,6 +41,12 @@ const AppRoutes = () => {
       element: <UserLeadsPage />,
       requiresAuth: true,
       allowAnyRole: true // Allow any authenticated user
+    },
+    {
+      path: '/leads/reports',
+      element: <LeadReportsPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin'] // Only allow admin roles
     },
     {
       path: '/unauthorized',
