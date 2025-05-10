@@ -11,9 +11,10 @@ import { toast } from '@/hooks/use-toast';
 interface LoginFormProps {
   onSuccess?: () => void;
   redirectTo?: string;
+  userType?: 'private' | 'business';
 }
 
-export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }: LoginFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('admin@test.local');
@@ -120,7 +121,11 @@ export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
       
       <div className="text-center text-sm">
         <span className="text-muted-foreground">Har du ikke konto?</span>{' '}
-        <Button variant="link" className="p-0" onClick={() => navigate('/register')}>
+        <Button 
+          variant="link" 
+          className="p-0" 
+          onClick={() => navigate(userType === 'business' ? '/register?type=business' : '/register')}
+        >
           Registrer deg
         </Button>
       </div>
