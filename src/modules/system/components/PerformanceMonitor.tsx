@@ -21,29 +21,32 @@ export const PerformanceMonitor = () => {
       const startTime = Date.now();
       
       // Make a simple request to measure response time
-      supabase.from('leads').select('count').then(() => {
-        const endTime = Date.now();
-        const responseTime = endTime - startTime;
-        
-        setPerformanceData(prev => {
-          // Keep last 20 data points for the chart
-          const newData = [
-            ...prev, 
-            { 
-              timestamp: new Date().toISOString().substring(11, 19), // HH:MM:SS
-              responseTime 
-            }
-          ].slice(-20);
+      // Fixed: Use Promise syntax correctly
+      supabase.from('leads').select('count')
+        .then(() => {
+          const endTime = Date.now();
+          const responseTime = endTime - startTime;
           
-          return newData;
+          setPerformanceData(prev => {
+            // Keep last 20 data points for the chart
+            const newData = [
+              ...prev, 
+              { 
+                timestamp: new Date().toISOString().substring(11, 19), // HH:MM:SS
+                responseTime 
+              }
+            ].slice(-20);
+            
+            return newData;
+          });
+          
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error('Error measuring performance:', err);
+          setError('Kunne ikke måle ytelse');
+          setIsLoading(false);
         });
-        
-        setIsLoading(false);
-      }).catch(err => {
-        console.error('Error measuring performance:', err);
-        setError('Kunne ikke måle ytelse');
-        setIsLoading(false);
-      });
     };
     
     // Collect initial data

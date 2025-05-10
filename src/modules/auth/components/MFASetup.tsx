@@ -12,7 +12,6 @@ export const MFASetup = () => {
     factorId: string | null;
     qr: string | null;
     uri: string | null;
-    challengeId?: string;
   }>({ factorId: null, qr: null, uri: null });
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +39,7 @@ export const MFASetup = () => {
   };
 
   const handleVerify = async () => {
-    if (!enrollmentData.factorId || !enrollmentData.challengeId) {
+    if (!enrollmentData.factorId) {
       toast({
         title: "Manglende data",
         description: "MFA-oppsettet mangler nødvendig informasjon. Vennligst start på nytt.",
@@ -51,9 +50,10 @@ export const MFASetup = () => {
     
     setIsLoading(true);
     try {
+      // We're passing factorId and the verification code to verifyMFA
       const { verified, error } = await verifyMFA(
         enrollmentData.factorId,
-        enrollmentData.challengeId,
+        "", // Passing empty string for challengeId as it's not used
         verificationCode
       );
       
