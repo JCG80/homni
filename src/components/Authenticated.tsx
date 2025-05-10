@@ -1,6 +1,6 @@
 
 import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 interface AuthenticatedProps {
@@ -9,6 +9,7 @@ interface AuthenticatedProps {
 
 export const Authenticated = ({ children }: AuthenticatedProps) => {
   const { user, profile, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -22,7 +23,8 @@ export const Authenticated = ({ children }: AuthenticatedProps) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    // Pass the current location so we can redirect back after login
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
   
   if (!profile) {

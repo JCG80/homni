@@ -1,6 +1,6 @@
 
 import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types/types';
 
@@ -18,6 +18,7 @@ export const ProtectedRoute = ({
   allowAnyAuthenticated = false
 }: ProtectedRouteProps) => {
   const { isAuthenticated, role, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -36,7 +37,8 @@ export const ProtectedRoute = ({
   // First check if user is authenticated at all
   if (!isAuthenticated) {
     console.log('Not authenticated, redirecting to', redirectTo);
-    return <Navigate to={redirectTo} replace />;
+    // Pass the current location so we can redirect back after login
+    return <Navigate to={redirectTo} replace state={{ from: location }} />;
   }
   
   // If allowAnyAuthenticated is true, grant access to any authenticated user

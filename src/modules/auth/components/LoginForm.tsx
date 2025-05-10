@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -15,10 +15,14 @@ interface LoginFormProps {
 
 export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('admin@test.local');
   const [password, setPassword] = useState('password');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get redirectUrl from location state or use provided redirectTo
+  const from = location.state?.from?.pathname || redirectTo;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +59,8 @@ export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
         if (onSuccess) {
           onSuccess();
         } else {
-          navigate(redirectTo);
+          console.log('Redirecting after successful login to:', from);
+          navigate(from, { replace: true });
         }
       } else {
         throw new Error('Kunne ikke logge inn - brukeren ble ikke funnet');
