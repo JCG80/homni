@@ -1,75 +1,62 @@
 
 import { useState, useEffect } from 'react';
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Users, Mail, Key, User, Eye } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { formatDistance } from 'date-fns';
-import { nb } from 'date-fns/locale';
+import { Mail, RefreshCw, UserCheck } from 'lucide-react';
 
-interface Member {
+interface MemberProfile {
   id: string;
-  full_name: string;
-  email: string;
-  role: string;
-  last_activity: string;
-  lead_count: number;
+  full_name?: string;
+  email?: string;
+  last_login?: string;
+  lead_count?: number;
+  user_id?: string;
 }
 
 export const MemberListPage = () => {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const { toast } = useToast();
-  const { loading: authLoading } = useRoleGuard({
-    allowedRoles: ['admin', 'master-admin'],
-    redirectTo: '/unauthorized'
-  });
+  const [members, setMembers] = useState<MemberProfile[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchMembers = async () => {
+  const loadMemberData = async () => {
     try {
       setLoading(true);
       
-      // Fetch users with role 'user' (members)
       const { data, error } = await supabase
         .from('user_profiles')
-        .select(`
-          id,
-          full_name,
-          email,
-          metadata->role as role,
-          updated_at as last_activity,
-          (
-            SELECT count(*)
-            FROM leads
-            WHERE submitted_by = user_profiles.id
-          ) as lead_count
-        `)
-        .eq('metadata->role', 'user');
+        .select('*');
       
       if (error) throw error;
       
-      setMembers(data || []);
-    } catch (error) {
-      console.error('Failed to fetch members:', error);
+      // Transform the data
+      const memberData: MemberProfile[] = (data || []).map(profile => ({
+        id: profile.id,
+        full_name: profile.full_name || 'Ukjent bruker',
+        email: profile.email || 'Ingen e-post',
+        last_login: profile.updated_at || 'Ukjent',
+        lead_count: 0 // This would normally come from a subquery
+      }));
+      
+      setMembers(memberData);
+    } catch (err) {
+      console.error('Error loading member data:', err);
+      setError('Kunne ikke laste medlemsdata. Vennligst prøv igjen senere.');
+      
       toast({
-        title: "Feil ved lasting av medlemmer",
-        description: "Kunne ikke hente medlemslisten. Vennligst prøv igjen senere.",
-        variant: "destructive"
+        title: 'Feil ved lasting av data',
+        description: 'Kunne ikke hente medlemsdata. Prøv igjen senere.',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -77,158 +64,116 @@ export const MemberListPage = () => {
   };
 
   useEffect(() => {
-    if (!authLoading) {
-      fetchMembers();
-    }
-  }, [authLoading]);
+    loadMemberData();
+  }, []);
 
-  const handleSendPasswordReset = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Passordgjenopprettingslenke sendt",
-        description: `En e-post med instruksjoner er sendt til ${email}`,
-      });
-    } catch (error) {
-      console.error('Failed to send password reset:', error);
-      toast({
-        title: "Feil ved sending av passordgjenopprettingslenke",
-        description: "Kunne ikke sende e-post. Vennligst prøv igjen senere.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleSendEmail = async (email: string) => {
-    // In a real app, you'd integrate with an email service
+  const handleImpersonateMember = (memberId: string) => {
     toast({
-      title: "E-postfunksjonalitet",
-      description: "E-postsending er ikke implementert enda.",
-      variant: "secondary"
+      title: 'Funksjon ikke tilgjengelig',
+      description: 'Funksjon for å logge inn som medlem er ikke implementert ennå.',
     });
   };
 
-  const handleImpersonate = async (userId: string) => {
-    // In a real app, you'd implement impersonation logic
+  const handleSendEmail = (memberId: string) => {
     toast({
-      title: "Brukerimitasjon",
-      description: "Logg inn som-funksjonalitet er ikke implementert enda.",
-      variant: "secondary"
+      title: 'Funksjon ikke tilgjengelig',
+      description: 'E-postfunksjon er ikke implementert ennå.',
     });
   };
-  
-  const filteredMembers = members.filter(member => 
-    member.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const handleResetPassword = (memberId: string) => {
+    toast({
+      title: 'Funksjon ikke tilgjengelig',
+      description: 'Funksjon for å tilbakestille passord er ikke implementert ennå.',
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg">Laster medlemmer...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Medlemsliste</h1>
+        <Button onClick={loadMemberData} variant="outline">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Oppdater
+        </Button>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 p-4 rounded-md mb-6">
+          <p className="text-red-700">{error}</p>
+        </div>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-6 w-6" />
-            <span>Medlemsliste</span>
-          </CardTitle>
+          <CardTitle>Medlemmer</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between items-center mb-6">
-            <div className="relative w-72">
-              <Input
-                placeholder="Søk etter navn eller e-post..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-              <Eye className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-            </div>
-            <Button onClick={() => fetchMembers()}>Oppdater liste</Button>
-          </div>
-
-          {loading ? (
-            <div className="space-y-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex justify-between items-center">
-                  <Skeleton className="h-12 w-full" />
-                </div>
-              ))}
-            </div>
+          {members.length === 0 ? (
+            <p>Ingen medlemmer funnet.</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Navn</TableHead>
                   <TableHead>E-post</TableHead>
-                  <TableHead>Antall forespørsler</TableHead>
                   <TableHead>Siste aktivitet</TableHead>
+                  <TableHead>Forespørsler</TableHead>
                   <TableHead className="text-right">Handlinger</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredMembers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      {searchTerm ? 'Ingen medlemmer samsvarer med søket' : 'Ingen medlemmer funnet'}
+                {members.map((member) => (
+                  <TableRow key={member.id}>
+                    <TableCell className="font-medium">{member.full_name}</TableCell>
+                    <TableCell>{member.email}</TableCell>
+                    <TableCell>
+                      {typeof member.last_login === 'string' 
+                        ? new Date(member.last_login).toLocaleDateString('nb-NO') 
+                        : 'Ukjent'}
+                    </TableCell>
+                    <TableCell>{member.lead_count || 0}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleImpersonateMember(member.id)}
+                        >
+                          <UserCheck className="h-4 w-4 mr-1" />
+                          Logg inn som
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleSendEmail(member.id)}
+                        >
+                          <Mail className="h-4 w-4 mr-1" />
+                          E-post
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleResetPassword(member.id)}
+                        >
+                          <RefreshCw className="h-4 w-4 mr-1" />
+                          Reset passord
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filteredMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-gray-500" />
-                          <span>{member.full_name || 'Ukjent navn'}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{member.email}</TableCell>
-                      <TableCell>
-                        <Badge variant={member.lead_count > 0 ? "default" : "secondary"}>
-                          {member.lead_count}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {member.last_activity ? (
-                          formatDistance(
-                            new Date(member.last_activity),
-                            new Date(),
-                            { addSuffix: true, locale: nb }
-                          )
-                        ) : (
-                          'Ukjent'
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Handlinger</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleImpersonate(member.id)}>
-                              <User className="mr-2 h-4 w-4" />
-                              <span>Logg inn som</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleSendPasswordReset(member.email)}>
-                              <Key className="mr-2 h-4 w-4" />
-                              <span>Tilbakestill passord</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleSendEmail(member.email)}>
-                              <Mail className="mr-2 h-4 w-4" />
-                              <span>Send e-post</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                ))}
               </TableBody>
             </Table>
           )}
@@ -237,5 +182,3 @@ export const MemberListPage = () => {
     </div>
   );
 };
-
-export default MemberListPage;

@@ -11,6 +11,7 @@ import { LeadReportsPage } from './modules/leads/pages/LeadReportsPage';
 import { UnauthorizedPage } from './modules/auth/pages/UnauthorizedPage';
 import { LoginPage } from './modules/auth/pages/LoginPage';
 import { RegisterPage } from './modules/auth/pages/RegisterPage';
+import { AuthManagementPage } from './modules/auth/pages/AuthManagementPage';
 import { ContentDashboard } from './modules/content/pages/ContentDashboard';
 import { EditContentPage } from './modules/content/pages/EditContentPage';
 import { ContentAdminPage } from './modules/content/pages/ContentAdminPage';
@@ -116,6 +117,13 @@ const AppRoutes = () => {
     {
       path: '/admin/users/companies',
       element: <CompanyListPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin'] as UserRole[]
+    },
+    // Auth management route
+    {
+      path: '/admin/users/auth',
+      element: <AuthManagementPage />,
       requiresAuth: true,
       roles: ['admin', 'master-admin'] as UserRole[]
     }
