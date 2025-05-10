@@ -2,8 +2,7 @@
 import './App.css'
 import AppRoutes from './Routes'
 import { Toaster } from './components/ui/toaster'
-import { AuthProvider } from './modules/auth/hooks/useAuth'
-import { QuickLogin } from './modules/auth/components/QuickLogin'
+import { AuthWrapper } from './modules/auth/components/AuthWrapper'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ErrorBoundary } from './components/ErrorBoundary'
 
@@ -25,13 +24,12 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+        <AuthWrapper>
           <div className="App">
             <AppRoutes />
             <Toaster />
-            <QuickLogin />
           </div>
-        </AuthProvider>
+        </AuthWrapper>
       </QueryClientProvider>
     </ErrorBoundary>
   );
