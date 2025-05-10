@@ -1,4 +1,3 @@
-
 # Development Notes
 
 ## Lead Distribution System
@@ -53,6 +52,12 @@
 - [x] Improved processLeads.ts to handle status validation
 - [x] Documented proper status validation pattern in DEV_NOTES.md
 
+#### Phase 7: Testing Setup
+- [x] Configured Vitest for unit testing
+- [x] Set up testing for address lookup module
+- [x] Added explicit imports for test functions in test files
+- [x] Created vitest.config.ts with proper configuration
+
 ### Testing Notes
 - Tested distribution strategy selection with both "roundRobin" and "category_match"
 - Verified that the global pause feature correctly prevents new leads from being distributed
@@ -62,6 +67,8 @@
 - Validated that LeadStatus values are properly checked and fallback to 'new' when invalid
 
 ### Pending Tasks
+- [ ] Add more test coverage for lead distribution functions
+- [ ] Create tests for lead status transitions
 - [ ] Implement the budget utilization feature
 - [ ] Add more detailed filtering options for lead distribution
 - [ ] Create better visualization for company performance
@@ -75,6 +82,7 @@
 1. Complete the budget tracking system
 2. Implement lead quality scoring
 3. Add more detailed reporting for companies
+4. Expand test coverage for critical modules
 
 ### Long-term
 1. Implement AI-based lead matching
@@ -116,4 +124,26 @@ function processLeadStatus(status: unknown) {
     return 'Invalid status';
   }
 }
+```
+
+## Testing Examples
+
+### Running Tests
+To run tests, you'll need to use Vitest directly:
+
+```bash
+npx vitest run
+# Or for a specific test file
+npx vitest run src/modules/geo/__tests__/addressLookup.test.ts
+```
+
+### Test Structure
+```typescript
+import { describe, test, expect } from 'vitest';
+
+describe('Module name', () => {
+  test('should do something', () => {
+    expect(1 + 1).toBe(2);
+  });
+});
 ```

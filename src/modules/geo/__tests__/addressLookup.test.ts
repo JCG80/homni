@@ -1,8 +1,9 @@
 
+import { describe, test, expect } from 'vitest';
 import { getAddressProvider } from '../addressLookup';
 import DummyProvider from '../providers/DEFAULT';
 
-// Using Jest for testing
+// Using Vitest for testing
 describe('addressLookup module', () => {
   test('getAddressProvider should return DEFAULT provider when region is invalid', async () => {
     const provider = await getAddressProvider('INVALID');

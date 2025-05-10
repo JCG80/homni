@@ -1,4 +1,3 @@
-
 # Lead Management and Distribution System
 
 ## Overview
@@ -45,6 +44,11 @@ This application provides a comprehensive system for managing and distributing l
    npm run build
    ```
 
+4. **Run Tests**
+   ```
+   npx vitest run
+   ```
+
 ## Usage
 
 ### Admin Users
@@ -87,8 +91,8 @@ const address = await provider.reverse(59.9133, 10.7389);
 - Tailwind CSS and shadcn/ui for styling
 - React Query for data fetching
 - Recharts for data visualization
+- Vitest for unit testing
 
 ## Development Roadmap
 
 See [DEV_NOTES.md](./DEV_NOTES.md) for current development status and roadmap.
-
