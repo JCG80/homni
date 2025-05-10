@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
@@ -65,7 +64,7 @@ export function AppRoutes() {
       {/* Auth management - only for admins */}
       <Route path="/auth-management" element={
         <Authenticated>
-          <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
             <AuthManagementPage />
           </ProtectedRoute>
         </Authenticated>
@@ -92,7 +91,7 @@ export function AppRoutes() {
       {/* Lead management - only for admins and companies */}
       <Route path="/lead-management" element={
         <Authenticated>
-          <ProtectedRoute allowedRoles={['admin', 'master-admin', 'company']}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company']}>
             <LeadManagementPage />
           </ProtectedRoute>
         </Authenticated>
@@ -101,7 +100,7 @@ export function AppRoutes() {
       {/* Lead settings - only for admins */}
       <Route path="/lead-settings" element={
         <Authenticated>
-          <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
             <LeadSettingsPage />
           </ProtectedRoute>
         </Authenticated>

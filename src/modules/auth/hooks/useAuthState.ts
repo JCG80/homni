@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getProfile } from '../api';
 import { AuthState } from '../types/types';
+import { determineUserRole } from '../utils/roles';
 
 const initialState: AuthState = {
   user: null,
@@ -35,16 +36,10 @@ export const useAuthState = () => {
   };
 
   useEffect(() => {
-    console.log('Setting up auth provider...');
-    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
-        
         if (session?.user) {
-          console.log('User is authenticated:', session.user.email);
-          
           setAuthState(prev => ({ 
             ...prev, 
             user: {
@@ -58,7 +53,6 @@ export const useAuthState = () => {
           setTimeout(async () => {
             try {
               const profile = await getProfile(session.user.id);
-              console.log('Retrieved profile:', profile);
               setAuthState(prev => ({ 
                 ...prev, 
                 profile, 
@@ -74,7 +68,6 @@ export const useAuthState = () => {
             }
           }, 0);
         } else {
-          console.log('User is not authenticated');
           setAuthState({
             user: null,
             profile: null,
@@ -87,12 +80,9 @@ export const useAuthState = () => {
 
     // THEN check for existing session
     const initialSession = async () => {
-      console.log('Checking for initial session...');
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
-        console.log('Found initial session for user:', session.user.id);
-        
         setAuthState(prev => ({ 
           ...prev, 
           user: {
@@ -104,7 +94,6 @@ export const useAuthState = () => {
         
         try {
           const profile = await getProfile(session.user.id);
-          console.log('Retrieved profile:', profile);
           setAuthState(prev => ({ 
             ...prev, 
             profile, 
@@ -119,7 +108,6 @@ export const useAuthState = () => {
           }));
         }
       } else {
-        console.log('No initial session found');
         setAuthState(prev => ({ ...prev, isLoading: false }));
       }
     };

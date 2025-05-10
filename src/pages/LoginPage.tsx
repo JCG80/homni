@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -25,7 +24,7 @@ export const LoginPage = () => {
     navigate(`/login${value === 'business' ? '?type=business' : ''}`, { replace: true });
   };
 
-  const handleDevLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin') => {
+  const handleDevLogin = async (role: UserRole) => {
     const result = await devLogin(role);
     if (result.error) {
       toast({
@@ -72,7 +71,7 @@ export const LoginPage = () => {
         {import.meta.env.MODE === 'development' && (
           <div className="mt-8 text-center space-x-2">
             <button 
-              onClick={() => handleDevLogin('user')} 
+              onClick={() => handleDevLogin('member')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as User
@@ -90,7 +89,7 @@ export const LoginPage = () => {
               Login as Admin
             </button>
             <button 
-              onClick={() => handleDevLogin('master-admin')} 
+              onClick={() => handleDevLogin('master_admin')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as Master Admin

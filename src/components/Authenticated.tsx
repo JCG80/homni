@@ -20,10 +20,10 @@ export const Authenticated = ({ children }: AuthenticatedProps) => {
     
     setCreatingProfile(true);
     try {
-      // Create a basic profile with default user role
+      // Create a basic profile with default member role
       const newProfile = await createProfile({
         id: user.id,
-        role: 'user',
+        role: 'member',
         full_name: user.email?.split('@')[0] || 'User'
       });
       

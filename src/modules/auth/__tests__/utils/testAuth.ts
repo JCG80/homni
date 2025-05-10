@@ -17,7 +17,7 @@ export const TEST_USERS: TestUser[] = [
   { 
     email: 'user@test.local', 
     password: 'Test1234!', 
-    role: 'user',
+    role: 'member',
     name: 'Test User'
   },
   { 
@@ -35,7 +35,7 @@ export const TEST_USERS: TestUser[] = [
   { 
     email: 'master-admin@test.local', 
     password: 'Test1234!', 
-    role: 'master-admin',
+    role: 'master_admin',
     name: 'Test Master Admin'
   },
   { 
