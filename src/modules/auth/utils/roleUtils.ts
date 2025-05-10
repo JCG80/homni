@@ -1,5 +1,6 @@
 
-import { UserRole, ALL_ROLES, isUserRole } from './roles';
+import { UserRole } from '../types/types';
+import { isUserRole } from './roles';
 
 /**
  * Determine user role based on metadata or default to member

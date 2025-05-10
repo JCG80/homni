@@ -1,3 +1,4 @@
+
 export type UserRole = 'guest' | 'member' | 'company' | 'admin' | 'master_admin' | 'provider' | 'editor';
 
 export const ALL_ROLES: UserRole[] = [
