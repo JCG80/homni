@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, isValidLeadStatus } from '../types/types';
+import { Lead, isValidLeadStatus } from '@/types/leads';
 import { toast } from '@/hooks/use-toast';
 
 export const useLeadsReport = () => {

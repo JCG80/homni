@@ -57,3 +57,21 @@ export const canAccessModule = (
   
   return allowedRoles.includes(role);
 };
+
+/**
+ * Determine user role based on metadata or default to basic user
+ */
+export const determineUserRole = (metadata: Record<string, any> | null): UserRole => {
+  if (!metadata || !metadata.role) {
+    return 'user';
+  }
+
+  const role = metadata.role as string;
+  
+  // Validate if the role is a valid UserRole
+  if (['user', 'company', 'admin', 'master-admin', 'provider'].includes(role)) {
+    return role as UserRole;
+  }
+  
+  return 'user'; // Default fallback role
+};

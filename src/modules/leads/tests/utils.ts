@@ -1,5 +1,4 @@
-
-import { Lead, LeadStatus, LeadPriority } from '../types/types';
+import { Lead, LeadStatus, LeadPriority } from '@/types/leads';
 
 type TestLeadParams = {
   title?: string;

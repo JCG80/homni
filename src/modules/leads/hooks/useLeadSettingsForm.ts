@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
-import { LeadSettings } from '../types/lead-settings';
+import { LeadSettings } from '@/types/leads';
 import { DistributionStrategy } from '../strategies/strategyFactory';
 import { toast } from '@/hooks/use-toast';
 

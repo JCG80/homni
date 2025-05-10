@@ -1,50 +1,6 @@
 
-// Define allowed lead statuses as a constant
-export const LEAD_STATUSES = [
-  'new',
-  'assigned',
-  'under_review',
-  'in_progress',
-  'completed',
-  'archived'
-] as const;
+import { Lead, LeadStatus, LeadPriority, LeadFormValues, LeadFilter, LEAD_STATUSES, isValidLeadStatus } from "@/types/leads";
 
-// Define LeadStatus type from the constant
-export type LeadStatus = typeof LEAD_STATUSES[number];
-
-// Validation function to check if a value is a valid lead status
-export function isValidLeadStatus(value: any): value is LeadStatus {
-  return LEAD_STATUSES.includes(value);
-}
-
-export type LeadPriority = 'low' | 'medium' | 'high';
-
-export interface Lead {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  status: LeadStatus;
-  priority?: LeadPriority;
-  created_at: string;
-  updated_at?: string;
-  company_id?: string | null;
-  submitted_by: string; // This matches the database column
-  provider_id?: string | null;
-  property_id?: string | null;
-  gdpr_deletion_date?: string | null;
-  deleted_at?: string | null;
-  content?: any;
-  internal_notes?: string | null;
-}
-
-export interface LeadFormValues {
-  title: string;
-  description: string;
-  category: string;
-}
-
-export interface LeadFilter {
-  status?: LeadStatus;
-  category?: string;
-}
+// Re-export everything for backward compatibility
+export { LEAD_STATUSES, isValidLeadStatus };
+export type { Lead, LeadStatus, LeadPriority, LeadFormValues, LeadFilter };

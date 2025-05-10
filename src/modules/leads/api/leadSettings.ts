@@ -1,7 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { mapDbToLeadSettings } from '../types/lead-settings';
-import { LeadSettings } from '../types/lead-settings';
+import { LeadSettings, mapDbToLeadSettings } from '@/types/leads';
 
 /**
  * Fetches the latest lead settings from the database

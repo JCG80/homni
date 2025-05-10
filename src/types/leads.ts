@@ -31,7 +31,7 @@ export interface Lead {
   created_at: string;
   updated_at?: string;
   company_id?: string | null;
-  submitted_by: string; 
+  submitted_by: string;
   provider_id?: string | null;
   property_id?: string | null;
   gdpr_deletion_date?: string | null;

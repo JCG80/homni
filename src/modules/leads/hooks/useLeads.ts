@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   getLeads, 
@@ -8,7 +9,7 @@ import {
   assignLeadToCompany, 
   getLeadById 
 } from '../api/leads-api';
-import { Lead, LeadFormValues, LeadStatus, LeadFilter } from '../types/types';
+import { Lead, LeadFormValues, LeadStatus, LeadFilter } from '@/types/leads';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 // Hook to get leads based on user role

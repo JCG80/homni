@@ -10,7 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { LeadSettings } from '../types/lead-settings';
+import { LeadSettings } from '@/types/leads';
 
 export const CompanyLeadSettings = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);

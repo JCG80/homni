@@ -1,5 +1,5 @@
 
-import { LeadStatus } from '../types/types';
+import { LeadStatus } from '@/types/leads';
 import { getStatusColor, getStatusLabel } from '../utils/lead-utils';
 
 interface LeadStatusBadgeProps {

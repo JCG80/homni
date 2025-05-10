@@ -1,5 +1,6 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES } from '../types/types';
+import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES, isValidLeadStatus } from '@/types/leads';
 import { isStatusTransitionAllowed } from '../utils/lead-utils';
 
 // Create a new lead

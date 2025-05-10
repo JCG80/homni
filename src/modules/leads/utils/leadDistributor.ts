@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Lead } from '../types/types';
+import { Lead } from '@/types/leads';
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
 import { toast } from '@/hooks/use-toast';
 import { Database } from '@/integrations/supabase/types';

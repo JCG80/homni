@@ -3,7 +3,7 @@ import { distributeLeadToProvider, DistributionStrategy } from '../strategies/st
 import { supabase } from "@/integrations/supabase/client";
 import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
-import { isValidLeadStatus } from '../types/types';
+import { isValidLeadStatus } from '@/types/leads';
 
 /**
  * Processes unassigned leads using the specified distribution strategy
