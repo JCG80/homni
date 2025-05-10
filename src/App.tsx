@@ -1,6 +1,6 @@
 
 import './App.css'
-import AppRoutes from './Routes'
+import { AppRoutes } from './Routes'
 import { Toaster } from './components/ui/toaster'
 import { AuthWrapper } from './modules/auth/components/AuthWrapper'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
