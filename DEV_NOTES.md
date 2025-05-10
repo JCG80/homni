@@ -38,11 +38,19 @@
 - [x] Created separate components for strategy selection, budget inputs, and distribution toggles
 - [x] Extracted form logic to a custom hook for better reusability
 
+#### Phase 5: Geo Services
+- [x] Implemented modulbasert adresseoppslagstjeneste (addressLookup)
+- [x] Created provider interface for address lookup services
+- [x] Implemented NO.ts provider for Norwegian addresses
+- [x] Added DEFAULT.ts fallback provider
+- [x] Created tests for address lookup functionality
+
 ### Testing Notes
 - Tested distribution strategy selection with both "roundRobin" and "category_match"
 - Verified that the global pause feature correctly prevents new leads from being distributed
 - Confirmed that the company UI correctly shows the current settings
 - Validated that the reports page correctly aggregates data
+- Tested address lookup functionality with Norwegian provider and fallback
 
 ### Pending Tasks
 - [ ] Implement the budget utilization feature
@@ -50,6 +58,7 @@
 - [ ] Create better visualization for company performance
 - [ ] Add export functionality for lead reports
 - [ ] Implement notification system for new leads
+- [ ] Add more address lookup providers (SE, DK, etc.)
 
 ## Roadmap
 
@@ -63,3 +72,4 @@
 2. Create a mobile app for companies to manage leads on-the-go
 3. Integrate with CRM systems
 4. Implement a bidding system for leads
+

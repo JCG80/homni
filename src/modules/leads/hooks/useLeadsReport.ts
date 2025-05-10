@@ -28,7 +28,8 @@ export const useLeadsReport = () => {
           throw new Error(error.message);
         }
         
-        setLeads(data || []);
+        // Cast the data to Lead[] to ensure type safety
+        setLeads(data as Lead[]);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
         setError(errorMessage);

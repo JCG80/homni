@@ -22,6 +22,12 @@ This application provides a comprehensive system for managing and distributing l
 - Charts and visualizations for lead status, categories, and time trends
 - Company-specific reports for tracking performance
 
+### Geo Services
+- Modular address lookup service with region-specific providers
+- Support for Norwegian addresses via Kartverket API
+- Fallback provider for regions without specific implementations
+- Reverse geocoding capabilities
+
 ## Getting Started
 
 1. **Installation**
@@ -55,6 +61,24 @@ This application provides a comprehensive system for managing and distributing l
 ### Regular Users
 - Submit new leads through the form
 - Track your submitted leads at `/leads/my`
+
+## Address Lookup Module
+
+### Usage Example
+```typescript
+// Get the appropriate provider based on region code
+const provider = await getAddressProvider('NO');
+
+// Search for addresses
+const results = await provider.search('Oslo');
+
+// Reverse geocode a location
+const address = await provider.reverse(59.9133, 10.7389);
+```
+
+### Available Providers
+- **NO**: Norwegian addresses via Kartverket API
+- **DEFAULT**: Fallback provider with dummy data
 
 ## Technical Stack
 
