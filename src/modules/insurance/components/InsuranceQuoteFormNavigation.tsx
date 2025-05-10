@@ -8,6 +8,10 @@ interface InsuranceQuoteFormNavigationProps {
   canGoNext: boolean;
   canGoPrev: boolean;
   isLastStep: boolean;
+  // Add the missing properties from the error
+  currentStep?: number;
+  totalSteps?: number;
+  stepLabels?: Array<{id: string; label: string}>;
 }
 
 export const InsuranceQuoteFormNavigation: React.FC<InsuranceQuoteFormNavigationProps> = ({
@@ -15,7 +19,11 @@ export const InsuranceQuoteFormNavigation: React.FC<InsuranceQuoteFormNavigation
   onPrev,
   canGoNext,
   canGoPrev,
-  isLastStep
+  isLastStep,
+  // Include the new properties with defaults
+  currentStep,
+  totalSteps,
+  stepLabels
 }) => {
   return (
     <div className="flex justify-between mt-6">

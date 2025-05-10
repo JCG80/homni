@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { InsuranceCompanyCard } from '../components/InsuranceCompanyCard';
 import { InsuranceTypeTag } from '../components/InsuranceTypeTag';

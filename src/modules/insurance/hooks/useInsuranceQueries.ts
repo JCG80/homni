@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   fetchInsuranceCompanies,
@@ -335,4 +334,26 @@ export const useDeleteCompanyReview = (companyId: string) => {
       });
     }
   });
+};
+
+// Export all hooks as a single object for easier import
+export const useInsuranceQueries = {
+  useInsuranceCompanies,
+  useInsuranceCompany,
+  useInsuranceCompaniesWithTypes,
+  useCreateInsuranceCompany,
+  useUpdateInsuranceCompany,
+  useDeleteInsuranceCompany,
+  useInsuranceTypes,
+  useInsuranceType,
+  useCreateInsuranceType,
+  useUpdateInsuranceType,
+  useDeleteInsuranceType,
+  useAssociateCompanyWithType,
+  useRemoveCompanyTypeAssociation,
+  useCompanyTypes,
+  useCompanyReviews,
+  useCreateCompanyReview,
+  useUpdateCompanyReview,
+  useDeleteCompanyReview
 };

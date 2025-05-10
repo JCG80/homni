@@ -59,10 +59,13 @@ export const InsuranceQuotePage = () => {
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       <InsuranceQuoteFormNavigation 
+        onNext={handleNext}
+        onPrev={handleBack}
+        canGoNext={true}
+        canGoPrev={currentStep > 0}
+        isLastStep={currentStep === STEPS.length - 1}
         currentStep={currentStep}
         totalSteps={STEPS.length}
-        onNext={handleNext}
-        onBack={handleBack}
         stepLabels={STEPS}
       />
 
