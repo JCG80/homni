@@ -46,6 +46,7 @@ export async function loadProjectDocById(id: string): Promise<ProjectDoc | null>
  * Load project doc by type (e.g. 'project_plan')
  */
 export async function loadProjectDocByType(docType: string): Promise<ProjectDoc | null> {
+  // Use type-casting to avoid TypeScript errors with the Supabase client
   const { data, error } = await supabase
     .from('project_docs')
     .select('*')

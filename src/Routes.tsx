@@ -1,181 +1,79 @@
-import { useRoutes } from 'react-router-dom';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
 import { Unauthenticated } from './components/Unauthenticated';
-import { ProtectedRoute } from './modules/auth/components/ProtectedRoute';
-import { AdminLeadsPage } from './modules/leads/pages/AdminLeadsPage';
-import { LeadTestPage } from './modules/leads/pages/LeadTestPage';
-import { CompanyLeadsPage } from './modules/leads/pages/CompanyLeadsPage';
-import { UserLeadsPage } from './modules/leads/pages/UserLeadsPage';
-import { LeadReportsPage } from './modules/leads/pages/LeadReportsPage';
+import { HomePage } from './pages/HomePage';
 import { UnauthorizedPage } from './modules/auth/pages/UnauthorizedPage';
-import { LoginPage } from './modules/auth/pages/LoginPage';
-import { RegisterPage } from './modules/auth/pages/RegisterPage';
 import { AuthManagementPage } from './modules/auth/pages/AuthManagementPage';
-import { ContentDashboard } from './modules/content/pages/ContentDashboard';
-import { EditContentPage } from './modules/content/pages/EditContentPage';
-import { ContentAdminPage } from './modules/content/pages/ContentAdminPage';
-import { SystemMapPage } from './modules/system/pages/SystemMapPage';
-import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
-import { MemberListPage } from './modules/user/pages/MemberListPage';
-import { CompanyListPage } from './modules/user/pages/CompanyListPage';
-import { UserRole } from './modules/auth/utils/roles';
+import { ProtectedRoute } from './modules/auth/components/ProtectedRoute';
+import { CompanyProfilePage } from './modules/company/pages/CompanyProfilePage';
+import { LeadCapturePage } from './modules/leads/pages/LeadCapturePage';
+import { LeadManagementPage } from './modules/leads/pages/LeadManagementPage';
+import { LeadSettingsPage } from './modules/leads/pages/LeadSettingsPage';
 import { ProjectPlanPage } from './modules/docs/pages/ProjectPlanPage';
+import { docsRoutes } from './modules/docs/routes';
 
-const AppRoutes = () => {
-  // Define routes with their auth requirements
-  const routesConfig = [
-    {
-      path: '/',
-      element: <AdminLeadsPage />,
-      requiresAuth: true,
-      allowAnyRole: true // Allow any authenticated user to access the home page
-    },
-    {
-      path: '/login',
-      element: <LoginPage />
-    },
-    {
-      path: '/register',
-      element: <RegisterPage />
-    },
-    // Leads module
-    {
-      path: '/leads/company',
-      element: <CompanyLeadsPage />,
-      requiresAuth: true,
-      roles: ['company', 'admin', 'master-admin'] as UserRole[] // Allow company and admin roles
-    },
-    {
-      path: '/leads/my',
-      element: <UserLeadsPage />,
-      requiresAuth: true,
-      allowAnyRole: true // Allow any authenticated user
-    },
-    {
-      path: '/leads/reports',
-      element: <LeadReportsPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin'] as UserRole[] // Only allow admin roles
-    },
-    {
-      path: '/unauthorized',
-      element: <UnauthorizedPage />
-    },
-    // Allow all authenticated users to access test pages
-    {
-      path: '/leads/test',
-      element: <LeadTestPage />,
-      requiresAuth: true,
-      allowAnyRole: true
-    },
-    // Content module routes
-    {
-      path: '/admin/content',
-      element: <ContentDashboard />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
-    },
-    {
-      path: '/admin/content/new',
-      element: <EditContentPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
-    },
-    {
-      path: '/admin/content/edit/:id',
-      element: <EditContentPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
-    },
-    // New Content Admin Page
-    {
-      path: '/admin/content-admin',
-      element: <ContentAdminPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
-    },
-    // System module routes
-    {
-      path: '/admin/system/map',
-      element: <SystemMapPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin'] as UserRole[]
-    },
-    {
-      path: '/admin/system/modules',
-      element: <SystemModulesPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin'] as UserRole[]
-    },
-    // User/Company management routes
-    {
-      path: '/admin/users/members',
-      element: <MemberListPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin'] as UserRole[]
-    },
-    {
-      path: '/admin/users/companies',
-      element: <CompanyListPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin'] as UserRole[]
-    },
-    // Auth management route
-    {
-      path: '/admin/users/auth',
-      element: <AuthManagementPage />,
-      requiresAuth: true,
-      roles: ['admin', 'master-admin'] as UserRole[]
-    },
-    // Project Plan Route
-    {
-      path: '/docs/project-plan',
-      element: <ProjectPlanPage />,
-      requiresAuth: true,
-      allowAnyRole: true // Allow any authenticated user to access the project plan
-    }
-  ];
+export function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Unauthenticated />} />
+      <Route path="/" element={
+        <Authenticated>
+          <HomePage />
+        </Authenticated>
+      } />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      
+      {/* Auth management - only for admins */}
+      <Route path="/auth-management" element={
+        <Authenticated>
+          <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+            <AuthManagementPage />
+          </ProtectedRoute>
+        </Authenticated>
+      } />
 
-  // Transform the config into actual route objects
-  const routes = routesConfig.map(route => {
-    // If route requires authentication
-    if (route.requiresAuth) {
-      // Special case for routes that allow any authenticated user
-      if (route.allowAnyRole) {
-        return {
-          path: route.path,
-          element: (
-            <ProtectedRoute allowAnyAuthenticated={true}>
-              {route.element}
-            </ProtectedRoute>
-          )
-        };
-      }
-      // If route has specific roles
-      if (route.roles && route.roles.length > 0) {
-        return {
-          path: route.path,
-          element: (
-            <ProtectedRoute allowedRoles={route.roles}>
-              {route.element}
-            </ProtectedRoute>
-          )
-        };
-      }
-      // If route just requires authentication without specific roles
-      return {
-        path: route.path,
-        element: <Authenticated>{route.element}</Authenticated>
-      };
-    }
-    // Regular route without auth requirements
-    return {
-      path: route.path,
-      element: route.element
-    };
-  });
+      {/* Company profile - only for companies */}
+      <Route path="/company-profile" element={
+        <Authenticated>
+          <ProtectedRoute allowedRoles={['company']}>
+            <CompanyProfilePage />
+          </ProtectedRoute>
+        </Authenticated>
+      } />
 
-  return useRoutes(routes);
-};
+      {/* Lead capture - accessible to all authenticated users */}
+      <Route path="/lead-capture" element={
+        <Authenticated>
+          <ProtectedRoute allowAnyAuthenticated={true}>
+            <LeadCapturePage />
+          </ProtectedRoute>
+        </Authenticated>
+      } />
 
-export default AppRoutes;
+      {/* Lead management - only for admins and companies */}
+      <Route path="/lead-management" element={
+        <Authenticated>
+          <ProtectedRoute allowedRoles={['admin', 'master-admin', 'company']}>
+            <LeadManagementPage />
+          </ProtectedRoute>
+        </Authenticated>
+      } />
+
+      {/* Lead settings - only for admins */}
+      <Route path="/lead-settings" element={
+        <Authenticated>
+          <ProtectedRoute allowedRoles={['admin', 'master-admin']}>
+            <LeadSettingsPage />
+          </ProtectedRoute>
+        </Authenticated>
+      } />
+      
+      {/* Documentation routes */}
+      {docsRoutes}
+      
+      {/* Catch-all route to redirect to home page */}
+      <Route path="*" element={<HomePage />} />
+    </Routes>
+  );
+}

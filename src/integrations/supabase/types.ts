@@ -153,6 +153,39 @@ export type Database = {
         }
         Relationships: []
       }
+      project_docs: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string | null
+          doc_type: string
+          id: string
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          doc_type: string
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          doc_type?: string
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           created_at: string | null
