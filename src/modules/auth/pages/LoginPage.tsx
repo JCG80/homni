@@ -1,5 +1,6 @@
 
 import { LoginForm } from '../components/LoginForm';
+import { devLogin } from '../utils/devLogin';
 
 export const LoginPage = () => {
   return (
@@ -13,6 +14,35 @@ export const LoginPage = () => {
         </div>
         
         <LoginForm />
+
+        {import.meta.env.MODE === 'development' && (
+          <div className="mt-8 text-center space-x-2">
+            <button 
+              onClick={() => devLogin('user')} 
+              className="px-3 py-1 bg-gray-200 rounded text-xs"
+            >
+              Login as User
+            </button>
+            <button 
+              onClick={() => devLogin('company')} 
+              className="px-3 py-1 bg-gray-200 rounded text-xs"
+            >
+              Login as Company
+            </button>
+            <button 
+              onClick={() => devLogin('admin')} 
+              className="px-3 py-1 bg-gray-200 rounded text-xs"
+            >
+              Login as Admin
+            </button>
+            <button 
+              onClick={() => devLogin('master-admin')} 
+              className="px-3 py-1 bg-gray-200 rounded text-xs"
+            >
+              Login as Master Admin
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

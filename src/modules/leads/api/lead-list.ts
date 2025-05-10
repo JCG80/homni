@@ -85,3 +85,27 @@ const retryApiCall = async <T>(
   
   throw lastError;
 };
+
+// Export these functions to match the imports in useLeads.ts
+export const getLeads = listLeads;
+export const getUserLeads = listLeadsByUser;
+export const getCompanyLeads = listLeadsByCompany;
+export const getLeadById = async (leadId: string): Promise<Lead | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('id', leadId)
+      .single();
+    
+    if (error) {
+      console.error(`Error fetching lead ${leadId}:`, error);
+      return null;
+    }
+    
+    return data ? parseLead(data) : null;
+  } catch (error) {
+    console.error(`Unexpected error fetching lead ${leadId}:`, error);
+    return null;
+  }
+};
