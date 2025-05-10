@@ -24,8 +24,8 @@ export async function getLeads(filters: LeadFilter = {}): Promise<Lead[]> {
   const { data, error } = await query;
   
   if (error) throw error;
-  // Use type assertion to avoid deep instantiation issue
-  return (data || []).map((item: any) => parseLead(item));
+  // Break the type recursion by explicitly typing each item
+  return (data || []).map((item) => parseLead(item as any));
 }
 
 /**
@@ -38,8 +38,8 @@ export async function getUserLeads(userId: string): Promise<Lead[]> {
     .eq('submitted_by', userId);
   
   if (error) throw error;
-  // Use type assertion to avoid deep instantiation issue
-  return (data || []).map((item: any) => parseLead(item));
+  // Break the type recursion by explicitly typing each item
+  return (data || []).map((item) => parseLead(item as any));
 }
 
 /**
@@ -52,8 +52,8 @@ export async function getCompanyLeads(companyId: string): Promise<Lead[]> {
     .eq('company_id', companyId);
   
   if (error) throw error;
-  // Use type assertion to avoid deep instantiation issue
-  return (data || []).map((item: any) => parseLead(item));
+  // Break the type recursion by explicitly typing each item
+  return (data || []).map((item) => parseLead(item as any));
 }
 
 /**
@@ -83,6 +83,6 @@ export async function loadLeads(): Promise<Lead[]> {
     return [];
   }
 
-  // Use type assertion to avoid deep instantiation issue
-  return data.map((item: any) => parseLead(item));
+  // Break the type recursion by explicitly typing each item
+  return data.map((item) => parseLead(item as any));
 }
