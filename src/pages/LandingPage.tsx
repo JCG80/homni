@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RegistrationFlow } from '@/components/landing/RegistrationFlow';
 
 export const LandingPage = () => {
   const [activeTab, setActiveTab] = useState<string>('private');
@@ -66,8 +66,8 @@ export const LandingPage = () => {
         </div>
       </header>
       
-      {/* Hero Section with Tab Content */}
-      <section className="bg-gradient-to-br from-primary/80 to-primary py-20 text-white">
+      {/* Hero Section with Dynamic Registration Flow */}
+      <section className="bg-gradient-to-br from-primary/80 to-primary py-12 md:py-16 text-white">
         <div className="container mx-auto px-4">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full max-w-3xl mx-auto">
             <TabsList className="w-full mb-8 bg-white/20 grid grid-cols-2">
@@ -76,35 +76,25 @@ export const LandingPage = () => {
             </TabsList>
             
             <TabsContent value="private" className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Spar penger på dine faste utgifter</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Spar penger på dine faste utgifter</h1>
               <p className="text-xl mb-8 max-w-2xl mx-auto">
                 Sammenlign og bytt leverandører enkelt. Vi hjelper deg å finne de beste tilbudene på strøm, 
                 forsikring, bredbånd og mobilabonnement.
               </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button size="lg" onClick={goToRegister} className="bg-white text-primary hover:bg-white/90">
-                  Kom i gang
-                </Button>
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
-                  Les mer
-                </Button>
-              </div>
+              
+              {/* New Registration Flow Component */}
+              <RegistrationFlow userType="private" />
             </TabsContent>
             
             <TabsContent value="business" className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Smarte løsninger for bedrifter</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Smarte løsninger for bedrifter</h1>
               <p className="text-xl mb-8 max-w-2xl mx-auto">
                 Vi hjelper bedrifter med å finne de beste avtalene på strøm, forsikring, 
                 bredbånd og mobilabonnementer. Spar penger og tid med våre tjenester.
               </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button size="lg" onClick={goToRegister} className="bg-white text-primary hover:bg-white/90">
-                  Registrer bedrift
-                </Button>
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
-                  Våre bedriftstjenester
-                </Button>
-              </div>
+              
+              {/* New Registration Flow Component for Business */}
+              <RegistrationFlow userType="business" />
             </TabsContent>
           </Tabs>
         </div>
