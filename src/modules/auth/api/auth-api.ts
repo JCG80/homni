@@ -1,8 +1,10 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '../types/types';
 import { determineUserRole } from '../utils/roleUtils';
 import { parseUserProfile } from '../utils/parseUserProfile';
 import { UserRole } from '../utils/roles';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Get user profile by user ID
@@ -45,12 +47,31 @@ export const signInWithEmail = async (email: string, password: string) => {
     
     if (error) {
       console.error("Sign in error:", error);
+      // Use toast to provide feedback about authentication errors
+      if (error.message.includes('Invalid login credentials')) {
+        toast({
+          title: "Påloggingsfeil",
+          description: "E-post eller passord er feil. Vennligst prøv igjen.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Påloggingsfeil",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
       return { user: null, error };
     }
     
     return { user: data.user, error: null };
   } catch (error) {
     console.error("Unexpected sign in error:", error);
+    toast({
+      title: "Teknisk feil",
+      description: "En uventet feil oppstod ved pålogging. Vennligst prøv igjen senere.",
+      variant: "destructive",
+    });
     return { user: null, error };
   }
 };
@@ -67,12 +88,39 @@ export const signUpWithEmail = async (email: string, password: string) => {
     
     if (error) {
       console.error("Sign up error:", error);
+      // Use toast to provide feedback about registration errors
+      if (error.message.includes('email address is already registered')) {
+        toast({
+          title: "Registreringsfeil",
+          description: "E-postadressen er allerede registrert. Vennligst bruk en annen e-post eller prøv å logge inn.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Registreringsfeil",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
       return { user: null, error };
+    }
+    
+    // Notify user about email verification if enabled in Supabase
+    if (!data.session && data.user) {
+      toast({
+        title: "Verifiser e-post",
+        description: "Vi har sendt en bekreftelses-e-post. Vennligst sjekk innboksen din for å fullføre registreringen.",
+      });
     }
     
     return { user: data.user, error: null };
   } catch (error) {
     console.error("Unexpected sign up error:", error);
+    toast({
+      title: "Teknisk feil",
+      description: "En uventet feil oppstod ved registrering. Vennligst prøv igjen senere.",
+      variant: "destructive",
+    });
     return { user: null, error };
   }
 };
@@ -90,6 +138,11 @@ export const createProfile = async (profile: Partial<Profile> & { id: string }):
     
     if (error) {
       console.error("Error creating profile:", error);
+      toast({
+        title: "Profilfeil",
+        description: "Kunne ikke opprette brukerprofil. Vennligst prøv igjen senere.",
+        variant: "destructive",
+      });
       return null;
     }
     
@@ -114,6 +167,11 @@ export const updateUserRole = async (userId: string, role: UserRole): Promise<bo
     
     if (fetchError) {
       console.error("Error fetching user profile metadata:", fetchError);
+      toast({
+        title: "Oppdateringsfeil",
+        description: "Kunne ikke hente brukerinformasjon for rolleendring.",
+        variant: "destructive",
+      });
       return false;
     }
     
@@ -137,8 +195,18 @@ export const updateUserRole = async (userId: string, role: UserRole): Promise<bo
     
     if (error) {
       console.error("Error updating user role:", error);
+      toast({
+        title: "Rolleendringsfeil",
+        description: "Kunne ikke oppdatere brukerrolle.",
+        variant: "destructive",
+      });
       return false;
     }
+    
+    toast({
+      title: "Rolle oppdatert",
+      description: `Bruker ${userId} har fått rollen ${role}.`,
+    });
     
     return true;
   } catch (error) {
@@ -153,9 +221,111 @@ export const updateUserRole = async (userId: string, role: UserRole): Promise<bo
 export const signOut = async (): Promise<{ error: Error | null }> => {
   try {
     const { error } = await supabase.auth.signOut();
+    
+    if (error) {
+      toast({
+        title: "Utloggingsfeil",
+        description: "Kunne ikke logge ut. Vennligst prøv igjen.",
+        variant: "destructive",
+      });
+    }
+    
     return { error };
   } catch (error) {
     console.error("Unexpected sign out error:", error);
     return { error: error instanceof Error ? error : new Error('Unknown error during sign out') };
+  }
+};
+
+/**
+ * Set up multi-factor authentication for a user
+ */
+export const setupMFA = async () => {
+  try {
+    // Start the enrollment process
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: 'totp',
+    });
+    
+    if (error) {
+      console.error("MFA enrollment error:", error);
+      toast({
+        title: "MFA-oppsettsfeil",
+        description: "Kunne ikke starte MFA-oppsett. Vennligst prøv igjen senere.",
+        variant: "destructive",
+      });
+      return { factorId: null, qr: null, uri: null, error };
+    }
+    
+    return { 
+      factorId: data.id,
+      qr: data.totp.qr_code,
+      uri: data.totp.uri,
+      error: null 
+    };
+  } catch (error) {
+    console.error("Unexpected MFA setup error:", error);
+    return { factorId: null, qr: null, uri: null, error };
+  }
+};
+
+/**
+ * Verify MFA challenge
+ */
+export const verifyMFA = async (factorId: string, challengeId: string, code: string) => {
+  try {
+    const { data, error } = await supabase.auth.mfa.challenge({
+      factorId,
+      challengeId,
+      code
+    });
+    
+    if (error) {
+      console.error("MFA verification error:", error);
+      toast({
+        title: "MFA-verifiseringsfeil",
+        description: "Ugyldig kode. Vennligst prøv igjen.",
+        variant: "destructive",
+      });
+      return { verified: false, error };
+    }
+    
+    return { verified: data.verified, error: null };
+  } catch (error) {
+    console.error("Unexpected MFA verification error:", error);
+    return { verified: false, error };
+  }
+};
+
+/**
+ * Helper to get audit logs (requires Supabase Pro)
+ * You can replace with your own implementation using a custom table if needed
+ */
+export const getAuditLogs = async (userId?: string, limit = 100) => {
+  try {
+    // This is a placeholder - actual implementation depends on your audit logging setup
+    // For Enterprise/Pro Supabase plans, you can use the built-in system
+    // For other plans, you would need a custom implementation
+    const query = supabase
+      .from('audit_logs') // Assume a custom audit_logs table
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    
+    if (userId) {
+      query.eq('user_id', userId);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error("Error fetching audit logs:", error);
+      return { logs: null, error };
+    }
+    
+    return { logs: data, error: null };
+  } catch (error) {
+    console.error("Unexpected error fetching audit logs:", error);
+    return { logs: null, error };
   }
 };
