@@ -56,6 +56,16 @@ Access to routes and features is controlled by:
 - The `useRoleGuard` hook for component-level access
 - Row Level Security policies in the database
 
+## User Profile Integration
+
+- When a user signs up, a profile is automatically created in the `user_profiles` table via a Supabase trigger
+- The user profile ID matches the auth.users ID
+- The UI checks both user authentication and profile existence
+- If a profile is missing, the `Authenticated` component shows an error screen with options to:
+  - Create a new profile
+  - Log in again
+  - Contact administrator
+
 ## Testing
 
 Auth functionality is tested via:

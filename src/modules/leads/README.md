@@ -53,6 +53,19 @@ const leads = (data || []).map(parseLead);
 
 ---
 
+## 🧍 Brukerprofil-integrasjon
+
+- Ved innlogging opprettes automatisk en rad i `user_profiles` via Supabase-trigger.
+- `user_profiles.id` må samsvare med `auth.users.id`.
+- UI sjekker både `user` og `userProfile`. Dersom `userProfile` mangler, vises en advarsel i `Authenticated.tsx`.
+
+🔁 **Validering:**
+- [x] Ny bruker får automatisk profil
+- [x] Manglende profil vises i UI
+- [x] Fungerer med RLS-policies via `auth.uid() = profiles.id`
+
+---
+
 ## ✅ Testing
 - Alle tester ligger i `__tests__/`
 - Bruk `vitest`, `jsdom` og `@testing-library/react`
