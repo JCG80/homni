@@ -26,5 +26,13 @@ export interface RouteConfig {
   element: React.ReactNode;
   requiresAuth?: boolean;
   roles?: UserRole[];
-  allowAnyRole?: boolean; // Renamed flag for consistency with existing code
+  allowAnyRole?: boolean;
+}
+
+// Add test user type for easier management of test users
+export interface TestUser {
+  email: string;
+  password: string;
+  role: UserRole;
+  name: string;
 }
