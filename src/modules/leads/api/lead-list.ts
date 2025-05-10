@@ -2,22 +2,35 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Lead } from '@/types/leads';
 import { parseLead } from '../utils/parseLead';
+import { ApiError, dedupeByKey } from '@/utils/apiHelpers';
+
+// Define a simpler type to avoid deep nesting
+type SimpleLead = {
+  id: string;
+  submitted_by: string;
+  status: string;
+  created_at: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  assigned_company_id?: string;
+};
 
 export const listLeads = async (): Promise<Lead[]> => {
   try {
-    // Use a simple select with explicit typing and avoid template literals
-    const { data, error } = await supabase
+    const { data: rawData, error } = await supabase
       .from('leads')
-      .select('*');
+      .select('id, submitted_by, status, created_at, title, description, category');
     
     if (error) {
-      console.error('Error fetching leads:', error);
-      return [];
+      throw new ApiError('listLeads', error);
     }
     
-    // Use parseLead on each item individually to avoid deep type inferencing
-    const leads = (data || []).map(item => parseLead(item));
-    return leads;
+    if (!rawData) return [];
+
+    // Cast to simple type and map using parseLead
+    const leads = (rawData as SimpleLead[]).map(item => parseLead(item));
+    return dedupeByKey(leads, 'id');
   } catch (error) {
     console.error('Unexpected error listing leads:', error);
     return [];
@@ -26,17 +39,19 @@ export const listLeads = async (): Promise<Lead[]> => {
 
 export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => {
   try {
-    const { data, error } = await supabase
+    const { data: rawData, error } = await supabase
       .from('leads')
-      .select('*')
-      .eq('assigned_company_id', companyId);
+      .select('id, submitted_by, status, created_at, title, description, category')
+      .eq('company_id', companyId);
     
     if (error) {
-      console.error(`Error fetching leads for company ${companyId}:`, error);
-      return [];
+      throw new ApiError('listLeadsByCompany', error);
     }
     
-    return (data || []).map(item => parseLead(item));
+    if (!rawData) return [];
+    
+    const leads = (rawData as SimpleLead[]).map(item => parseLead(item));
+    return dedupeByKey(leads, 'id');
   } catch (error) {
     console.error(`Unexpected error listing leads for company ${companyId}:`, error);
     return [];
@@ -45,17 +60,19 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
 
 export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
   try {
-    const { data, error } = await supabase
+    const { data: rawData, error } = await supabase
       .from('leads')
-      .select('*')
+      .select('id, submitted_by, status, created_at, title, description, category')
       .eq('created_by', userId);
     
     if (error) {
-      console.error(`Error fetching leads for user ${userId}:`, error);
-      return [];
+      throw new ApiError('listLeadsByUser', error);
     }
     
-    return (data || []).map(item => parseLead(item));
+    if (!rawData) return [];
+    
+    const leads = (rawData as SimpleLead[]).map(item => parseLead(item));
+    return dedupeByKey(leads, 'id');
   } catch (error) {
     console.error(`Unexpected error listing leads for user ${userId}:`, error);
     return [];
@@ -92,18 +109,17 @@ export const getUserLeads = listLeadsByUser;
 export const getCompanyLeads = listLeadsByCompany;
 export const getLeadById = async (leadId: string): Promise<Lead | null> => {
   try {
-    const { data, error } = await supabase
+    const { data: rawData, error } = await supabase
       .from('leads')
-      .select('*')
+      .select('id, submitted_by, status, created_at, title, description, category')
       .eq('id', leadId)
       .single();
     
     if (error) {
-      console.error(`Error fetching lead ${leadId}:`, error);
-      return null;
+      throw new ApiError('getLeadById', error);
     }
     
-    return data ? parseLead(data) : null;
+    return rawData ? parseLead(rawData as SimpleLead) : null;
   } catch (error) {
     console.error(`Unexpected error fetching lead ${leadId}:`, error);
     return null;
