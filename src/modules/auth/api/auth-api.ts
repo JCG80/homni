@@ -106,12 +106,31 @@ export const createProfile = async (profile: Partial<Profile> & { id: string }):
  */
 export const updateUserRole = async (userId: string, role: UserRole): Promise<boolean> => {
   try {
-    // Update the role in the metadata field since there's no direct 'role' column
+    // First, fetch the current user profile to get the existing metadata
+    const { data: profileData, error: fetchError } = await supabase
+      .from('user_profiles')
+      .select('metadata')
+      .eq('id', userId)
+      .single();
+    
+    if (fetchError) {
+      console.error("Error fetching user profile metadata:", fetchError);
+      return false;
+    }
+    
+    // Get current metadata or initialize as empty object if it doesn't exist
+    const currentMetadata = profileData?.metadata || {};
+    
+    // Update the role in the metadata field, preserving other metadata
+    const updatedMetadata = { 
+      ...currentMetadata, 
+      role: role 
+    };
+    
+    // Now update the profile with the new metadata
     const { error } = await supabase
       .from('user_profiles')
-      .update({ 
-        metadata: { role: role } 
-      })
+      .update({ metadata: updatedMetadata })
       .eq('id', userId);
     
     if (error) {
