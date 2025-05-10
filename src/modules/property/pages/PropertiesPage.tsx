@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { getUserProperties } from '../api/propertyApi';
+import { getUserProperties } from '../api';
 import { Property } from '../types/propertyTypes';
 import { PropertyList } from '../components/PropertyList';
 import { AddPropertyForm } from '../components/AddPropertyForm';
