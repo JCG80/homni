@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { signInWithEmail } from '../api';
+import { devLogin } from '../utils/devLogin';
 import { toast } from '@/hooks/use-toast';
-import { TEST_USERS } from '../__tests__/utils/testAuth';
+import { TEST_USERS } from '../utils/devLogin';
 
 export const DevQuickLogin: React.FC = () => {
   // Only show in development mode
@@ -11,23 +11,26 @@ export const DevQuickLogin: React.FC = () => {
     return null;
   }
 
-  const loginAs = async (email: string, password: string, roleName: string) => {
+  const loginAs = async (role: string) => {
     try {
-      const { user, error } = await signInWithEmail(email, password);
+      const user = TEST_USERS.find(u => u.role === role);
+      if (!user) return;
       
-      if (error) {
+      const result = await devLogin(user.role);
+      
+      if (result.error) {
         toast({
           title: 'Login failed',
-          description: error.message,
+          description: result.error.message,
           variant: 'destructive',
         });
         return;
       }
       
-      if (user) {
+      if (result.success) {
         toast({
           title: 'Login successful',
-          description: `Logged in as ${roleName} (${email})`,
+          description: `Logged in as ${role} (${user.email})`,
         });
       }
     } catch (err) {
@@ -48,7 +51,7 @@ export const DevQuickLogin: React.FC = () => {
             key={user.email}
             size="sm"
             variant="outline"
-            onClick={() => loginAs(user.email, user.password, user.name)}
+            onClick={() => loginAs(user.role)}
             className="text-xs justify-start"
           >
             Login as {user.role}
