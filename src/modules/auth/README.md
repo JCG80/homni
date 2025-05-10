@@ -18,6 +18,8 @@ This module handles all authentication and user management functions.
 - **ForgotPasswordPage**: Password reset initiation
 - **ResetPasswordConfirmationPage**: Password reset confirmation
 - **AuthManagementPage**: Admin page for user role management
+- **ProfilePage**: User profile management
+- **CompanyProfilePage**: Company profile management
 
 ## Hooks
 
@@ -65,6 +67,16 @@ Access to routes and features is controlled by:
   - Create a new profile
   - Log in again
   - Contact administrator
+
+## Company Profile Integration
+
+- When a business user signs up, both a user profile and a company profile are created
+- The company profile is linked to the user profile via the `company_id` field
+- Business users can access company-specific features based on their role and company association
+- If a company profile is missing for a company user, a fallback UI is shown with options to:
+  - Register a new company
+  - Contact administrator
+  - Refresh profile data
 
 ## Testing
 

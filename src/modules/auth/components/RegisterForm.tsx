@@ -33,8 +33,8 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
       const { user } = await signUpWithEmail(email, password);
       
       if (user) {
-        // Create profile with appropriate role based on user type
-        await createProfile({
+        // Create company profile with appropriate role and company details
+        const profileData = {
           id: user.id,
           full_name: fullName,
           // For business users, set role to 'company', otherwise 'user'
@@ -43,7 +43,39 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private'
           ...(userType === 'business' ? { company_name: companyName } : {}),
           // Include phone_number if provided
           ...(phoneNumber ? { phone_number: phoneNumber } : {}),
-        });
+        };
+        
+        await createProfile(profileData);
+        
+        // If it's a business account, also create a company profile entry
+        if (userType === 'business') {
+          try {
+            const { data, error } = await (window as any).supabase
+              .from('company_profiles')
+              .insert([
+                {
+                  name: companyName,
+                  user_id: user.id,
+                  tags: [],
+                  status: 'active'
+                }
+              ]);
+              
+            if (error) throw error;
+            
+            // Add company_id to user profile if company profile was created
+            if (data && data[0]) {
+              await (window as any).supabase
+                .from('user_profiles')
+                .update({ company_id: data[0].id })
+                .eq('id', user.id);
+            }
+          } catch (companyError) {
+            console.error("Error creating company profile:", companyError);
+            // Continue with signup even if company profile creation fails
+            // The user can still access the system, but with limited company features
+          }
+        }
         
         toast({
           title: 'Registrering fullført',
