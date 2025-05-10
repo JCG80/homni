@@ -1,25 +1,49 @@
 
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-// Common error handling utilities
-export const handleApiError = (error: any, defaultMessage: string = "En uventet feil oppstod"): Error => {
+/**
+ * Generic API error handler
+ */
+export const handleApiError = (error: any, defaultMessage: string = "En feil oppstod"): string => {
   console.error("API Error:", error);
-  return error instanceof Error ? error : new Error(defaultMessage);
+  
+  // Try to extract a meaningful error message
+  let errorMessage = defaultMessage;
+  
+  if (error?.message) {
+    errorMessage = error.message;
+  } else if (error?.error_description) {
+    errorMessage = error.error_description;
+  } else if (typeof error === 'string') {
+    errorMessage = error;
+  }
+  
+  return errorMessage;
 };
 
-// Common toast notifications
-export const showErrorToast = (title: string, description: string) => {
+/**
+ * Show a success toast with a default title and description
+ */
+export const showSuccessToast = (
+  title: string = "Suksess", 
+  description: string = "Operasjonen var vellykket"
+) => {
   toast({
     title,
     description,
-    variant: "destructive",
   });
 };
 
-export const showSuccessToast = (title: string, description: string) => {
+/**
+ * Show an error toast with a default title and description
+ */
+export const showErrorToast = (
+  title: string = "Feil", 
+  description: string = "En feil oppstod. Vennligst prøv igjen."
+) => {
   toast({
     title,
     description,
+    variant: "destructive"
   });
 };
