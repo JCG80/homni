@@ -8,12 +8,13 @@ import { MarkdownViewer } from './MarkdownViewer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { ProjectPlanEditor } from './ProjectPlanEditor';
+import { Badge } from '@/components/ui/badge';
 
 export const ProjectPlanViewer: React.FC = () => {
   const { projectPlan, isLoading, isEditing, setIsEditing, updateProjectPlan } = useProjectPlan();
   const { role } = useAuth();
   
-  const isAdmin = role === 'admin' || role === 'master-admin';
+  const isAdmin = role === 'admin' || role === 'master_admin';
   
   if (isLoading) {
     return (
@@ -60,7 +61,18 @@ export const ProjectPlanViewer: React.FC = () => {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{projectPlan.title}</CardTitle>
+        <div>
+          <CardTitle className="flex items-center gap-3">
+            {projectPlan.title}
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+              Oppdatert: {new Date(projectPlan.updated_at).toLocaleDateString('nb-NO')}
+            </Badge>
+          </CardTitle>
+          <div className="mt-2 flex gap-2">
+            <Badge variant="secondary">Fase 11</Badge>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Auth Module</Badge>
+          </div>
+        </div>
         {isAdmin && (
           <Button 
             variant="outline" 
@@ -74,6 +86,13 @@ export const ProjectPlanViewer: React.FC = () => {
         )}
       </CardHeader>
       <CardContent>
+        <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-md">
+          <h3 className="font-semibold text-amber-800">Nåværende fokus</h3>
+          <p className="text-amber-700 mt-1">
+            Refaktorering av autentiseringsmodulen for bedre typesikkerhet og feilhåndtering.
+            Prioritet: Høy
+          </p>
+        </div>
         <MarkdownViewer content={projectPlan.content} />
       </CardContent>
     </Card>

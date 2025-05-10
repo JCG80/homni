@@ -1,3 +1,4 @@
+
 # Development Notes
 
 ## Lead Distribution System
@@ -36,6 +37,8 @@
 - [x] Refactored LeadSettingsForm into smaller, more focused components
 - [x] Created separate components for strategy selection, budget inputs, and distribution toggles
 - [x] Extracted form logic to a custom hook for better reusability
+- [x] Fixed LeadSettingsPage import issues and component props
+- [x] Updated useLeadSettings hook for better error handling and state management
 
 #### Phase 5: Geo Services
 - [x] Implemented modulbasert adresseoppslagstjeneste (addressLookup)
@@ -81,12 +84,24 @@
 - [x] Added proper error handling and toast notifications
 
 #### Phase 10: Role-Based Access Control Enhancement
-- [x] Added 'anonymous' as a distinct role for unauthenticated users
+- [x] Added 'guest' as a distinct role for unauthenticated users
 - [x] Updated ProtectedRoute to properly handle anonymous vs. authenticated users
 - [x] Enhanced module access with specific permissions for anonymous users
 - [x] Created unit tests for anonymous role permissions
 - [x] Fixed role handling in useAuth hook for better type safety
 - [x] Streamlined role management to use a single source of truth
+- [x] Fixed type issues in LoginPage.tsx and other auth components
+- [x] Updated UserRole throughout the application for consistency
+
+#### Phase 11: Auth Module Refactoring (Current Focus)
+- [x] Refactored useAuth hook to provide more type safety and clarity
+- [x] Fixed ProtectedRoute component to properly handle role-based access
+- [x] Updated LoginPage to use correct UserRole enum values
+- [x] Standardized role checking logic across the application
+- [x] Updated Authenticated component for better profile handling
+- [x] Added proper error messaging for missing or invalid profiles
+- [x] Enhanced error handling across authentication flows
+- [x] Improved UX for profile creation and error states
 
 ### Testing Notes
 - Tested distribution strategy selection with both "roundRobin" and "category_match"
@@ -101,6 +116,13 @@
 - Tested content management system with all role types
 - Verified content editor properly validates input fields
 - Confirmed scheduled publishing functionality works correctly
+- Tested authentication flows with different user roles
+- Verified that ProtectedRoute correctly restricts access based on roles
+
+### Current In-Progress Tasks
+- [ ] Refactor remaining auth components for better type safety
+- [ ] Enhance project documentation with up-to-date status
+- [ ] Fix LeadSettingsPage component to use correct hook and props
 
 ### Pending Tasks
 - [ ] Add more test coverage for lead distribution functions
@@ -118,7 +140,7 @@
 
 ## Roadmap
 
-### Short-term
+### Short-term (Next 2-4 weeks)
 1. Complete the budget tracking system
 2. Implement lead quality scoring
 3. Add more detailed reporting for companies
@@ -126,6 +148,15 @@
 5. Extend parsing utilities to other entity types
 6. Enhance content publishing workflow with approval steps
 7. Add media library for content images
+8. Fix any remaining type issues in auth modules
+
+### Mid-term (Next 2-3 months)
+1. Implement AI-based lead matching algorithm (priority high)
+2. Create mobile-responsive design for all pages
+3. Add notification system for important events
+4. Implement advanced filtering and search across the application
+5. Add data export capabilities for reports
+6. Create dashboard widgets for key metrics
 
 ### Long-term
 1. Implement AI-based lead matching
@@ -222,12 +253,12 @@ describe('Module name', () => {
 
 ## Role-Based Access System
 
-### Anonymous vs. User Roles
+### Guest vs. Authenticated Roles
 
 The system now distinguishes between:
 
-- `anonymous`: Non-authenticated visitors who can access public pages like home, lead submission forms, and public information
-- `user`: Authenticated individuals who can access personal dashboards and lead history
+- `guest`: Non-authenticated visitors who can access public pages like home, lead submission forms, and public information
+- `member`: Authenticated individuals who can access personal dashboards and lead history
 
 This separation allows for:
 1. Better security through explicit role definitions
@@ -241,9 +272,9 @@ This separation allows for:
 // Define what modules each role can access
 function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
-    case 'anonymous':
+    case 'guest':
       return ['home', 'leads/submit', 'info'];
-    case 'user':
+    case 'member':
       return ['dashboard', 'leads'];
     // Other roles...
   }
@@ -255,11 +286,3 @@ function canAccessModule(role: UserRole, module: string): boolean {
   return allowed.includes('*') || allowed.includes(module);
 }
 ```
-
-### Usage in Protected Routes
-
-When using the `ProtectedRoute` component:
-- Non-authenticated users automatically receive the 'anonymous' role
-- The component checks if the current module is allowed for the user's role
-- If access is not allowed and the user is anonymous, they are redirected to login
-- If access is not allowed and the user is authenticated, they see the unauthorized page
