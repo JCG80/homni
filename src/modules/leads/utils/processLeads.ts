@@ -1,7 +1,6 @@
 
-import { Lead } from '@/types/leads';
-import { supabase } from "@/integrations/supabase/client";
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
+import { supabase } from "@/integrations/supabase/client";
 import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
 

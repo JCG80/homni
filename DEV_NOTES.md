@@ -31,6 +31,9 @@
 - [x] Improved type safety by adding proper casting from database responses to LeadSettings type
 - [x] Replaced server-side aggregation (.group()) with client-side grouping using lodash
 - [x] Updated LeadSettings interface to properly match both UI needs and database schema
+- [x] Refactored LeadSettingsForm into smaller, more focused components
+- [x] Created separate components for strategy selection, budget inputs, and distribution toggles
+- [x] Extracted form logic to a custom hook for better reusability
 
 ### Testing Notes
 - Tested distribution strategy selection with both "roundRobin" and "category_match"
