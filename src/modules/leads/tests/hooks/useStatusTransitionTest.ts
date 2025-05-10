@@ -1,71 +1,87 @@
 
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { getLeadById } from '../../api/lead-fetch';
+import { isStatusTransitionAllowed } from '../../utils/lead-utils';
+import { LeadStatus } from '@/types/leads';
 import { updateLeadStatus } from '../../api/lead-update';
-import { LeadStatus } from '../../types/types';
-import { toast } from '@/hooks/use-toast';
 
 export function useStatusTransitionTest() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [leadId, setLeadId] = useState('');
-  const [status, setStatus] = useState<LeadStatus>('new');
+  const [currentStatus, setCurrentStatus] = useState<LeadStatus | null>(null);
+  const [targetStatus, setTargetStatus] = useState<LeadStatus>('new');
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusCode, setStatusCode] = useState<number | null>(null);
 
-  // Test updating lead status
-  const testUpdateStatus = async () => {
-    if (!user) {
-      toast({
-        title: 'Error',
-        description: 'User must be logged in to test',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+  // Fetch the current lead status
+  const fetchLeadStatus = async () => {
     if (!leadId) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a lead ID',
-        variant: 'destructive',
-      });
+      setError('Please enter a lead ID');
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-    
     try {
-      // First, fetch the current lead to display its status
-      const currentLead = await getLeadById(leadId);
-      console.log('Current lead status:', currentLead.status);
-      
-      // Try to update the status
-      console.log(`Attempting to update lead ${leadId} status from ${currentLead.status} to ${status}`);
-      const result = await updateLeadStatus(leadId, status);
-      
-      setResult(result);
-      setStatusCode(200);
-      
-      toast({
-        title: 'Status Updated',
-        description: `Lead status updated successfully to ${status}`,
-      });
-    } catch (err) {
-      setStatusCode(400);
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
-      
-      toast({
-        title: 'Update Failed',
-        description: err instanceof Error ? err.message : 'Failed to update lead status',
-        variant: 'destructive',
-      });
+      setIsLoading(true);
+      setError(null);
+      setResult(null);
+      setStatusCode(null);
+
+      const { data, error } = await supabase
+        .from('leads')
+        .select('status')
+        .eq('id', leadId)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error(`Lead with ID ${leadId} not found`);
+      }
+
+      setCurrentStatus(data.status as LeadStatus);
+      setTargetStatus(data.status as LeadStatus);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch lead status');
+      setCurrentStatus(null);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Test status transition using the updateLeadStatus function
+  const testStatusTransition = async () => {
+    if (!currentStatus || !leadId) {
+      setError('Please fetch a lead first');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      setResult(null);
+      setStatusCode(null);
+
+      const updatedLead = await updateLeadStatus(leadId, targetStatus);
+      
+      setResult(updatedLead);
+      setStatusCode(200);
+    } catch (err: any) {
+      setError(err.message || 'Failed to update lead status');
+      setStatusCode(err.code || 400);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Check if a transition is allowed based on the current status
+  const isTransitionAllowed = (status: LeadStatus) => {
+    if (!currentStatus) return false;
+    return isStatusTransitionAllowed(currentStatus, status);
   };
 
   return {
@@ -73,11 +89,14 @@ export function useStatusTransitionTest() {
     isLoading,
     leadId,
     setLeadId,
-    status,
-    setStatus,
+    currentStatus,
+    targetStatus,
+    setTargetStatus,
     result,
     error,
     statusCode,
-    testUpdateStatus
+    fetchLeadStatus,
+    testStatusTransition,
+    isTransitionAllowed
   };
 }
