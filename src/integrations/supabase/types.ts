@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      company_insurance_types: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          type_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          type_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_insurance_types_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_insurance_types_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_profiles: {
         Row: {
           contact_name: string | null
@@ -57,6 +93,50 @@ export type Database = {
         }
         Relationships: []
       }
+      company_reviews: {
+        Row: {
+          company_id: string
+          content: string
+          created_at: string
+          id: string
+          is_verified: boolean | null
+          rating: number
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          rating: number
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          rating?: number
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_reviews_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content: {
         Row: {
           body: string | null
@@ -93,6 +173,69 @@ export type Database = {
           title?: string
           type?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      insurance_companies: {
+        Row: {
+          created_at: string
+          customer_rating: number | null
+          description: string | null
+          id: string
+          is_featured: boolean | null
+          logo_url: string | null
+          name: string
+          review_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_rating?: number | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name: string
+          review_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_rating?: number | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          logo_url?: string | null
+          name?: string
+          review_count?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      insurance_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
         }
         Relationships: []
       }
