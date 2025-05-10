@@ -1,94 +1,127 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { isStatusTransitionAllowed } from '../../utils/lead-utils';
+import { toast } from '@/hooks/use-toast';
 import { LeadStatus } from '@/types/leads';
+import { fetchLeadStatus } from '../../api/lead-fetch';
 import { updateLeadStatus } from '../../api/lead-update';
+import { isStatusTransitionAllowed } from '../../utils/lead-utils';
 
 export function useStatusTransitionTest() {
-  const { user } = useAuth();
+  const [leadId, setLeadId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [leadId, setLeadId] = useState('');
   const [currentStatus, setCurrentStatus] = useState<LeadStatus | null>(null);
   const [targetStatus, setTargetStatus] = useState<LeadStatus>('new');
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusCode, setStatusCode] = useState<number | null>(null);
 
-  // Fetch the current lead status
   const fetchLeadStatus = async () => {
-    if (!leadId) {
-      setError('Please enter a lead ID');
+    if (!leadId.trim()) {
+      toast({
+        title: "Mangler lead ID",
+        description: "Vennligst oppgi en gyldig ID",
+        variant: "destructive",
+      });
       return;
     }
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      setResult(null);
-      setStatusCode(null);
-
-      const { data, error } = await supabase
-        .from('leads')
-        .select('status')
-        .eq('id', leadId)
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      if (!data) {
-        throw new Error(`Lead with ID ${leadId} not found`);
-      }
-
-      setCurrentStatus(data.status as LeadStatus);
-      setTargetStatus(data.status as LeadStatus);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch lead status');
-      setCurrentStatus(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Test status transition using the updateLeadStatus function
-  const testStatusTransition = async () => {
-    if (!currentStatus || !leadId) {
-      setError('Please fetch a lead first');
-      return;
-    }
+    setIsLoading(true);
+    setCurrentStatus(null);
+    setError(null);
+    setStatusCode(null);
+    setResult(null);
 
     try {
-      setIsLoading(true);
-      setError(null);
-      setResult(null);
-      setStatusCode(null);
-
-      const updatedLead = await updateLeadStatus(leadId, targetStatus);
+      const { status, data, error: apiError } = await fetchLeadStatus(leadId);
       
-      setResult(updatedLead);
-      setStatusCode(200);
-    } catch (err: any) {
-      setError(err.message || 'Failed to update lead status');
-      setStatusCode(err.code || 400);
+      setStatusCode(status);
+      
+      if (apiError || !data) {
+        setError(apiError?.message || 'Kunne ikke hente lead-status');
+        toast({
+          title: 'Feil ved henting',
+          description: 'Kunne ikke hente lead-status',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      setCurrentStatus(data.status);
+      setResult(data);
+      
+      toast({
+        title: 'Lead funnet',
+        description: `Lead med status "${data.status}" ble funnet`,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Uventet feil oppstod');
+      toast({
+        title: 'Feil ved henting',
+        description: 'En feil oppstod ved henting av lead',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Check if a transition is allowed based on the current status
-  const isTransitionAllowed = (status: LeadStatus) => {
-    if (!currentStatus) return false;
-    return isStatusTransitionAllowed(currentStatus, status);
+  const testStatusTransition = async () => {
+    if (!leadId.trim() || !currentStatus) {
+      toast({
+        title: "Mangler informasjon",
+        description: "Hent lead-status først",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setStatusCode(null);
+    setResult(null);
+
+    try {
+      const { data, error: apiError, status } = await updateLeadStatus(leadId, targetStatus);
+      
+      setStatusCode(status);
+      
+      if (apiError) {
+        setError(apiError.message);
+        toast({
+          title: 'Oppdatering feilet',
+          description: apiError.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      setResult(data);
+      setCurrentStatus(targetStatus);
+      
+      toast({
+        title: 'Status oppdatert',
+        description: `Lead ble oppdatert til "${targetStatus}"`,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Uventet feil oppstod');
+      toast({
+        title: 'Oppdatering feilet',
+        description: 'En feil oppstod ved oppdatering av lead-status',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const isTransitionAllowed = currentStatus 
+    ? isStatusTransitionAllowed(currentStatus, targetStatus)
+    : false;
 
   return {
-    user,
-    isLoading,
     leadId,
     setLeadId,
+    isLoading,
     currentStatus,
     targetStatus,
     setTargetStatus,

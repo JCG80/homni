@@ -1,18 +1,16 @@
 
-import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useStatusTransitionTest } from '../hooks/useStatusTransitionTest';
 import { LeadIdInput } from './LeadIdInput';
 import { StatusTransitionSelector } from './StatusTransitionSelector';
 import { TransitionTestButton } from './TransitionTestButton';
 import { TransitionTestResult } from './TransitionTestResult';
+import { useStatusTransitionTest } from '../hooks/useStatusTransitionTest';
 
 export function StatusTransitionTest() {
   const {
-    user,
-    isLoading,
     leadId,
     setLeadId,
+    isLoading,
     currentStatus,
     targetStatus,
     setTargetStatus,
@@ -23,20 +21,13 @@ export function StatusTransitionTest() {
     testStatusTransition,
     isTransitionAllowed
   } = useStatusTransitionTest();
-  
+
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
-        <CardTitle>Test Status Transition Rules</CardTitle>
+        <CardTitle>Test Status Transitions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <h3 className="font-medium">Status Transition Validation</h3>
-          <p className="text-sm text-muted-foreground">
-            Test lead status transitions based on the allowed transition rules.
-          </p>
-        </div>
-        
         <LeadIdInput
           leadId={leadId}
           setLeadId={setLeadId}
@@ -44,24 +35,24 @@ export function StatusTransitionTest() {
           fetchLeadStatus={fetchLeadStatus}
           currentStatus={currentStatus}
         />
-        
+
         {currentStatus && (
-          <div className="space-y-6">
+          <>
             <StatusTransitionSelector
               currentStatus={currentStatus}
               targetStatus={targetStatus}
               setTargetStatus={setTargetStatus}
               isTransitionAllowed={isTransitionAllowed}
             />
-            
+
             <TransitionTestButton
-              isDisabled={!currentStatus || !user}
+              isDisabled={!isTransitionAllowed || !leadId}
               isLoading={isLoading}
               onClick={testStatusTransition}
             />
-          </div>
+          </>
         )}
-        
+
         <TransitionTestResult
           result={result}
           error={error}
