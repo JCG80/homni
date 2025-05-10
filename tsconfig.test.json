@@ -2,7 +2,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["vitest/globals", "vitest/importMeta", "node"]
+    "types": ["vitest/globals", "vitest/importMeta", "node", "@testing-library/jest-dom"]
   },
-  "include": ["src", "vitest.config.ts", "vitest.setup.ts"]
+  "include": ["src", "vitest.config.ts", "vitest.setup.ts", "src/setupTests.ts"]
 }
