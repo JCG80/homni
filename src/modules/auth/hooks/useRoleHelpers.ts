@@ -1,6 +1,6 @@
 
 import { useAuthContext } from './useAuthContext';
-import { UserRole } from '../types/types';
+import { UserRole } from '../utils/roles';
 
 /**
  * Hook for checking user roles and permissions

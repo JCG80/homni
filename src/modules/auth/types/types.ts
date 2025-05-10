@@ -1,4 +1,9 @@
 
+/**
+ * Core auth module types
+ */
+
+// Import UserRole from the new location
 import { UserRole } from '../utils/roles';
 
 export type { UserRole };

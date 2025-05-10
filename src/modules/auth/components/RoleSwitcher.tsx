@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { updateUserRole } from '../api';
 import { useAuth } from '../hooks/useAuth';
-import { UserRole } from '../types/types';
+import { UserRole } from '../utils/roles';
 import { toast } from '@/hooks/use-toast';
 
 export const RoleSwitcher = () => {
