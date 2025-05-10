@@ -1,4 +1,5 @@
 
-// Add any global test setup here
-// For example, if using jest-dom:
-// import '@testing-library/jest-dom';
+// Import jest-dom for DOM element assertions
+import '@testing-library/jest-dom';
+
+// Add any other global test setup here
