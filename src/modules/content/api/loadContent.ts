@@ -10,7 +10,7 @@ export async function loadAllContent(): Promise<Content[]> {
   const { data, error } = await supabase
     .from('content')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false }) as any; // Using type assertion until types are updated
   
   if (error) {
     console.error('Error loading content:', error);
@@ -28,7 +28,7 @@ export async function loadContentById(id: string): Promise<Content | null> {
     .from('content')
     .select('*')
     .eq('id', id)
-    .single();
+    .single() as any; // Using type assertion until types are updated
   
   if (error) {
     console.error('Error loading content by ID:', error);
@@ -46,7 +46,7 @@ export async function loadContentBySlug(slug: string): Promise<Content | null> {
     .from('content')
     .select('*')
     .eq('slug', slug)
-    .single();
+    .single() as any; // Using type assertion until types are updated
   
   if (error) {
     console.error('Error loading content by slug:', error);
@@ -65,7 +65,7 @@ export async function loadPublishedContent(type?: string): Promise<Content[]> {
     .select('*')
     .eq('published', true)
     .lte('published_at', new Date().toISOString())
-    .order('published_at', { ascending: false });
+    .order('published_at', { ascending: false }) as any; // Using type assertion until types are updated
   
   if (type) {
     query = query.eq('type', type);

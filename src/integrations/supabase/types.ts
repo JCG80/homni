@@ -39,6 +39,45 @@ export type Database = {
         }
         Relationships: []
       }
+      content: {
+        Row: {
+          body: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          published: boolean | null
+          published_at: string | null
+          slug: string
+          title: string
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          published?: boolean | null
+          published_at?: string | null
+          slug: string
+          title: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          published?: boolean | null
+          published_at?: string | null
+          slug?: string
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       lead_settings: {
         Row: {
           agents_paused: boolean

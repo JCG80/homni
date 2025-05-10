@@ -1,4 +1,3 @@
-
 import { useRoutes } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
 import { Unauthenticated } from './components/Unauthenticated';
@@ -13,11 +12,11 @@ import { LoginPage } from './modules/auth/pages/LoginPage';
 import { RegisterPage } from './modules/auth/pages/RegisterPage';
 import { ContentDashboard } from './modules/content/pages/ContentDashboard';
 import { EditContentPage } from './modules/content/pages/EditContentPage';
-import { RouteConfig } from './modules/auth/types/types';
+import { UserRole } from './modules/auth/types/types';
 
 const AppRoutes = () => {
   // Define routes with their auth requirements
-  const routesConfig: RouteConfig[] = [
+  const routesConfig = [
     {
       path: '/',
       element: <AdminLeadsPage />,
@@ -66,19 +65,19 @@ const AppRoutes = () => {
       path: '/admin/content',
       element: <ContentDashboard />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] // Only allow admin and editor roles
+      roles: ['admin', 'master-admin', 'editor'] as UserRole[] // Only allow admin and editor roles
     },
     {
       path: '/admin/content/new',
       element: <EditContentPage />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] // Only allow admin and editor roles
+      roles: ['admin', 'master-admin', 'editor'] as UserRole[] // Only allow admin and editor roles
     },
     {
       path: '/admin/content/edit/:id',
       element: <EditContentPage />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] // Only allow admin and editor roles
+      roles: ['admin', 'master-admin', 'editor'] as UserRole[] // Only allow admin and editor roles
     }
   ];
 

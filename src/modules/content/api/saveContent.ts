@@ -7,7 +7,8 @@ import { parseContent } from '../utils/parseContent';
  * Create new content
  */
 export async function createContent(contentData: ContentFormValues): Promise<Content | null> {
-  const userId = supabase.auth.getUser().then(res => res.data.user?.id);
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData?.user?.id;
   
   if (!userId) {
     console.error('No authenticated user found');
@@ -18,17 +19,16 @@ export async function createContent(contentData: ContentFormValues): Promise<Con
     .from('content')
     .insert({
       ...contentData,
-      created_by: await userId,
+      created_by: userId
     })
-    .select()
-    .single();
+    .select() as any; // Using type assertion until types are updated
   
   if (error) {
     console.error('Error creating content:', error);
     return null;
   }
   
-  return parseContent(data);
+  return parseContent(data[0]);
 }
 
 /**
@@ -42,13 +42,12 @@ export async function updateContent(id: string, contentData: Partial<ContentForm
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
-    .select()
-    .single();
+    .select() as any; // Using type assertion until types are updated
   
   if (error) {
     console.error('Error updating content:', error);
     return null;
   }
   
-  return parseContent(data);
+  return parseContent(data[0]);
 }

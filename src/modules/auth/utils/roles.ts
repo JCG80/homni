@@ -1,5 +1,5 @@
 
-export type UserRole = 'user' | 'company' | 'admin' | 'master-admin' | 'editor';
+export type UserRole = 'user' | 'company' | 'admin' | 'master-admin' | 'provider' | 'editor';
 
 /**
  * Get all modules a specific role has access to
@@ -16,6 +16,8 @@ export function getAllowedModulesForRole(role: UserRole): string[] {
       return ['content', 'dashboard'];
     case 'master-admin':
       return ['*']; // access to all modules
+    case 'provider':
+      return ['dashboard', 'leads', 'services'];
     default:
       return [];
   }
@@ -38,6 +40,7 @@ export function getRoleDisplayName(role: UserRole): string {
     'company': 'Bedrift',
     'admin': 'Administrator',
     'master-admin': 'Master Administrator',
+    'provider': 'Tjenesteleverandør',
     'editor': 'Redaktør'
   };
   
