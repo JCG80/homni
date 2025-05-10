@@ -16,8 +16,8 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
     
     console.log('Attempting dev login with email:', email);
     
-    // Try sign in with password first as most reliable method
-    const { data, error } = await supabase.auth.signInWithPassword({ 
+    // First attempt: Try sign in with standard test password
+    let { data, error } = await supabase.auth.signInWithPassword({ 
       email, 
       password: 'password' // Standard test password
     });
@@ -25,25 +25,43 @@ export async function devLogin(email: string): Promise<{success: boolean, error?
     if (error) {
       console.warn('Password login failed:', error.message);
       
-      // Fall back to OTP (passwordless) login
-      const { error: otpError } = await supabase.auth.signInWithOtp({ 
-        email,
-        options: {
-          shouldCreateUser: false // Only sign in existing users
-        }
+      // Second attempt: Try with a different common test password
+      const { data: data2, error: error2 } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password: 'test123' // Alternative test password
       });
       
-      if (otpError) {
-        console.error('OTP login also failed:', otpError.message);
-        return { success: false, error: `Login failed: ${otpError.message}` };
+      if (error2) {
+        console.warn('Alternative password login failed:', error2.message);
+        
+        // Final attempt: OTP (passwordless) login if available
+        const { data: otpData, error: otpError } = await supabase.auth.signInWithOtp({ 
+          email,
+          options: {
+            shouldCreateUser: false // Only sign in existing users
+          }
+        });
+        
+        if (otpError) {
+          if (otpError.message.includes('OTP') && otpError.message.includes('disabled')) {
+            console.error('OTP login is disabled on this project:', otpError.message);
+            return { success: false, error: `Login failed: OTP is disabled. Check Supabase Auth settings or use password authentication.` };
+          }
+          
+          console.error('All login methods failed:', otpError.message);
+          return { success: false, error: `Login failed after trying multiple methods. Last error: ${otpError.message}` };
+        }
+        
+        console.log('Dev OTP login sent for:', email);
+        return { success: true, error: 'OTP email sent. Check your inbox to complete login.' };
       }
       
-      console.log('Dev OTP login sent for:', email);
-      return { success: true, error: 'OTP email sent. Check your inbox.' };
+      // Alternative password worked
+      data = data2;
     }
     
-    console.log('Dev login successful for:', email, 'User:', data.user);
-    console.log('User metadata:', data.user?.user_metadata);
+    console.log('Dev login successful for:', email, 'User:', data?.user);
+    console.log('User metadata:', data?.user?.user_metadata);
     
     return { success: true };
   } catch (err) {
