@@ -20,6 +20,11 @@ export const LoginPage = () => {
     }
   }, [typeParam]);
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    navigate(`/login${value === 'business' ? '?type=business' : ''}`, { replace: true });
+  };
+
   const handleDevLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin') => {
     const result = await devLogin(role);
     if (result.error) {
@@ -38,23 +43,32 @@ export const LoginPage = () => {
         <div className="text-center">
           <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
             <TabsList className="grid w-full grid-cols-2 bg-white">
               <TabsTrigger value="private">Privatperson</TabsTrigger>
               <TabsTrigger value="business">Bedrift</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="private" className="mt-6">
+              <h1 className="text-3xl font-bold">Logg inn som privatperson</h1>
+              <p className="text-muted-foreground mt-2">
+                Velkommen tilbake til Homni
+              </p>
+              
+              <LoginForm redirectTo="/dashboard" userType="private" />
+            </TabsContent>
+            
+            <TabsContent value="business" className="mt-6">
+              <h1 className="text-3xl font-bold">Logg inn som bedrift</h1>
+              <p className="text-muted-foreground mt-2">
+                Logg inn på din bedriftskonto hos Homni
+              </p>
+              
+              <LoginForm redirectTo="/dashboard" userType="business" />
+            </TabsContent>
           </Tabs>
-          
-          <h1 className="text-3xl font-bold">Logg inn</h1>
-          <p className="text-muted-foreground mt-2">
-            {activeTab === 'business' 
-              ? 'Logg inn på din bedriftskonto hos Homni' 
-              : 'Velkommen tilbake til Homni'}
-          </p>
         </div>
         
-        <LoginForm redirectTo="/dashboard" userType={activeTab === 'business' ? 'business' : 'private'} />
-
         {import.meta.env.MODE === 'development' && (
           <div className="mt-8 text-center space-x-2">
             <button 
