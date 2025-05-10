@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -103,7 +102,7 @@ export const LandingPage = () => {
               value={activeTab}
               onValueChange={setActiveTab}
             >
-              <TabsList>
+              <TabsList className="bg-transparent">
                 <TabsTrigger value="private">Privatperson</TabsTrigger>
                 <TabsTrigger value="business">Bedrift</TabsTrigger>
               </TabsList>
@@ -122,10 +121,10 @@ export const LandingPage = () => {
       {/* Hero Section with Tab Content */}
       <section className="bg-gradient-to-br from-primary/80 to-primary py-20 text-white">
         <div className="container mx-auto px-4">
-          <Tabs defaultValue="private" className="w-full max-w-3xl mx-auto">
-            <TabsList className="w-full mb-8 grid grid-cols-2">
-              <TabsTrigger value="private" className="text-lg py-3 data-[state=active]:bg-white/20">Privatperson</TabsTrigger>
-              <TabsTrigger value="business" className="text-lg py-3 data-[state=active]:bg-white/20">Bedrift</TabsTrigger>
+          <Tabs defaultValue="private" className="w-full max-w-3xl mx-auto" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full mb-8 bg-white/20 grid grid-cols-2">
+              <TabsTrigger value="private" className="text-lg py-3 data-[state=active]:bg-transparent data-[state=active]:font-bold">Privatperson</TabsTrigger>
+              <TabsTrigger value="business" className="text-lg py-3 data-[state=active]:bg-transparent data-[state=active]:font-bold">Bedrift</TabsTrigger>
             </TabsList>
             
             <TabsContent value="private" className="text-center">

@@ -39,7 +39,7 @@ export const LoginPage = () => {
           <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 bg-white">
               <TabsTrigger value="private">Privatperson</TabsTrigger>
               <TabsTrigger value="business">Bedrift</TabsTrigger>
             </TabsList>
@@ -47,7 +47,9 @@ export const LoginPage = () => {
           
           <h1 className="text-3xl font-bold">Logg inn</h1>
           <p className="text-muted-foreground mt-2">
-            Velkommen tilbake til Homni
+            {activeTab === 'business' 
+              ? 'Logg inn på din bedriftskonto hos Homni' 
+              : 'Velkommen tilbake til Homni'}
           </p>
         </div>
         

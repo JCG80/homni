@@ -24,7 +24,7 @@ export const RegisterPage = () => {
           <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 bg-white">
               <TabsTrigger value="private">Privatperson</TabsTrigger>
               <TabsTrigger value="business">Bedrift</TabsTrigger>
             </TabsList>
