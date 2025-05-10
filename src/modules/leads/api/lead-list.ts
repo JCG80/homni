@@ -4,24 +4,15 @@ import { Lead } from '@/types/leads';
 import { parseLead } from '../utils/parseLead';
 import { ApiError, dedupeByKey } from '@/utils/apiHelpers';
 
-// Define a simpler type to avoid deep nesting
-type SimpleLead = {
-  id: string;
-  submitted_by: string;
-  status: string;
-  created_at: string;
-  title?: string;
-  description?: string;
-  category?: string;
-  assigned_company_id?: string;
-};
+// Define specific fields to select to avoid type recursion issues
+const LEAD_FIELDS = 'id, submitted_by, status, created_at, title, description, category, company_id';
 
 export const listLeads = async (): Promise<Lead[]> => {
   try {
-    // Use a basic select without generic type annotation to avoid deep type instantiation
+    // Avoid generic type parameters completely
     const { data: rawData, error } = await supabase
       .from('leads')
-      .select('id, submitted_by, status, created_at, title, description, category');
+      .select(LEAD_FIELDS);
     
     if (error) {
       throw new ApiError('listLeads', error);
@@ -29,8 +20,8 @@ export const listLeads = async (): Promise<Lead[]> => {
     
     if (!rawData) return [];
 
-    // Cast to simple type and map using parseLead
-    const leads = (rawData as SimpleLead[]).map(item => parseLead(item));
+    // Map using parseLead without casting to intermediate type
+    const leads = rawData.map(item => parseLead(item));
     return dedupeByKey(leads, 'id');
   } catch (error) {
     console.error('Unexpected error listing leads:', error);
@@ -40,10 +31,10 @@ export const listLeads = async (): Promise<Lead[]> => {
 
 export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => {
   try {
-    // Use basic select without generic type annotation
+    // Avoid generic type parameters completely
     const { data: rawData, error } = await supabase
       .from('leads')
-      .select('id, submitted_by, status, created_at, title, description, category')
+      .select(LEAD_FIELDS)
       .eq('company_id', companyId);
     
     if (error) {
@@ -52,7 +43,8 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
     
     if (!rawData) return [];
     
-    const leads = (rawData as SimpleLead[]).map(item => parseLead(item));
+    // Map directly without intermediate type
+    const leads = rawData.map(item => parseLead(item));
     return dedupeByKey(leads, 'id');
   } catch (error) {
     console.error(`Unexpected error listing leads for company ${companyId}:`, error);
@@ -62,10 +54,10 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
 
 export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
   try {
-    // Completely remove the generic parameter to avoid the deep instantiation error
+    // Avoid generic type parameters completely
     const { data: rawData, error } = await supabase
       .from('leads')
-      .select('id, submitted_by, status, created_at, title, description, category')
+      .select(LEAD_FIELDS)
       .eq('created_by', userId);
     
     if (error) {
@@ -74,7 +66,8 @@ export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
     
     if (!rawData) return [];
     
-    const leads = (rawData as SimpleLead[]).map(item => parseLead(item));
+    // Map directly without intermediate type
+    const leads = rawData.map(item => parseLead(item));
     return dedupeByKey(leads, 'id');
   } catch (error) {
     console.error(`Unexpected error listing leads for user ${userId}:`, error);
@@ -112,9 +105,10 @@ export const getUserLeads = listLeadsByUser;
 export const getCompanyLeads = listLeadsByCompany;
 export const getLeadById = async (leadId: string): Promise<Lead | null> => {
   try {
+    // Avoid generic type parameters completely
     const { data: rawData, error } = await supabase
       .from('leads')
-      .select('id, submitted_by, status, created_at, title, description, category')
+      .select(LEAD_FIELDS)
       .eq('id', leadId)
       .single();
     
@@ -122,7 +116,7 @@ export const getLeadById = async (leadId: string): Promise<Lead | null> => {
       throw new ApiError('getLeadById', error);
     }
     
-    return rawData ? parseLead(rawData as SimpleLead) : null;
+    return rawData ? parseLead(rawData) : null;
   } catch (error) {
     console.error(`Unexpected error fetching lead ${leadId}:`, error);
     return null;
