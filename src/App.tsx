@@ -18,6 +18,7 @@ import { LeadSettingsPage } from './modules/leads/pages/LeadSettingsPage'
 import { UnauthorizedPage } from './pages/UnauthorizedPage'
 import { InsuranceRequestSuccessPage } from './pages/InsuranceRequestSuccessPage'
 import { ProtectedRoute } from './modules/auth/components/ProtectedRoute'
+import { LoginPage } from './pages/LoginPage'
 
 // Import module-specific routes
 import { docsRoutes } from './modules/docs/routes'
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/admin/settings" element={<LeadSettingsPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
+                <Route path="/login" element={<LoginPage />} />
                 
                 {/* Include module routes */}
                 {docsRoutes}
