@@ -1,12 +1,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getProfile } from '../api';
-import { AuthUser, Profile, AuthState } from '../types/types';
-import { isUserRole } from '../utils/roles';
+import { AuthState, AuthUser } from '../types/types';
+import { useFetchProfile } from './useFetchProfile';
+import { useAuthDerivedState } from './useAuthDerivedState';
 
 /**
- * Hook for managing authentication state with fallback mechanisms
+ * Hook that manages the authentication state
  */
 export const useAuthState = () => {
   const [authState, setAuthState] = useState<AuthState>({
@@ -16,207 +16,132 @@ export const useAuthState = () => {
     error: null,
   });
 
-  /**
-   * Fetch user profile with fallback error handling
-   */
-  const fetchProfile = useCallback(async (userId: string) => {
-    try {
-      // Primary implementation - use the API
-      return await getProfile(userId);
-    } catch (primaryError) {
-      console.error("Primary profile fetch failed:", primaryError);
-      
-      try {
-        // Fallback implementation - direct database query
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
-          
-        if (error) throw error;
-        return data;
-      } catch (fallbackError) {
-        console.error("Fallback profile fetch also failed:", fallbackError);
-        throw fallbackError;
-      }
-    }
-  }, []);
-
-  /**
-   * Parse profile data with validation and fallback defaults
-   */
-  const parseProfileData = (profileData: any): Profile | null => {
-    if (!profileData) return null;
-  
-    try {
-      // Extract company_id from metadata if present
-      const companyId = profileData.company_id || 
-        (profileData.metadata && typeof profileData.metadata === 'object' ? 
-          profileData.metadata.company_id : undefined);
-      
-      // Validate that role is a valid UserRole
-      let role = profileData.role;
-      if (!isUserRole(role)) {
-        console.warn(`Invalid role '${role}' found in profile, defaulting to 'member'`);
-        role = 'member';
-      }
-      
-      return {
-        id: profileData.id,
-        full_name: profileData.full_name,
-        role: role,
-        company_id: companyId,
-        created_at: profileData.created_at,
-        metadata: profileData.metadata || {},
-        email: profileData.email,
-        phone: profileData.phone,
-        updated_at: profileData.updated_at
-      };
-    } catch (error) {
-      console.error("Error parsing profile data:", error);
-      // Return minimal valid profile as fallback
-      return {
-        id: profileData.id,
-        role: 'member',
-        created_at: profileData.created_at || new Date().toISOString(),
-        metadata: {}
-      };
-    }
-  };
-  
-  /**
-   * Refresh the user profile
-   */
-  const refreshProfile = async () => {
-    if (!authState.user) return;
-    
-    try {
-      setAuthState(prev => ({ ...prev, isLoading: true }));
-      const profileData = await fetchProfile(authState.user!.id);
-      const parsedProfile = parseProfileData(profileData);
-      setAuthState(prev => ({ 
-        ...prev, 
-        profile: parsedProfile, 
-        isLoading: false,
-        error: null
-      }));
-    } catch (error) {
-      console.error('Error refreshing profile:', error);
-      setAuthState(prev => ({ 
-        ...prev, 
-        error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
-        isLoading: false 
-      }));
-    }
-  };
+  const { fetchProfile } = useFetchProfile();
 
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session?.user) {
-          setAuthState(prev => ({ 
-            ...prev, 
-            user: {
-              id: session.user.id,
-              email: session.user.email,
-            },
-            isLoading: true
-          }));
-          
-          // Use setTimeout to avoid potential deadlock
-          setTimeout(async () => {
-            try {
-              const profileData = await fetchProfile(session.user.id);
-              const parsedProfile = parseProfileData(profileData);
-              setAuthState(prev => ({ 
-                ...prev, 
-                profile: parsedProfile, 
-                isLoading: false,
-                error: null
-              }));
-            } catch (error) {
-              console.error('Error fetching profile:', error);
-              setAuthState(prev => ({ 
-                ...prev, 
-                error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
-                isLoading: false 
-              }));
-            }
-          }, 0);
-        } else {
-          setAuthState({
-            user: null,
-            profile: null,
-            isLoading: false,
-            error: null,
-          });
-        }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        return;
       }
-    );
 
-    // THEN check for existing session
-    const initialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (session?.user) {
-        setAuthState(prev => ({ 
-          ...prev, 
-          user: {
-            id: session.user.id,
-            email: session.user.email,
-          },
+        const user: AuthUser = {
+          id: session.user.id,
+          email: session.user.email || undefined,
+        };
+
+        setAuthState(prev => ({
+          ...prev,
+          user,
           isLoading: true
         }));
-        
-        try {
-          const profileData = await fetchProfile(session.user.id);
-          const parsedProfile = parseProfileData(profileData);
-          setAuthState(prev => ({ 
-            ...prev, 
-            profile: parsedProfile, 
-            isLoading: false,
-            error: null
-          }));
-        } catch (error) {
-          console.error('Error fetching profile:', error);
-          setAuthState(prev => ({ 
-            ...prev, 
-            error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
-            isLoading: false 
-          }));
-        }
+
+        // Use setTimeout to avoid potential deadlock
+        setTimeout(async () => {
+          try {
+            const profile = await fetchProfile(user.id);
+            setAuthState(prev => ({
+              ...prev,
+              profile,
+              isLoading: false,
+              error: null
+            }));
+          } catch (error: any) {
+            console.error("Error after session change:", error);
+            setAuthState(prev => ({
+              ...prev,
+              isLoading: false,
+              error: new Error(error.message || "Failed to fetch profile")
+            }));
+          }
+        }, 0);
       } else {
-        setAuthState(prev => ({ ...prev, isLoading: false }));
+        setAuthState({
+          user: null,
+          profile: null,
+          isLoading: false,
+          error: null,
+        });
       }
-    };
-    
-    initialSession();
+    });
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const user: AuthUser = {
+          id: session.user.id,
+          email: session.user.email || undefined,
+        };
+
+        setAuthState(prev => ({
+          ...prev,
+          user,
+          isLoading: true
+        }));
+
+        fetchProfile(user.id)
+          .then(profile => {
+            setAuthState({
+              user,
+              profile,
+              isLoading: false,
+              error: null,
+            });
+          })
+          .catch(error => {
+            console.error("Error after initial session:", error);
+            setAuthState(prev => ({
+              ...prev,
+              isLoading: false,
+              error: new Error(error.message || "Failed to fetch profile")
+            }));
+          });
+      } else {
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+        }));
+      }
+    });
 
     return () => {
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
 
-  // Calculate derived state
-  const isAuthenticated = !!authState.user;
-  const role = authState.profile?.role;
-  const isAdmin = role === 'admin' || role === 'master_admin';
-  const isMasterAdmin = role === 'master_admin';
-  const isCompany = role === 'company';
-  const isUser = role === 'member';
+  const refreshProfile = useCallback(async () => {
+    if (authState.user) {
+      setAuthState(prev => ({ ...prev, isLoading: true }));
+      
+      try {
+        const profile = await fetchProfile(authState.user.id);
+        setAuthState(prev => ({
+          ...prev,
+          profile,
+          isLoading: false,
+          error: null,
+        }));
+      } catch (error: any) {
+        console.error("Error refreshing profile:", error);
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: new Error(error.message || "Failed to refresh profile"),
+        }));
+      }
+    }
+  }, [authState.user, fetchProfile]);
+
+  // Get derived state like isAdmin, isUser, etc.
+  const derivedState = useAuthDerivedState({
+    user: authState.user,
+    profile: authState.profile
+  });
 
   return {
-    authState,
+    ...authState,
+    ...derivedState,
     refreshProfile,
-    isAuthenticated,
-    isAdmin,
-    isMasterAdmin,
-    isCompany,
-    isUser,
-    role,
   };
 };
-
-export default useAuthState;
