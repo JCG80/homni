@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   fetchInsuranceCompanies,
@@ -18,7 +19,7 @@ import {
   createCompanyReview,
   updateCompanyReview,
   deleteCompanyReview
-} from "../api/insuranceApi";
+} from "../api";
 import { InsuranceCompany, InsuranceType, CompanyReview } from "../types/insurance-types";
 import { toast } from "@/hooks/use-toast";
 
