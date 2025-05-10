@@ -6,7 +6,7 @@
 ### Completed Tasks
 
 #### Phase 1: Lead Settings and Distribution Logic
-- [x] Enhanced the `processUnassignedLeads` function to respect lead settings
+- [x] Enhanced the `processLeadSettings` function to respect lead settings
 - [x] Added support for global pause settings
 - [x] Added filtering capabilities based on lead categories
 - [x] Created company settings UI component for viewing and updating lead settings
@@ -26,10 +26,13 @@
 - [x] Added proper role-based access controls
 
 #### Phase 4: Type Improvements and Refactoring
-- [x] Aligned with the base types from src/types/leads.ts
-- [x] Fixed Badge styling to use variant="default" with custom classes instead of deprecated variant="success"
-- [x] Improved type safety by adding proper casting from database responses to LeadSettings type
-- [x] Replaced server-side aggregation (.group()) with client-side grouping using lodash
+- [x] Fixed type errors in LeadSettings module
+- [x] Created proper mapping between database model and application types
+- [x] Added categories and zipCodes direct access to LeadSettings type
+- [x] Fixed missing exports and type usage across components
+- [x] Created missing useLeadsReport hook for LeadReportsPage
+- [x] Added type safety for accessing lead properties
+- [x] Fixed Badge styling to use variant="default" with custom classes
 - [x] Updated LeadSettings interface to properly match both UI needs and database schema
 - [x] Refactored LeadSettingsForm into smaller, more focused components
 - [x] Created separate components for strategy selection, budget inputs, and distribution toggles

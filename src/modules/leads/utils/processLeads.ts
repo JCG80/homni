@@ -73,7 +73,12 @@ export async function processUnassignedLeads(
       
       // Check zip code filters if they exist
       if (settings?.zipCodes && settings.zipCodes.length > 0) {
-        const zipCode = lead.postal_code || lead.zip_code || lead.zipCode;
+        // Extract zip code from lead using any available property
+        const zipCode = 
+          (lead as any).postal_code || 
+          (lead as any).zip_code || 
+          (lead as any).zipCode;
+          
         if (zipCode && !settings.zipCodes.includes(zipCode)) {
           console.log(`Lead ${lead.id} skipped due to zip code filter`);
           continue;

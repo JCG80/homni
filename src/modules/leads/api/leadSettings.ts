@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { mapDbToLeadSettings } from '../types/lead-settings';
 import { LeadSettings } from '../types/lead-settings';
@@ -66,4 +67,4 @@ export async function globalPause(paused: boolean) {
   await updateLeadSettings({ globally_paused: paused });
 }
 
-export { LeadSettings };
+export type { LeadSettings };
