@@ -10,6 +10,7 @@ import { useDetachedBuildings } from '../hooks/useDetachedBuildings';
 export const AdminDetachedBuildingsPage = () => {
   const {
     buildings,
+    isLoading,
     isDialogOpen,
     setIsDialogOpen,
     searchTerm,
@@ -44,6 +45,7 @@ export const AdminDetachedBuildingsPage = () => {
         onEdit={handleEdit}
         onDelete={handleDelete}
         searchTerm={searchTerm}
+        isLoading={isLoading}
       />
 
       <DetachedBuildingFormDialog

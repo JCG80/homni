@@ -11,31 +11,41 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-
-interface BuildingType {
-  id: string;
-  name: string;
-  description: string;
-}
+import { DetachedBuilding } from '../../types/detached-buildings-types';
 
 interface DetachedBuildingsTableProps {
-  buildings: BuildingType[];
-  onEdit: (building: BuildingType) => void;
+  buildings: DetachedBuilding[];
+  onEdit: (building: DetachedBuilding) => void;
   onDelete: (id: string) => void;
   searchTerm: string;
+  isLoading?: boolean;
 }
 
 export const DetachedBuildingsTable = ({
   buildings,
   onEdit,
   onDelete,
-  searchTerm
+  searchTerm,
+  isLoading = false
 }: DetachedBuildingsTableProps) => {
   // Filter buildings based on search term
   const filteredBuildings = buildings.filter(building => 
     building.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     building.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <div className="animate-pulse flex flex-col space-y-4 w-full">
+          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-10 bg-gray-200 rounded w-full"></div>
+          <div className="h-10 bg-gray-200 rounded w-full"></div>
+          <div className="h-10 bg-gray-200 rounded w-full"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Table>
@@ -65,7 +75,9 @@ export const DetachedBuildingsTable = ({
         {filteredBuildings.length === 0 && (
           <TableRow>
             <TableCell colSpan={3} className="text-center">
-              Ingen bygningstyper funnet
+              {searchTerm 
+                ? 'Ingen bygningstyper funnet for søket' 
+                : 'Ingen bygningstyper funnet'}
             </TableCell>
           </TableRow>
         )}

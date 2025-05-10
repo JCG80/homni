@@ -28,14 +28,16 @@ export const InsuranceQuoteFormNavigation = ({
         <div className="flex justify-between mb-2">
           {stepLabels.map((step, index) => (
             <div key={step.id} className="flex flex-col items-center">
-              <div className={`
-                w-10 h-10 rounded-full flex items-center justify-center text-sm
-                ${index === currentStep 
-                  ? 'bg-primary text-white' 
-                  : index < currentStep 
-                    ? 'bg-green-100 text-green-700 border border-green-200' 
-                    : 'bg-gray-100 text-gray-500'}
-              `}>
+              <div 
+                className={`
+                  w-10 h-10 rounded-full flex items-center justify-center text-sm
+                  ${index === currentStep 
+                    ? 'bg-primary text-white' 
+                    : index < currentStep 
+                      ? 'bg-green-100 text-green-700 border border-green-200' 
+                      : 'bg-gray-100 text-gray-500'}
+                `}
+              >
                 {index + 1}
               </div>
               <span className="text-xs mt-1 hidden md:block">{step.label}</span>

@@ -1,29 +1,75 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { 
+  fetchDetachedBuildings,
+  createDetachedBuilding,
+  updateDetachedBuilding,
+  deleteDetachedBuilding
+} from '../api/detachedBuildingsApi';
+import { DetachedBuilding, CreateDetachedBuildingInput, UpdateDetachedBuildingInput } from '../types/detached-buildings-types';
 import { BuildingFormValues } from '../components/admin/DetachedBuildingFormDialog';
-
-// Sample data for demonstration
-const SAMPLE_BUILDINGS = [
-  { id: '1', name: 'Garasje', description: 'Frittstående garasje' },
-  { id: '2', name: 'Uthus', description: 'Standard uthus' },
-  { id: '3', name: 'Anneks', description: 'Anneks med overnatting' },
-  { id: '4', name: 'Carport', description: 'Åpen carport' },
-  { id: '5', name: 'Redskapsbod', description: 'Bod til hageredskaper' },
-];
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useDetachedBuildings = () => {
-  const [buildings, setBuildings] = useState(SAMPLE_BUILDINGS);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentBuilding, setCurrentBuilding] = useState<BuildingFormValues | undefined>();
+  const queryClient = useQueryClient();
+
+  // Query to fetch buildings
+  const { data: buildings = [], isLoading } = useQuery({
+    queryKey: ['detachedBuildings'],
+    queryFn: fetchDetachedBuildings
+  });
+
+  // Add mutation
+  const addMutation = useMutation({
+    mutationFn: (data: CreateDetachedBuildingInput) => createDetachedBuilding(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['detachedBuildings'] });
+      toast.success('Bygningstype lagt til');
+      setIsDialogOpen(false);
+    },
+    onError: (error) => {
+      console.error('Error adding building:', error);
+      toast.error('Kunne ikke legge til bygningstype');
+    }
+  });
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateDetachedBuildingInput) => updateDetachedBuilding(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['detachedBuildings'] });
+      toast.success('Bygningstype oppdatert');
+      setIsDialogOpen(false);
+    },
+    onError: (error) => {
+      console.error('Error updating building:', error);
+      toast.error('Kunne ikke oppdatere bygningstype');
+    }
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteDetachedBuilding(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['detachedBuildings'] });
+      toast.success('Bygningstype slettet');
+    },
+    onError: (error) => {
+      console.error('Error deleting building:', error);
+      toast.error('Kunne ikke slette bygningstype');
+    }
+  });
 
   const handleAddNew = () => {
     setCurrentBuilding(undefined);
     setIsDialogOpen(true);
   };
 
-  const handleEdit = (building: typeof SAMPLE_BUILDINGS[0]) => {
+  const handleEdit = (building: DetachedBuilding) => {
     setCurrentBuilding({
       id: building.id,
       name: building.name,
@@ -34,35 +80,30 @@ export const useDetachedBuildings = () => {
 
   const handleDelete = (id: string) => {
     if (confirm('Er du sikker på at du vil slette denne bygningstypen?')) {
-      setBuildings(buildings.filter(building => building.id !== id));
-      toast.success('Bygningstype slettet');
+      deleteMutation.mutate(id);
     }
   };
 
   const handleSubmit = (values: BuildingFormValues) => {
     if (values.id) {
       // Edit existing building
-      setBuildings(buildings.map(building => 
-        building.id === values.id 
-          ? { ...building, name: values.name, description: values.description }
-          : building
-      ));
-      toast.success('Bygningstype oppdatert');
-    } else {
-      // Add new building
-      const newBuilding = {
-        id: Date.now().toString(),
+      updateMutation.mutate({
+        id: values.id,
         name: values.name,
         description: values.description,
-      };
-      setBuildings([...buildings, newBuilding]);
-      toast.success('Bygningstype lagt til');
+      });
+    } else {
+      // Add new building
+      addMutation.mutate({
+        name: values.name,
+        description: values.description,
+      });
     }
-    setIsDialogOpen(false);
   };
 
   return {
     buildings,
+    isLoading,
     isDialogOpen,
     setIsDialogOpen,
     searchTerm,
