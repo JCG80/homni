@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { Lead, LeadFilter } from '@/types/leads';
+import { parseLead } from '../utils/parseLead';
 
 /**
  * Get all leads with optional filters
@@ -23,7 +24,7 @@ export async function getLeads(filters: LeadFilter = {}): Promise<Lead[]> {
   const { data, error } = await query;
   
   if (error) throw error;
-  return data as Lead[];
+  return (data || []).map(item => parseLead(item));
 }
 
 /**
@@ -36,7 +37,7 @@ export async function getUserLeads(userId: string): Promise<Lead[]> {
     .eq('submitted_by', userId);
   
   if (error) throw error;
-  return data as Lead[];
+  return (data || []).map(item => parseLead(item));
 }
 
 /**
@@ -49,7 +50,7 @@ export async function getCompanyLeads(companyId: string): Promise<Lead[]> {
     .eq('company_id', companyId);
   
   if (error) throw error;
-  return data as Lead[];
+  return (data || []).map(item => parseLead(item));
 }
 
 /**
@@ -63,5 +64,5 @@ export async function getLeadById(leadId: string): Promise<Lead> {
     .single();
   
   if (error) throw error;
-  return data as Lead;
+  return parseLead(data);
 }

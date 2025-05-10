@@ -14,8 +14,9 @@ src/modules/leads/
 ├── pages/                # Route-baserte sider (f.eks. CompanyLeadsPage)
 ├── hooks/                # Egendefinerte hooks (f.eks. useLeadsReport)
 ├── utils/                # Logikk og distribusjonsstrategi (f.eks. processLeads)
+│   ├── parseLead.ts      # Validering og typesikker konvertering av Lead-data
 ├── types/                # Modulspesifikke typer hvis ikke delt globalt
-├── tests/                # Tester for alle overnevnte mapper
+├── __tests__/            # Tester for alle overnevnte mapper
 ```
 
 ---
@@ -38,29 +39,26 @@ Bruk `ProtectedRoute` og `useRoleGuard` for tilgangskontroll.
 
 ---
 
+## 🧪 TypeSikkerhet
+- Typer er definert i `@/types/leads.ts`
+- Valider alltid `LeadStatus` og `LeadSettings` eksplisitt med valideringsfunksjoner
+- Bruk parsing-funksjoner fra `utils/` (f.eks. `parseLead`) for å sikre typesikker konvertering
+- Ikke bruk `any` eller direkte casting med `as Lead[]` - bruk parser-funksjonene
+- Example:
+```ts
+// Riktig bruk av parseLead
+const { data } = await supabase.from('leads').select('*');
+const leads = (data || []).map(parseLead);
+```
+
+---
+
 ## ✅ Testing
-- Alle tester ligger i `tests/`
+- Alle tester ligger i `__tests__/`
 - Bruk `vitest`, `jsdom` og `@testing-library/react`
 - Kjør test: `npm run test`
 
 ---
 
-## 🧪 TypeSikkerhet
-- Typer er definert i `@/types/leads.ts`
-- Valider alltid `LeadStatus` og `LeadSettings` eksplisitt
-- Ikke bruk `any` – bruk streng typesetting med importerte typer
-
----
-
-## 📌 Eksempel på bruk
-```ts
-const { data } = await supabase.from('leads').select('*');
-const leads = data.map(item => ({
-  ...item,
-  status: isValidLeadStatus(item.status) ? item.status : 'new',
-}));
-```
-
----
-
 📁 Endringer i modulen skal dokumenteres i `DEV_NOTES.md` og følge prosjektets modulstandard.
+
