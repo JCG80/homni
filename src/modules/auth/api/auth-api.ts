@@ -307,7 +307,9 @@ export const verifyMFA = async (factorId: string, challengeId: string, verificat
       return { verified: false, error: verifyResult.error };
     }
     
-    return { verified: verifyResult.data?.verified || false, error: null };
+    // Fixed: Check if data exists and handle the result properly
+    // The .verify() method doesn't return a "verified" property directly
+    return { verified: !!verifyResult.data, error: null };
   } catch (error) {
     console.error("Unexpected MFA verification error:", error);
     return { verified: false, error };

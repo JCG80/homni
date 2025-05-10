@@ -23,7 +23,8 @@ export const PerformanceMonitor = () => {
       
       // Make a simple request to measure response time
       // Fixed: Properly handle Promise with then/catch
-      supabase.from('leads').select('count')
+      // Using Promise.resolve() to ensure we're working with a proper Promise
+      Promise.resolve(supabase.from('leads').select('count'))
         .then(() => {
           const endTime = Date.now();
           const responseTime = endTime - startTime;
