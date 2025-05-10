@@ -29,7 +29,7 @@ export const LoginPage = () => {
           </p>
         </div>
         
-        <LoginForm redirectTo="/" />
+        <LoginForm redirectTo="/dashboard" />
 
         {import.meta.env.MODE === 'development' && (
           <div className="mt-8 text-center space-x-2">

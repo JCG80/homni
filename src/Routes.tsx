@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
@@ -12,16 +13,28 @@ import { LeadManagementPage } from './modules/leads/pages/LeadManagementPage';
 import { LeadSettingsPage } from './modules/leads/pages/LeadSettingsPage';
 import { ProjectPlanPage } from './modules/docs/pages/ProjectPlanPage';
 import { docsRoutes } from './modules/docs/routes';
+import { LandingPage } from './pages/LandingPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { PowerComparisonPage } from './pages/PowerComparisonPage';
 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<Unauthenticated />} />
-      <Route path="/" element={
+      {/* Offentlige sider som er tilgjengelig for alle */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/strom" element={<PowerComparisonPage />} />
+      <Route path="/strøm" element={<PowerComparisonPage />} />
+      
+      {/* Beskyttede sider som krever innlogging */}
+      <Route path="/dashboard" element={
         <Authenticated>
           <HomePage />
         </Authenticated>
       } />
+      
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       
       {/* Auth management - only for admins */}
@@ -72,8 +85,8 @@ export function AppRoutes() {
       {/* Documentation routes */}
       {docsRoutes}
       
-      {/* Catch-all route to redirect to home page */}
-      <Route path="*" element={<HomePage />} />
+      {/* Catch-all route to redirect to landing page */}
+      <Route path="*" element={<LandingPage />} />
     </Routes>
   );
 }

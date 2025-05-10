@@ -1,19 +1,20 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 
 export const LandingPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="border-b bg-white">
         <div className="container mx-auto py-4 px-4 flex items-center justify-between">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-primary">Homni</h1>
+            <Link to="/" className="text-2xl font-bold text-primary">Homni</Link>
           </div>
           
           <NavigationMenu>
@@ -24,9 +25,9 @@ export const LandingPage = () => {
                   <ul className="grid gap-3 p-6 w-[400px] md:w-[500px] lg:w-[600px] grid-cols-2">
                     <li className="row-span-3">
                       <NavigationMenuLink asChild>
-                        <a
+                        <Link
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/50 to-primary p-6 no-underline outline-none focus:shadow-md"
-                          href="/strøm"
+                          to="/strøm"
                         >
                           <div className="mt-4 mb-2 text-lg font-medium text-white">
                             Strøm
@@ -34,46 +35,46 @@ export const LandingPage = () => {
                           <p className="text-sm leading-tight text-white/90">
                             Sammenlign strømpriser fra ulike leverandører og finn den beste avtalen for ditt forbruk.
                           </p>
-                        </a>
+                        </Link>
                       </NavigationMenuLink>
                     </li>
                     <li>
                       <NavigationMenuLink asChild>
-                        <a
+                        <Link
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          href="/bredbånd"
+                          to="/bredbånd"
                         >
                           <div className="text-sm font-medium leading-none">Bredbånd</div>
                           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                             Finn det beste bredbåndet til ditt område.
                           </p>
-                        </a>
+                        </Link>
                       </NavigationMenuLink>
                     </li>
                     <li>
                       <NavigationMenuLink asChild>
-                        <a
+                        <Link
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          href="/mobilabonnement"
+                          to="/mobilabonnement"
                         >
                           <div className="text-sm font-medium leading-none">Mobilabonnement</div>
                           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                             Sammenlign priser og finn det billigste abonnementet.
                           </p>
-                        </a>
+                        </Link>
                       </NavigationMenuLink>
                     </li>
                     <li>
                       <NavigationMenuLink asChild>
-                        <a
+                        <Link
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          href="/forsikring"
+                          to="/forsikring"
                         >
                           <div className="text-sm font-medium leading-none">Forsikring</div>
                           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                             Sammenlign og få oversikt over forsikringstilbud.
                           </p>
-                        </a>
+                        </Link>
                       </NavigationMenuLink>
                     </li>
                   </ul>
@@ -113,7 +114,11 @@ export const LandingPage = () => {
             Sammenlign priser og finn de beste tilbudene på strøm, forsikring, bredbånd og mer.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-white text-primary hover:bg-white/90">
+            <Button 
+              size="lg" 
+              className="bg-white text-primary hover:bg-white/90"
+              onClick={() => navigate('/strøm')}
+            >
               Sammenlign strømpriser
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">

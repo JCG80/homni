@@ -15,7 +15,7 @@ export const RegisterPage = () => {
           </p>
         </div>
         
-        <RegisterForm redirectTo="/" />
+        <RegisterForm redirectTo="/dashboard" />
         
         <div className="text-center text-sm text-muted-foreground">
           <Link to="/" className="hover:text-primary">
