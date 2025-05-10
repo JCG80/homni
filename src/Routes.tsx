@@ -13,6 +13,11 @@ import { LoginPage } from './modules/auth/pages/LoginPage';
 import { RegisterPage } from './modules/auth/pages/RegisterPage';
 import { ContentDashboard } from './modules/content/pages/ContentDashboard';
 import { EditContentPage } from './modules/content/pages/EditContentPage';
+import { ContentAdminPage } from './modules/content/pages/ContentAdminPage';
+import { SystemMapPage } from './modules/system/pages/SystemMapPage';
+import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
+import { MemberListPage } from './modules/user/pages/MemberListPage';
+import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles';
 
 const AppRoutes = () => {
@@ -32,6 +37,7 @@ const AppRoutes = () => {
       path: '/register',
       element: <RegisterPage />
     },
+    // Leads module
     {
       path: '/leads/company',
       element: <CompanyLeadsPage />,
@@ -66,19 +72,52 @@ const AppRoutes = () => {
       path: '/admin/content',
       element: <ContentDashboard />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] as UserRole[] // Only allow admin and editor roles
+      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
     },
     {
       path: '/admin/content/new',
       element: <EditContentPage />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] as UserRole[] // Only allow admin and editor roles
+      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
     },
     {
       path: '/admin/content/edit/:id',
       element: <EditContentPage />,
       requiresAuth: true,
-      roles: ['admin', 'master-admin', 'editor'] as UserRole[] // Only allow admin and editor roles
+      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
+    },
+    // New Content Admin Page
+    {
+      path: '/admin/content-admin',
+      element: <ContentAdminPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin', 'editor'] as UserRole[]
+    },
+    // System module routes
+    {
+      path: '/admin/system/map',
+      element: <SystemMapPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin'] as UserRole[]
+    },
+    {
+      path: '/admin/system/modules',
+      element: <SystemModulesPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin'] as UserRole[]
+    },
+    // User/Company management routes
+    {
+      path: '/admin/users/members',
+      element: <MemberListPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin'] as UserRole[]
+    },
+    {
+      path: '/admin/users/companies',
+      element: <CompanyListPage />,
+      requiresAuth: true,
+      roles: ['admin', 'master-admin'] as UserRole[]
     }
   ];
 
