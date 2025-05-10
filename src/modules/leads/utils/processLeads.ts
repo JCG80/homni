@@ -1,10 +1,9 @@
 
-import { Lead } from '../types/types';
+import { Lead } from '@/types/leads';
 import { supabase } from "@/integrations/supabase/client";
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
 import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
-import { LeadSettings } from '../types/lead-settings';
 
 /**
  * Processes unassigned leads using the specified distribution strategy
@@ -20,8 +19,8 @@ export async function processUnassignedLeads(
     
     if (!settings) {
       console.warn('No lead settings found, using default strategy');
-    } else if (settings.globally_paused) {
-      console.log('Lead distribution is globally paused in settings');
+    } else if (settings.paused) {
+      console.log('Lead distribution is paused in settings');
       toast({
         title: 'Distribution paused',
         description: 'Lead distribution is currently paused in system settings',
@@ -65,13 +64,18 @@ export async function processUnassignedLeads(
     // Process each lead
     for (const lead of unassignedLeads) {
       // Apply filters from lead settings if they exist
-      if (settings?.filters) {
+      if (settings?.categories && settings.categories.length > 0) {
         // Simple filtering logic based on category
-        if (settings.filters.categories && 
-            Array.isArray(settings.filters.categories) && 
-            settings.filters.categories.length > 0 && 
-            !settings.filters.categories.includes(lead.category)) {
+        if (!settings.categories.includes(lead.category)) {
           console.log(`Lead ${lead.id} skipped due to category filter`);
+          continue;
+        }
+      }
+      
+      // Check zip code filters if they exist
+      if (settings?.zipCodes && settings.zipCodes.length > 0 && lead.zipCode) {
+        if (!settings.zipCodes.includes(lead.zipCode)) {
+          console.log(`Lead ${lead.id} skipped due to zip code filter`);
           continue;
         }
       }

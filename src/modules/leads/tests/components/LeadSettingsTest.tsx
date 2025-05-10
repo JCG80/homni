@@ -4,7 +4,7 @@ import { fetchLeadSettings } from '../../api/leadSettings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
-import { LeadSettings } from '../../api/leadSettings';
+import { LeadSettings } from '../../types/lead-settings';
 
 export const LeadSettingsTest = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);
@@ -55,6 +55,9 @@ export const LeadSettingsTest = () => {
               <span className="text-gray-500">Strategy:</span>
               <span className="font-medium">{settings.strategy}</span>
               
+              <span className="text-gray-500">Paused:</span>
+              <span className="font-medium">{settings.paused ? 'Yes' : 'No'}</span>
+              
               <span className="text-gray-500">Budget:</span>
               <span className="font-medium">{settings.budget || 'Not set'}</span>
               
@@ -64,25 +67,23 @@ export const LeadSettingsTest = () => {
               <span className="text-gray-500">Monthly Budget:</span>
               <span className="font-medium">{settings.monthly_budget || 'Not set'}</span>
               
-              <span className="text-gray-500">Global Pause:</span>
-              <span className="font-medium">{settings.global_pause ? 'Yes' : 'No'}</span>
-              
-              <span className="text-gray-500">Agents Paused:</span>
-              <span className="font-medium">{settings.agents_paused ? 'Yes' : 'No'}</span>
-              
-              <span className="text-gray-500">Globally Paused:</span>
-              <span className="font-medium">{settings.globally_paused ? 'Yes' : 'No'}</span>
-              
               <span className="text-gray-500">Last Updated:</span>
               <span className="font-medium">
                 {new Date(settings.updated_at).toLocaleString()}
               </span>
               
-              <span className="text-gray-500">Filters:</span>
+              <span className="text-gray-500">Categories:</span>
               <span className="font-medium">
-                {Object.keys(settings.filters).length > 0 
-                  ? JSON.stringify(settings.filters, null, 2) 
-                  : 'No filters'}
+                {settings.categories && settings.categories.length > 0 
+                  ? settings.categories.join(', ') 
+                  : 'No categories'}
+              </span>
+              
+              <span className="text-gray-500">Zip Codes:</span>
+              <span className="font-medium">
+                {settings.zipCodes && settings.zipCodes.length > 0 
+                  ? settings.zipCodes.join(', ') 
+                  : 'No zip codes'}
               </span>
             </div>
           </div>

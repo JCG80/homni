@@ -1,9 +1,12 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { PieChart, Pie, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Lead } from '@/types/leads';
+import _ from 'lodash';
 
 // Types for the aggregated data
 interface StatusCount {
@@ -40,36 +43,26 @@ export const LeadReportsPage = () => {
       try {
         setDataLoading(true);
         
-        // Fetch all leads and compute aggregations client-side instead of using group
+        // Fetch all leads and compute aggregations client-side 
         const { data: allLeads, error: leadsError } = await supabase
           .from('leads')
           .select('*');
         
         if (leadsError) throw leadsError;
         
-        if (allLeads) {
-          // Process status counts
-          const statusMap: Record<string, number> = {};
-          allLeads.forEach(lead => {
-            const status = lead.status;
-            statusMap[status] = (statusMap[status] || 0) + 1;
-          });
-          
-          const statusData: StatusCount[] = Object.keys(statusMap).map(status => ({
+        if (allLeads && allLeads.length > 0) {
+          // Process status counts using lodash
+          const statusGroups = _.groupBy(allLeads, 'status');
+          const statusData: StatusCount[] = Object.entries(statusGroups).map(([status, leads]) => ({
             status,
-            count: statusMap[status]
+            count: leads.length
           }));
           
-          // Process category counts
-          const categoryMap: Record<string, number> = {};
-          allLeads.forEach(lead => {
-            const category = lead.category;
-            categoryMap[category] = (categoryMap[category] || 0) + 1;
-          });
-          
-          const categoryData: CategoryCount[] = Object.keys(categoryMap).map(category => ({
+          // Process category counts using lodash
+          const categoryGroups = _.groupBy(allLeads, 'category');
+          const categoryData: CategoryCount[] = Object.entries(categoryGroups).map(([category, leads]) => ({
             category,
-            count: categoryMap[category]
+            count: leads.length
           }));
           
           setStatusCounts(statusData);
@@ -86,8 +79,8 @@ export const LeadReportsPage = () => {
             dateCountMap[dateStr] = 0;
           }
           
-          // Count leads per day
-          allLeads.forEach(lead => {
+          // Count leads per day using lodash
+          allLeads.forEach((lead: any) => {
             const date = new Date(lead.created_at).toISOString().split('T')[0];
             if (dateCountMap[date] !== undefined) {
               dateCountMap[date]++;

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
@@ -26,7 +27,7 @@ export const CompanyLeadSettings = () => {
         
         // Initialize the paused state
         if (data) {
-          setPaused(data.globally_paused);
+          setPaused(data.paused);
         }
       } catch (err) {
         console.error('Error loading settings:', err);
@@ -105,7 +106,7 @@ export const CompanyLeadSettings = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Lead Distribution Settings</span>
-          <Badge variant={paused ? "destructive" : "outline"} className={paused ? "" : "bg-green-100 text-green-800 hover:bg-green-100"}>
+          <Badge variant={paused ? "destructive" : "default"} className={paused ? "" : "bg-green-100 text-green-800 hover:bg-green-100"}>
             {paused ? "Paused" : "Active"}
           </Badge>
         </CardTitle>
@@ -152,10 +153,10 @@ export const CompanyLeadSettings = () => {
             
             <span className="text-gray-500">Category Filters:</span>
             <span className="font-medium">
-              {settings?.filters && settings.filters.categories && 
-               Array.isArray(settings.filters.categories) && 
-               settings.filters.categories.length > 0 
-                ? settings.filters.categories.join(', ') 
+              {settings?.categories && 
+               Array.isArray(settings.categories) && 
+               settings.categories.length > 0 
+                ? settings.categories.join(', ') 
                 : 'No filters'}
             </span>
           </div>

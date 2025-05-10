@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
-import { fetchLeadSettings, updateLeadSettings, LeadSettings } from '../api/leadSettings';
+import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
+import { LeadSettings } from '../types/lead-settings';
 import { DistributionStrategy, DISTRIBUTION_STRATEGIES } from '../strategies/strategyFactory';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -20,9 +21,8 @@ export const LeadSettingsForm = () => {
   const [strategy, setStrategy] = useState<DistributionStrategy>('category_match');
   const [dailyBudget, setDailyBudget] = useState<string>('');
   const [monthlyBudget, setMonthlyBudget] = useState<string>('');
-  const [globalPause, setGlobalPause] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [agentsPaused, setAgentsPaused] = useState(false);
-  const [globallyPaused, setGloballyPaused] = useState(false);
   
   useEffect(() => {
     const loadSettings = async () => {
@@ -37,9 +37,8 @@ export const LeadSettingsForm = () => {
           setStrategy(data.strategy as DistributionStrategy);
           setDailyBudget(data.daily_budget?.toString() || '');
           setMonthlyBudget(data.monthly_budget?.toString() || '');
-          setGlobalPause(data.global_pause);
+          setPaused(data.paused);
           setAgentsPaused(data.agents_paused);
-          setGloballyPaused(data.globally_paused);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load settings');
@@ -61,17 +60,24 @@ export const LeadSettingsForm = () => {
     try {
       setSaving(true);
       
-      // Create a proper Record<string, any> for filters
-      const filtersRecord: Record<string, any> = settings?.filters as Record<string, any> || {};
+      // Create a proper filters object
+      const filtersObj: Record<string, any> = {};
+      
+      if (settings?.categories) {
+        filtersObj.categories = settings.categories;
+      }
+      
+      if (settings?.zipCodes) {
+        filtersObj.zipCodes = settings.zipCodes;
+      }
       
       await updateLeadSettings({
         strategy,
         daily_budget: dailyBudget ? parseFloat(dailyBudget) : null,
         monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
-        global_pause: globalPause,
+        globally_paused: paused,
         agents_paused: agentsPaused,
-        globally_paused: globallyPaused,
-        filters: filtersRecord
+        filters: filtersObj
       });
       
       toast({
@@ -160,29 +166,20 @@ export const LeadSettingsForm = () => {
             
             <div className="flex items-center space-x-2">
               <Switch
-                id="global-pause"
-                checked={globalPause}
-                onCheckedChange={setGlobalPause}
+                id="pause-leads"
+                checked={!paused}
+                onCheckedChange={() => setPaused(!paused)}
               />
-              <Label htmlFor="global-pause">Global Pause</Label>
+              <Label htmlFor="pause-leads">{paused ? 'Resume' : 'Pause'} Lead Distribution</Label>
             </div>
             
             <div className="flex items-center space-x-2">
               <Switch
                 id="agents-paused"
-                checked={agentsPaused}
-                onCheckedChange={setAgentsPaused}
+                checked={!agentsPaused}
+                onCheckedChange={() => setAgentsPaused(!agentsPaused)}
               />
-              <Label htmlFor="agents-paused">Pause Agents</Label>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="globally-paused"
-                checked={globallyPaused}
-                onCheckedChange={setGloballyPaused}
-              />
-              <Label htmlFor="globally-paused">System-wide Pause</Label>
+              <Label htmlFor="agents-paused">{agentsPaused ? 'Enable' : 'Disable'} Agent Lead Distribution</Label>
             </div>
             
             <Button 
