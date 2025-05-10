@@ -35,7 +35,23 @@ const AuthContext = createContext<AuthContextType>({
 // AuthProvider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const authData = useAuthState();
-  return <AuthContext.Provider value={authData}>{children}</AuthContext.Provider>;
+  
+  // Map the values from authState to match the AuthContextType
+  const authContextValue: AuthContextType = {
+    user: authData.user,
+    profile: authData.profile,
+    isLoading: authData.isLoading,
+    error: authData.error,
+    refreshProfile: authData.refreshProfile,
+    isAuthenticated: authData.isAuthenticated,
+    isAdmin: authData.isAdmin,
+    isMasterAdmin: authData.isMasterAdmin,
+    isCompany: authData.isCompany,
+    isUser: authData.isUser,
+    role: authData.role,
+  };
+  
+  return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
 };
 
 // Named export for the useAuth hook
