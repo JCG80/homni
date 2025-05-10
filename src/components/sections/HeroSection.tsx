@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';

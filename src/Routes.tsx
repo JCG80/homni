@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
 import { Unauthenticated } from './components/Unauthenticated';
 import { HomePage } from './pages/HomePage';
@@ -21,14 +21,16 @@ import { PowerComparisonPage } from './pages/PowerComparisonPage';
 export function AppRoutes() {
   return (
     <Routes>
-      {/* Offentlige sider som er tilgjengelig for alle */}
+      {/* Public pages accessible to everyone */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/strom" element={<PowerComparisonPage />} />
-      <Route path="/strøm" element={<PowerComparisonPage />} />
       
-      {/* Beskyttede sider som krever innlogging */}
+      {/* Redirect from /strøm to /strom for consistency */}
+      <Route path="/strøm" element={<Navigate to="/strom" replace />} />
+      
+      {/* Protected pages requiring authentication */}
       <Route path="/dashboard" element={
         <Authenticated>
           <HomePage />
