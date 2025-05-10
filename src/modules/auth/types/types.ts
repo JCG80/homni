@@ -1,5 +1,7 @@
 
-export type UserRole = 'user' | 'company' | 'admin' | 'master-admin' | 'provider' | 'editor';
+import { UserRole } from '../utils/roles';
+
+export { UserRole };
 
 export interface Profile {
   id: string;

@@ -94,3 +94,46 @@ export function isContentEditorRole(role: UserRole | null): boolean {
   if (!role) return false;
   return ['admin', 'master-admin', 'editor'].includes(role);
 }
+
+/**
+ * Determine user role based on metadata or default to basic user
+ */
+export function determineUserRole(metadata: Record<string, any> | null): UserRole {
+  if (!metadata || !metadata.role) {
+    return 'user';
+  }
+
+  const role = metadata.role as string;
+  
+  // Validate if the role is a valid UserRole
+  if (ALL_ROLES.includes(role as UserRole)) {
+    return role as UserRole;
+  }
+  
+  return 'user'; // Default fallback role
+}
+
+/**
+ * Get all modules that can be accessed by a specific role using a module access map
+ */
+export function getAccessibleModules(
+  role: UserRole | null,
+  moduleAccessMap: Record<string, UserRole[]> = {
+    'leads': ['user', 'company', 'admin', 'master-admin'],
+    'admin': ['admin', 'master-admin'],
+    'company': ['company', 'admin', 'master-admin'],
+    'geo': ['user', 'company', 'admin', 'master-admin', 'provider'],
+    'content': ['admin', 'master-admin', 'editor'],
+    'settings': ['admin', 'master-admin']
+  }
+): string[] {
+  if (!role) return [];
+  
+  // Master admin can access everything
+  if (role === 'master-admin') return Object.keys(moduleAccessMap);
+  
+  // Find all modules this role can access
+  return Object.entries(moduleAccessMap)
+    .filter(([_, allowedRoles]) => allowedRoles.includes(role))
+    .map(([moduleName, _]) => moduleName);
+}
