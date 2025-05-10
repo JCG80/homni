@@ -1,4 +1,5 @@
 
+// ⚡️ FIX: Updated ContentEditor to properly type contentType
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,11 +10,11 @@ import { toast } from '@/hooks/use-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { loadContent } from '../api/loadContent';
 import { saveContent } from '../api/saveContent';
-import { ContentFormValues } from '../types/content-types';
+import { ContentFormValues, ContentType } from '../types/content-types';
 
 export interface ContentEditorProps {
   contentId?: string;
-  contentType?: string;
+  contentType?: ContentType;
   onSave?: () => void;
   isLoading?: boolean;
 }

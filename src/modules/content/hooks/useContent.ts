@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Content, ContentFormValues } from '../types/content-types';
 import { loadAllContent, loadContentById, loadContentBySlug, loadPublishedContent } from '../api/loadContent';
-import { createContent, updateContent } from '../api/saveContent';
+import { saveContent, createContent, updateContent } from '../api/saveContent';
 import { deleteContent } from '../api/deleteContent';
+import { parseContent } from '../utils/parseContent';
 
 export function useContent() {
   const queryClient = useQueryClient();
@@ -59,10 +60,12 @@ export function useContent() {
       mutationFn: ({ id, data }: { id: string; data: Partial<ContentFormValues> }) => 
         updateContent(id, data),
       onSuccess: (data) => {
-        if (data?.id) {
+        // ⚡️ FIX: Safe checking for data properties with proper type handling
+        if (data) {
+          const content = data as Content;
           queryClient.invalidateQueries({ queryKey: ['content'] });
-          queryClient.invalidateQueries({ queryKey: ['content', data.id] });
-          queryClient.invalidateQueries({ queryKey: ['content', 'slug', data.slug] });
+          queryClient.invalidateQueries({ queryKey: ['content', content.id] });
+          queryClient.invalidateQueries({ queryKey: ['content', 'slug', content.slug] });
         }
       },
     });

@@ -15,10 +15,11 @@ export interface Content {
 }
 
 export interface ContentFormValues {
+  id?: string; // ⚡️ FIX: Added optional id field
   title: string;
   slug: string;
   body: string;
   type: ContentType;
   published: boolean;
-  published_at: string | null;
+  published_at?: string | null;
 }

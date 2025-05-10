@@ -1,4 +1,5 @@
 
+// ⚡️ FIX: Resolved TS2589 by simplifying select and using parseLead correctly
 import { supabase } from '@/integrations/supabase/client';
 import { Lead, LeadFilter } from '@/types/leads';
 import { parseLead } from '../utils/parseLead';
@@ -25,7 +26,7 @@ export async function getLeads(filters: LeadFilter = {}): Promise<Lead[]> {
     const { data, error } = await query;
     
     if (error) throw error;
-    return (data || []).map((item) => parseLead(item));
+    return (data || []).map(item => parseLead(item));
   } catch (error) {
     console.error('Failed to fetch leads:', error);
     return [];
@@ -43,7 +44,7 @@ export async function getUserLeads(userId: string): Promise<Lead[]> {
       .eq('submitted_by', userId);
     
     if (error) throw error;
-    return (data || []).map((item) => parseLead(item));
+    return (data || []).map(item => parseLead(item));
   } catch (error) {
     console.error(`Failed to fetch user leads for user ${userId}:`, error);
     return [];
@@ -61,7 +62,7 @@ export async function getCompanyLeads(companyId: string): Promise<Lead[]> {
       .eq('company_id', companyId);
     
     if (error) throw error;
-    return (data || []).map((item) => parseLead(item));
+    return (data || []).map(item => parseLead(item));
   } catch (error) {
     console.error(`Failed to fetch company leads for company ${companyId}:`, error);
     return [];
@@ -102,7 +103,7 @@ export async function loadLeads(): Promise<Lead[]> {
         .select('*');
 
       if (error) throw error;
-      return (data || []).map((item) => parseLead(item));
+      return (data || []).map(item => parseLead(item));
     } catch (error) {
       console.error('Failed to load leads:', error);
       
