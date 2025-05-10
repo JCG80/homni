@@ -33,43 +33,49 @@ export const ProtectedRoute = ({
     );
   }
   
-  console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', role, 
+  // Determine the current role - use 'anonymous' if not authenticated
+  const currentRole: UserRole = isAuthenticated && role ? role as UserRole : 'anonymous';
+  
+  console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', currentRole, 
     'allowedRoles:', allowedRoles, 'allowAnyAuthenticated:', allowAnyAuthenticated,
     'module:', module);
   
-  // First check if user is authenticated at all
-  if (!isAuthenticated) {
-    console.log('Not authenticated, redirecting to', redirectTo);
-    // Pass the current location so we can redirect back after login
-    return <Navigate to={redirectTo} replace state={{ from: location }} />;
+  // If module is specified, check if user has access to that module
+  if (module) {
+    if (!canAccessModule(currentRole, module)) {
+      // If not anonymous, redirect to unauthorized. If anonymous, redirect to login.
+      const redirectPath = currentRole === 'anonymous' ? '/login' : '/unauthorized';
+      console.log(`User does not have access to module: ${module}, redirecting to: ${redirectPath}`);
+      return <Navigate to={redirectPath} replace state={{ from: location }} />;
+    }
   }
   
-  // If allowAnyAuthenticated is true, grant access to any authenticated user
+  // If allowAnyAuthenticated is true, require authentication
   if (allowAnyAuthenticated) {
+    if (!isAuthenticated) {
+      console.log('Authentication required, redirecting to login');
+      return <Navigate to={redirectTo} replace state={{ from: location }} />;
+    }
     console.log('allowAnyAuthenticated is true, granting access to authenticated user');
     return <>{children}</>;
   }
   
-  // If module is specified, check if user has access to that module
-  if (module && role) {
-    if (!canAccessModule(role as UserRole, module)) {
-      console.log(`User does not have access to module: ${module}`);
+  // If specific roles are required, check if the user has one of them
+  if (allowedRoles.length > 0) {
+    // Non-authenticated users automatically don't have the required roles
+    if (!isAuthenticated) {
+      console.log('Authentication required for specific roles, redirecting to login');
+      return <Navigate to={redirectTo} replace state={{ from: location }} />;
+    }
+    
+    console.log('Role check - Current role:', currentRole, 'Allowed roles:', allowedRoles);
+    
+    if (!allowedRoles.includes(currentRole)) {
+      console.error('Access denied. User role:', currentRole, 'Required roles:', allowedRoles);
       return <Navigate to="/unauthorized" replace />;
     }
   }
   
-  // If no specific roles are required, allow access
-  if (allowedRoles.length === 0) {
-    console.log('No specific roles required, granting access');
-    return <>{children}</>;
-  }
-  
-  console.log('Role check - Current role:', role, 'Allowed roles:', allowedRoles);
-  
-  if (!role || !allowedRoles.includes(role as UserRole)) {
-    console.error('Access denied. User role:', role, 'Required roles:', allowedRoles);
-    return <Navigate to="/unauthorized" replace />;
-  }
-  
+  // If we get here, access is granted
   return <>{children}</>;
 };

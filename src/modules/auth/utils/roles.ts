@@ -1,11 +1,13 @@
 
-export type UserRole = 'user' | 'company' | 'admin' | 'master-admin' | 'provider' | 'editor';
+export type UserRole = 'anonymous' | 'user' | 'company' | 'admin' | 'master-admin' | 'provider' | 'editor';
 
 /**
  * Get all modules a specific role has access to
  */
 export function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
+    case 'anonymous':
+      return ['home', 'leads/submit', 'info'];
     case 'user':
       return ['dashboard', 'leads'];
     case 'company':
@@ -36,6 +38,7 @@ export function canAccessModule(role: UserRole, module: string): boolean {
  */
 export function getRoleDisplayName(role: UserRole): string {
   const displayNames: Record<UserRole, string> = {
+    'anonymous': 'Gjest',
     'user': 'Bruker',
     'company': 'Bedrift',
     'admin': 'Administrator',

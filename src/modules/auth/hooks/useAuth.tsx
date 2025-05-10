@@ -2,7 +2,8 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getProfile } from '../api/auth-api';
-import { AuthState, Profile, UserRole } from '../types/types';
+import { AuthState, Profile } from '../types/types';
+import { UserRole } from '../utils/roles';
 
 const initialState: AuthState = {
   user: null,
@@ -146,6 +147,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const { authState, refreshProfile } = useContext(AuthContext);
   const { user, profile, isLoading, error } = authState;
+  
+  // Determine the role - user is either authenticated with a specific role, or anonymous
+  const currentRole: UserRole = profile?.role || (user ? 'user' : 'anonymous');
 
   return {
     user,
@@ -154,11 +158,13 @@ export const useAuth = () => {
     error,
     refreshProfile,
     isAuthenticated: !!user,
-    role: profile?.role || null,
-    isUser: profile?.role === 'user',
-    isCompany: profile?.role === 'company',
-    isAdmin: profile?.role === 'admin' || profile?.role === 'master-admin',
-    isMasterAdmin: profile?.role === 'master-admin',
-    isProvider: profile?.role === 'provider',
+    role: currentRole,
+    isAnonymous: !user,
+    isUser: currentRole === 'user',
+    isCompany: currentRole === 'company',
+    isAdmin: currentRole === 'admin' || currentRole === 'master-admin',
+    isMasterAdmin: currentRole === 'master-admin',
+    isProvider: currentRole === 'provider',
+    isEditor: currentRole === 'editor',
   };
 };

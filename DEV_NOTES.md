@@ -1,4 +1,3 @@
-
 # Development Notes
 
 ## Lead Distribution System
@@ -80,6 +79,14 @@
 - [x] Added support for publishing scheduling with published_at field
 - [x] Updated role utility to include editor role with content module access
 - [x] Added proper error handling and toast notifications
+
+#### Phase 10: Role-Based Access Control Enhancement
+- [x] Added 'anonymous' as a distinct role for unauthenticated users
+- [x] Updated ProtectedRoute to properly handle anonymous vs. authenticated users
+- [x] Enhanced module access with specific permissions for anonymous users
+- [x] Created unit tests for anonymous role permissions
+- [x] Fixed role handling in useAuth hook for better type safety
+- [x] Streamlined role management to use a single source of truth
 
 ### Testing Notes
 - Tested distribution strategy selection with both "roundRobin" and "category_match"
@@ -212,3 +219,47 @@ describe('Module name', () => {
   });
 });
 ```
+
+## Role-Based Access System
+
+### Anonymous vs. User Roles
+
+The system now distinguishes between:
+
+- `anonymous`: Non-authenticated visitors who can access public pages like home, lead submission forms, and public information
+- `user`: Authenticated individuals who can access personal dashboards and lead history
+
+This separation allows for:
+1. Better security through explicit role definitions
+2. Improved user experience with clear access boundaries
+3. Support for public-facing content without requiring authentication
+4. Type-safe role handling throughout the application
+
+### Role Access Implementation
+
+```typescript
+// Define what modules each role can access
+function getAllowedModulesForRole(role: UserRole): string[] {
+  switch (role) {
+    case 'anonymous':
+      return ['home', 'leads/submit', 'info'];
+    case 'user':
+      return ['dashboard', 'leads'];
+    // Other roles...
+  }
+}
+
+// Check if a specific role can access a module
+function canAccessModule(role: UserRole, module: string): boolean {
+  const allowed = getAllowedModulesForRole(role);
+  return allowed.includes('*') || allowed.includes(module);
+}
+```
+
+### Usage in Protected Routes
+
+When using the `ProtectedRoute` component:
+- Non-authenticated users automatically receive the 'anonymous' role
+- The component checks if the current module is allowed for the user's role
+- If access is not allowed and the user is anonymous, they are redirected to login
+- If access is not allowed and the user is authenticated, they see the unauthorized page
