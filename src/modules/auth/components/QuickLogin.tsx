@@ -15,7 +15,7 @@ import { Key } from 'lucide-react';
 export const QuickLogin = () => {
   const handleLogin = async (user: TestUser) => {
     try {
-      const result = await devLogin(user.role as any);
+      const result = await devLogin(user.role);
       if (result.success) {
         toast({
           title: "Login successful",
@@ -37,6 +37,11 @@ export const QuickLogin = () => {
       });
     }
   };
+
+  // Only show in development mode
+  if (import.meta.env.MODE !== 'development') {
+    return null;
+  }
 
   return (
     <DropdownMenu>

@@ -3,6 +3,10 @@ import { LoginForm } from '../components/LoginForm';
 import { devLogin } from '../utils/devLogin';
 
 export const LoginPage = () => {
+  const handleDevLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin') => {
+    await devLogin(role);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg">
@@ -18,25 +22,25 @@ export const LoginPage = () => {
         {import.meta.env.MODE === 'development' && (
           <div className="mt-8 text-center space-x-2">
             <button 
-              onClick={() => devLogin('user')} 
+              onClick={() => handleDevLogin('user')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as User
             </button>
             <button 
-              onClick={() => devLogin('company')} 
+              onClick={() => handleDevLogin('company')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as Company
             </button>
             <button 
-              onClick={() => devLogin('admin')} 
+              onClick={() => handleDevLogin('admin')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as Admin
             </button>
             <button 
-              onClick={() => devLogin('master-admin')} 
+              onClick={() => handleDevLogin('master-admin')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as Master Admin
