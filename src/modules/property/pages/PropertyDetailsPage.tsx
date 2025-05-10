@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getPropertyById, getPropertyExpenses, getPropertyDocuments } from '../api/propertyApi';
+import { getPropertyById } from '../api'; // Updated import
+import { getPropertyExpenses, getPropertyDocuments } from '../api'; // Updated imports
 import { Property, PropertyExpense, PropertyDocument } from '../types/propertyTypes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

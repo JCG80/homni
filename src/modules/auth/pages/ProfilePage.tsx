@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from '@/hooks/use-toast';
 import { updateProfile } from '../api';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getUserProperties } from '@/modules/property/api/propertyApi';
+import { getUserProperties } from '@/modules/property/api'; // Updated import
 import { Property } from '@/modules/property/types/propertyTypes';
 import { PropertyList } from '@/modules/property/components/PropertyList';
 import { AddPropertyForm } from '@/modules/property/components/AddPropertyForm';

@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Property, PropertyType } from "../types/propertyTypes";
-import { createProperty } from "../api/propertyApi";
+import { createProperty } from "../api"; // Updated import
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 interface AddPropertyFormProps {
