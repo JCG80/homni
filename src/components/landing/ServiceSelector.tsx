@@ -47,7 +47,7 @@ export const ServiceSelector = ({
         <SelectTrigger className="w-full h-14 bg-white text-gray-800 text-lg">
           <SelectValue placeholder="Hva trenger du hjelp med?" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white">
           {services.map(service => (
             <SelectItem key={service.id} value={service.id}>
               {service.name}

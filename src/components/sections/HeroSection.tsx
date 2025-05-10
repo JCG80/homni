@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ServiceSelector } from '@/components/landing/ServiceSelector';
 import { ExampleTags } from '@/components/landing/ExampleTags';
+import { useNavigate } from 'react-router-dom';
 
 interface HeroSectionProps {
   activeTab: string;
@@ -14,20 +15,30 @@ interface HeroSectionProps {
 
 export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) => {
   const [selectedService, setSelectedService] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleServiceSelect = (service: string) => {
     setSelectedService(service);
   };
 
   const handleRoleToggle = (value: string) => {
-    if (value) handleTabChange(value);
+    if (value) {
+      handleTabChange(value);
+      // Reset selected service when changing user type
+      setSelectedService("");
+    }
   };
 
   const handleGetOffer = () => {
-    // If a service is selected, proceed to next step
+    // If a service is selected, proceed based on the service
     if (selectedService) {
-      // Here we would navigate to the appropriate service page or open next step
-      console.log(`Selected service: ${selectedService} for ${activeTab} users`);
+      if (selectedService === 'strom' || selectedService === 'energiavtaler') {
+        navigate('/strom');
+      } else {
+        // For other services, start the registration flow
+        // This could be expanded with more specific routing later
+        console.log(`Starting registration for ${selectedService} (${activeTab})`);
+      }
     }
   };
 
@@ -99,6 +110,7 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
           <ExampleTags 
             userType={activeTab as 'private' | 'business'} 
             onTagSelect={handleServiceSelect}
+            selectedService={selectedService}
           />
         </div>
       </div>
