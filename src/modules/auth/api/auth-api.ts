@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Profile, UserRole } from '../types/types';
 
@@ -18,18 +17,23 @@ export const signUpWithEmail = async (email: string, password: string) => {
 
 export const signInWithEmail = async (email: string, password: string) => {
   console.log('Attempting login with email:', email);
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  
-  if (error) {
-    console.error('Login error:', error);
-    throw error;
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (error) {
+      console.error('Login error:', error);
+      return { user: null, error };
+    }
+    
+    console.log('Login successful, user:', data.user);
+    return { user: data.user, error: null };
+  } catch (error) {
+    console.error('Unexpected error during login:', error);
+    return { user: null, error };
   }
-  
-  console.log('Login successful, user:', data.user);
-  return data;
 };
 
 export const signOut = async () => {
@@ -40,7 +44,13 @@ export const signOut = async () => {
 export const getProfile = async (userId: string): Promise<Profile | null> => {
   try {
     console.log('Fetching profile for user:', userId);
-    // First try to get profile from the user_profiles table
+    
+    // Get user metadata for role information first
+    const { data: authUser } = await supabase.auth.getUser();
+    const userMeta = authUser?.user?.user_metadata;
+    console.log('User metadata from auth:', userMeta);
+    
+    // Check if the user already has a profile in the database
     const { data: profile, error } = await supabase
       .from('user_profiles')
       .select('*')
@@ -49,80 +59,52 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     
     if (error) {
       console.error('Error fetching profile from DB:', error);
-    }
-    
-    // Get user metadata for role information
-    const { data: authUser } = await supabase.auth.getUser();
-    const userMeta = authUser?.user?.user_metadata;
-    console.log('User metadata from auth:', userMeta);
-    
-    // Check for role in metadata
-    let userRole: UserRole | null = null;
-    
-    // Try to extract role from metadata (handle various ways it could be stored)
-    if (userMeta) {
-      if (typeof userMeta.role === 'string') {
-        userRole = userMeta.role as UserRole;
-      } else if (typeof userMeta['custom_claims'] === 'object' && userMeta['custom_claims']?.role) {
-        userRole = userMeta['custom_claims'].role as UserRole;
-      } else if (userMeta['role']) {
-        userRole = userMeta['role'] as UserRole;
-      } else if (typeof authUser?.user?.app_metadata?.role === 'string') {
-        userRole = authUser.user.app_metadata.role as UserRole;
-      }
       
-      // For admin@test.local, override as master-admin for dev purposes
-      if (authUser?.user?.email === 'admin@test.local' && import.meta.env.MODE === 'development') {
-        userRole = 'master-admin';
-        console.log('Overriding role to master-admin for admin@test.local in development');
+      // If there's no profile in the database, create one based on user metadata
+      if (error.code === 'PGRST116') { // Record not found
+        console.log('Profile not found in database, creating one...');
+        
+        // Extract role from metadata or use default
+        const userRole = determineUserRole(authUser);
+        const fullName = userMeta?.full_name || userMeta?.['full_name'] || 'User';
+        
+        // Create a new profile in the database
+        const { error: insertError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: userId,
+            full_name: fullName
+          });
+        
+        if (insertError) {
+          console.error('Failed to create profile in database:', insertError);
+        } else {
+          console.log('Created new profile in database');
+        }
+        
+        // Return a profile object with the role from metadata
+        return {
+          id: userId,
+          role: userRole,
+          full_name: fullName,
+          created_at: new Date().toISOString(),
+        };
       }
-      
-      console.log('Extracted role from metadata:', userRole);
     }
     
     if (profile) {
       console.log('Found profile in database:', profile);
       
-      // If we're in development mode and this is a test user, use the role from TEST_USERS
-      if (import.meta.env.MODE === 'development' && authUser?.user?.email) {
-        const email = authUser.user.email;
-        if (email.endsWith('@test.local')) {
-          let devRole: UserRole | null = null;
-          
-          if (email === 'admin@test.local') devRole = 'master-admin';
-          else if (email === 'company@test.local') devRole = 'company';
-          else if (email === 'provider@test.local') devRole = 'provider';
-          else if (email === 'user@test.local') devRole = 'user';
-          
-          if (devRole) {
-            console.log(`Development mode: Setting role for ${email} to ${devRole}`);
-            userRole = devRole;
-          }
-        }
-      }
+      // Extract role from metadata or use default
+      const userRole = determineUserRole(authUser);
       
       return {
-        id: userId,
-        full_name: profile.full_name,
-        role: userRole || 'user', // Default to user role if no role is found
-        created_at: profile.created_at,
+        ...profile,
+        role: userRole,
       };
     }
     
-    // If no profile in database but we have user metadata
-    if (userMeta) {
-      console.log('Using profile from user metadata:', userMeta);
-      
-      // Create a profile from user metadata
-      return {
-        id: userId,
-        role: userRole || 'user', // Default to user role if no role is found
-        full_name: userMeta.full_name || userMeta?.['full_name'],
-        created_at: new Date().toISOString(),
-      };
-    }
-    
-    // If no profile found anywhere, create a minimal default one
+    // If we reach here, we couldn't get a profile from any source
     console.log('No profile found, returning default with user role');
     return {
       id: userId,
@@ -139,6 +121,47 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
     };
   }
 };
+
+function determineUserRole(authUser: any): UserRole {
+  let userRole: UserRole = 'user'; // Default role
+  
+  if (!authUser?.user) return userRole;
+  
+  const userMeta = authUser.user.user_metadata;
+  const email = authUser.user.email;
+  
+  // Try to extract role from metadata
+  if (userMeta) {
+    if (typeof userMeta.role === 'string') {
+      userRole = userMeta.role as UserRole;
+    } else if (typeof userMeta['custom_claims'] === 'object' && userMeta['custom_claims']?.role) {
+      userRole = userMeta['custom_claims'].role as UserRole;
+    } else if (userMeta['role']) {
+      userRole = userMeta['role'] as UserRole;
+    } else if (typeof authUser.user.app_metadata?.role === 'string') {
+      userRole = authUser.user.app_metadata.role as UserRole;
+    }
+  }
+  
+  // Special case for development test users based on email
+  if (import.meta.env.MODE === 'development' && email) {
+    if (email === 'admin@test.local') {
+      userRole = 'master-admin';
+      console.log('Development mode: Setting role for admin@test.local to master-admin');
+    } else if (email === 'company@test.local') {
+      userRole = 'company';
+      console.log('Development mode: Setting role for company@test.local to company');
+    } else if (email === 'provider@test.local') {
+      userRole = 'provider';
+      console.log('Development mode: Setting role for provider@test.local to provider');
+    } else if (email === 'user@test.local') {
+      userRole = 'user';
+      console.log('Development mode: Setting role for user@test.local to user');
+    }
+  }
+  
+  return userRole;
+}
 
 export const updateProfile = async (userId: string, updates: Partial<Profile>) => {
   try {

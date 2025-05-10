@@ -26,7 +26,16 @@ export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
     setIsSubmitting(true);
 
     try {
-      const { user } = await signInWithEmail(email, password);
+      if (!email || !password) {
+        throw new Error('Du må fylle inn både e-post og passord');
+      }
+
+      console.log('Attempting login with:', { email });
+      const { user, error: signInError } = await signInWithEmail(email, password);
+      
+      if (signInError) {
+        throw new Error(signInError instanceof Error ? signInError.message : 'Feil ved innlogging');
+      }
       
       if (user) {
         toast({
@@ -40,14 +49,19 @@ export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
           navigate(redirectTo);
         }
       } else {
-        throw new Error('Kunne ikke logge inn');
+        throw new Error('Kunne ikke logge inn - brukeren ble ikke funnet');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'Feil ved innlogging');
+      const errorMessage = err instanceof Error
+        ? err.message
+        : 'Feil ved innlogging - sjekk brukernavn og passord';
+      
+      setError(errorMessage);
+      
       toast({
         title: 'Innloggingsfeil',
-        description: 'Sjekk e-post og passord',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -95,6 +109,10 @@ export const LoginForm = ({ onSuccess, redirectTo = '/' }: LoginFormProps) => {
         <Button variant="link" className="p-0" onClick={() => navigate('/register')}>
           Registrer deg
         </Button>
+      </div>
+
+      <div className="text-xs text-center text-muted-foreground">
+        <p>For utvikling: bruk 'admin@test.local' / 'password'</p>
       </div>
     </form>
   );
