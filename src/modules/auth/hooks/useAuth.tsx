@@ -34,22 +34,31 @@ const AuthContext = createContext<AuthContextType>({
 
 // AuthProvider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Use all values directly from useAuthState
-  const authData = useAuthState();
+  // Use all values from useAuthState hook
+  const { 
+    authState,
+    refreshProfile, 
+    isAuthenticated, 
+    isAdmin, 
+    isMasterAdmin, 
+    isCompany, 
+    isUser, 
+    role 
+  } = useAuthState();
   
   // Map the values from authState to match the AuthContextType
   const authContextValue: AuthContextType = {
-    user: authData.user,
-    profile: authData.profile,
-    isLoading: authData.isLoading,
-    error: authData.error,
-    refreshProfile: authData.refreshProfile,
-    isAuthenticated: authData.isAuthenticated,
-    isAdmin: authData.isAdmin,
-    isMasterAdmin: authData.isMasterAdmin,
-    isCompany: authData.isCompany,
-    isUser: authData.isUser,
-    role: authData.role,
+    user: authState.user,
+    profile: authState.profile,
+    isLoading: authState.isLoading,
+    error: authState.error,
+    refreshProfile,
+    isAuthenticated,
+    isAdmin,
+    isMasterAdmin,
+    isCompany,
+    isUser,
+    role,
   };
   
   return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
