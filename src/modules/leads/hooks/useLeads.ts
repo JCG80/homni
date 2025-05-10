@@ -26,7 +26,7 @@ export const useLeadList = (filters: LeadFilter = {}) => {
       // Admin sees all leads, with optional filters
       if (isAdmin) {
         console.log('Admin user, fetching all leads with filters:', filters);
-        return getLeads(filters);
+        return getLeads();
       }
       
       // Company sees assigned leads

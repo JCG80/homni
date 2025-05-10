@@ -1,120 +1,64 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { UserRole } from '../types/types';
+import { toast } from '@/hooks/use-toast';
 
 /**
- * Development login utility that directly authenticates a test user.
- * Only works in development mode for testing purposes.
+ * Development-only login function for quick testing with different user roles
+ * @param role The user role to login as
  */
-export async function devLogin(email: string): Promise<{success: boolean, error?: string}> {
+export const devLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin'): Promise<void> => {
+  if (import.meta.env.MODE !== 'development') {
+    console.warn('Dev login attempted in non-development environment');
+    return;
+  }
+
+  // Use predefined test users with standardized format: role@test.local / Test1234!
+  const email = `${role}@test.local`;
+  const password = 'Test1234!';
+
   try {
-    // For security, only allow this in development environments
-    if (import.meta.env.MODE !== 'development') {
-      console.error('Dev login only allowed in development mode');
-      return { success: false, error: 'Dev login only allowed in development mode' };
-    }
-    
-    console.log('Attempting dev login with email:', email);
-    
-    // First attempt: Try sign in with standard test password
-    let { data, error } = await supabase.auth.signInWithPassword({ 
-      email, 
-      password: 'password' // Standard test password
+    // Show loading toast
+    toast({
+      title: 'Logging in...',
+      description: `Authenticating as ${role}`,
     });
-    
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
     if (error) {
-      console.warn('Password login failed:', error.message);
+      console.error('Dev login failed:', error);
       
-      // Second attempt: Try with a different common test password
-      const { data: data2, error: error2 } = await supabase.auth.signInWithPassword({ 
+      // If login fails, try with alternative password format in case environment uses different pattern
+      const alternativePassword = 'password';
+      const { error: altError } = await supabase.auth.signInWithPassword({
         email, 
-        password: 'test123' // Alternative test password
+        password: alternativePassword
       });
-      
-      if (error2) {
-        console.warn('Alternative password login failed:', error2.message);
-        
-        // Final attempt: OTP (passwordless) login if available
-        const { data: otpData, error: otpError } = await supabase.auth.signInWithOtp({ 
-          email,
-          options: {
-            shouldCreateUser: false // Only sign in existing users
-          }
+
+      if (altError) {
+        console.error('Alternative dev login also failed:', altError);
+        toast({
+          title: 'Login failed',
+          description: 'Dev login failed. Check console for details.',
+          variant: 'destructive',
         });
-        
-        if (otpError) {
-          if (otpError.message.includes('OTP') && otpError.message.includes('disabled')) {
-            console.error('OTP login is disabled on this project:', otpError.message);
-            return { success: false, error: `Login failed: OTP is disabled. Check Supabase Auth settings or use password authentication.` };
-          }
-          
-          console.error('All login methods failed:', otpError.message);
-          return { success: false, error: `Login failed after trying multiple methods. Last error: ${otpError.message}` };
-        }
-        
-        console.log('Dev OTP login sent for:', email);
-        return { success: true, error: 'OTP email sent. Check your inbox to complete login.' };
+        return;
       }
-      
-      // Alternative password worked
-      data = data2;
     }
     
-    console.log('Dev login successful for:', email, 'User:', data?.user);
-    console.log('User metadata:', data?.user?.user_metadata);
-    
-    return { success: true };
+    toast({
+      title: 'Login successful',
+      description: `Logged in as ${role}`,
+    });
   } catch (err) {
-    const error = err instanceof Error ? err.message : 'Unknown error during dev login';
-    console.error('Dev login error:', error);
-    return { success: false, error };
+    console.error('Unexpected error during dev login:', err);
+    toast({
+      title: 'Login error',
+      description: err instanceof Error ? err.message : 'Unknown error occurred',
+      variant: 'destructive',
+    });
   }
 };
-
-/**
- * Direct role-based login for development purposes.
- * Allows logging in as a specific role without needing a pre-existing user.
- */
-export async function devLoginAs(role: UserRole): Promise<{success: boolean, error?: string}> {
-  try {
-    // For security, only allow this in development environments
-    if (import.meta.env.MODE !== 'development') {
-      console.error('Dev login only allowed in development mode');
-      return { success: false, error: 'Dev login only allowed in development mode' };
-    }
-    
-    // Find a matching test user for the role
-    const matchingUser = TEST_USERS.find(user => user.role === role);
-    
-    if (!matchingUser) {
-      console.error(`No test user found with role: ${role}`);
-      return { success: false, error: `No test user found with role: ${role}` };
-    }
-    
-    console.log(`Attempting dev login as ${role} role with user:`, matchingUser.email);
-    
-    // Use the matching test user to login
-    const result = await devLogin(matchingUser.email);
-    
-    return result;
-  } catch (err) {
-    const error = err instanceof Error ? err.message : 'Unknown error during role-based dev login';
-    console.error('Dev login error:', error);
-    return { success: false, error };
-  }
-}
-
-// Available test users - make sure these match what's in your Supabase database
-export interface TestUser {
-  email: string;
-  role: UserRole;
-  name: string;
-}
-
-export const TEST_USERS: TestUser[] = [
-  { email: 'admin@test.local', role: 'master-admin', name: 'Master Admin' },
-  { email: 'admin@test.local', role: 'admin', name: 'Admin' }, // Added admin role mapping
-  { email: 'provider@test.local', role: 'provider', name: 'Test Provider' },
-  { email: 'user@test.local', role: 'user', name: 'Test User' },
-  { email: 'company@test.local', role: 'company', name: 'Test Company' }
-];
