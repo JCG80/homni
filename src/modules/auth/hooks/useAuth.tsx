@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+
+import { useState, useEffect, useCallback, createContext, ReactNode, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthUser, Profile } from '../types/types';
-import { User } from '@supabase/supabase-js';
 
 interface AuthState {
   user: AuthUser | null;
@@ -10,7 +10,41 @@ interface AuthState {
   error: Error | null;
 }
 
-const useAuth = () => {
+interface AuthContextType extends AuthState {
+  refreshProfile: () => Promise<void>;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isMasterAdmin: boolean;
+  isCompany: boolean;
+  isUser: boolean;
+  role: string | undefined;
+}
+
+// Create context with default values
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  profile: null,
+  isLoading: true,
+  error: null,
+  refreshProfile: async () => {},
+  isAuthenticated: false,
+  isAdmin: false,
+  isMasterAdmin: false,
+  isCompany: false,
+  isUser: false,
+  role: undefined,
+});
+
+// AuthProvider component
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const auth = useAuthState();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+};
+
+// Named export for the useAuth hook
+export const useAuth = () => useContext(AuthContext);
+
+const useAuthState = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     profile: null,
@@ -156,10 +190,29 @@ const useAuth = () => {
     };
   };
 
+  // Check if the user is authenticated
+  const isAuthenticated = !!authState.user;
+  
+  // Get the user role
+  const role = authState.profile?.role;
+  
+  // Role-specific checks
+  const isAdmin = role === 'admin' || role === 'master-admin';
+  const isMasterAdmin = role === 'master-admin';
+  const isCompany = role === 'company';
+  const isUser = role === 'user';
+
   return {
     ...authState,
     refreshProfile,
+    isAuthenticated,
+    isAdmin,
+    isMasterAdmin,
+    isCompany,
+    isUser,
+    role,
   };
 };
 
+// Default export for backward compatibility
 export default useAuth;
