@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Home, Car, Phone, Zap, Link, Shield } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -23,23 +24,39 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
   const handleRoleToggle = (value: string) => {
     if (value) {
       handleTabChange(value);
-      // Reset selected service when changing user type
       setSelectedService("");
     }
   };
 
   const handleGetOffer = () => {
-    // If a service is selected, proceed based on the service
     if (selectedService) {
       if (selectedService === 'strom' || selectedService === 'energiavtaler') {
         navigate('/strom');
+      } else if (selectedService === 'forsikring' || selectedService === 'bedriftsforsikring') {
+        navigate('/insurance/quote');
       } else {
-        // For other services, start the registration flow
-        // This could be expanded with more specific routing later
         console.log(`Starting registration for ${selectedService} (${activeTab})`);
       }
     }
   };
+
+  // Service icons
+  const serviceIcons = {
+    strom: <Zap className="h-6 w-6" />,
+    forsikring: <Shield className="h-6 w-6" />,
+    mobil: <Phone className="h-6 w-6" />,
+    bredband: <Link className="h-6 w-6" />,
+    energiavtaler: <Zap className="h-6 w-6" />,
+    bedriftsforsikring: <Shield className="h-6 w-6" />
+  };
+
+  // Quick selection buttons with icons
+  const quickSelections = [
+    { id: 'strom', name: 'Strøm', icon: <Zap className="h-5 w-5" /> },
+    { id: 'forsikring', name: 'Forsikring', icon: <Shield className="h-5 w-5" /> },
+    { id: 'mobil', name: 'Mobil', icon: <Phone className="h-5 w-5" /> },
+    { id: 'bredband', name: 'Bredbånd', icon: <Link className="h-5 w-5" /> }
+  ];
 
   return (
     <section className="relative overflow-hidden">
@@ -79,7 +96,28 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
           Sammenlign leverandører og spar penger. Det er gratis og uforpliktende.
         </p>
 
-        {/* Service Selector */}
+        {/* Quick service selection - Minimalist Icon Buttons */}
+        <div className="flex justify-center gap-4 mb-6">
+          {quickSelections.map(service => (
+            <button
+              key={service.id}
+              onClick={() => setSelectedService(service.id)}
+              className={`
+                flex flex-col items-center p-4 rounded-lg transition-all
+                ${selectedService === service.id 
+                  ? 'bg-primary text-white' 
+                  : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-md'}
+              `}
+            >
+              <div className="mb-2">
+                {service.icon}
+              </div>
+              <span className="text-sm font-medium">{service.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Advanced selection with dropdown */}
         <div className="space-y-6 max-w-xl mx-auto">
           <ServiceSelector 
             userType={activeTab as 'private' | 'business'} 
