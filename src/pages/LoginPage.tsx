@@ -1,11 +1,25 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { devLogin } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const LoginPage = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const typeParam = searchParams.get('type');
+  const [activeTab, setActiveTab] = useState<string>(typeParam === 'business' ? 'business' : 'private');
+
+  useEffect(() => {
+    if (typeParam === 'business') {
+      setActiveTab('business');
+    } else {
+      setActiveTab('private');
+    }
+  }, [typeParam]);
+
   const handleDevLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin') => {
     const result = await devLogin(role);
     if (result.error) {
@@ -23,13 +37,21 @@ export const LoginPage = () => {
       <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg">
         <div className="text-center">
           <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="private">Privatperson</TabsTrigger>
+              <TabsTrigger value="business">Bedrift</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
           <h1 className="text-3xl font-bold">Logg inn</h1>
           <p className="text-muted-foreground mt-2">
             Velkommen tilbake til Homni
           </p>
         </div>
         
-        <LoginForm redirectTo="/dashboard" />
+        <LoginForm redirectTo="/dashboard" userType={activeTab === 'business' ? 'business' : 'private'} />
 
         {import.meta.env.MODE === 'development' && (
           <div className="mt-8 text-center space-x-2">
@@ -60,8 +82,14 @@ export const LoginPage = () => {
           </div>
         )}
         
-        <div className="text-center text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-primary">
+        <div className="text-center text-sm">
+          <p className="text-muted-foreground mb-2">
+            Har du ikke konto?{' '}
+            <Link to={activeTab === 'business' ? '/register?type=business' : '/register'} className="text-primary hover:underline">
+              Registrer deg
+            </Link>
+          </p>
+          <Link to="/" className="hover:text-primary text-muted-foreground">
             ← Tilbake til forsiden
           </Link>
         </div>

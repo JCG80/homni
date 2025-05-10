@@ -11,13 +11,16 @@ import { toast } from '@/hooks/use-toast';
 interface RegisterFormProps {
   onSuccess?: () => void;
   redirectTo?: string;
+  userType?: 'private' | 'business';
 }
 
-export const RegisterForm = ({ onSuccess, redirectTo = '/' }: RegisterFormProps) => {
+export const RegisterForm = ({ onSuccess, redirectTo = '/', userType = 'private' }: RegisterFormProps) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,16 +33,23 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/' }: RegisterFormProps)
       const { user } = await signUpWithEmail(email, password);
       
       if (user) {
-        // Create profile with default 'user' role
+        // Create profile with appropriate role based on user type
         await createProfile({
           id: user.id,
           full_name: fullName,
-          role: 'user',
+          // For business users, set role to 'company', otherwise 'user'
+          role: userType === 'business' ? 'company' : 'user',
+          // Only include company_name for business users
+          ...(userType === 'business' ? { company_name: companyName } : {}),
+          // Include phone_number if provided
+          ...(phoneNumber ? { phone_number: phoneNumber } : {}),
         });
         
         toast({
           title: 'Registrering fullført',
-          description: 'Din konto er opprettet.',
+          description: userType === 'business' 
+            ? 'Din bedriftskonto er opprettet.' 
+            : 'Din konto er opprettet.',
         });
         
         if (onSuccess) {
@@ -68,8 +78,22 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/' }: RegisterFormProps)
         </Alert>
       )}
       
+      {userType === 'business' && (
+        <div className="space-y-2">
+          <Label htmlFor="companyName">Bedriftsnavn</Label>
+          <Input
+            id="companyName"
+            type="text"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            required
+            placeholder="Bedrift AS"
+          />
+        </div>
+      )}
+      
       <div className="space-y-2">
-        <Label htmlFor="fullName">Fullt navn</Label>
+        <Label htmlFor="fullName">{userType === 'business' ? 'Kontaktperson' : 'Fullt navn'}</Label>
         <Input
           id="fullName"
           type="text"
@@ -91,6 +115,18 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/' }: RegisterFormProps)
           placeholder="din@epost.no"
         />
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="phoneNumber">Telefonnummer</Label>
+        <Input
+          id="phoneNumber"
+          type="tel"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          placeholder={userType === 'business' ? 'Bedriftens telefonnummer' : 'Ditt telefonnummer (valgfritt)'}
+          required={userType === 'business'}
+        />
+      </div>
       
       <div className="space-y-2">
         <Label htmlFor="password">Passord</Label>
@@ -107,13 +143,6 @@ export const RegisterForm = ({ onSuccess, redirectTo = '/' }: RegisterFormProps)
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Registrerer...' : 'Registrer'}
       </Button>
-      
-      <div className="text-center text-sm">
-        <span className="text-muted-foreground">Har du allerede en konto?</span>{' '}
-        <Button variant="link" className="p-0" onClick={() => navigate('/login')}>
-          Logg inn
-        </Button>
-      </div>
     </form>
   );
 };
