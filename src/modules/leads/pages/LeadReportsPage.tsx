@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
@@ -41,72 +40,68 @@ export const LeadReportsPage = () => {
       try {
         setDataLoading(true);
         
-        // Fetch status counts
-        const { data: statusData, error: statusError } = await supabase
+        // Fetch all leads and compute aggregations client-side instead of using group
+        const { data: allLeads, error: leadsError } = await supabase
           .from('leads')
-          .select('status, count')
-          .group('status');
+          .select('*');
         
-        if (statusError) throw statusError;
+        if (leadsError) throw leadsError;
         
-        // Fetch category counts
-        const { data: categoryData, error: categoryError } = await supabase
-          .from('leads')
-          .select('category, count')
-          .group('category');
+        if (allLeads) {
+          // Process status counts
+          const statusMap: Record<string, number> = {};
+          allLeads.forEach(lead => {
+            const status = lead.status;
+            statusMap[status] = (statusMap[status] || 0) + 1;
+          });
           
-        if (categoryError) throw categoryError;
-        
-        // Fetch time series data (leads per day for the last 30 days)
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        const { data: timeData, error: timeError } = await supabase
-          .from('leads')
-          .select('created_at')
-          .gte('created_at', thirtyDaysAgo.toISOString());
+          const statusData: StatusCount[] = Object.keys(statusMap).map(status => ({
+            status,
+            count: statusMap[status]
+          }));
           
-        if (timeError) throw timeError;
-        
-        // Format the data
-        setStatusCounts(statusData.map(item => ({
-          status: item.status,
-          count: parseInt(item.count)
-        })));
-        
-        setCategoryCounts(categoryData.map(item => ({
-          category: item.category,
-          count: parseInt(item.count)
-        })));
-        
-        // Process time series data
-        const dateCountMap: Record<string, number> = {};
-        
-        // Initialize with zero count for each day in the last 30 days
-        for (let i = 0; i < 30; i++) {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          const dateStr = date.toISOString().split('T')[0];
-          dateCountMap[dateStr] = 0;
-        }
-        
-        // Count leads per day
-        if (timeData) {
-          timeData.forEach(item => {
-            const date = new Date(item.created_at).toISOString().split('T')[0];
+          // Process category counts
+          const categoryMap: Record<string, number> = {};
+          allLeads.forEach(lead => {
+            const category = lead.category;
+            categoryMap[category] = (categoryMap[category] || 0) + 1;
+          });
+          
+          const categoryData: CategoryCount[] = Object.keys(categoryMap).map(category => ({
+            category,
+            count: categoryMap[category]
+          }));
+          
+          setStatusCounts(statusData);
+          setCategoryCounts(categoryData);
+          
+          // Process time series data
+          const dateCountMap: Record<string, number> = {};
+          
+          // Initialize with zero count for each day in the last 30 days
+          for (let i = 0; i < 30; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            dateCountMap[dateStr] = 0;
+          }
+          
+          // Count leads per day
+          allLeads.forEach(lead => {
+            const date = new Date(lead.created_at).toISOString().split('T')[0];
             if (dateCountMap[date] !== undefined) {
               dateCountMap[date]++;
             }
           });
+          
+          // Convert to array and sort by date
+          const timeSeriesArray = Object.entries(dateCountMap).map(([date, count]) => ({
+            date,
+            count
+          })).sort((a, b) => a.date.localeCompare(b.date));
+          
+          setTimeSeriesData(timeSeriesArray);
         }
-        
-        // Convert to array and sort by date
-        const timeSeriesArray = Object.entries(dateCountMap).map(([date, count]) => ({
-          date,
-          count
-        })).sort((a, b) => a.date.localeCompare(b.date));
-        
-        setTimeSeriesData(timeSeriesArray);
       } catch (error) {
         console.error('Error fetching report data:', error);
       } finally {

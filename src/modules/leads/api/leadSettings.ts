@@ -1,8 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
-
-export type LeadSettings = Database['public']['Tables']['lead_settings']['Row'];
+import { LeadSettings } from '../types/lead-settings';
 
 /**
  * Fetches the latest lead settings from the database
@@ -28,7 +27,11 @@ export async function fetchLeadSettings(): Promise<LeadSettings | null> {
  * Note: This creates a new record rather than updating an existing one to maintain history
  */
 export async function updateLeadSettings(updates: {
-  filters?: Record<string, any>;
+  filters?: {
+    categories?: string[];
+    zipCodes?: string[];
+    [key: string]: any;
+  };
   daily_budget?: number | null;
   monthly_budget?: number | null;
   budget?: number | null;

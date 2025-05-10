@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
 import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
+import { LeadSettings } from '../types/lead-settings';
 
 /**
  * Processes unassigned leads using the specified distribution strategy
@@ -64,7 +65,7 @@ export async function processUnassignedLeads(
     // Process each lead
     for (const lead of unassignedLeads) {
       // Apply filters from lead settings if they exist
-      if (settings?.filters && Object.keys(settings.filters).length > 0) {
+      if (settings?.filters) {
         // Simple filtering logic based on category
         if (settings.filters.categories && 
             Array.isArray(settings.filters.categories) && 

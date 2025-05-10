@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchLeadSettings, updateLeadSettings, LeadSettings } from '../api/leadSettings';
-import { DistributionStrategy, DISTRIBUTION_STRATEGIES } from '../strategies/strategyFactory';
+import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
+import { DistributionStrategy } from '../strategies/strategyFactory';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
+import { LeadSettings } from '../types/lead-settings';
 
 export const CompanyLeadSettings = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);
@@ -53,7 +53,7 @@ export const CompanyLeadSettings = () => {
         globally_paused: newPausedState,
         // Keep other settings the same
         strategy: settings?.strategy as DistributionStrategy,
-        filters: settings?.filters as Record<string, any> || {},
+        filters: settings?.filters || {},
         daily_budget: settings?.daily_budget,
         monthly_budget: settings?.monthly_budget,
       });
@@ -105,7 +105,7 @@ export const CompanyLeadSettings = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Lead Distribution Settings</span>
-          <Badge variant={paused ? "destructive" : "success"}>
+          <Badge variant={paused ? "destructive" : "outline"} className={paused ? "" : "bg-green-100 text-green-800 hover:bg-green-100"}>
             {paused ? "Paused" : "Active"}
           </Badge>
         </CardTitle>
