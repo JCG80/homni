@@ -96,9 +96,51 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_history: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          lead_id: string
+          method: string
+          new_status: string | null
+          previous_status: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id: string
+          method: string
+          new_status?: string | null
+          previous_status?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id?: string
+          method?: string
+          new_status?: string | null
+          previous_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_history_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_settings: {
         Row: {
           agents_paused: boolean
+          auto_distribute: boolean | null
           budget: number | null
           daily_budget: number | null
           filters: Json
@@ -111,6 +153,7 @@ export type Database = {
         }
         Insert: {
           agents_paused?: boolean
+          auto_distribute?: boolean | null
           budget?: number | null
           daily_budget?: number | null
           filters?: Json
@@ -123,6 +166,7 @@ export type Database = {
         }
         Update: {
           agents_paused?: boolean
+          auto_distribute?: boolean | null
           budget?: number | null
           daily_budget?: number | null
           filters?: Json
@@ -142,6 +186,8 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          lead_type: string | null
+          metadata: Json | null
           status: string
           submitted_by: string
           title: string
@@ -153,6 +199,8 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          lead_type?: string | null
+          metadata?: Json | null
           status?: string
           submitted_by: string
           title: string
@@ -164,6 +212,8 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          lead_type?: string | null
+          metadata?: Json | null
           status?: string
           submitted_by?: string
           title?: string

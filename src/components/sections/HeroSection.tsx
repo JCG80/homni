@@ -42,8 +42,8 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
   };
 
   return (
-    <section className="bg-gradient-to-br from-primary/80 to-primary py-16 md:py-20 text-white">
-      <div className="container mx-auto px-4 max-w-3xl">
+    <section className="relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
         {/* Role Toggle */}
         <div className="flex justify-center mb-8">
           <ToggleGroup 

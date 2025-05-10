@@ -1,6 +1,5 @@
 
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { LeadsTable } from '../components/LeadsTable';
 import { Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { DistributionStrategy, DISTRIBUTION_STRATEGIES } from '../strategies/strategyFactory';
@@ -18,6 +17,7 @@ import { toast } from '@/hooks/use-toast';
 import { RefreshCw } from 'lucide-react';
 import { loadSettings } from '../utils/loadSettings';
 import { supabase } from '@/integrations/supabase/client';
+import { LeadsTabs } from '../components/LeadsTabs';
 
 export const AdminLeadsPage = () => {
   const { isAdmin, isLoading } = useAuth();
@@ -29,6 +29,7 @@ export const AdminLeadsPage = () => {
   const [dailyBudget, setDailyBudget] = useState<string>('');
   const [monthlyBudget, setMonthlyBudget] = useState<string>('');
   const [globalPause, setGlobalPause] = useState(false);
+  const [autoDistribute, setAutoDistribute] = useState(false);
   const [settingsLoading, setSettingsLoading] = useState(false);
 
   // Fetch current strategy and settings on mount
@@ -46,6 +47,7 @@ export const AdminLeadsPage = () => {
           setDailyBudget(settings.daily_budget?.toString() || '');
           setMonthlyBudget(settings.monthly_budget?.toString() || '');
           setGlobalPause(settings.global_pause);
+          setAutoDistribute(settings.auto_distribute || false);
         }
       } catch (error) {
         console.error('Error fetching strategy or settings:', error);
@@ -98,6 +100,7 @@ export const AdminLeadsPage = () => {
           daily_budget: dailyBudget ? parseFloat(dailyBudget) : null,
           monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
           global_pause: globalPause,
+          auto_distribute: autoDistribute,
           filters: {}
         });
       
@@ -247,6 +250,19 @@ export const AdminLeadsPage = () => {
           </label>
         </div>
         
+        <div className="flex items-center mb-4">
+          <input
+            type="checkbox"
+            id="autoDistribute"
+            checked={autoDistribute}
+            onChange={(e) => setAutoDistribute(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          <label htmlFor="autoDistribute" className="ml-2 block text-sm">
+            Automatisk distribusjon av nye leads
+          </label>
+        </div>
+        
         <Button 
           onClick={handleSaveSettings}
           disabled={isSaving || settingsLoading}
@@ -263,8 +279,8 @@ export const AdminLeadsPage = () => {
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold mb-4">Alle leads</h2>
-        <LeadsTable />
+        <h2 className="text-xl font-semibold mb-4">Leads</h2>
+        <LeadsTabs />
       </div>
     </div>
   );

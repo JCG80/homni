@@ -8,11 +8,18 @@ import { isValidLeadStatus } from '@/types/leads';
 /**
  * Processes unassigned leads using the specified distribution strategy
  * @param strategy - Which distribution strategy to use (will use the one from settings if not provided)
+ * @param options - Additional options for processing
  * @returns Promise<number> - Number of leads processed
  */
 export async function processUnassignedLeads(
-  strategy?: DistributionStrategy
+  strategy?: DistributionStrategy,
+  options: {
+    leadType?: string;
+    showToasts?: boolean;
+  } = {}
 ): Promise<number> {
+  const { leadType, showToasts = true } = options;
+  
   try {
     // First check if the system is paused via settings
     const settings = await fetchLeadSettings();
@@ -21,41 +28,55 @@ export async function processUnassignedLeads(
       console.warn('No lead settings found, using default strategy');
     } else if (settings.paused) {
       console.log('Lead distribution is paused in settings');
-      toast({
-        title: 'Distribution paused',
-        description: 'Lead distribution is currently paused in system settings',
-        variant: 'destructive',
-      });
+      if (showToasts) {
+        toast({
+          title: 'Distribution paused',
+          description: 'Lead distribution is currently paused in system settings',
+          variant: 'destructive',
+        });
+      }
       return 0;
     }
     
     // Use provided strategy or get from settings
     const distributionStrategy = strategy || (settings?.strategy as DistributionStrategy || 'roundRobin');
     
-    // Get unassigned leads (those with status "new" and no company_id)
-    const { data: unassignedLeads, error } = await supabase
+    // Build query for unassigned leads
+    let query = supabase
       .from('leads')
       .select('*')
       .eq('status', 'new')
       .is('company_id', null);
     
+    // Filter by lead type if specified
+    if (leadType) {
+      query = query.eq('lead_type', leadType);
+    }
+    
+    // Execute query
+    const { data: unassignedLeads, error } = await query;
+    
     if (error) {
       console.error('Error fetching unassigned leads:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch unassigned leads',
-        variant: 'destructive',
-      });
+      if (showToasts) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch unassigned leads',
+          variant: 'destructive',
+        });
+      }
       return 0;
     }
     
     if (!unassignedLeads || unassignedLeads.length === 0) {
       console.log('No unassigned leads to process');
-      toast({
-        title: 'No leads',
-        description: 'No unassigned leads to process',
-        variant: 'default',
-      });
+      if (showToasts) {
+        toast({
+          title: 'No leads',
+          description: 'No unassigned leads to process',
+          variant: 'default',
+        });
+      }
       return 0;
     }
     
@@ -70,25 +91,35 @@ export async function processUnassignedLeads(
       }
 
       // Apply filters from lead settings if they exist
-      if (settings?.categories && settings.categories.length > 0) {
-        // Simple filtering logic based on category
-        if (!settings.categories.includes(lead.category)) {
-          console.log(`Lead ${lead.id} skipped due to category filter`);
-          continue;
+      if (settings?.filters) {
+        // Filter by categories
+        if (settings.categories && settings.categories.length > 0) {
+          if (!settings.categories.includes(lead.category)) {
+            console.log(`Lead ${lead.id} skipped due to category filter`);
+            continue;
+          }
         }
-      }
-      
-      // Check zip code filters if they exist
-      if (settings?.zipCodes && settings.zipCodes.length > 0) {
-        // Extract zip code from lead using any available property
-        const zipCode = 
-          (lead as any).postal_code || 
-          (lead as any).zip_code || 
-          (lead as any).zipCode;
-          
-        if (zipCode && !settings.zipCodes.includes(zipCode)) {
-          console.log(`Lead ${lead.id} skipped due to zip code filter`);
-          continue;
+        
+        // Filter by lead types
+        if (settings.lead_types && settings.lead_types.length > 0) {
+          if (!settings.lead_types.includes(lead.lead_type)) {
+            console.log(`Lead ${lead.id} skipped due to lead_type filter`);
+            continue;
+          }
+        }
+        
+        // Filter by zip codes
+        if (settings.zipCodes && settings.zipCodes.length > 0) {
+          const zipCode = 
+            (lead as any).postal_code || 
+            (lead as any).zip_code || 
+            (lead as any).zipCode ||
+            (lead.metadata?.postcode);
+            
+          if (zipCode && !settings.zipCodes.includes(zipCode)) {
+            console.log(`Lead ${lead.id} skipped due to zip code filter`);
+            continue;
+          }
         }
       }
       
@@ -104,7 +135,7 @@ export async function processUnassignedLeads(
           .from('leads')
           .update({
             company_id: providerId,
-            status: 'assigned', // This is a validated status from our constants
+            status: 'assigned',
             updated_at: new Date().toISOString()
           })
           .eq('id', lead.id);
@@ -113,34 +144,53 @@ export async function processUnassignedLeads(
           console.error(`Error assigning lead ${lead.id}:`, updateError);
         } else {
           assignedCount++;
+          
+          // Log the assignment in lead_history
+          const { error: historyError } = await supabase
+            .from('lead_history')
+            .insert({
+              lead_id: lead.id,
+              assigned_to: providerId,
+              method: 'auto',
+              previous_status: 'new',
+              new_status: 'assigned'
+            });
+            
+          if (historyError) {
+            console.error(`Error logging lead history for ${lead.id}:`, historyError);
+          }
         }
       }
     }
     
     console.log(`Processed ${unassignedLeads.length} leads, assigned ${assignedCount}`);
     
-    if (assignedCount > 0) {
-      toast({
-        title: 'Leads distributed',
-        description: `Successfully assigned ${assignedCount} of ${unassignedLeads.length} leads`,
-        variant: 'default',
-      });
-    } else if (unassignedLeads.length > 0) {
-      toast({
-        title: 'No matches found',
-        description: 'Found leads but could not find matching companies',
-        variant: 'destructive',
-      });
+    if (showToasts) {
+      if (assignedCount > 0) {
+        toast({
+          title: 'Leads distributed',
+          description: `Successfully assigned ${assignedCount} of ${unassignedLeads.length} leads`,
+          variant: 'default',
+        });
+      } else if (unassignedLeads.length > 0) {
+        toast({
+          title: 'No matches found',
+          description: 'Found leads but could not find matching companies',
+          variant: 'destructive',
+        });
+      }
     }
     
     return assignedCount;
   } catch (error) {
     console.error('Error in processUnassignedLeads:', error);
-    toast({
-      title: 'Error',
-      description: error instanceof Error ? error.message : 'An unknown error occurred',
-      variant: 'destructive',
-    });
+    if (showToasts) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'An unknown error occurred',
+        variant: 'destructive',
+      });
+    }
     return 0;
   }
 }

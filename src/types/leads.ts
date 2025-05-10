@@ -8,7 +8,9 @@ export const LEAD_STATUSES = [
   'under_review',
   'in_progress',
   'completed',
-  'archived'
+  'archived',
+  'won',
+  'lost'
 ] as const;
 
 // Define LeadStatus type from the constant
@@ -38,20 +40,25 @@ export interface Lead {
   deleted_at?: string | null;
   content?: any;
   internal_notes?: string | null;
-  zipCode?: string; // Added zipCode field
+  zipCode?: string;
+  lead_type?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface LeadFormValues {
   title: string;
   description: string;
   category: string;
-  zipCode?: string; // Added zipCode field
+  zipCode?: string;
+  lead_type?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface LeadFilter {
   status?: LeadStatus;
   category?: string;
-  zipCode?: string; // Added zipCode field
+  zipCode?: string;
+  lead_type?: string;
 }
 
 // Base lead settings that match our core type requirements
@@ -64,17 +71,20 @@ export interface LeadSettings {
   filters: {
     categories?: string[];
     zipCodes?: string[];
+    lead_types?: string[];
     [key: string]: Json | undefined;
   };
   budget?: number | null;
   daily_budget?: number | null;
   monthly_budget?: number | null;
   updated_at: string;
+  auto_distribute?: boolean;
   
   // Properties for direct access
   paused: boolean;
   categories: string[];
   zipCodes?: string[];
+  lead_types?: string[];
 }
 
 /**
@@ -104,15 +114,17 @@ export function mapDbToLeadSettings(data: any): LeadSettings {
     globally_paused: data.globally_paused,
     global_pause: data.global_pause,
     agents_paused: data.agents_paused,
-    filters: data.filters || { categories: [], zipCodes: [] },
+    filters: data.filters || { categories: [], zipCodes: [], lead_types: [] },
     budget: data.budget,
     daily_budget: data.daily_budget,
     monthly_budget: data.monthly_budget,
     updated_at: data.updated_at,
+    auto_distribute: data.auto_distribute || false,
     
     // Map to the base type properties
     paused: data.globally_paused || data.global_pause,
     categories: data.filters?.categories || [],
-    zipCodes: data.filters?.zipCodes || []
+    zipCodes: data.filters?.zipCodes || [],
+    lead_types: data.filters?.lead_types || []
   };
 }
