@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { FileText, Plus } from 'lucide-react';
+import { FileText, Plus, Star, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useUserReviews } from '@/hooks/useUserReviews';
 
@@ -23,23 +23,38 @@ export const ReviewsCard = () => {
       </div>
       <div className="px-5 py-4">
         {isLoading ? (
-          <p className="text-muted-foreground">Laster omtaler...</p>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="animate-pulse h-4 w-4 bg-primary/20 rounded-full"></span>
+            Laster omtaler...
+          </div>
         ) : reviews.length > 0 ? (
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {reviews.slice(0, 3).map(review => (
               <li key={review.id} className="text-sm border-b border-border/30 pb-2 last:border-0">
-                <p className="font-medium">{review.title}</p>
-                <p className="text-muted-foreground truncate">{review.content}</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-medium flex items-center gap-1">
+                    <Star className="h-3.5 w-3.5 text-yellow-500" /> 
+                    {review.title}
+                  </p>
+                </div>
+                <p className="text-muted-foreground truncate pl-5">{review.content}</p>
+                <div className="flex items-center text-xs text-muted-foreground mt-1 pl-5">
+                  <Calendar className="h-3 w-3 mr-1" /> 
+                  {new Date(review.created_at).toLocaleDateString('nb-NO')}
+                </div>
               </li>
             ))}
             {reviews.length > 3 && (
-              <li className="text-sm text-primary">
-                + {reviews.length - 3} flere omtaler
+              <li className="text-sm text-primary flex items-center gap-1">
+                <Plus className="h-3 w-3" /> {reviews.length - 3} flere omtaler
               </li>
             )}
           </ul>
         ) : (
-          <p className="text-muted-foreground">Du har ingen omtaler ennå.</p>
+          <div className="flex flex-col items-center py-4 text-muted-foreground">
+            <FileText className="h-10 w-10 text-muted-foreground/30 mb-2" />
+            <p>Du har ingen omtaler ennå.</p>
+          </div>
         )}
       </div>
       <div className="px-5 pb-5 pt-2">

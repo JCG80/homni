@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { User, Edit } from 'lucide-react';
+import { User, Edit, Mail, Phone, Home } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,14 +25,29 @@ export const ProfileCard = () => {
       </div>
       <div className="px-5 py-4">
         {profile ? (
-          <div className="space-y-2 text-sm">
-            <p><span className="font-medium">Navn:</span> {profile.full_name || 'Ikke angitt'}</p>
-            <p><span className="font-medium">E-post:</span> {profile.email || 'Ikke angitt'}</p>
-            <p><span className="font-medium">Telefon:</span> {profile.phone || 'Ikke angitt'}</p>
-            <p><span className="font-medium">Adresse:</span> {profile.address || 'Ikke angitt'}</p>
+          <div className="space-y-3">
+            <p className="flex items-center gap-2 text-sm">
+              <User className="h-4 w-4 text-primary/80" />
+              <span>{profile.full_name || 'Ikke angitt'}</span>
+            </p>
+            <p className="flex items-center gap-2 text-sm">
+              <Mail className="h-4 w-4 text-primary/80" />
+              <span>{profile.email || 'Ikke angitt'}</span>
+            </p>
+            <p className="flex items-center gap-2 text-sm">
+              <Phone className="h-4 w-4 text-primary/80" />
+              <span>{profile.phone || 'Ikke angitt'}</span>
+            </p>
+            <p className="flex items-center gap-2 text-sm">
+              <Home className="h-4 w-4 text-primary/80" />
+              <span>{profile.address || 'Ikke angitt'}</span>
+            </p>
           </div>
         ) : (
-          <p className="text-gray-500">Laster profil...</p>
+          <p className="text-gray-500 flex items-center gap-2">
+            <span className="animate-pulse h-4 w-4 bg-primary/20 rounded-full"></span>
+            Laster profil...
+          </p>
         )}
       </div>
       <div className="px-5 pb-5 pt-2">

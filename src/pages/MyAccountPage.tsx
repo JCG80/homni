@@ -3,7 +3,7 @@ import React from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageSquare, FileText, User, Edit, Plus, Mail } from 'lucide-react';
+import { MessageSquare, FileText, User, Bell, Mail, Heart, Home } from 'lucide-react';
 import { ProfileCard } from '@/components/account/ProfileCard';
 import { ReviewsCard } from '@/components/account/ReviewsCard';
 import { OffersCard } from '@/components/account/OffersCard';
@@ -17,8 +17,10 @@ export const MyAccountPage = () => {
   return (
     <div className="container mx-auto py-12 px-4">
       <header className="mb-10">
-        <h1 className="text-3xl font-medium text-foreground">
-          Hei, <span className="text-gradient font-semibold">{userName}</span>! Hva ønsker du å gjøre i dag?
+        <h1 className="text-3xl font-medium text-foreground flex items-center gap-2">
+          <User className="h-6 w-6 text-primary" />
+          Hei, <span className="text-gradient font-semibold">{userName}</span>! 
+          <span className="text-muted-foreground text-lg font-normal ml-1">Hva ønsker du å gjøre i dag?</span>
         </h1>
       </header>
 
@@ -42,20 +44,26 @@ export const MyAccountPage = () => {
               type="email"
             />
             <Button className="warm-button">
-              Motta tips
+              <Bell className="h-4 w-4 mr-2" /> Motta tips
             </Button>
           </div>
         </div>
         
         <div className="bg-secondary/50 rounded-lg p-6">
           <h2 className="text-lg font-medium mb-4 flex items-center">
-            <span className="w-2 h-6 bg-primary rounded-full mr-2"></span>
+            <Heart className="h-5 w-5 mr-2 text-primary" />
             Våre samarbeidspartnere
           </h2>
           <div className="flex flex-wrap gap-4">
-            <a href="#" className="text-primary hover:underline">Boliglånspartner</a>
-            <a href="#" className="text-primary hover:underline">Forsikringspartner</a>
-            <a href="#" className="text-primary hover:underline">Energi-partner</a>
+            <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+              <Home className="h-4 w-4" /> Boliglånspartner
+            </a>
+            <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+              <Bell className="h-4 w-4" /> Forsikringspartner
+            </a>
+            <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+              <Mail className="h-4 w-4" /> Energi-partner
+            </a>
           </div>
         </div>
       </div>

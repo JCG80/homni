@@ -127,7 +127,7 @@
 
 /* Adding the new warm and soft UI styles */
 .warm-card {
-  @apply bg-gradient-to-br from-white to-secondary/50 rounded-lg shadow-sm hover:shadow-md transition-duration-300;
+  @apply bg-gradient-to-br from-white to-secondary/50 rounded-lg shadow-sm hover:shadow-md transition duration-300;
 }
 
 .warm-button {
