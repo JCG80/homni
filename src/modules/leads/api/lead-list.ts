@@ -66,3 +66,19 @@ export async function getLeadById(leadId: string): Promise<Lead> {
   if (error) throw error;
   return parseLead(data);
 }
+
+/**
+ * Load leads with simplified selection
+ */
+export async function loadLeads(): Promise<Lead[]> {
+  const { data, error } = await supabase
+    .from('leads')
+    .select('*');
+
+  if (error || !data) {
+    console.error('Failed to load leads:', error);
+    return [];
+  }
+
+  return data.map(item => parseLead(item));
+}
