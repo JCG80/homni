@@ -34,6 +34,7 @@ const AuthContext = createContext<AuthContextType>({
 
 // AuthProvider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  // Use all values directly from useAuthState
   const authData = useAuthState();
   
   // Map the values from authState to match the AuthContextType
