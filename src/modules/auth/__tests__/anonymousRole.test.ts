@@ -24,6 +24,6 @@ describe('Anonymous Role Access', () => {
     expect(canAccessModule('admin', 'admin')).toBe(true);
     expect(canAccessModule('admin', 'leads')).toBe(true);
     expect(canAccessModule('company', 'leads')).toBe(true);
-    expect(canAccessModule('master-admin', 'anything')).toBe(false); // No direct match, but will pass with '*'
+    expect(canAccessModule('master-admin', 'anything')).toBe(true); // Has access to everything with '*'
   });
 });

@@ -47,7 +47,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: null
+      role: 'anonymous'
     });
 
     const { getByTestId } = render(
@@ -131,5 +131,41 @@ describe('ProtectedRoute Component', () => {
     );
 
     expect(getByText('Authenticated Content')).toBeInTheDocument();
+  });
+
+  test('should allow anonymous users to access allowed modules', () => {
+    (useAuth as any).mockReturnValue({
+      isLoading: false,
+      isAuthenticated: false,
+      role: 'anonymous'
+    });
+
+    const { getByText } = render(
+      <MemoryRouter>
+        <ProtectedRoute module="home">
+          <div>Public Content</div>
+        </ProtectedRoute>
+      </MemoryRouter>
+    );
+
+    expect(getByText('Public Content')).toBeInTheDocument();
+  });
+
+  test('should redirect anonymous users from protected modules', () => {
+    (useAuth as any).mockReturnValue({
+      isLoading: false,
+      isAuthenticated: false,
+      role: 'anonymous'
+    });
+
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <ProtectedRoute module="dashboard">
+          <div>Protected Dashboard</div>
+        </ProtectedRoute>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId('navigate')).toHaveAttribute('data-to', '/login');
   });
 });
