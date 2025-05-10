@@ -1,4 +1,3 @@
-
 import { useRoutes } from 'react-router-dom';
 import { Authenticated } from './components/Authenticated';
 import { Unauthenticated } from './components/Unauthenticated';
@@ -20,6 +19,7 @@ import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
 import { MemberListPage } from './modules/user/pages/MemberListPage';
 import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles';
+import { ProjectPlanPage } from './modules/docs/pages/ProjectPlanPage';
 
 const AppRoutes = () => {
   // Define routes with their auth requirements
@@ -126,6 +126,13 @@ const AppRoutes = () => {
       element: <AuthManagementPage />,
       requiresAuth: true,
       roles: ['admin', 'master-admin'] as UserRole[]
+    },
+    // Project Plan Route
+    {
+      path: '/docs/project-plan',
+      element: <ProjectPlanPage />,
+      requiresAuth: true,
+      allowAnyRole: true // Allow any authenticated user to access the project plan
     }
   ];
 
