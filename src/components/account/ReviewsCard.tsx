@@ -40,7 +40,7 @@ export const ReviewsCard = () => {
                 <p className="text-muted-foreground truncate pl-5">{review.content}</p>
                 <div className="flex items-center text-xs text-muted-foreground mt-1 pl-5">
                   <Calendar className="h-3 w-3 mr-1" /> 
-                  {new Date(review.created_at).toLocaleDateString('nb-NO')}
+                  {new Date(review.createdAt).toLocaleDateString('nb-NO')}
                 </div>
               </li>
             ))}

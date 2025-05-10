@@ -45,7 +45,7 @@ export const MessagesCard = () => {
                 <p className="text-muted-foreground truncate pl-5">{message.content}</p>
                 <div className="flex items-center text-xs text-muted-foreground mt-1 pl-5">
                   <Calendar className="h-3 w-3 mr-1" />
-                  {new Date(message.date).toLocaleDateString('nb-NO')}
+                  {new Date(message.createdAt).toLocaleDateString('nb-NO')}
                 </div>
               </li>
             ))}
