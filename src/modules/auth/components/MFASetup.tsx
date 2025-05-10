@@ -50,10 +50,10 @@ export const MFASetup = () => {
     
     setIsLoading(true);
     try {
-      // We're passing factorId and the verification code to verifyMFA
+      // Updated to match our fixed verifyMFA function
       const { verified, error } = await verifyMFA(
         enrollmentData.factorId,
-        "", // Passing empty string for challengeId as it's not used
+        "", // Challenge ID will be created inside the function
         verificationCode
       );
       

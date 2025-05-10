@@ -272,12 +272,12 @@ export const setupMFA = async () => {
 /**
  * Verify MFA challenge
  */
-export const verifyMFA = async (factorId: string, challengeId: string, code: string) => {
+export const verifyMFA = async (factorId: string, challengeId: string, verificationCode: string) => {
   try {
-    // Fixed: Removed challengeId property which doesn't exist in MFAChallengeParams
+    // Fixed: Use the correct parameters expected by Supabase MFA challenge API
     const { data, error } = await supabase.auth.mfa.challenge({
       factorId,
-      code
+      // Don't include code as a separate parameter since it's not supported by MFAChallengeParams
     });
     
     if (error) {
@@ -290,8 +290,24 @@ export const verifyMFA = async (factorId: string, challengeId: string, code: str
       return { verified: false, error };
     }
     
-    // Fixed: Use data.totp?.verified or a default false value if not available
-    return { verified: data.totp?.verified || false, error: null };
+    // Now verify the challenge with the code
+    const verifyResult = await supabase.auth.mfa.verify({
+      factorId,
+      challengeId: data.id,
+      code: verificationCode
+    });
+    
+    if (verifyResult.error) {
+      console.error("MFA code verification error:", verifyResult.error);
+      toast({
+        title: "MFA-verifiseringsfeil",
+        description: "Ugyldig kode. Vennligst prøv igjen.",
+        variant: "destructive",
+      });
+      return { verified: false, error: verifyResult.error };
+    }
+    
+    return { verified: verifyResult.data?.verified || false, error: null };
   } catch (error) {
     console.error("Unexpected MFA verification error:", error);
     return { verified: false, error };
@@ -306,7 +322,6 @@ export const getAuditLogs = async (userId?: string, limit = 100) => {
   try {
     // This is a placeholder implementation since audit_logs table doesn't exist yet
     // We'll implement a mock for now and return empty array
-    // In a real implementation, you would create this table and configure RLS policies
     
     // Mock data for the UI to display
     const mockLogs = Array.from({ length: 5 }).map((_, index) => ({

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -21,7 +22,7 @@ export const PerformanceMonitor = () => {
       const startTime = Date.now();
       
       // Make a simple request to measure response time
-      // Fixed: Use Promise syntax correctly
+      // Fixed: Properly handle Promise with then/catch
       supabase.from('leads').select('count')
         .then(() => {
           const endTime = Date.now();
