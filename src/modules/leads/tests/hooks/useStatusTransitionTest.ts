@@ -15,7 +15,7 @@ export function useStatusTransitionTest() {
   const [error, setError] = useState<string | null>(null);
   const [statusCode, setStatusCode] = useState<number | null>(null);
 
-  const fetchLeadStatus = async () => {
+  const fetchLeadStatusHandler = async () => {
     if (!leadId.trim()) {
       toast({
         title: "Mangler lead ID",
@@ -32,12 +32,12 @@ export function useStatusTransitionTest() {
     setResult(null);
 
     try {
-      const { status, data, error: apiError } = await fetchLeadStatus(leadId);
+      const response = await fetchLeadStatus(leadId);
       
-      setStatusCode(status);
+      setStatusCode(response.status);
       
-      if (apiError || !data) {
-        setError(apiError?.message || 'Kunne ikke hente lead-status');
+      if (response.error || !response.data) {
+        setError(response.error?.message || 'Kunne ikke hente lead-status');
         toast({
           title: 'Feil ved henting',
           description: 'Kunne ikke hente lead-status',
@@ -46,12 +46,12 @@ export function useStatusTransitionTest() {
         return;
       }
       
-      setCurrentStatus(data.status);
-      setResult(data);
+      setCurrentStatus(response.data.status);
+      setResult(response.data);
       
       toast({
         title: 'Lead funnet',
-        description: `Lead med status "${data.status}" ble funnet`,
+        description: `Lead med status "${response.data.status}" ble funnet`,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Uventet feil oppstod');
@@ -81,21 +81,10 @@ export function useStatusTransitionTest() {
     setResult(null);
 
     try {
-      const { data, error: apiError, status } = await updateLeadStatus(leadId, targetStatus);
+      const updatedLead = await updateLeadStatus(leadId, targetStatus);
       
-      setStatusCode(status);
-      
-      if (apiError) {
-        setError(apiError.message);
-        toast({
-          title: 'Oppdatering feilet',
-          description: apiError.message,
-          variant: 'destructive',
-        });
-        return;
-      }
-      
-      setResult(data);
+      setStatusCode(200); // Assuming success status code
+      setResult(updatedLead);
       setCurrentStatus(targetStatus);
       
       toast({
@@ -104,6 +93,8 @@ export function useStatusTransitionTest() {
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Uventet feil oppstod');
+      setStatusCode(400); // Assuming error status code
+      
       toast({
         title: 'Oppdatering feilet',
         description: 'En feil oppstod ved oppdatering av lead-status',
@@ -114,9 +105,9 @@ export function useStatusTransitionTest() {
     }
   };
 
-  const isTransitionAllowed = currentStatus 
-    ? isStatusTransitionAllowed(currentStatus, targetStatus)
-    : false;
+  const isTransitionAllowed = (status: LeadStatus) => {
+    return currentStatus ? isStatusTransitionAllowed(currentStatus, status) : false;
+  };
 
   return {
     leadId,
@@ -128,7 +119,7 @@ export function useStatusTransitionTest() {
     result,
     error,
     statusCode,
-    fetchLeadStatus,
+    fetchLeadStatus: fetchLeadStatusHandler,
     testStatusTransition,
     isTransitionAllowed
   };

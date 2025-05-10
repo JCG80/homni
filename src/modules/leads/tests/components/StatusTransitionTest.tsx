@@ -5,6 +5,7 @@ import { StatusTransitionSelector } from './StatusTransitionSelector';
 import { TransitionTestButton } from './TransitionTestButton';
 import { TransitionTestResult } from './TransitionTestResult';
 import { useStatusTransitionTest } from '../hooks/useStatusTransitionTest';
+import { LeadStatus } from '@/types/leads';
 
 export function StatusTransitionTest() {
   const {
@@ -21,6 +22,11 @@ export function StatusTransitionTest() {
     testStatusTransition,
     isTransitionAllowed
   } = useStatusTransitionTest();
+
+  // Function to check if a transition is allowed for a specific status
+  const checkTransition = (status: LeadStatus) => {
+    return isTransitionAllowed(status);
+  };
 
   return (
     <Card className="w-full max-w-3xl mx-auto">
@@ -42,11 +48,11 @@ export function StatusTransitionTest() {
               currentStatus={currentStatus}
               targetStatus={targetStatus}
               setTargetStatus={setTargetStatus}
-              isTransitionAllowed={isTransitionAllowed}
+              isTransitionAllowed={checkTransition}
             />
 
             <TransitionTestButton
-              isDisabled={!isTransitionAllowed || !leadId}
+              isDisabled={!isTransitionAllowed(targetStatus) || !leadId}
               isLoading={isLoading}
               onClick={testStatusTransition}
             />

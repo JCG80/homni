@@ -1,8 +1,9 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { getLeadById, updateLeadStatus } from '../../api';
-import { LeadStatus } from '../../types/types';
+import { getLeadById } from '../../api/lead-list';
+import { updateLeadStatus } from '../../api/lead-update';
+import { LeadStatus } from '@/types/leads';
 import { toast } from '@/hooks/use-toast';
 
 export function useLeadStatusUpdateTest() {
