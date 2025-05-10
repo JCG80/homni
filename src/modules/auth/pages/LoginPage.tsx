@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { LoginForm } from '../components/LoginForm';
 import { devLogin } from '../utils/devLogin';
 import { toast } from '@/hooks/use-toast';
+import { UserRole } from '../types/types';
 
 export const LoginPage = () => {
-  const handleDevLogin = async (role: 'user' | 'company' | 'admin' | 'master-admin') => {
+  // Updated to use correct UserRole types
+  const handleDevLogin = async (role: UserRole) => {
     const result = await devLogin(role);
     if (result.error) {
       toast({
@@ -43,7 +45,7 @@ export const LoginPage = () => {
         {import.meta.env.MODE === 'development' && (
           <div className="mt-8 text-center space-x-2">
             <button 
-              onClick={() => handleDevLogin('user')} 
+              onClick={() => handleDevLogin('member')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as User
@@ -61,7 +63,7 @@ export const LoginPage = () => {
               Login as Admin
             </button>
             <button 
-              onClick={() => handleDevLogin('master-admin')} 
+              onClick={() => handleDevLogin('master_admin')} 
               className="px-3 py-1 bg-gray-200 rounded text-xs"
             >
               Login as Master Admin

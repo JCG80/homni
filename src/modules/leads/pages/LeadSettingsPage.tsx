@@ -3,10 +3,63 @@ import React from 'react';
 import { LeadSettingsForm } from '../components/LeadSettingsForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
-import { useLeads } from '../hooks/useLeads';
+import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
+import { useState, useEffect } from 'react';
+import { toast } from '@/hooks/use-toast';
+import { LeadSettings } from '@/types/leads';
 
 export const LeadSettingsPage = () => {
-  const { isLoading, error, settings, updateSettings } = useLeads();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<LeadSettings | null>(null);
+  
+  // Fetch settings on component mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setIsLoading(true);
+        const settingsData = await fetchLeadSettings();
+        setSettings(settingsData);
+      } catch (err) {
+        console.error('Failed to load lead settings:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load settings');
+        toast({
+          title: "Error loading settings",
+          description: "Could not load lead distribution settings",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSettings();
+  }, []);
+  
+  // Function to update settings
+  const handleUpdateSettings = async (updatedSettings: Partial<LeadSettings>) => {
+    try {
+      await updateLeadSettings(updatedSettings);
+      // Refresh settings after update
+      const newSettings = await fetchLeadSettings();
+      setSettings(newSettings);
+      
+      toast({
+        title: "Settings updated",
+        description: "Lead distribution settings have been saved",
+      });
+      
+      return true;
+    } catch (err) {
+      console.error('Failed to update settings:', err);
+      toast({
+        title: "Update failed",
+        description: "Could not save lead distribution settings",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
   
   return (
     <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
@@ -29,10 +82,7 @@ export const LeadSettingsPage = () => {
                 <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
               </div>
             ) : (
-              <LeadSettingsForm 
-                initialSettings={settings} 
-                onSubmit={updateSettings} 
-              />
+              <LeadSettingsForm />
             )}
           </CardContent>
         </Card>
