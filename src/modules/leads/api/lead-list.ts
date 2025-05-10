@@ -18,6 +18,7 @@ type SimpleLead = {
 
 export const listLeads = async (): Promise<Lead[]> => {
   try {
+    // Use a basic select without generic type annotation to avoid deep type instantiation
     const { data: rawData, error } = await supabase
       .from('leads')
       .select('id, submitted_by, status, created_at, title, description, category');
@@ -39,6 +40,7 @@ export const listLeads = async (): Promise<Lead[]> => {
 
 export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => {
   try {
+    // Use basic select without generic type annotation
     const { data: rawData, error } = await supabase
       .from('leads')
       .select('id, submitted_by, status, created_at, title, description, category')
@@ -60,6 +62,7 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
 
 export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
   try {
+    // Use basic select without generic type annotation
     const { data: rawData, error } = await supabase
       .from('leads')
       .select('id, submitted_by, status, created_at, title, description, category')
