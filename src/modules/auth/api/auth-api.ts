@@ -106,9 +106,12 @@ export const createProfile = async (profile: Partial<Profile> & { id: string }):
  */
 export const updateUserRole = async (userId: string, role: UserRole): Promise<boolean> => {
   try {
+    // Update the role in the metadata field since there's no direct 'role' column
     const { error } = await supabase
       .from('user_profiles')
-      .update({ role })
+      .update({ 
+        metadata: { role: role } 
+      })
       .eq('id', userId);
     
     if (error) {
