@@ -1,11 +1,11 @@
 
 import { createContext, useContext, ReactNode } from 'react';
-import { useAuth } from './useAuth';
+import { useAuth, ModuleAccess } from './useAuth';
 import { AuthUser, AuthState, Profile } from '../types/types';
 
 // For backward compatibility, maintain the old interface
 interface AuthContextType {
-  authState: AuthState;
+  authState: AuthState & { module_access: ModuleAccess[] };
   refreshProfile: () => Promise<void>;
 }
 
@@ -16,6 +16,7 @@ const AuthContext = createContext<AuthContextType>({
     profile: null,
     isLoading: true,
     error: null,
+    module_access: [],
   },
   refreshProfile: async () => {},
 });
@@ -26,11 +27,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const auth = useAuth();
   
   // Map to the old format for backward compatibility
-  const authState: AuthState = {
+  const authState: AuthState & { module_access: ModuleAccess[] } = {
     user: auth.user,
     profile: auth.profile,
     isLoading: auth.isLoading,
     error: auth.error,
+    module_access: auth.module_access,
   };
   
   return (

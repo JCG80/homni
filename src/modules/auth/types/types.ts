@@ -5,6 +5,7 @@
 
 // Import UserRole from the new location
 import { UserRole } from '../utils/roles/types';
+import { ModuleAccess } from '../hooks/useAuth';
 
 export type { UserRole };
 

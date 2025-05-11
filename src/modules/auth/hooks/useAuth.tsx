@@ -1,10 +1,17 @@
 
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { AuthUser, Profile } from '../types/types';
 import { useAuthSession } from './useAuthSession';
 import { useAuthDerivedState } from './useAuthDerivedState';
 import { UserRole } from '../utils/roles/types';
 import { useDevAuth } from './useDevAuth';
+import { supabase } from '@/integrations/supabase/client';
+
+// Define a type for module access
+export interface ModuleAccess {
+  system_module_id: string;
+  internal_admin?: boolean;
+}
 
 // Define a comprehensive AuthContextType with all required fields
 export interface AuthContextType {
@@ -20,7 +27,7 @@ export interface AuthContextType {
   isMember: boolean;
   role: UserRole | undefined;
   account_type?: string;
-  module_access: string[];
+  module_access: ModuleAccess[]; // Make this required
   internal_admin: boolean;
   canAccessModule: (module: string) => boolean;
   // Add dev-specific props
@@ -42,7 +49,7 @@ const AuthContext = createContext<AuthContextType>({
   isMember: false,
   role: undefined,
   account_type: undefined,
-  module_access: [],
+  module_access: [], // Default empty array
   internal_admin: false,
   canAccessModule: () => false,
 });
@@ -51,6 +58,7 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Get the auth session state
   const authSession = useAuthSession();
+  const [moduleAccess, setModuleAccess] = useState<ModuleAccess[]>([]);
   
   // Get dev auth functionality (only works in development)
   const devAuth = useDevAuth();
@@ -58,6 +66,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Use dev user instead of real auth in development mode
   const effectiveUser = devAuth.isDevMode ? devAuth.devUser : authSession.user;
   const effectiveProfile = devAuth.isDevMode ? devAuth.devUserProfile : authSession.profile;
+  
+  // Fetch module access when user changes
+  useEffect(() => {
+    const fetchModuleAccess = async () => {
+      if (!effectiveUser?.id) return;
+      
+      try {
+        const { data: accessData, error: accessError } = await supabase
+          .from('module_access')
+          .select('system_module_id, internal_admin')
+          .eq('user_id', effectiveUser.id);
+          
+        if (accessError) {
+          console.error('Error fetching module access:', accessError);
+          return;
+        }
+        
+        setModuleAccess(accessData || []);
+      } catch (error) {
+        console.error('Unexpected error fetching module access:', error);
+      }
+    };
+    
+    // Only fetch module access for real users, not dev users
+    if (effectiveUser && !devAuth.isDevMode) {
+      fetchModuleAccess();
+    } else if (devAuth.isDevMode && devAuth.devUser) {
+      // For dev users, set some sample module access
+      setModuleAccess([{ system_module_id: 'dev-module', internal_admin: true }]);
+    } else {
+      // Reset module access when no user
+      setModuleAccess([]);
+    }
+  }, [effectiveUser?.id, devAuth.isDevMode, devAuth.devUser]);
   
   // Get derived state like isAdmin, isMember, etc.
   const derivedState = useAuthDerivedState({
@@ -71,7 +113,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // No need to refresh in dev mode
       return;
     }
-    return authSession.refreshProfile();
+    
+    const result = await authSession.refreshProfile();
+    
+    // After refreshing profile, also refresh module access
+    if (effectiveUser?.id) {
+      try {
+        const { data: accessData, error: accessError } = await supabase
+          .from('module_access')
+          .select('system_module_id, internal_admin')
+          .eq('user_id', effectiveUser.id);
+          
+        if (!accessError) {
+          setModuleAccess(accessData || []);
+        }
+      } catch (error) {
+        console.error('Error refreshing module access:', error);
+      }
+    }
+    
+    return result;
   };
   
   // Combine the states for the context value
@@ -81,6 +142,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     user: effectiveUser,
     profile: effectiveProfile,
     refreshProfile,
+    module_access: moduleAccess, // Include module access in context
     // Add dev-specific functionality
     isDevMode: devAuth.isDevMode,
     switchDevUser: devAuth.switchToDevUser,

@@ -2,17 +2,19 @@
 import { useCallback } from 'react';
 import { AuthUser, Profile } from '../types/types';
 import { UserRole } from '../utils/roles/types';
+import { ModuleAccess } from './useAuth';
 
 interface AuthBaseState {
   user: AuthUser | null;
   profile: Profile | null;
+  module_access?: ModuleAccess[];
 }
 
 /**
  * Hook that provides derived state from auth data (user and profile)
  * This separates the derived state logic from the main auth state management
  */
-export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
+export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthBaseState) => {
   // Check if user is authenticated
   const isAuthenticated = !!user;
 
@@ -22,8 +24,12 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
   // Get account type from user metadata or profile
   const account_type = (profile as any)?.metadata?.account_type || (profile as any)?.account_type || 'member';
   
-  // Get internal admin flag from user metadata or profile
-  const internal_admin = (profile as any)?.metadata?.internal_admin || (profile as any)?.internal_admin || false;
+  // Get internal admin flag from user metadata, profile, or module_access
+  const internal_admin = 
+    (profile as any)?.metadata?.internal_admin || 
+    (profile as any)?.internal_admin || 
+    module_access.some(access => access.internal_admin) || 
+    false;
 
   // Helper function to check if user has a specific role
   const hasRole = useCallback((roleToCheck: UserRole) => {
@@ -31,14 +37,13 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
   }, [role]);
 
   // Helper function to check if user can access a specific module
-  const canAccessModule = useCallback((module: string) => {
+  const canAccessModule = useCallback((moduleId: string) => {
     // Master admins can access everything
     if (role === 'master_admin' || internal_admin) return true;
     
-    // For other users, we'll need to query the module_access table
-    // This will be handled by the backend through RLS policies
-    return true; // Default to true for now, the backend will enforce access control
-  }, [role, internal_admin]);
+    // Check if user has access to this specific module
+    return module_access.some(access => access.system_module_id === moduleId);
+  }, [role, internal_admin, module_access]);
 
   // Helper functions to check common roles
   const isAdmin = useCallback(() => {
