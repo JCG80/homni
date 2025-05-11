@@ -2,6 +2,7 @@
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 export const CompanyDashboard: React.FC = () => {
   const { user, profile, module_access = [] } = useAuth();
@@ -29,7 +30,14 @@ export const CompanyDashboard: React.FC = () => {
             <ul className="list-disc pl-5 mt-2">
               {module_access.length > 0 ? (
                 module_access.map((module, index) => (
-                  <li key={index}>{module}</li>
+                  <li key={index} className="mb-1">
+                    <Badge variant="outline" className="mr-2">
+                      {module.system_module_id}
+                    </Badge>
+                    {module.internal_admin && (
+                      <Badge className="bg-blue-500">Intern Admin</Badge>
+                    )}
+                  </li>
                 ))
               ) : (
                 <li className="text-muted-foreground">Ingen moduler aktivert</li>
