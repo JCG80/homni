@@ -9,13 +9,11 @@ import { UserRole } from './types';
  */
 export function getRoleDisplayName(role: UserRole): string {
   const displayNames: Record<UserRole, string> = {
-    'guest': 'Gjest',
-    'member': 'Bruker',
+    'anonymous': 'Gjest',
+    'user': 'Bruker',
     'company': 'Bedrift',
     'admin': 'Administrator',
-    'master_admin': 'Master Administrator',
-    'provider': 'Tjenesteleverandør',
-    'editor': 'Redaktør'
+    'master_admin': 'Master Administrator'
   };
   
   return displayNames[role] || role;

@@ -9,20 +9,16 @@ import { UserRole } from './types';
  */
 export function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
-    case 'guest':
+    case 'anonymous':
       return ['home', 'leads/submit', 'info', 'login', 'register'];
-    case 'member':
+    case 'user':
       return ['dashboard', 'leads'];
     case 'company':
       return ['dashboard', 'leads', 'settings', 'reports'];
     case 'admin':
       return ['admin', 'leads', 'companies', 'reports', 'content'];
-    case 'editor':
-      return ['content', 'dashboard'];
     case 'master_admin':
       return ['*']; // access to all modules
-    case 'provider':
-      return ['dashboard', 'leads', 'services'];
     default:
       return [];
   }
@@ -42,11 +38,11 @@ export function canAccessModule(role: UserRole, module: string): boolean {
 export function getAccessibleModules(
   role: UserRole | null,
   moduleAccessMap: Record<string, UserRole[]> = {
-    'leads': ['member', 'company', 'admin', 'master_admin'],
+    'leads': ['user', 'company', 'admin', 'master_admin'],
     'admin': ['admin', 'master_admin'],
     'company': ['company', 'admin', 'master_admin'],
-    'geo': ['member', 'company', 'admin', 'master_admin', 'provider'],
-    'content': ['admin', 'master_admin', 'editor'],
+    'geo': ['user', 'company', 'admin', 'master_admin'],
+    'content': ['admin', 'master_admin'],
     'settings': ['admin', 'master_admin']
   }
 ): string[] {

@@ -6,27 +6,23 @@
 /**
  * All possible user roles in the system
  */
-export type UserRole = 'guest' | 'member' | 'company' | 'admin' | 'master_admin' | 'provider' | 'editor';
+export type UserRole = 'anonymous' | 'user' | 'company' | 'admin' | 'master_admin';
 
 /**
  * Constants defining role categories
  */
 export const ALL_ROLES: UserRole[] = [
-  'member',
+  'user',
   'company',
   'admin',
-  'master_admin',
-  'provider', 
-  'editor'
+  'master_admin'
 ];
 
-export const PUBLIC_ROLES: UserRole[] = ['guest'];
+export const PUBLIC_ROLES: UserRole[] = ['anonymous'];
 
 export const AUTHENTICATED_ROLES: UserRole[] = [
-  'member',
+  'user',
   'company',
   'admin',
-  'master_admin',
-  'provider',
-  'editor'
+  'master_admin'
 ];

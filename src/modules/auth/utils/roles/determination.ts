@@ -12,7 +12,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
   try {
     // Primary implementation - from user data
     if (!userData) {
-      return 'member';
+      return 'user';
     }
 
     // Extract role from user metadata
@@ -27,9 +27,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
       // Map test emails to roles in development
       if (email === 'admin@test.local') return 'master_admin';
       if (email === 'company@test.local') return 'company';
-      if (email === 'provider@test.local') return 'provider';
-      if (email === 'editor@test.local') return 'editor';
-      if (email === 'user@test.local') return 'member';
+      if (email === 'user@test.local') return 'user';
     }
     
     // Validate if the role is a valid UserRole
@@ -37,9 +35,9 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
       return role as UserRole;
     }
     
-    return 'member'; // Default fallback role
+    return 'user'; // Default fallback role
   } catch (error) {
     console.error('Error determining user role:', error);
-    return 'member'; // Fallback to default role on error
+    return 'user'; // Fallback to default role on error
   }
 }

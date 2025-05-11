@@ -86,7 +86,7 @@ export const AppRoutes = () => {
         
         {/* Lead management routes */}
         <Route path="/leads" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member']}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user']}>
             <LeadManagementPage />
           </ProtectedRoute>
         } />

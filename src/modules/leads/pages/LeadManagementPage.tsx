@@ -5,7 +5,7 @@ import { AdminLeadsPage } from './AdminLeadsPage';
 import { CompanyLeadsPage } from './CompanyLeadsPage';
 import { UserLeadsPage } from './UserLeadsPage';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { UserRole } from '@/modules/auth/types/types';
+import { UserRole } from '@/modules/auth/utils/roles';
 
 export const LeadManagementPage = () => {
   const { role } = useAuth();
@@ -16,16 +16,16 @@ export const LeadManagementPage = () => {
       return <AdminLeadsPage />;
     } else if (role === 'company') {
       return <CompanyLeadsPage />;
-    } else if (role === 'member') {
+    } else if (role === 'user') {
       return <UserLeadsPage />;
     }
     
     // Fallback - should not happen due to ProtectedRoute
-    return <div>Unauthorized</div>;
+    return <div>Uautorisert</div>;
   };
   
   return (
-    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member']}>
+    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user']}>
       {renderLeadsPage()}
     </ProtectedRoute>
   );

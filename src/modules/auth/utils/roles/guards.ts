@@ -1,24 +1,37 @@
 
 /**
- * Type guards for role management
+ * Type guards and validation functions for roles
  */
 import { UserRole, ALL_ROLES } from './types';
 
 /**
- * Check if a value is a valid UserRole
- * @param value The value to check
- * @returns True if the value is a valid UserRole
+ * Type guard to check if a value is a valid UserRole
  */
-export const isUserRole = (value: any): value is UserRole => {
-  return typeof value === 'string' && ALL_ROLES.includes(value as UserRole);
-};
+export function isUserRole(value: any): value is UserRole {
+  return ALL_ROLES.includes(value as UserRole) || value === 'anonymous';
+}
 
 /**
- * Validate and convert a value to UserRole if possible
- * @param value Value to convert
- * @param defaultRole Default role to use if validation fails
- * @returns Valid UserRole or default
+ * Check if a user has at least one of the required roles
  */
-export const toUserRole = (value: any, defaultRole: UserRole = 'member'): UserRole => {
-  return isUserRole(value) ? value : defaultRole;
-};
+export function hasRequiredRole(userRole: UserRole | null, allowedRoles: UserRole[]): boolean {
+  if (!userRole) return false;
+  if (allowedRoles.length === 0) return true;
+  return allowedRoles.includes(userRole);
+}
+
+/**
+ * Determine if a role has admin privileges
+ */
+export function isAdminRole(role: UserRole | null): boolean {
+  if (!role) return false;
+  return ['admin', 'master_admin'].includes(role);
+}
+
+/**
+ * Determine if a role has content editor privileges
+ */
+export function isContentEditorRole(role: UserRole | null): boolean {
+  if (!role) return false;
+  return ['admin', 'master_admin'].includes(role);
+}

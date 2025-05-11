@@ -16,12 +16,15 @@ export const Authenticated = ({
   requiredRoles = [],
   allowAnyRole = false,
 }: AuthenticatedProps) => {
-  const { isAuthenticated, isLoading, role } = useAuth();
+  const { isAuthenticated, isLoading, user, profile } = useAuth();
 
   if (isLoading) {
-    return <div>Loading authentication state...</div>;
+    return <div>Laster autentiseringsstatus...</div>;
   }
 
+  // Determine the current role - use 'anonymous' if not authenticated
+  const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous';
+  
   // If not authenticated, show fallback
   if (!isAuthenticated) {
     return <>{fallback}</>;
@@ -34,7 +37,7 @@ export const Authenticated = ({
 
   // If specific roles are required, check if the user has one of them
   if (requiredRoles.length > 0) {
-    if (!role || !requiredRoles.includes(role)) {
+    if (!requiredRoles.includes(currentRole)) {
       return <>{fallback}</>;
     }
   }
