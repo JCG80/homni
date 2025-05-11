@@ -432,6 +432,41 @@ export type Database = {
         }
         Relationships: []
       }
+      module_access: {
+        Row: {
+          created_at: string | null
+          id: string
+          internal_admin: boolean | null
+          system_module_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          internal_admin?: boolean | null
+          system_module_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          internal_admin?: boolean | null
+          system_module_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_access_system_module_id_fkey"
+            columns: ["system_module_id"]
+            isOneToOne: false
+            referencedRelation: "system_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_docs: {
         Row: {
           content: string
@@ -620,31 +655,34 @@ export type Database = {
       }
       system_modules: {
         Row: {
-          created_at: string
-          description: string
+          created_at: string | null
+          dependencies: string[] | null
+          description: string | null
           id: string
-          is_active: boolean
+          is_active: boolean | null
           name: string
-          requires_role: string[] | null
-          updated_at: string
+          route: string | null
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
-          description: string
+          created_at?: string | null
+          dependencies?: string[] | null
+          description?: string | null
           id?: string
-          is_active?: boolean
+          is_active?: boolean | null
           name: string
-          requires_role?: string[] | null
-          updated_at?: string
+          route?: string | null
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
-          description?: string
+          created_at?: string | null
+          dependencies?: string[] | null
+          description?: string | null
           id?: string
-          is_active?: boolean
+          is_active?: boolean | null
           name?: string
-          requires_role?: string[] | null
-          updated_at?: string
+          route?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
