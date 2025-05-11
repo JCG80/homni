@@ -40,12 +40,10 @@ export const AppRoutes = () => {
         
         {/* Service comparison routes */}
         <Route path="/strom" element={<PowerComparisonPage />} />
+        <Route path="/compare" element={<InsuranceQuotePage />} />
         <Route path="/forsikring/*" element={<InsuranceRoutes />} />
         <Route path="/insurance/*" element={<InsuranceRoutes />} />
         <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
-        
-        {/* Insurance comparison route - make sure it's defined before the nested routes */}
-        <Route path="/compare" element={<InsuranceQuotePage />} />
         
         {/* Lead capture public route */}
         <Route path="/lead-capture" element={<LeadCapturePage />} />
@@ -101,8 +99,6 @@ export const AppRoutes = () => {
             <LeadSettingsPage />
           </ProtectedRoute>
         } />
-        
-        {/* Doc routes - imported from modules */}
         
         {/* 404 - Not Found */}
         <Route path="*" element={<NotFound />} />

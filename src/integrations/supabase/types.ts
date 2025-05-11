@@ -668,7 +668,41 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      delete_user_profile: {
+        Args: { user_id: string }
+        Returns: undefined
+      }
+      get_user_profile: {
+        Args: { user_id: string }
+        Returns: {
+          id: string
+          full_name: string
+          email: string
+          phone: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
+      list_all_user_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          full_name: string
+          email: string
+          phone: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
+      update_user_profile: {
+        Args: {
+          user_id: string
+          full_name: string
+          email: string
+          phone: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

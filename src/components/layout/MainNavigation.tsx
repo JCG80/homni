@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
@@ -11,7 +12,6 @@ import {
   navigationMenuTriggerStyle 
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();
@@ -114,6 +114,18 @@ export const MainNavigation = () => {
                   }
                 >
                   Min profil
+                </NavLink>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <NavLink to="/leads" 
+                  className={({ isActive }) => 
+                    cn({ "bg-accent text-accent-foreground": isActive })
+                  }
+                >
+                  Forespørsler
                 </NavLink>
               </NavigationMenuLink>
             </NavigationMenuItem>

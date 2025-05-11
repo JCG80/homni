@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -29,6 +30,9 @@ const routeMap: RouteMap = {
   'quote': { label: 'Få tilbud', parent: 'insurance' },
   'login': { label: 'Logg inn', parent: '' },
   'register': { label: 'Registrer deg', parent: '' },
+  'leads': { label: 'Forespørsler', parent: '' },
+  'lead-capture': { label: 'Ny forespørsel', parent: 'leads' },
+  'select-services': { label: 'Velg tjenester', parent: '' },
 };
 
 export const BreadcrumbNav = () => {
