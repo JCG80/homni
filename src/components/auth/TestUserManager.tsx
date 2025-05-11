@@ -6,6 +6,7 @@ import { useTestUserVerification } from './hooks/useTestUserVerification';
 import { TestUserWarning } from './TestUserWarning';
 import { TestUserButton } from './TestUserButton';
 import { TestInstructions } from './TestInstructions';
+import { useState } from 'react';
 
 interface TestUserManagerProps {
   onLoginClick: (role: UserRole) => Promise<void>;
@@ -19,11 +20,25 @@ export const TestUserManager = ({ onLoginClick }: TestUserManagerProps) => {
     setLoadingRole,
     runSetupTestUsers
   } = useTestUserVerification();
+  
+  const [setupInProgress, setSetupInProgress] = useState(false);
 
   const handleDevLogin = async (role: UserRole) => {
     setLoadingRole(role);
-    await onLoginClick(role);
-    setLoadingRole(null);
+    try {
+      await onLoginClick(role);
+    } finally {
+      setLoadingRole(null);
+    }
+  };
+  
+  const handleSetupTestUsers = async () => {
+    setSetupInProgress(true);
+    try {
+      await runSetupTestUsers();
+    } finally {
+      setSetupInProgress(false);
+    }
   };
 
   if (isVerifying) {
@@ -39,7 +54,11 @@ export const TestUserManager = ({ onLoginClick }: TestUserManagerProps) => {
     <div className="mt-8">
       <p className="text-sm text-center mb-4">Testbrukere for utvikling</p>
       
-      <TestUserWarning missingUsers={missingUsers} onSetupClick={runSetupTestUsers} />
+      <TestUserWarning 
+        missingUsers={missingUsers} 
+        onSetupClick={handleSetupTestUsers}
+        isSettingUp={setupInProgress} 
+      />
       
       <div className="space-y-2">
         {TEST_USERS.map((user) => (

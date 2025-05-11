@@ -1,12 +1,13 @@
 
 import { UserRole } from './roles/types';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 export interface TestUser {
   name: string;
   email: string;
   role: UserRole;
-  password?: string; // Add password property
+  password: string;
   company_id?: string;
 }
 
@@ -15,12 +16,13 @@ export interface DevLoginResult {
   error?: Error;
 }
 
+// Make sure these match exactly what's in the database
 export const TEST_USERS: TestUser[] = [
-  { name: 'Master Admin', email: 'master@example.com', role: 'master_admin', password: 'default_password' },
-  { name: 'Admin', email: 'admin@example.com', role: 'admin', password: 'default_password' },
-  { name: 'Company User', email: 'company@example.com', role: 'company', company_id: 'your_company_id', password: 'default_password' },
-  { name: 'Member User', email: 'member@example.com', role: 'member', password: 'default_password' },
-  { name: 'Regular User', email: 'user@example.com', role: 'user', password: 'default_password' },
+  { name: 'Test Master Admin', email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!' },
+  { name: 'Test Admin', email: 'admin@test.local', role: 'admin', password: 'Test1234!' },
+  { name: 'Test Company', email: 'company@test.local', role: 'company', password: 'Test1234!' },
+  { name: 'Test User', email: 'user@test.local', role: 'user', password: 'Test1234!' },
+  { name: 'Test Provider', email: 'provider@test.local', role: 'user', password: 'Test1234!' }
 ];
 
 /**
@@ -43,15 +45,26 @@ export const devLogin = async (role: UserRole): Promise<DevLoginResult> => {
       throw new Error(`No test user found with role ${role}`);
     }
 
-    // Sign in the test user using their email and a default password
-    const { error } = await supabase.auth.signInWithPassword({
+    // Sign in the test user using their email and password
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: testUser.email,
-      password: testUser.password || 'default_password', // Use the password or default
+      password: testUser.password,
     });
 
     if (error) {
+      console.error('Dev login error details:', error);
+      toast({
+        title: 'Innloggingsfeil',
+        description: `Kunne ikke logge inn som ${testUser.role}: ${error.message}`,
+        variant: 'destructive',
+      });
       throw error;
     }
+
+    toast({
+      title: 'Innlogget',
+      description: `Du er nå logget inn som ${testUser.name} (${testUser.role})`,
+    });
 
     return { success: true };
   } catch (error: any) {
