@@ -1,6 +1,5 @@
-
 import React, { Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
 import { Dashboard } from './pages/Dashboard';
 import MyAccountPage from './pages/MyAccountPage';
@@ -45,7 +44,8 @@ export const AppRoutes = () => {
         <Route path="/strom" element={<PowerComparisonPage />} />
         <Route path="/compare" element={<InsuranceQuotePage />} />
         <Route path="/forsikring/*" element={<InsuranceRoutes />} />
-        <Route path="/insurance/*" element={<InsuranceRoutes />} />
+        {/* Redirect from English route to Norwegian route */}
+        <Route path="/insurance/*" element={<Navigate to="/forsikring" replace />} />
         <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
         
         {/* Lead capture public route */}
