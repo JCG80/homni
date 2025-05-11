@@ -17,7 +17,7 @@ import { InsuranceQuotePage } from './modules/insurance/pages/InsuranceQuotePage
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { InsuranceRoutes } from './modules/insurance/InsuranceRoutes';
-import { NotFound } from './pages/NotFound';
+import NotFound from './pages/NotFound';
 import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionPage';
 
 export const AppRoutes = () => {
@@ -97,9 +97,13 @@ export const AppRoutes = () => {
             <LeadSettingsPage />
           </ProtectedRoute>
         } />
+
+        {/* Add a route for /compare that was in the console error */}
+        <Route path="/compare" element={
+          <InsuranceQuotePage />
+        } />
         
         {/* Doc routes - imported from modules */}
-        {/* ... keep existing code for importing specific module routes */}
         
         {/* 404 - Not Found */}
         <Route path="*" element={<NotFound />} />
