@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Tree from 'react-d3-tree';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +35,7 @@ export const SystemMapPage = () => {
 
           // Add all modules to the tree
           modulesData.forEach(module => {
-            if (module.active) {
+            if (module.is_active) {
               rootNode.children?.push({
                 name: module.name,
                 attributes: {
@@ -48,31 +47,7 @@ export const SystemMapPage = () => {
             }
           });
 
-          // Process dependencies
-          for (const module of modulesData) {
-            if (!module.active) continue;
-            
-            const dependencies = module.dependencies || [];
-            const moduleNode = findNodeById(rootNode, module.id);
-            
-            if (moduleNode) {
-              dependencies.forEach(depId => {
-                const depModule = modulesData.find(m => m.id === depId);
-                if (depModule && depModule.active) {
-                  moduleNode.children = moduleNode.children || [];
-                  moduleNode.children.push({
-                    name: depModule.name,
-                    attributes: {
-                      id: depModule.id,
-                      description: depModule.description,
-                      dependency: 'true'
-                    }
-                  });
-                }
-              });
-            }
-          }
-          
+          // For now, we'll skip the dependencies processing since it's not fully implemented
           setTreeData(rootNode);
         }
       } catch (error) {
@@ -224,27 +199,13 @@ export const SystemMapPage = () => {
                   
                   <div className="mb-4">
                     <h3 className="text-sm font-medium text-gray-500">Status</h3>
-                    <Badge variant={selectedNode.active ? 'default' : 'outline'}>
-                      {selectedNode.active ? 'Aktiv' : 'Inaktiv'}
+                    <Badge variant={selectedNode.is_active ? 'default' : 'outline'}>
+                      {selectedNode.is_active ? 'Aktiv' : 'Inaktiv'}
                     </Badge>
                   </div>
 
-                  {selectedNode.dependencies && selectedNode.dependencies.length > 0 && (
-                    <div className="mb-4">
-                      <h3 className="text-sm font-medium text-gray-500">Avhengigheter</h3>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {selectedNode.dependencies.map((depId) => {
-                          const depModule = modules.find((m) => m.id === depId);
-                          return (
-                            <Badge key={depId} variant="outline">
-                              {depModule?.name || depId}
-                            </Badge>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
+                  {/* We'll simplify this part since dependencies are not implemented yet */}
+                  
                   {selectedNode.route && (
                     <div className="mb-4">
                       <h3 className="text-sm font-medium text-gray-500">Navigasjon</h3>

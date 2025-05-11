@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { SystemModule } from '../types/systemModules';
+import { Json } from '@/integrations/supabase/types';
 
 /**
  * Fetch all system modules
@@ -8,12 +9,12 @@ import { SystemModule } from '../types/systemModules';
 export async function getSystemModules(): Promise<SystemModule[]> {
   try {
     const { data, error } = await supabase
-      .from('system_modules')
+      .from('system_modules' as any)
       .select('*')
       .order('name');
     
     if (error) throw error;
-    return data || [];
+    return (data as unknown as SystemModule[]) || [];
   } catch (error) {
     console.error('Error fetching system modules:', error);
     return [];
@@ -26,7 +27,7 @@ export async function getSystemModules(): Promise<SystemModule[]> {
 export async function toggleSystemModule(moduleId: string, isActive: boolean): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('system_modules')
+      .from('system_modules' as any)
       .update({ is_active: isActive, updated_at: new Date().toISOString() })
       .eq('id', moduleId);
     
@@ -44,13 +45,13 @@ export async function toggleSystemModule(moduleId: string, isActive: boolean): P
 export async function createSystemModule(module: Omit<SystemModule, 'id' | 'created_at' | 'updated_at'>): Promise<SystemModule | null> {
   try {
     const { data, error } = await supabase
-      .from('system_modules')
+      .from('system_modules' as any)
       .insert([module])
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as unknown as SystemModule;
   } catch (error) {
     console.error('Error creating system module:', error);
     return null;
@@ -63,7 +64,7 @@ export async function createSystemModule(module: Omit<SystemModule, 'id' | 'crea
 export async function deleteSystemModule(moduleId: string): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('system_modules')
+      .from('system_modules' as any)
       .delete()
       .eq('id', moduleId);
     

@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { logAdminAction } from '../utils/adminLogger';
+import { Json } from '@/integrations/supabase/types';
 
 /**
  * Fetches all available system modules
@@ -8,7 +9,7 @@ import { logAdminAction } from '../utils/adminLogger';
 export const fetchAvailableModules = async () => {
   try {
     const { data, error } = await supabase
-      .from('system_modules')
+      .from('system_modules' as any)
       .select('*')
       .order('name');
     
@@ -34,9 +35,9 @@ export const fetchUserModuleAccess = async (userId: string) => {
     if (error) throw error;
     
     // Extract module_access and internal_admin from metadata
-    const metadata = data?.metadata || {};
-    const moduleAccess = metadata.module_access || [];
-    const isInternalAdmin = metadata.internal_admin || false;
+    const metadata = data?.metadata as Record<string, any> || {};
+    const moduleAccess = metadata.module_access as string[] || [];
+    const isInternalAdmin = !!metadata.internal_admin;
     
     return {
       moduleAccess,
@@ -65,7 +66,7 @@ export const updateUserModuleAccess = async (
       .single();
     
     // Get current metadata or initialize as empty object
-    const currentMetadata = currentData?.metadata || {};
+    const currentMetadata = (currentData?.metadata as Record<string, any>) || {};
     
     // Update with new module access settings
     const updatedMetadata = {
@@ -77,7 +78,7 @@ export const updateUserModuleAccess = async (
     const { error } = await supabase
       .from('user_profiles')
       .update({
-        metadata: updatedMetadata
+        metadata: updatedMetadata as Json
       })
       .eq('id', userId);
     

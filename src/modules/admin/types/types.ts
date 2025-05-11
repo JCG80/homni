@@ -1,4 +1,6 @@
 
+import { Json } from '@/integrations/supabase/types';
+
 /**
  * Admin module types
  */
@@ -23,7 +25,7 @@ export interface CompanyProfile {
   updated_at?: string;
   modules_access?: string[];
   tags?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any> | Json;
   // Statistics fields
   leadsWonPercentage?: number;
   avgResponseTime?: string;

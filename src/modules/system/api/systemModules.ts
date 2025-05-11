@@ -9,7 +9,7 @@ export async function getSystemModules(): Promise<SystemModule[]> {
   try {
     // Explicitly cast the response data to SystemModule[]
     const { data, error } = await supabase
-      .from('system_modules')
+      .from('system_modules' as any)
       .select('*')
       .order('name');
     
@@ -27,7 +27,7 @@ export async function getSystemModules(): Promise<SystemModule[]> {
 export async function toggleSystemModule(moduleId: string, isActive: boolean): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('system_modules')
+      .from('system_modules' as any)
       .update({ is_active: isActive, updated_at: new Date().toISOString() })
       .eq('id', moduleId);
     
@@ -37,4 +37,12 @@ export async function toggleSystemModule(moduleId: string, isActive: boolean): P
     console.error('Error toggling system module:', error);
     return false;
   }
+}
+
+/**
+ * Get module dependencies (mock function to fix SystemMapPage)
+ */
+export async function getModuleDependencies(): Promise<Record<string, string[]>> {
+  // This is a mock implementation - in a real app this would fetch actual data
+  return {};
 }

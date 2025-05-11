@@ -45,7 +45,7 @@ export const SystemModulesPage = () => {
         // Update local state
         setModules(prev => 
           prev.map(mod => 
-            mod.id === moduleId ? { ...mod, active: !currentActive } : mod
+            mod.id === moduleId ? { ...mod, is_active: !currentActive } : mod
           )
         );
         

@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader, FileText } from 'lucide-react';
 import { CompanyProfile } from '../../types/types';
+import { Json } from '@/integrations/supabase/types';
 
 interface NotesTabProps {
   company: CompanyProfile;
@@ -22,7 +23,7 @@ export function NotesTab({ company, notes, setNotes, isLoading, onUpdate }: Note
     setIsSaving(true);
     try {
       // Get the current metadata or initialize as empty object
-      const currentMetadata = company.metadata || {};
+      const currentMetadata = (company.metadata as Record<string, any>) || {};
       
       // Update the company record with the new metadata
       const { error } = await supabase
@@ -31,8 +32,8 @@ export function NotesTab({ company, notes, setNotes, isLoading, onUpdate }: Note
           metadata: {
             ...currentMetadata,
             admin_notes: notes
-          }
-        } as any)
+          } as Json
+        })
         .eq('id', company.id);
       
       if (error) throw error;

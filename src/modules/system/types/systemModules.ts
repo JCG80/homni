@@ -7,4 +7,9 @@ export interface SystemModule {
   requires_role?: string[];
   created_at: string;
   updated_at: string;
+  
+  // Additional properties needed for SystemMapPage
+  active?: boolean;
+  dependencies?: string[];
+  route?: string;
 }
