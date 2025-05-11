@@ -24,6 +24,9 @@ import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles/types';
 import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
 
+// Import SystemModulesPage
+import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
+
 // Import MasterAdmin management pages
 import { MembersManagementPage } from './modules/admin/pages/MembersManagementPage';
 import CompaniesManagementPage from './modules/admin/pages/CompaniesManagementPage';
@@ -139,6 +142,13 @@ export const AppRoutes = () => {
         <Route path="/admin/settings" element={
           <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
             <LeadSettingsPage />
+          </ProtectedRoute>
+        } />
+
+        {/* System Modules route */}
+        <Route path="/admin/system-modules" element={
+          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
+            <SystemModulesPage />
           </ProtectedRoute>
         } />
         
