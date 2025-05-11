@@ -1,5 +1,6 @@
 
 import { Lead, LeadStatus, LeadPriority } from '@/types/leads';
+import { vi } from 'vitest';
 
 type TestLeadParams = {
   title?: string;
