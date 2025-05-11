@@ -8,8 +8,8 @@ import { SystemModule } from '../types/systemTypes';
 export async function getSystemModules(): Promise<SystemModule[]> {
   try {
     const { data, error } = await supabase
-      .from<SystemModule>('system_modules')
-      .select<SystemModule>('*')
+      .from('system_modules')
+      .select('*')
       .order('name');
     
     if (error) throw error;
@@ -26,8 +26,8 @@ export async function getSystemModules(): Promise<SystemModule[]> {
 export async function toggleSystemModule(moduleId: string, isActive: boolean): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from<SystemModule>('system_modules')
-      .update<SystemModule>({ 
+      .from('system_modules')
+      .update({ 
         is_active: isActive, 
         updated_at: new Date().toISOString() 
       })
@@ -47,8 +47,8 @@ export async function toggleSystemModule(moduleId: string, isActive: boolean): P
 export async function createSystemModule(module: Omit<SystemModule, 'id' | 'created_at' | 'updated_at'>): Promise<SystemModule | null> {
   try {
     const { data, error } = await supabase
-      .from<SystemModule>('system_modules')
-      .insert<SystemModule>([module])
+      .from('system_modules')
+      .insert([module])
       .select();
     
     if (error) throw error;
@@ -65,7 +65,7 @@ export async function createSystemModule(module: Omit<SystemModule, 'id' | 'crea
 export async function deleteSystemModule(moduleId: string): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from<SystemModule>('system_modules')
+      .from('system_modules')
       .delete()
       .eq('id', moduleId);
     
@@ -83,8 +83,8 @@ export async function deleteSystemModule(moduleId: string): Promise<boolean> {
 export async function getModuleDependencies(): Promise<Record<string, string[]>> {
   try {
     const { data, error } = await supabase
-      .from<SystemModule>('system_modules')
-      .select<SystemModule>('id, dependencies');
+      .from('system_modules')
+      .select('id, dependencies');
     
     if (error) throw error;
     

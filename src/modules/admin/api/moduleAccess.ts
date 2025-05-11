@@ -20,8 +20,8 @@ interface ModuleAccess {
 export const fetchAvailableModules = async () => {
   try {
     const { data, error } = await supabase
-      .from<Module>('system_modules')
-      .select<Module>('*')
+      .from('system_modules')
+      .select('*')
       .order('name');
     
     if (error) throw error;
@@ -39,8 +39,8 @@ export const fetchUserModuleAccess = async (userId: string) => {
   try {
     // First, check if the user has internal_admin flag in the module_access table
     const { data: moduleAccessData, error: moduleAccessError } = await supabase
-      .from<ModuleAccess>('module_access')
-      .select<ModuleAccess>('system_module_id, internal_admin')
+      .from('module_access')
+      .select('system_module_id, internal_admin')
       .eq('user_id', userId);
     
     if (moduleAccessError) throw moduleAccessError;
@@ -73,7 +73,7 @@ export const updateUserModuleAccess = async (
   try {
     // First delete all existing module access for this user
     const { error: deleteError } = await supabase
-      .from<ModuleAccess>('module_access')
+      .from('module_access')
       .delete()
       .eq('user_id', userId);
     
@@ -88,7 +88,7 @@ export const updateUserModuleAccess = async (
       }));
       
       const { error: insertError } = await supabase
-        .from<ModuleAccess>('module_access')
+        .from('module_access')
         .insert(moduleAccessRecords);
       
       if (insertError) throw insertError;
@@ -97,14 +97,14 @@ export const updateUserModuleAccess = async (
     else if (isInternalAdmin) {
       // Get the first available module to create at least one record with internal_admin=true
       const { data: firstModule } = await supabase
-        .from<Module>('system_modules')
-        .select<Module>('id')
+        .from('system_modules')
+        .select('id')
         .limit(1)
         .single();
       
       if (firstModule) {
         const { error: insertAdminError } = await supabase
-          .from<ModuleAccess>('module_access')
+          .from('module_access')
           .insert({
             user_id: userId,
             system_module_id: firstModule.id,
