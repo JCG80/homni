@@ -30,8 +30,8 @@ export function useFilterOperations({
       const newFilter = await userFiltersApi.createUserFilter(filter);
       
       if (newFilter) {
-        // Update local state
-        setFilters(prev => [...prev, newFilter]);
+        // Update local state with proper typing
+        setFilters((prev: UserLeadFilter[]) => [...prev, newFilter]);
         
         // If this is a default filter or there are no other filters, set it as active
         if (filter.is_default || filters.length === 0) {
@@ -62,8 +62,8 @@ export function useFilterOperations({
       const updatedFilter = await userFiltersApi.updateUserFilter(id, updates);
       
       if (updatedFilter) {
-        // Update local state
-        setFilters(prev => prev.map(f => f.id === id ? updatedFilter : f));
+        // Update local state with proper typing
+        setFilters((prev: UserLeadFilter[]) => prev.map(f => f.id === id ? updatedFilter : f));
         
         // Update active filter if it was the one that was updated
         if (activeFilter && activeFilter.id === id) {
