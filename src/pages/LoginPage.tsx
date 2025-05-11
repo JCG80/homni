@@ -13,7 +13,7 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@/components/ui/alert";
-import { AlertCircle, Info } from 'lucide-react';
+import { AlertCircle, Info, Loader2 } from 'lucide-react';
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();
@@ -23,6 +23,7 @@ export const LoginPage = () => {
   const { user, isLoading } = useAuth();
   const [missingUsers, setMissingUsers] = useState<string[]>([]);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [loadingRole, setLoadingRole] = useState<string | null>(null);
 
   useEffect(() => {
     // If user is already logged in, redirect to dashboard
@@ -67,6 +68,8 @@ export const LoginPage = () => {
     console.log(`Attempting dev login as ${role}`);
     const user = TEST_USERS.find(u => u.role === role);
     
+    if (!user) return;
+    
     if (user && missingUsers.includes(user.email)) {
       toast({
         title: 'Test user not created',
@@ -76,15 +79,27 @@ export const LoginPage = () => {
       return;
     }
     
-    const result = await devLogin(role);
-    if (result.error) {
+    try {
+      setLoadingRole(role);
+      const result = await devLogin(role);
+      
+      if (result.error) {
+        toast({
+          title: 'Innlogging feilet',
+          description: result.error.message,
+          variant: 'destructive',
+        });
+      }
+      // Suksess-meldinger håndteres allerede i devLogin
+    } catch (err) {
       toast({
-        title: 'Innlogging feilet',
-        description: result.error.message,
+        title: 'Feil ved innlogging',
+        description: err instanceof Error ? err.message : 'Ukjent feil oppstod',
         variant: 'destructive',
       });
+    } finally {
+      setLoadingRole(null);
     }
-    // Suksess-meldinger håndteres allerede i devLogin
   };
 
   const runSetupTestUsers = async () => {
@@ -92,8 +107,8 @@ export const LoginPage = () => {
       // @ts-ignore - This is defined in setupTestUsers.ts
       if (window.setupTestUsers) {
         toast({
-          title: 'Setting up test users',
-          description: 'Creating test users in the database...',
+          title: 'Oppretter testbrukere',
+          description: 'Lager testbrukere i databasen...',
         });
         // @ts-ignore
         await window.setupTestUsers();
@@ -104,27 +119,27 @@ export const LoginPage = () => {
         
         if (missing.length === 0) {
           toast({
-            title: 'Success',
-            description: 'All test users were created successfully',
+            title: 'Vellykket',
+            description: 'Alle testbrukere ble opprettet',
           });
         } else {
           toast({
-            title: 'Partial success',
-            description: `${missing.length} test users could not be created`,
+            title: 'Delvis vellykket',
+            description: `${missing.length} testbrukere kunne ikke opprettes`,
             variant: 'destructive',
           });
         }
       } else {
         toast({
-          title: 'Setup function not found',
-          description: 'The setupTestUsers function is not available',
+          title: 'Setup-funksjon ikke funnet',
+          description: 'setupTestUsers-funksjonen er ikke tilgjengelig',
           variant: 'destructive',
         });
       }
     } catch (error: any) {
       toast({
-        title: 'Error setting up test users',
-        description: error.message || 'An unknown error occurred',
+        title: 'Feil ved oppretting av testbrukere',
+        description: error.message || 'En ukjent feil oppstod',
         variant: 'destructive',
       });
     }
@@ -200,12 +215,23 @@ export const LoginPage = () => {
                   className="w-full text-xs"
                   variant={missingUsers.includes(user.email) ? "destructive" : "outline"}
                   size="sm"
-                  disabled={isVerifying}
+                  disabled={isVerifying || loadingRole === user.role}
                 >
-                  {missingUsers.includes(user.email) ? (
-                    <AlertCircle className="mr-2 h-3 w-3" />
-                  ) : null}
-                  Logg inn som {user.name} ({user.role})
+                  {loadingRole === user.role ? (
+                    <>
+                      <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                      Logger inn...
+                    </>
+                  ) : missingUsers.includes(user.email) ? (
+                    <>
+                      <AlertCircle className="mr-2 h-3 w-3" />
+                      {user.name} ({user.role}) - Ikke opprettet
+                    </>
+                  ) : (
+                    <>
+                      {user.name} ({user.role})
+                    </>
+                  )}
                 </Button>
               ))}
             </div>
