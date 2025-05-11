@@ -10,30 +10,50 @@ import { useRegistrationSubmit } from '../../hooks/useRegistrationSubmit';
 interface PrivateRegistrationFormProps {
   onSuccess?: () => void;
   redirectTo?: string;
+  isSubmitting?: boolean;
+  retryHandler?: (submitFn: () => Promise<any>) => Promise<void>;
+  currentAttempt?: number;
+  maxRetries?: number;
 }
 
 export const PrivateRegistrationForm = ({ 
   onSuccess, 
-  redirectTo = '/'
+  redirectTo = '/',
+  isSubmitting: outerIsSubmitting,
+  retryHandler,
+  currentAttempt = 0,
+  maxRetries = 3
 }: PrivateRegistrationFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const { isSubmitting, error, handleSubmit: submitRegistration } = useRegistrationSubmit();
+  const { isSubmitting: innerIsSubmitting, error, handleSubmit: submitRegistration } = useRegistrationSubmit();
+
+  // Use outer isSubmitting state if provided, otherwise use inner state
+  const isSubmitting = outerIsSubmitting !== undefined ? outerIsSubmitting : innerIsSubmitting;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    submitRegistration({
-      email,
-      password,
-      fullName,
-      phoneNumber,
-      userType: 'private',
-      redirectTo,
-      onSuccess
-    });
+    const submitFunction = () => {
+      return submitRegistration({
+        email,
+        password,
+        fullName,
+        phoneNumber,
+        userType: 'private',
+        redirectTo,
+        onSuccess
+      });
+    };
+    
+    // Use the retry handler if provided, otherwise just submit directly
+    if (retryHandler) {
+      retryHandler(submitFunction);
+    } else {
+      submitFunction();
+    }
   };
 
   return (
@@ -92,7 +112,13 @@ export const PrivateRegistrationForm = ({
       </div>
       
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Registrerer...' : 'Registrer'}
+        {isSubmitting ? (
+          currentAttempt > 0 
+            ? `Registrerer... (forsøk ${currentAttempt}/${maxRetries})` 
+            : 'Registrerer...'
+        ) : (
+          'Registrer'
+        )}
       </Button>
     </form>
   );
