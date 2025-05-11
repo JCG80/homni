@@ -5,6 +5,8 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginTabs } from '@/components/auth/LoginTabs';
 import { TestUserManager } from '@/components/auth/TestUserManager';
 import { UserRole } from '@/modules/auth/utils/roles';
+import { devLogin } from '@/modules/auth/utils/devLogin';
+import { toast } from '@/hooks/use-toast';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -16,6 +18,19 @@ export const LoginPage = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [user, isLoading, navigate]);
+
+  // Handle test user login
+  const handleDevLogin = async (role: UserRole) => {
+    const result = await devLogin(role);
+    if (result.error) {
+      toast({
+        title: 'Login failed',
+        description: result.error.message,
+        variant: 'destructive',
+      });
+    }
+    // Success notifications are already handled in devLogin
+  };
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -36,7 +51,7 @@ export const LoginPage = () => {
         </div>
         
         {import.meta.env.MODE === 'development' && (
-          <TestUserManager />
+          <TestUserManager onLoginClick={handleDevLogin} />
         )}
         
         <div className="text-center text-sm">
