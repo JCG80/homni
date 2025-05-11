@@ -1,3 +1,4 @@
+
 import { Lead, LeadStatus, LeadPriority } from '@/types/leads';
 
 type TestLeadParams = {
@@ -10,6 +11,9 @@ type TestLeadParams = {
   content?: any;
   provider_id?: string;
   company_id?: string;
+  id?: string;
+  lead_type?: string;
+  metadata?: Record<string, any>;
 };
 
 /**
@@ -27,5 +31,8 @@ export const createTestLead = (params: TestLeadParams): Partial<Lead> => {
     ...(params.content && { content: params.content }),
     ...(params.provider_id && { provider_id: params.provider_id }),
     ...(params.company_id && { company_id: params.company_id }),
+    ...(params.id && { id: params.id }),
+    ...(params.lead_type && { lead_type: params.lead_type }),
+    ...(params.metadata && { metadata: params.metadata }),
   };
 };

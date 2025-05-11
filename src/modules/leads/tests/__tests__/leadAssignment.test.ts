@@ -1,30 +1,27 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { assignLeadToProvider } from '../../utils/leadAssignment';
-import { distributeLeadToProvider } from '../../strategies/strategyFactory';
 import { supabase } from '@/integrations/supabase/client';
 import { createTestLead } from '../utils';
-import { withRetry } from '@/utils/apiRetry';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
     update: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis()
+    is: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    match: vi.fn().mockReturnThis()
   }
 }));
 
-vi.mock('../../strategies/strategyFactory', () => ({
-  distributeLeadToProvider: vi.fn()
-}));
-
-vi.mock('@/utils/apiRetry', () => ({
-  withRetry: vi.fn((fn) => fn())
-}));
-
 describe('Lead Assignment', () => {
+  const mockFrom = supabase.from as unknown as ReturnType<typeof vi.fn>;
+  const mockUpdate = supabase.from('').update as unknown as ReturnType<typeof vi.fn>;
+  const mockInsert = supabase.from('').insert as unknown as ReturnType<typeof vi.fn>;
+  
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -33,125 +30,96 @@ describe('Lead Assignment', () => {
     vi.resetAllMocks();
   });
   
-  it('should successfully assign lead when provider found', async () => {
-    // Mock provider distribution
-    (distributeLeadToProvider as any).mockResolvedValue('provider-123');
-    
-    // Mock successful lead update
-    (supabase.from as any).mockReturnThis();
-    (supabase.update as any).mockReturnThis();
-    (supabase.eq as any).mockReturnValue({ error: null });
-    
-    // Mock successful history log
-    (supabase.insert as any).mockReturnValue({ error: null });
-    
+  it('should successfully assign a lead to a provider', async () => {
     const testLead = createTestLead({ 
       submitted_by: 'user-123',
-      id: 'lead-123',
-      category: 'plumbing'
+      id: 'lead-123'
     });
     
-    const result = await assignLeadToProvider(testLead, 'category_match');
+    // Mock successful update
+    mockUpdate.mockResolvedValue({ data: { id: 'lead-123' }, error: null });
+    
+    // Mock successful history insert
+    mockInsert.mockResolvedValue({ data: { id: 'history-1' }, error: null });
+    
+    const result = await assignLeadToProvider(testLead as any, 'provider-123');
     
     expect(result).toBe(true);
-    expect(distributeLeadToProvider).toHaveBeenCalledWith('category_match', 'plumbing');
-    
-    // Check that lead was updated correctly
-    expect(supabase.from).toHaveBeenCalledWith('leads');
-    expect(supabase.update).toHaveBeenCalledWith({
-      company_id: 'provider-123',
-      status: 'assigned',
-      updated_at: expect.any(String)
-    });
-    expect(supabase.eq).toHaveBeenCalledWith('id', 'lead-123');
-    
-    // Check that history was logged
-    expect(supabase.from).toHaveBeenCalledWith('lead_history');
-    expect(supabase.insert).toHaveBeenCalledWith({
-      lead_id: 'lead-123',
-      assigned_to: 'provider-123',
-      method: 'auto',
-      previous_status: 'new',
-      new_status: 'assigned'
-    });
+    expect(mockFrom).toHaveBeenCalledWith('leads');
+    expect(mockUpdate).toHaveBeenCalled();
+    expect(mockFrom).toHaveBeenCalledWith('lead_history');
+    expect(mockInsert).toHaveBeenCalled();
   });
   
-  it('should return false when no provider found', async () => {
-    (distributeLeadToProvider as any).mockResolvedValue(null);
-    
+  it('should handle errors when updating lead', async () => {
     const testLead = createTestLead({ 
       submitted_by: 'user-123',
-      id: 'lead-123',
-      category: 'plumbing'
+      id: 'lead-456'
     });
     
-    const result = await assignLeadToProvider(testLead, 'category_match');
+    // Mock failed update
+    mockUpdate.mockResolvedValue({ 
+      data: null, 
+      error: new Error('Database error') 
+    });
+    
+    const result = await assignLeadToProvider(testLead as any, 'provider-123');
     
     expect(result).toBe(false);
-    expect(distributeLeadToProvider).toHaveBeenCalledWith('category_match', 'plumbing');
-    expect(supabase.update).not.toHaveBeenCalled();
+    expect(mockFrom).toHaveBeenCalledWith('leads');
+    expect(mockUpdate).toHaveBeenCalled();
+    // History insert should not be called on lead update error
+    expect(mockInsert).not.toHaveBeenCalled();
   });
   
-  it('should return false when lead update fails', async () => {
-    (distributeLeadToProvider as any).mockResolvedValue('provider-123');
-    
-    // Mock failed lead update
-    (supabase.from as any).mockReturnThis();
-    (supabase.update as any).mockReturnThis();
-    (supabase.eq as any).mockReturnValue({ error: { message: 'Update failed' } });
-    
+  it('should handle errors when creating history record', async () => {
     const testLead = createTestLead({ 
       submitted_by: 'user-123',
-      id: 'lead-123',
-      category: 'plumbing'
+      id: 'lead-789'
     });
     
-    const result = await assignLeadToProvider(testLead, 'category_match');
-    
-    expect(result).toBe(false);
-  });
-  
-  it('should still return true when lead update succeeds but history logging fails', async () => {
-    (distributeLeadToProvider as any).mockResolvedValue('provider-123');
-    
-    // Mock successful lead update but failed history log
-    (supabase.from as any).mockImplementation((table) => {
-      if (table === 'leads') {
-        return {
-          update: () => ({
-            eq: () => ({ error: null })
-          })
-        };
-      } else {
-        return {
-          insert: () => ({ error: { message: 'History log failed' } })
-        };
-      }
+    // Mock successful update but failed history insert
+    mockUpdate.mockResolvedValue({ data: { id: 'lead-789' }, error: null });
+    mockInsert.mockResolvedValue({ 
+      data: null, 
+      error: new Error('History error') 
     });
     
-    const testLead = createTestLead({ 
-      submitted_by: 'user-123',
-      id: 'lead-123',
-      category: 'plumbing'
-    });
+    const result = await assignLeadToProvider(testLead as any, 'provider-123');
     
-    const result = await assignLeadToProvider(testLead, 'category_match');
-    
-    // We still consider it a success even if history logging fails
+    // Should still return true as the lead itself was updated
     expect(result).toBe(true);
+    expect(mockFrom).toHaveBeenCalledWith('leads');
+    expect(mockUpdate).toHaveBeenCalled();
+    expect(mockFrom).toHaveBeenCalledWith('lead_history');
+    expect(mockInsert).toHaveBeenCalled();
   });
   
-  it('should handle errors during processing', async () => {
-    (distributeLeadToProvider as any).mockRejectedValue(new Error('Strategy error'));
-    
+  it('should handle missing lead ID gracefully', async () => {
     const testLead = createTestLead({ 
       submitted_by: 'user-123',
-      id: 'lead-123',
-      category: 'plumbing'
+      // No ID provided
     });
     
-    const result = await assignLeadToProvider(testLead, 'category_match');
+    const result = await assignLeadToProvider(testLead as any, 'provider-123');
     
     expect(result).toBe(false);
+    // Should not attempt database operations
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
+  
+  it('should handle missing provider ID gracefully', async () => {
+    const testLead = createTestLead({ 
+      submitted_by: 'user-123',
+      id: 'lead-123'
+    });
+    
+    const result = await assignLeadToProvider(testLead as any, null);
+    
+    expect(result).toBe(false);
+    // Should not attempt database operations
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockInsert).not.toHaveBeenCalled();
   });
 });

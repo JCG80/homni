@@ -87,7 +87,7 @@ describe('Lead Notifications', () => {
       showToasts: true,
       totalLeads: 0,
       assignedCount: 0,
-      error: 'String error message'
+      error: 'String error message' as unknown as Error
     });
     
     expect(toast).toHaveBeenCalledWith({

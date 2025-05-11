@@ -1,68 +1,52 @@
 
 import { Button } from '@/components/ui/button';
-import { Loader } from 'lucide-react';
+import { DistributionStrategy } from '../../strategies/strategyFactory';
 
 interface TestActionButtonsProps {
-  isLoading: boolean;
-  isUserLoggedIn: boolean;
-  onTestValidData: () => void;
-  onTestInvalidStatus: () => void;
-  onTestUnauthorizedSubmission: () => void;
+  onTestStrategy: () => void;
+  onProcessUnassigned: () => void;
+  onSaveAsDefault: () => void;
+  loading: boolean;
+  isSaving: boolean;
+  selectedStrategy: DistributionStrategy;
+  currentDbStrategy: DistributionStrategy | null;
+  category: string;
 }
 
-export const TestActionButtons = ({
-  isLoading,
-  isUserLoggedIn,
-  onTestValidData,
-  onTestInvalidStatus,
-  onTestUnauthorizedSubmission
+export const TestActionButtons = ({ 
+  onTestStrategy, 
+  onProcessUnassigned, 
+  onSaveAsDefault,
+  loading,
+  isSaving,
+  selectedStrategy,
+  currentDbStrategy,
+  category
 }: TestActionButtonsProps) => {
   return (
-    <>
-      <Button
-        onClick={onTestValidData}
-        disabled={isLoading || !isUserLoggedIn}
-        className="w-full sm:w-auto"
+    <div className="space-y-2 pt-2 flex flex-wrap gap-2">
+      <Button 
+        onClick={onTestStrategy} 
+        disabled={loading || (selectedStrategy === 'category_match' && !category)}
       >
-        {isLoading ? (
-          <>
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-            Testing...
-          </>
-        ) : (
-          'Test Valid Data'
-        )}
+        {loading ? 'Testing...' : 'Test Strategy'}
       </Button>
-      <Button
-        onClick={onTestInvalidStatus}
-        disabled={isLoading || !isUserLoggedIn}
-        variant="outline"
-        className="w-full sm:w-auto"
+
+      <Button 
+        variant="outline" 
+        onClick={onProcessUnassigned} 
+        disabled={loading}
       >
-        {isLoading ? (
-          <>
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-            Testing...
-          </>
-        ) : (
-          'Test Invalid Status'
-        )}
+        Process Unassigned Leads
       </Button>
-      <Button
-        onClick={onTestUnauthorizedSubmission}
-        disabled={isLoading || !isUserLoggedIn}
-        variant="outline"
-        className="w-full sm:w-auto"
+      
+      <Button 
+        variant="secondary" 
+        onClick={onSaveAsDefault} 
+        disabled={loading || isSaving || selectedStrategy === currentDbStrategy}
       >
-        {isLoading ? (
-          <>
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-            Testing...
-          </>
-        ) : (
-          'Test Unauthorized Submission'
-        )}
+        {isSaving ? 'Saving...' : 'Set as Default Strategy'}
       </Button>
-    </>
+    </div>
   );
 };

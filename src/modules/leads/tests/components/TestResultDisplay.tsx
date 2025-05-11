@@ -1,37 +1,26 @@
 
-import { Lead } from '../../types/types';
-import { Card } from '@/components/ui/card';
-
-interface TestResultProps {
-  error: string | null;
-  statusCode: number | null;
-  result: Lead | null;
+interface TestResultDisplayProps {
+  result: string | null;
+  processResult: number | null;
 }
 
-export const TestResultDisplay = ({ error, statusCode, result }: TestResultProps) => {
+export const TestResultDisplay = ({ result, processResult }: TestResultDisplayProps) => {
   return (
     <>
-      {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
-          <p className="font-medium">Error occurred:</p>
-          <p className="text-sm">{error}</p>
+      {result !== null && (
+        <div className="pt-4 border-t">
+          <p className="text-sm font-medium">Result:</p>
+          <pre className="mt-1 p-2 bg-gray-100 rounded-md overflow-auto text-sm">
+            {result || 'No provider found'}
+          </pre>
         </div>
       )}
 
-      {statusCode && !error && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="font-medium">Status Code: {statusCode}</p>
-          <p className="text-sm">
-            {statusCode === 201 ? "✅ Success: Lead was inserted successfully" : "Status code received"}
-          </p>
-        </div>
-      )}
-
-      {result && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="font-medium">Success! Lead inserted:</p>
-          <pre className="text-xs mt-2 overflow-auto p-2 bg-black/5 rounded">
-            {JSON.stringify(result, null, 2)}
+      {processResult !== null && (
+        <div className="pt-4 border-t">
+          <p className="text-sm font-medium">Processed Leads:</p>
+          <pre className="mt-1 p-2 bg-gray-100 rounded-md overflow-auto text-sm">
+            {processResult} leads assigned
           </pre>
         </div>
       )}

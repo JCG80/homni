@@ -55,10 +55,10 @@ describe('Lead Filtering', () => {
   });
   
   it('should filter by lead types correctly', () => {
-    const testLead = createTestLead({ 
-      submitted_by: 'user-123',
+    const testLead = {
+      ...createTestLead({ submitted_by: 'user-123' }),
       lead_type: 'premium' 
-    });
+    };
     
     const matchingSettings = { 
       filters: {},
@@ -75,10 +75,10 @@ describe('Lead Filtering', () => {
   });
   
   it('should filter by zip codes correctly', () => {
-    const testLead = createTestLead({ 
-      submitted_by: 'user-123',
+    const testLead = {
+      ...createTestLead({ submitted_by: 'user-123' }),
       metadata: { postal_code: '12345' }
-    });
+    };
     
     const matchingSettings = { 
       filters: {},
@@ -95,20 +95,20 @@ describe('Lead Filtering', () => {
   });
   
   it('should handle different postal code field names in metadata', () => {
-    const testLeadWithZipCode = createTestLead({ 
-      submitted_by: 'user-123',
+    const testLeadWithZipCode = {
+      ...createTestLead({ submitted_by: 'user-123' }),
       metadata: { zip_code: '12345' }
-    });
+    };
     
-    const testLeadWithZipCodeCamelCase = createTestLead({ 
-      submitted_by: 'user-123',
+    const testLeadWithZipCodeCamelCase = {
+      ...createTestLead({ submitted_by: 'user-123' }),
       metadata: { zipCode: '12345' }
-    });
+    };
     
-    const testLeadWithPostcode = createTestLead({ 
-      submitted_by: 'user-123',
+    const testLeadWithPostcode = {
+      ...createTestLead({ submitted_by: 'user-123' }),
       metadata: { postcode: '12345' }
-    });
+    };
     
     const settings = { 
       filters: {},
