@@ -7,13 +7,15 @@ import {
   createSystemModule,
   deleteSystemModule
 } from '../services/systemModules';
-import { SystemModule } from '../types/systemTypes';
+import type { SystemModule } from '../types/systemTypes';
 
 export {
   getSystemModules,
   toggleSystemModule,
   getModuleDependencies,
   createSystemModule,
-  deleteSystemModule,
-  SystemModule // Export the type
+  deleteSystemModule
 };
+
+// Export the type separately with 'export type' syntax
+export type { SystemModule };
