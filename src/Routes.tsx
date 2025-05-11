@@ -15,10 +15,12 @@ import { InsuranceRequestSuccessPage } from './pages/InsuranceRequestSuccessPage
 import { ProtectedRoute } from './modules/auth/components/ProtectedRoute';
 import { PowerComparisonPage } from './pages/PowerComparisonPage';
 import { InsuranceQuotePage } from './modules/insurance/pages/InsuranceQuotePage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 
 export const AppRoutes = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>Laster inn...</div>}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -40,6 +42,8 @@ export const AppRoutes = () => {
         <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
         <Route path="/strom" element={<PowerComparisonPage />} />
         <Route path="/forsikring" element={<InsuranceQuotePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </Suspense>
   );

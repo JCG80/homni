@@ -1,36 +1,40 @@
 
-import { Profile, UserRole } from '../types/types';
+import { Profile } from '../types/types';
+import { UserRole } from './roles';
 import { isUserRole } from './roles';
 
 /**
- * Parse and validate raw user profile data into a properly typed Profile object
- * Ensures type safety and consistent data structure
+ * Parse user profile data from database into typed Profile object
+ * Ensures all required fields are present and properly typed
  */
-export function parseUserProfile(item: any): Profile {
-  // Validate role is a valid UserRole using type guard
+export const parseUserProfile = (data: any): Profile | null => {
+  if (!data || !data.id) return null;
+  
+  // Extract role from metadata or use default role
   let role: UserRole = 'member'; // Default role
-  if (item.role && isUserRole(item.role)) {
-    role = item.role as UserRole;
+  
+  if (data.role && isUserRole(data.role)) {
+    role = data.role as UserRole;
+  } else if (data.metadata && typeof data.metadata === 'object') {
+    // Try to get role from metadata if it exists
+    if (data.metadata.role && isUserRole(data.metadata.role)) {
+      role = data.metadata.role as UserRole;
+    }
   }
-  
-  // Extract company_id from metadata if it exists
-  const companyId = item.company_id || 
-    (item.metadata && typeof item.metadata === 'object' ? 
-      item.metadata.company_id : undefined);
-  
+
   return {
-    id: item.id || '',
-    full_name: item.full_name || '',
-    role: role,
-    company_id: companyId,
-    created_at: item.created_at || new Date().toISOString(),
-    metadata: item.metadata || {},
-    email: item.email,
-    phone: item.phone,
-    address: item.address,
-    region: item.region,
-    profile_picture_url: item.profile_picture_url,
-    preferences: item.preferences || {},
-    updated_at: item.updated_at,
+    id: data.id,
+    full_name: data.full_name || '',
+    role,
+    company_id: data.company_id || undefined,
+    created_at: data.created_at,
+    metadata: data.metadata || {},
+    email: data.email || undefined,
+    phone: data.phone || undefined,
+    address: data.address || undefined,
+    region: data.region || undefined,
+    profile_picture_url: data.profile_picture_url || undefined,
+    preferences: data.preferences || {},
+    updated_at: data.updated_at || undefined
   };
-}
+};

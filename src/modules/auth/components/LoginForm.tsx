@@ -10,6 +10,18 @@ import { toast } from '@/hooks/use-toast';
 import { useAuthRetry } from '../hooks/useAuthRetry';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { TEST_USERS } from '../utils/devLogin';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+// Schema for login form validation
+const loginSchema = z.object({
+  email: z.string().email('Vennligst skriv inn en gyldig e-post'),
+  password: z.string().min(6, 'Passordet må være minst 6 tegn')
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -20,13 +32,20 @@ interface LoginFormProps {
 export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }: LoginFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   // Get redirectUrl from location state or use provided redirectTo
   const from = location.state?.from?.pathname || redirectTo;
 
+  // Initialize form with react-hook-form
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+  
   // Use retry hook for authentication
   const { 
     isSubmitting, 
@@ -47,19 +66,13 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
     showToasts: true
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: LoginFormValues) => {
     setError(null);
 
-    if (!email || !password) {
-      setError('Du må fylle inn både e-post og passord');
-      return;
-    }
-
-    console.log('Attempting login with:', { email });
+    console.log('Attempting login with:', { email: values.email });
     
     executeWithRetry(async () => {
-      const { user, error: signInError } = await signInWithEmail(email, password);
+      const { user, error: signInError } = await signInWithEmail(values.email, values.password);
       
       if (signInError) {
         console.error('Detailed login error:', JSON.stringify(signInError));
@@ -91,86 +104,101 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      
-      {lastError && !error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{lastError.message}</AlertDescription>
-        </Alert>
-      )}
-      
-      <div className="space-y-2">
-        <Label htmlFor="email">E-post</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          placeholder="din@epost.no"
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="password">Passord</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
-      
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <div className="flex items-center">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {currentAttempt > 0 
-              ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
-              : 'Logger inn...'}
-          </div>
-        ) : (
-          'Logg inn'
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
-      </Button>
-      
-      <div className="text-center text-sm">
-        <span className="text-muted-foreground">Har du ikke konto?</span>{' '}
-        <Button 
-          variant="link" 
-          className="p-0" 
-          onClick={() => navigate(userType === 'business' ? '/register?type=business' : '/register')}
-        >
-          Registrer deg
-        </Button>
-      </div>
-
-      {import.meta.env.MODE === 'development' && (
-        <div className="text-xs mt-4">
-          <details className="text-muted-foreground">
-            <summary className="cursor-pointer">Dev info</summary>
-            <div className="mt-2 p-2 bg-muted rounded-md">
-              <p>Test users should have the following credentials:</p>
-              <ul className="list-disc pl-4 mt-1">
-                {TEST_USERS.map(user => (
-                  <li key={user.email} className="text-xs">
-                    {user.role}: {user.email} / {user.password}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-2">Run <code>window.setupTestUsers()</code> in console to create these users.</p>
+        
+        {lastError && !error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{lastError.message}</AlertDescription>
+          </Alert>
+        )}
+        
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>E-post</FormLabel>
+              <FormControl>
+                <Input 
+                  type="email" 
+                  placeholder="din@epost.no" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Passord</FormLabel>
+              <FormControl>
+                <Input 
+                  type="password" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <div className="flex items-center">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {currentAttempt > 0 
+                ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
+                : 'Logger inn...'}
             </div>
-          </details>
+          ) : (
+            'Logg inn'
+          )}
+        </Button>
+        
+        <div className="text-center text-sm">
+          <span className="text-muted-foreground">Har du ikke konto?</span>{' '}
+          <Button 
+            variant="link" 
+            className="p-0" 
+            onClick={() => navigate(userType === 'business' ? '/register?type=business' : '/register')}
+            type="button"
+          >
+            Registrer deg
+          </Button>
         </div>
-      )}
-    </form>
+
+        {import.meta.env.MODE === 'development' && (
+          <div className="text-xs mt-4">
+            <details className="text-muted-foreground">
+              <summary className="cursor-pointer">Dev info</summary>
+              <div className="mt-2 p-2 bg-muted rounded-md">
+                <p>Test users should have the following credentials:</p>
+                <ul className="list-disc pl-4 mt-1">
+                  {TEST_USERS.map(user => (
+                    <li key={user.email} className="text-xs">
+                      {user.role}: {user.email} / {user.password}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2">Run <code>window.setupTestUsers()</code> in console to create these users.</p>
+              </div>
+            </details>
+          </div>
+        )}
+      </form>
+    </Form>
   );
 };

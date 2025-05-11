@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AuthState, AuthUser } from '../types/types';
 import { useFetchProfile } from './useFetchProfile';
 import { useAuthDerivedState } from './useAuthDerivedState';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Hook that manages the authentication state
@@ -18,12 +19,18 @@ export const useAuthState = () => {
 
   const { fetchProfile } = useFetchProfile();
 
+  // Set up effect to handle auth state
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Skip initial session event as we'll handle it separately
       if (event === 'INITIAL_SESSION') {
         return;
       }
+
+      console.log(`Auth state change: ${event}`);
 
       if (session?.user) {
         const user: AuthUser = {
@@ -31,44 +38,54 @@ export const useAuthState = () => {
           email: session.user.email || undefined,
         };
 
-        setAuthState(prev => ({
-          ...prev,
-          user,
-          isLoading: true
-        }));
+        if (mounted) {
+          setAuthState(prev => ({
+            ...prev,
+            user,
+            isLoading: true
+          }));
+        }
 
-        // Use setTimeout to avoid potential deadlock
+        // Use setTimeout to avoid potential deadlock with Supabase auth
         setTimeout(async () => {
           try {
             const profile = await fetchProfile(user.id);
-            setAuthState(prev => ({
-              ...prev,
-              profile,
-              isLoading: false,
-              error: null
-            }));
-          } catch (error: any) {
-            console.error("Error after session change:", error);
-            setAuthState(prev => ({
-              ...prev,
-              isLoading: false,
-              error: new Error(error.message || "Failed to fetch profile")
-            }));
+            
+            if (mounted) {
+              setAuthState(prev => ({
+                ...prev,
+                profile,
+                isLoading: false,
+                error: null
+              }));
+            }
+          } catch (error) {
+            console.error("Error after auth state change:", error);
+            
+            if (mounted) {
+              setAuthState(prev => ({
+                ...prev,
+                isLoading: false,
+                error: error instanceof Error ? error : new Error("Failed to fetch profile")
+              }));
+            }
           }
         }, 0);
       } else {
-        setAuthState({
-          user: null,
-          profile: null,
-          isLoading: false,
-          error: null,
-        });
+        if (mounted) {
+          setAuthState({
+            user: null,
+            profile: null,
+            isLoading: false,
+            error: null,
+          });
+        }
       }
     });
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
+      if (session?.user && mounted) {
         const user: AuthUser = {
           id: session.user.id,
           email: session.user.email || undefined,
@@ -82,22 +99,27 @@ export const useAuthState = () => {
 
         fetchProfile(user.id)
           .then(profile => {
-            setAuthState({
-              user,
-              profile,
-              isLoading: false,
-              error: null,
-            });
+            if (mounted) {
+              setAuthState({
+                user,
+                profile,
+                isLoading: false,
+                error: null,
+              });
+            }
           })
           .catch(error => {
-            console.error("Error after initial session:", error);
-            setAuthState(prev => ({
-              ...prev,
-              isLoading: false,
-              error: new Error(error.message || "Failed to fetch profile")
-            }));
+            console.error("Error fetching initial profile:", error);
+            
+            if (mounted) {
+              setAuthState(prev => ({
+                ...prev,
+                isLoading: false,
+                error: error instanceof Error ? error : new Error("Failed to fetch profile")
+              }));
+            }
           });
-      } else {
+      } else if (mounted) {
         setAuthState(prev => ({
           ...prev,
           isLoading: false,
@@ -106,10 +128,12 @@ export const useAuthState = () => {
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
 
+  // Function to refresh the user profile
   const refreshProfile = useCallback(async () => {
     if (authState.user) {
       setAuthState(prev => ({ ...prev, isLoading: true }));
@@ -122,12 +146,23 @@ export const useAuthState = () => {
           isLoading: false,
           error: null,
         }));
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error refreshing profile:", error);
+        
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : "Failed to refresh profile";
+        
+        toast({
+          title: "Feil ved oppdatering av profil",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        
         setAuthState(prev => ({
           ...prev,
           isLoading: false,
-          error: new Error(error.message || "Failed to refresh profile"),
+          error: error instanceof Error ? error : new Error(errorMessage),
         }));
       }
     }
