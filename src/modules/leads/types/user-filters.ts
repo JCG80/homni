@@ -11,6 +11,7 @@ export interface UserLeadFilter {
     categories?: string[];
     zipCodes?: string[];
     status?: string;
+    category?: string;
     dateRange?: {
       start?: string;
       end?: string;

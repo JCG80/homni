@@ -1,11 +1,13 @@
 
 import { useState, useEffect } from 'react';
 import { LeadSettings } from '../types/lead-settings';
-import { supabase } from '@/integrations/supabase/client';
-import { parseLeadSettings } from '../utils/parseLeadSettings';
 import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 
+/**
+ * Hook for managing lead settings with support for company-specific configurations
+ * @param companyId Optional company ID for company-specific settings
+ */
 export const useLeadSettings = (companyId?: string) => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);

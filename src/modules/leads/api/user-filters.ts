@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { UserLeadFilter, CreateUserFilterRequest, UpdateUserFilterRequest } from '../types/user-filters';
 import { toast } from '@/hooks/use-toast';
@@ -58,28 +59,49 @@ export async function getDefaultFilter(): Promise<UserLeadFilter | null> {
  * Creates a new filter for the current user
  */
 export async function createUserFilter(filter: CreateUserFilterRequest): Promise<UserLeadFilter | null> {
-  // If this is a default filter, first unset any existing default
-  if (filter.is_default) {
-    await unsetExistingDefaults();
-  }
-  
-  const { data, error } = await supabase
-    .from('user_lead_filters')
-    .insert([filter])
-    .select()
-    .maybeSingle();
-  
-  if (error) {
-    console.error('Error creating user filter:', error);
-    toast({
-      title: 'Error creating filter',
-      description: error.message,
-      variant: 'destructive',
-    });
+  try {
+    // If this is a default filter, first unset any existing default
+    if (filter.is_default) {
+      await unsetExistingDefaults();
+    }
+    
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      console.error('No authenticated user found');
+      toast({
+        title: 'Authentication error',
+        description: 'You must be logged in to create filters',
+        variant: 'destructive',
+      });
+      return null;
+    }
+    
+    const { data, error } = await supabase
+      .from('user_lead_filters')
+      .insert({
+        ...filter,
+        user_id: user.id
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating user filter:', error);
+      toast({
+        title: 'Error creating filter',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return null;
+    }
+    
+    return data as UserLeadFilter;
+  } catch (err) {
+    console.error('Unexpected error in createUserFilter:', err);
     return null;
   }
-  
-  return data as UserLeadFilter;
 }
 
 /**
