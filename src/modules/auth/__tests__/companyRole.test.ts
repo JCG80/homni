@@ -18,7 +18,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useLocation: () => ({ pathname: '/test' }),
-    Navigate: ({ to }) => <div data-testid="navigate" data-to={to}>Navigate to {to}</div>
+    Navigate: ({ to }) => `<div data-testid="navigate" data-to="${to}">Navigate to ${to}</div>`
   };
 });
 

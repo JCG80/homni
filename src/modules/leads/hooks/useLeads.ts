@@ -102,7 +102,10 @@ export const useAssignLead = () => {
   });
 };
 
-// Add the missing useLeads export for backward compatibility
+/**
+ * Main useLeads hook that returns leads, loading state, error, and refresh function
+ * This is exported for backward compatibility and used in the AdminLeadsPage
+ */
 export const useLeads = () => {
   const { data: leads = [], isLoading, error, refetch } = useLeadList();
   
