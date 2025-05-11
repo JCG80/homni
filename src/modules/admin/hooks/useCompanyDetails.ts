@@ -88,12 +88,15 @@ export function useCompanyDetails(
       
       if (error) throw error;
       
+      // Cast data to the right type to include metadata
+      const typedData = data as unknown as CompanyProfile;
+      
       // Set the notes if available
-      if (data?.metadata?.admin_notes) {
-        setNotes(data.metadata.admin_notes);
+      if (typedData?.metadata?.admin_notes) {
+        setNotes(typedData.metadata.admin_notes);
       }
       
-      return data as CompanyProfile;
+      return typedData;
     }
   });
 

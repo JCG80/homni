@@ -7,13 +7,14 @@ import { SystemModule } from '../types/systemModules';
  */
 export async function getSystemModules(): Promise<SystemModule[]> {
   try {
+    // Explicitly cast the response data to SystemModule[]
     const { data, error } = await supabase
       .from('system_modules')
       .select('*')
       .order('name');
     
     if (error) throw error;
-    return data || [];
+    return (data as unknown as SystemModule[]) || [];
   } catch (error) {
     console.error('Error fetching system modules:', error);
     return [];

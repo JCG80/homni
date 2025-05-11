@@ -13,7 +13,7 @@ export const fetchAvailableModules = async () => {
       .order('name');
     
     if (error) throw error;
-    return data || [];
+    return (data as any[]) || [];
   } catch (error) {
     console.error('Error fetching available modules:', error);
     return [];
@@ -27,15 +27,20 @@ export const fetchUserModuleAccess = async (userId: string) => {
   try {
     const { data, error } = await supabase
       .from('user_profiles')
-      .select('module_access, internal_admin')
+      .select('metadata')
       .eq('id', userId)
       .single();
     
     if (error) throw error;
     
+    // Extract module_access and internal_admin from metadata
+    const metadata = data?.metadata || {};
+    const moduleAccess = metadata.module_access || [];
+    const isInternalAdmin = metadata.internal_admin || false;
+    
     return {
-      moduleAccess: data?.module_access || [],
-      isInternalAdmin: data?.internal_admin || false
+      moduleAccess,
+      isInternalAdmin
     };
   } catch (error) {
     console.error('Error fetching user module access:', error);
@@ -53,11 +58,26 @@ export const updateUserModuleAccess = async (
   isInternalAdmin: boolean
 ) => {
   try {
+    const { data: currentData } = await supabase
+      .from('user_profiles')
+      .select('metadata')
+      .eq('id', userId)
+      .single();
+    
+    // Get current metadata or initialize as empty object
+    const currentMetadata = currentData?.metadata || {};
+    
+    // Update with new module access settings
+    const updatedMetadata = {
+      ...currentMetadata,
+      module_access: moduleAccess,
+      internal_admin: isInternalAdmin
+    };
+    
     const { error } = await supabase
       .from('user_profiles')
       .update({
-        module_access: moduleAccess,
-        internal_admin: isInternalAdmin
+        metadata: updatedMetadata
       })
       .eq('id', userId);
     

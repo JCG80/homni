@@ -30,8 +30,9 @@ export const logAdminAction = async (
   details: Record<string, any> = {}
 ): Promise<void> => {
   try {
+    // Use type assertion to handle the admin_logs table that isn't in TypeScript definitions yet
     const { error } = await supabase
-      .from('admin_logs')
+      .from('admin_logs' as any)
       .insert({
         admin_id: adminId,
         action,
@@ -39,7 +40,7 @@ export const logAdminAction = async (
         resource_id: resourceId,
         details,
         ip_address: window.location.hostname // Basic client IP tracking
-      });
+      } as any);
     
     if (error) {
       console.error('Failed to log admin action:', error);
@@ -59,8 +60,9 @@ export const getAdminLogs = async (
   offset = 0
 ) => {
   try {
+    // Use type assertion for the admin_logs table
     let query = supabase
-      .from('admin_logs')
+      .from('admin_logs' as any)
       .select('*');
     
     // If not a master admin, only show their own logs

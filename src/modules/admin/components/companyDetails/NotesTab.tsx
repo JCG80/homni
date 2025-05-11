@@ -24,7 +24,7 @@ export function NotesTab({ company, notes, setNotes, isLoading, onUpdate }: Note
       // Get the current metadata or initialize as empty object
       const currentMetadata = company.metadata || {};
       
-      // Update the metadata with the new notes
+      // Update the company record with the new metadata
       const { error } = await supabase
         .from('company_profiles')
         .update({
@@ -32,7 +32,7 @@ export function NotesTab({ company, notes, setNotes, isLoading, onUpdate }: Note
             ...currentMetadata,
             admin_notes: notes
           }
-        })
+        } as any)
         .eq('id', company.id);
       
       if (error) throw error;
