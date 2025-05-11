@@ -5,12 +5,13 @@ import { LeadForm } from '../components/LeadForm';
 import { LeadsTable } from '../components/LeadsTable';
 import { Button } from '@/components/ui/button';
 import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 
 export const UserLeadsPage = () => {
   const [showForm, setShowForm] = useState(false);
   const { user, isLoading, role } = useAuth();
   const { loading } = useRoleGuard({
-    allowedRoles: ['user', 'admin', 'master_admin'], // Allow user role specifically
+    allowedRoles: ['member', 'admin', 'master_admin'] as UserRole[], 
     redirectTo: '/login'
   });
 

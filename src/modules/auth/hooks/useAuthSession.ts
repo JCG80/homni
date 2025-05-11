@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthUser, AuthState } from '../types/types';
 import { useFetchUserProfile } from './useFetchUserProfile';
+import { UserRole } from '../utils/roles/types';
 
 /**
  * Hook that manages the auth session state and listens for changes
@@ -34,7 +35,7 @@ export const useAuthSession = () => {
         const user: AuthUser = {
           id: session.user.id,
           email: session.user.email || undefined,
-          role: 'user' // Default role until profile is loaded
+          role: 'member' as UserRole // Default role until profile is loaded
         };
 
         if (mounted) {
@@ -94,7 +95,7 @@ export const useAuthSession = () => {
         const user: AuthUser = {
           id: session.user.id,
           email: session.user.email || undefined,
-          role: 'user' // Default role until profile is loaded
+          role: 'member' as UserRole // Default role until profile is loaded
         };
 
         setAuthState(prev => ({

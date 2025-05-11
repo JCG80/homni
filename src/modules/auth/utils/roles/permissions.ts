@@ -11,7 +11,7 @@ export function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
     case 'anonymous':
       return ['home', 'leads/submit', 'info', 'login', 'register'];
-    case 'user':
+    case 'member':
       return ['dashboard', 'leads', 'leads/my', 'profile', 'properties', 'maintenance', 'my-account'];
     case 'company':
       return ['dashboard', 'leads', 'company', 'company/profile', 'settings', 'reports'];
@@ -38,10 +38,10 @@ export function canAccessModule(role: UserRole, module: string): boolean {
 export function getAccessibleModules(
   role: UserRole | null,
   moduleAccessMap: Record<string, UserRole[]> = {
-    'leads': ['user', 'company', 'admin', 'master_admin'],
+    'leads': ['member', 'company', 'admin', 'master_admin'],
     'admin': ['admin', 'master_admin'],
     'company': ['company', 'admin', 'master_admin'],
-    'geo': ['user', 'company', 'admin', 'master_admin'],
+    'geo': ['member', 'company', 'admin', 'master_admin'],
     'content': ['admin', 'master_admin'],
     'settings': ['company', 'admin', 'master_admin']
   }

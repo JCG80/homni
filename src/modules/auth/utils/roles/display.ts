@@ -7,11 +7,8 @@ import { UserRole } from './types';
  */
 export const roleNames: Partial<Record<UserRole, string>> = {
   anonymous: 'Anonym',
-  user: 'Bruker',
-  member: 'Medlem',
+  member: 'Bruker',
   company: 'Bedrift',
-  business: 'Bedrift',
-  provider: 'Leverandør',
   admin: 'Administrator',
   master_admin: 'Hovedadministrator',
   content_editor: 'Innholdsredaktør'
@@ -23,11 +20,8 @@ export const roleNames: Partial<Record<UserRole, string>> = {
  */
 export const roleDescriptions: Partial<Record<UserRole, string>> = {
   anonymous: 'Ikke innlogget bruker med begrenset tilgang.',
-  user: 'Standard bruker med grunnleggende tilgang.',
   member: 'Medlemsbruker med utvidet tilgang.',
   company: 'Bedriftsbruker med tilgang til bedriftsverktøy.',
-  business: 'Bedriftsbruker med tilgang til forretningsverktøy.',
-  provider: 'Leverandør med tilgang til leverandørverktøy.',
   admin: 'Administrator med tilgang til administrasjonsverktøy.',
   master_admin: 'Hovedadministrator med full tilgang til alle funksjoner.',
   content_editor: 'Innholdsredaktør med tilgang til å redigere innhold.'

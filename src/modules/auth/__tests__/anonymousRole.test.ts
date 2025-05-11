@@ -16,9 +16,9 @@ describe('Anonymous Role Access', () => {
     expect(canAccessModule('anonymous' as UserRole, 'content')).toBe(false);
   });
 
-  test('should allow user role to access user-specific modules', () => {
-    expect(canAccessModule('user', 'dashboard')).toBe(true);
-    expect(canAccessModule('user', 'leads')).toBe(true);
+  test('should allow member role to access user-specific modules', () => {
+    expect(canAccessModule('member', 'dashboard')).toBe(true);
+    expect(canAccessModule('member', 'leads')).toBe(true);
   });
 
   test('should preserve existing role functionality', () => {

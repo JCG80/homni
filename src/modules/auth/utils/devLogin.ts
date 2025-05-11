@@ -1,4 +1,3 @@
-
 import { UserRole } from './roles/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -21,8 +20,8 @@ export const TEST_USERS: TestUser[] = [
   { name: 'Test Master Admin', email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!' },
   { name: 'Test Admin', email: 'admin@test.local', role: 'admin', password: 'Test1234!' },
   { name: 'Test Company', email: 'company@test.local', role: 'company', password: 'Test1234!' },
-  { name: 'Test User', email: 'user@test.local', role: 'user', password: 'Test1234!' },
-  { name: 'Test Provider', email: 'provider@test.local', role: 'provider', password: 'Test1234!' }
+  { name: 'Test User', email: 'user@test.local', role: 'member', password: 'Test1234!' },
+  { name: 'Test Provider', email: 'provider@test.local', role: 'company', password: 'Test1234!' }
 ];
 
 /**

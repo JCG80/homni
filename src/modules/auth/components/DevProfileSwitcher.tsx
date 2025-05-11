@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { DEV_USERS, switchDevUser } from '../utils/devProfiles';
@@ -42,9 +41,7 @@ export const DevProfileSwitcher: React.FC<DevProfileSwitcherProps> = ({
       case 'admin':
         return 'bg-orange-500 text-white';
       case 'company':
-      case 'business':
         return 'bg-blue-600 text-white';
-      case 'user':
       case 'member':
         return 'bg-green-600 text-white';
       default:

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -63,10 +62,8 @@ export function UserNav() {
       case 'admin':
         return 'Administrator';
       case 'company':
-      case 'business':
         return 'Company';
       case 'member':
-      case 'user':
         return 'User';
       default:
         return role || 'Guest';

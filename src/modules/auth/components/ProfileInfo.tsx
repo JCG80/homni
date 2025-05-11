@@ -82,7 +82,7 @@ export const ProfileInfo: React.FC = () => {
         <div>
           <CardTitle>{profile.full_name || 'Anonym bruker'}</CardTitle>
           <CardDescription>
-            {profile.role === 'user' ? 'Bruker' : 
+            {profile.role === 'member' ? 'Bruker' : 
               profile.role === 'company' ? 'Bedrift' : 
               profile.role === 'admin' ? 'Administrator' : 
               profile.role === 'master_admin' ? 'Hoved-administrator' : 
