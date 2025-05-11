@@ -23,7 +23,7 @@ export const Authenticated = ({
   }
 
   // Determine the current role - use profile role first, then user role, default to 'anonymous'
-  const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous' as UserRole;
+  const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous';
   
   // If not authenticated, show fallback
   if (!isAuthenticated) {

@@ -34,7 +34,7 @@ export const ProtectedRoute = ({
   }
   
   // Determine the current role - use profile role first, then user role, default to 'anonymous'
-  const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous' as UserRole;
+  const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous';
   
   console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', currentRole, 
     'allowedRoles:', allowedRoles, 'allowAnyAuthenticated:', allowAnyAuthenticated,
@@ -44,7 +44,7 @@ export const ProtectedRoute = ({
   if (module) {
     if (!canAccessModule(currentRole, module)) {
       // If anonymous, redirect to login. Otherwise to unauthorized.
-      const redirectPath = currentRole === 'anonymous' as UserRole ? '/login' : '/unauthorized';
+      const redirectPath = currentRole === 'anonymous' ? '/login' : '/unauthorized';
       console.log(`User does not have access to module: ${module}, redirecting to: ${redirectPath}`);
       return <Navigate to={redirectPath} replace state={{ from: location }} />;
     }
