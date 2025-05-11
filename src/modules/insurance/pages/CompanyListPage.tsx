@@ -5,8 +5,9 @@ import { useInsuranceCompanies } from '../hooks/useInsuranceQueries';
 import { InsuranceCompanyCard } from '../components/InsuranceCompanyCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Building, Search, Filter, SlidersHorizontal } from 'lucide-react';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 export const CompanyListPage = () => {
   const { data: companies = [], isLoading } = useInsuranceCompanies();
@@ -27,17 +28,10 @@ export const CompanyListPage = () => {
     });
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 flex items-center">
-          <Building className="h-8 w-8 mr-2 text-primary" />
-          Forsikringsselskaper
-        </h1>
-        <p className="text-muted-foreground">
-          Utforsk og sammenlign forsikringsselskaper for å finne den beste løsningen for deg
-        </p>
-      </div>
-      
+    <PageLayout
+      title="Forsikringsselskaper"
+      description="Utforsk og sammenlign forsikringsselskaper for å finne den beste løsningen for deg"
+    >
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -84,6 +78,6 @@ export const CompanyListPage = () => {
           ))}
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 };

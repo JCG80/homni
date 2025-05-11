@@ -6,6 +6,7 @@ import { FilterSidebar } from '../components/comparison/FilterSidebar';
 import { SearchAndSort } from '../components/comparison/SearchAndSort';
 import { InsuranceCompanyGrid } from '../components/comparison/InsuranceCompanyGrid';
 import { InsuranceQuoteCTA } from '../components/comparison/InsuranceQuoteCTA';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 export const InsuranceComparisonPage = () => {
   const { data: companies = [], isLoading } = useInsuranceQueries.useInsuranceCompaniesWithTypes();
@@ -36,14 +37,10 @@ export const InsuranceComparisonPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Sammenlign forsikringsselskaper</h1>
-        <p className="text-muted-foreground">
-          Finn de beste forsikringsselskapene basert på kundetilfredshet og anmeldelser
-        </p>
-      </div>
-
+    <PageLayout
+      title="Sammenlign forsikringsselskaper"
+      description="Finn de beste forsikringsselskapene basert på kundetilfredshet og anmeldelser"
+    >
       <div className="flex flex-col md:flex-row gap-6">
         {/* Filters sidebar */}
         <div className="w-full md:w-64 shrink-0">
@@ -77,6 +74,6 @@ export const InsuranceComparisonPage = () => {
           <InsuranceQuoteCTA />
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };

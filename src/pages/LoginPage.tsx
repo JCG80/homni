@@ -36,7 +36,10 @@ export const LoginPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Laster inn...</p>
+        <div className="text-center">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Laster inn...</p>
+        </div>
       </div>
     );
   }
