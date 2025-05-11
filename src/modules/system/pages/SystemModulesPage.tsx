@@ -107,14 +107,14 @@ export const SystemModulesPage = () => {
                   <TableCell className="font-medium">{module.name}</TableCell>
                   <TableCell>{module.description}</TableCell>
                   <TableCell>
-                    <Badge variant={module.active ? "default" : "outline"}>
-                      {module.active ? 'Aktiv' : 'Inaktiv'}
+                    <Badge variant={module.is_active ? "default" : "outline"}>
+                      {module.is_active ? 'Aktiv' : 'Inaktiv'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <Switch
-                      checked={module.active}
-                      onCheckedChange={() => handleToggleModule(module.id, module.active)}
+                      checked={module.is_active}
+                      onCheckedChange={() => handleToggleModule(module.id, module.is_active)}
                     />
                   </TableCell>
                 </TableRow>

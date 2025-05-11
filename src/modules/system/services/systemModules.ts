@@ -37,3 +37,40 @@ export async function toggleSystemModule(moduleId: string, isActive: boolean): P
     return false;
   }
 }
+
+/**
+ * Create a new system module
+ */
+export async function createSystemModule(module: Omit<SystemModule, 'id' | 'created_at' | 'updated_at'>): Promise<SystemModule | null> {
+  try {
+    const { data, error } = await supabase
+      .from('system_modules')
+      .insert([module])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error creating system module:', error);
+    return null;
+  }
+}
+
+/**
+ * Delete a system module
+ */
+export async function deleteSystemModule(moduleId: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('system_modules')
+      .delete()
+      .eq('id', moduleId);
+    
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting system module:', error);
+    return false;
+  }
+}

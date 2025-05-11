@@ -1,135 +1,86 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Module } from '../types/types';
-import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { 
+  fetchAvailableModules, 
+  fetchUserModuleAccess, 
+  updateUserModuleAccess 
+} from '../api/moduleAccess';
 
 interface UseModuleAccessProps {
   userId: string;
   onUpdate?: () => void;
 }
 
-export function useModuleAccess({ userId, onUpdate }: UseModuleAccessProps) {
-  const [modules, setModules] = useState<Module[]>([]);
+export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
+  const { user } = useAuth();
+  const [modules, setModules] = useState<any[]>([]);
   const [userAccess, setUserAccess] = useState<string[]>([]);
   const [isInternalAdmin, setIsInternalAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // Fetch modules and user access
+  // Fetch available modules and user's current access
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Get modules
-        const { data: modulesData, error: modulesError } = await supabase
-          .from('system_modules' as any)
-          .select('*')
-          .order('name');
-
-        if (modulesError) {
-          throw modulesError;
-        }
-
-        // Get user access
-        const { data: userData, error: userError } = await supabase
-          .from('user_profiles')
-          .select('metadata')
-          .eq('id', userId)
-          .single();
-
-        if (userError) {
-          throw userError;
-        }
-
-        if (userData?.metadata) {
-          const metadata = userData.metadata as Record<string, any>;
-          const internal_admin = metadata.internal_admin || false;
-          const module_access = metadata.module_access || [];
-          
-          setIsInternalAdmin(internal_admin);
-          setUserAccess(module_access);
-        }
-
-        if (modulesData) {
-          // Cast to Module[] to satisfy TypeScript
-          setModules(modulesData as unknown as Module[]);
-        }
-
+        setLoading(true);
+        
+        // Fetch available modules
+        const availableModules = await fetchAvailableModules();
+        setModules(availableModules);
+        
+        // Fetch user's current module access
+        const { moduleAccess, isInternalAdmin } = await fetchUserModuleAccess(userId);
+        setUserAccess(moduleAccess);
+        setIsInternalAdmin(isInternalAdmin);
+        
         setLoading(false);
-      } catch (error) {
-        console.error('Error fetching module access data:', error);
-        setError(error instanceof Error ? error : new Error('Unknown error'));
+      } catch (err) {
+        console.error('Error in useModuleAccess:', err);
+        setError(err instanceof Error ? err : new Error('Unknown error'));
         setLoading(false);
       }
     };
-
+    
     fetchData();
   }, [userId]);
 
-  // Toggle module access
+  // Toggle specific module access
   const toggleAccess = (moduleId: string) => {
-    if (userAccess.includes(moduleId)) {
-      setUserAccess(userAccess.filter((id) => id !== moduleId));
-      logAudit(`Removed access to module ${moduleId}`);
-    } else {
-      setUserAccess([...userAccess, moduleId]);
-      logAudit(`Granted access to module ${moduleId}`);
-    }
+    setUserAccess(prev => {
+      if (prev.includes(moduleId)) {
+        return prev.filter(id => id !== moduleId);
+      } else {
+        return [...prev, moduleId];
+      }
+    });
   };
 
   // Toggle internal admin status
   const toggleInternalAdmin = () => {
-    setIsInternalAdmin(!isInternalAdmin);
-    logAudit(`${!isInternalAdmin ? 'Granted' : 'Removed'} internal admin status`);
+    setIsInternalAdmin(prev => !prev);
   };
 
-  // Log audit entry
-  const logAudit = async (action: string) => {
-    try {
-      // Use any casting for tables not in the schema
-      await supabase
-        .from('admin_logs' as any)
-        .insert({
-          user_id: userId,
-          action,
-          timestamp: new Date().toISOString(),
-        });
-    } catch (error) {
-      console.error('Error logging audit entry:', error);
-    }
-  };
-
-  // Update user access
+  // Save changes to the database
   const updateAccess = async () => {
+    if (!user?.id) return false;
+    
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          metadata: {
-            internal_admin: isInternalAdmin,
-            module_access: userAccess,
-          },
-        })
-        .eq('id', userId);
-
-      if (error) throw error;
-
-      toast({
-        title: 'Success',
-        description: 'User access updated successfully',
-      });
+      const success = await updateUserModuleAccess(
+        userId,
+        user.id,
+        userAccess,
+        isInternalAdmin
+      );
       
-      if (onUpdate) {
+      if (success && onUpdate) {
         onUpdate();
       }
       
-      return true;
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: `Failed to update user access: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        variant: 'destructive',
-      });
+      return success;
+    } catch (err) {
+      console.error('Error updating module access:', err);
       return false;
     }
   };
@@ -142,6 +93,6 @@ export function useModuleAccess({ userId, onUpdate }: UseModuleAccessProps) {
     error,
     toggleAccess,
     toggleInternalAdmin,
-    updateAccess,
+    updateAccess
   };
-}
+};
