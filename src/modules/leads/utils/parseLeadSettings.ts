@@ -10,7 +10,7 @@ import { LeadSettings } from '@/types/leads';
 export function parseLeadSettings(data: Database['public']['Tables']['lead_settings']['Row']): LeadSettings {
   // Ensure filters is an object (not a string or other non-object type)
   const filters = typeof data.filters === 'object' && data.filters !== null
-    ? data.filters 
+    ? data.filters as Record<string, any>
     : {};
 
   return {

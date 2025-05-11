@@ -1,11 +1,14 @@
 
-import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
+import { DistributionStrategy } from '../strategies/strategyFactory';
 import { supabase } from "@/integrations/supabase/client";
 import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
-import { isValidLeadStatus } from '@/types/leads';
 import { getCurrentStrategy } from './getCurrentStrategy';
 import { withRetry } from '@/utils/apiRetry';
+import { fetchUnassignedLeads } from './leadQuery';
+import { applyLeadFilters } from './leadFiltering';
+import { assignLeadToProvider } from './leadAssignment';
+import { showLeadProcessingNotifications } from './leadNotifications';
 
 /**
  * Processes unassigned leads using the specified distribution strategy
@@ -57,50 +60,16 @@ export async function processUnassignedLeads(
     
     console.log(`Using distribution strategy: ${distributionStrategy}`);
     
-    // Build query for unassigned leads
-    let query = supabase
-      .from('leads')
-      .select('*')
-      .eq('status', 'new')
-      .is('company_id', null);
-    
-    // Filter by lead type if specified
-    if (leadType) {
-      query = query.eq('lead_type', leadType);
-    }
-    
-    // Execute query with retry
-    const { data: unassignedLeads, error } = await withRetry(
-      async () => await query,
-      {
-        maxAttempts: 3,
-        delayMs: 800,
-        backoffFactor: 1.5,
-        onRetry: (attempt) => console.log(`Retrying lead fetch (attempt ${attempt})`)
-      }
-    );
-    
-    if (error) {
-      console.error('Error fetching unassigned leads:', error);
-      if (showToasts) {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch unassigned leads',
-          variant: 'destructive',
-        });
-      }
-      return 0;
-    }
+    // Fetch unassigned leads
+    const unassignedLeads = await fetchUnassignedLeads({ leadType });
     
     if (!unassignedLeads || unassignedLeads.length === 0) {
       console.log('No unassigned leads to process');
-      if (showToasts) {
-        toast({
-          title: 'No leads',
-          description: 'No unassigned leads to process',
-          variant: 'default',
-        });
-      }
+      showLeadProcessingNotifications({
+        showToasts,
+        totalLeads: 0,
+        assignedCount: 0
+      });
       return 0;
     }
     
@@ -108,124 +77,36 @@ export async function processUnassignedLeads(
     
     // Process each lead
     for (const lead of unassignedLeads) {
-      // Validate lead status - if it's not valid, skip this lead
-      if (!isValidLeadStatus(lead.status)) {
-        console.warn(`Lead ${lead.id} has invalid status ${lead.status}, skipping`);
+      // Apply filters from lead settings
+      if (!applyLeadFilters(lead, settings)) {
         continue;
       }
 
-      // Apply filters from lead settings if they exist
-      if (settings?.filters) {
-        // Filter by categories
-        if (settings.categories && settings.categories.length > 0) {
-          if (!settings.categories.includes(lead.category)) {
-            console.log(`Lead ${lead.id} skipped due to category filter`);
-            continue;
-          }
-        }
-        
-        // Filter by lead types
-        if (settings.lead_types && settings.lead_types.length > 0) {
-          if (!settings.lead_types.includes(lead.lead_type)) {
-            console.log(`Lead ${lead.id} skipped due to lead_type filter`);
-            continue;
-          }
-        }
-        
-        // Filter by zip codes
-        if (settings.zipCodes && settings.zipCodes.length > 0) {
-          // Fixed postcode access - properly handle different ways it might be stored
-          const zipCode = typeof lead.metadata === 'object' && lead.metadata 
-            ? (lead.metadata as any).postal_code || 
-              (lead.metadata as any).zip_code || 
-              (lead.metadata as any).zipCode || 
-              (lead.metadata as any).postcode
-            : null;
-            
-          if (zipCode && !settings.zipCodes.includes(zipCode)) {
-            console.log(`Lead ${lead.id} skipped due to zip code filter`);
-            continue;
-          }
-        }
-      }
-      
-      try {
-        // Get provider based on selected strategy with retry logic
-        const providerId = await withRetry(
-          () => distributeLeadToProvider(distributionStrategy!, lead.category),
-          {
-            maxAttempts: 3,
-            delayMs: 500,
-            backoffFactor: 1.5,
-            onRetry: (attempt) => console.log(`Retrying provider selection for lead ${lead.id} (attempt ${attempt})`)
-          }
-        );
-        
-        if (providerId) {
-          // Update lead with the selected provider and ensure valid status
-          const { error: updateError } = await supabase
-            .from('leads')
-            .update({
-              company_id: providerId,
-              status: 'assigned',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', lead.id);
-          
-          if (updateError) {
-            console.error(`Error assigning lead ${lead.id}:`, updateError);
-          } else {
-            assignedCount++;
-            
-            // Log the assignment in lead_history
-            const { error: historyError } = await supabase
-              .from('lead_history')
-              .insert({
-                lead_id: lead.id,
-                assigned_to: providerId,
-                method: 'auto',
-                previous_status: 'new',
-                new_status: 'assigned'
-              });
-              
-            if (historyError) {
-              console.error(`Error logging lead history for ${lead.id}:`, historyError);
-            }
-          }
-        }
-      } catch (error) {
-        console.error(`Error processing lead ${lead.id}:`, error);
+      // Assign lead to provider
+      const assigned = await assignLeadToProvider(lead, distributionStrategy!);
+      if (assigned) {
+        assignedCount++;
       }
     }
     
     console.log(`Processed ${unassignedLeads.length} leads, assigned ${assignedCount}`);
     
-    if (showToasts) {
-      if (assignedCount > 0) {
-        toast({
-          title: 'Leads distributed',
-          description: `Successfully assigned ${assignedCount} of ${unassignedLeads.length} leads`,
-          variant: 'default',
-        });
-      } else if (unassignedLeads.length > 0) {
-        toast({
-          title: 'No matches found',
-          description: 'Found leads but could not find matching companies',
-          variant: 'destructive',
-        });
-      }
-    }
+    // Show notifications based on results
+    showLeadProcessingNotifications({
+      showToasts,
+      totalLeads: unassignedLeads.length,
+      assignedCount
+    });
     
     return assignedCount;
   } catch (error) {
     console.error('Error in processUnassignedLeads:', error);
-    if (showToasts) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'An unknown error occurred',
-        variant: 'destructive',
-      });
-    }
+    showLeadProcessingNotifications({
+      showToasts,
+      totalLeads: 0,
+      assignedCount: 0,
+      error: error instanceof Error ? error : new Error(String(error))
+    });
     return 0;
   }
 }
