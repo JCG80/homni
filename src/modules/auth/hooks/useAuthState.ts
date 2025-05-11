@@ -1,144 +1,51 @@
+import { useCallback } from 'react';
+import { AuthUser, Profile } from '../types/types';
+import { UserRole } from '../utils/roles';
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { getProfile } from '../api';
-import { AuthState } from '../types/types';
-import { determineUserRole } from '../utils/roles';
-
-const initialState: AuthState = {
-  user: null,
-  profile: null,
-  isLoading: true,
-  error: null,
-};
+interface AuthBaseState {
+  user: AuthUser | null;
+  profile: Profile | null;
+}
 
 /**
- * Hook for managing authentication state
- * @deprecated Use the unified useAuthState from useAuthState.unified.ts instead
+ * Hook that provides derived state from auth data (user and profile)
+ * This separates the derived state logic from the main auth state management
  */
-export const useAuthState = () => {
-  const [authState, setAuthState] = useState<AuthState>(initialState);
+export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
+  // Check if user is authenticated
+  const isAuthenticated = !!user;
 
-  const refreshProfile = async () => {
-    if (!authState.user) return;
-    
-    try {
-      setAuthState(prev => ({ ...prev, isLoading: true }));
-      const profile = await getProfile(authState.user!.id);
-      setAuthState(prev => ({ ...prev, profile, isLoading: false }));
-    } catch (error) {
-      console.error('Error refreshing profile:', error);
-      setAuthState(prev => ({ 
-        ...prev, 
-        error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
-        isLoading: false 
-      }));
-    }
-  };
+  // Determine role - use profile role first, then user role, default to undefined
+  const role: UserRole | undefined = profile?.role ?? user?.role;
 
-  useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session?.user) {
-          setAuthState(prev => ({ 
-            ...prev, 
-            user: {
-              id: session.user.id,
-              email: session.user.email,
-            },
-            isLoading: true
-          }));
-          
-          // Use setTimeout to avoid potential deadlock
-          setTimeout(async () => {
-            try {
-              const profile = await getProfile(session.user.id);
-              setAuthState(prev => ({ 
-                ...prev, 
-                profile, 
-                isLoading: false 
-              }));
-            } catch (error) {
-              console.error('Error fetching profile:', error);
-              setAuthState(prev => ({ 
-                ...prev, 
-                error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
-                isLoading: false 
-              }));
-            }
-          }, 0);
-        } else {
-          setAuthState({
-            user: null,
-            profile: null,
-            isLoading: false,
-            error: null,
-          });
-        }
-      }
-    );
+  // Helper function to check if user has a specific role
+  const hasRole = useCallback((roleToCheck: UserRole) => {
+    return role === roleToCheck;
+  }, [role]);
 
-    // THEN check for existing session
-    const initialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        setAuthState(prev => ({ 
-          ...prev, 
-          user: {
-            id: session.user.id,
-            email: session.user.email,
-          },
-          isLoading: true
-        }));
-        
-        try {
-          const profile = await getProfile(session.user.id);
-          setAuthState(prev => ({ 
-            ...prev, 
-            profile, 
-            isLoading: false 
-          }));
-        } catch (error) {
-          console.error('Error fetching profile:', error);
-          setAuthState(prev => ({ 
-            ...prev, 
-            error: error instanceof Error ? error : new Error('Failed to fetch profile'), 
-            isLoading: false 
-          }));
-        }
-      } else {
-        setAuthState(prev => ({ ...prev, isLoading: false }));
-      }
-    };
-    
-    initialSession();
+  // Helper functions to check common roles
+  const isAdmin = useCallback(() => {
+    return hasRole('admin') || hasRole('master_admin');
+  }, [hasRole]);
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  const isMasterAdmin = useCallback(() => {
+    return hasRole('master_admin');
+  }, [hasRole]);
 
-  // Calculate derived state
-  const isAuthenticated = !!authState.user;
-  const role = authState.profile?.role;
-  const isAdmin = role === 'admin' || role === 'master_admin';
-  const isMasterAdmin = role === 'master_admin';
-  const isCompany = role === 'company';
-  const isUser = role === 'member';
+  const isCompany = useCallback(() => {
+    return hasRole('company');
+  }, [hasRole]);
+
+  const isUser = useCallback(() => {
+    return hasRole('user');
+  }, [hasRole]);
 
   return {
-    user: authState.user,
-    profile: authState.profile,
-    isLoading: authState.isLoading,
-    error: authState.error,
-    refreshProfile,
     isAuthenticated,
-    isAdmin,
-    isMasterAdmin,
-    isCompany,
-    isUser,
+    isAdmin: isAdmin(),
+    isMasterAdmin: isMasterAdmin(),
+    isCompany: isCompany(),
+    isUser: isUser(),
     role,
   };
 };

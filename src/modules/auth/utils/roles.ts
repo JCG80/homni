@@ -7,9 +7,9 @@ import {
   ALL_ROLES, 
   PUBLIC_ROLES, 
   AUTHENTICATED_ROLES 
-} from './utils/roles/types';
-import { isUserRole, canAccessModule } from './utils/roles/guards';
-import { determineUserRole } from './utils/roles/determination';
+} from './roles/types';
+import { isUserRole, canAccessModule } from './roles/guards';
+import { determineUserRole } from './roles/determination';
 
 export type { UserRole };
 export { 
