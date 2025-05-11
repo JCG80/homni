@@ -55,6 +55,14 @@ export const useRoleGuard = ({
 
     console.log('Role check in useRoleGuard - Current role:', role, 'Allowed roles:', allowedRoles);
 
+    // Special case: master_admin always has access to everything
+    if (role === 'master_admin') {
+      console.log('User is master_admin, granting access');
+      setIsAllowed(true);
+      setLoading(false);
+      return;
+    }
+
     // Use type guard to ensure role is a valid UserRole
     const validRole = role && isUserRole(role) ? role : null;
     

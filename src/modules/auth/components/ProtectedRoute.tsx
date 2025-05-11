@@ -69,6 +69,12 @@ export const ProtectedRoute = ({
       return <Navigate to={redirectTo} replace state={{ from: location }} />;
     }
     
+    // Special case: master_admin always has access to everything
+    if (currentRole === 'master_admin') {
+      console.log('User is master_admin, granting access');
+      return <>{children}</>;
+    }
+    
     console.log('Role check - Current role:', currentRole, 'account_type:', account_type, 'Allowed roles:', allowedRoles);
     
     // Check both role and account_type
