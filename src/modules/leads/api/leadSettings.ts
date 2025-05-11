@@ -1,23 +1,33 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import { LeadSettings, mapDbToLeadSettings } from '@/types/leads';
+import { LeadSettings } from '@/types/leads';
+import { parseLeadSettings } from '../utils/parseLeadSettings';
 
 /**
  * Fetches the latest lead settings from the database
+ * @param companyId Optional company ID for company-specific settings
  */
-export async function fetchLeadSettings(): Promise<LeadSettings | null> {
-  const { data, error } = await supabase
+export async function fetchLeadSettings(companyId?: string): Promise<LeadSettings | null> {
+  let query = supabase
     .from('lead_settings')
     .select('*')
-    .order('updated_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order('updated_at', { ascending: false });
+  
+  // If company ID is provided, get company-specific settings
+  if (companyId) {
+    query = query.eq('company_id', companyId);
+  } else {
+    query = query.is('company_id', null); // Get global settings
+  }
+  
+  const { data, error } = await query.limit(1).maybeSingle();
     
   if (error) {
     console.error('Error fetching lead settings:', error);
     throw error;
   }
   
-  return data ? mapDbToLeadSettings(data) : null;
+  return data ? parseLeadSettings(data) : null;
 }
 
 /**
@@ -37,6 +47,7 @@ export async function updateLeadSettings(updates: {
   global_pause?: boolean;
   agents_paused?: boolean;
   globally_paused?: boolean;
+  company_id?: string | null;
 }): Promise<void> {
   const { error } = await supabase
     .from('lead_settings')
@@ -54,15 +65,21 @@ export async function updateLeadSettings(updates: {
 /**
  * Specifically toggles the pause state for agents
  */
-export async function pauseForAgents(paused: boolean) {
-  await updateLeadSettings({ agents_paused: paused });
+export async function pauseForAgents(paused: boolean, companyId?: string) {
+  await updateLeadSettings({ 
+    agents_paused: paused,
+    company_id: companyId || null
+  });
 }
 
 /**
  * Specifically toggles the global pause state for the entire lead system
  */
-export async function globalPause(paused: boolean) {
-  await updateLeadSettings({ globally_paused: paused });
+export async function globalPause(paused: boolean, companyId?: string) {
+  await updateLeadSettings({ 
+    globally_paused: paused,
+    company_id: companyId || null 
+  });
 }
 
 export type { LeadSettings };

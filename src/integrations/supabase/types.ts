@@ -309,6 +309,7 @@ export type Database = {
           agents_paused: boolean
           auto_distribute: boolean | null
           budget: number | null
+          company_id: string | null
           daily_budget: number | null
           filters: Json
           global_pause: boolean
@@ -322,6 +323,7 @@ export type Database = {
           agents_paused?: boolean
           auto_distribute?: boolean | null
           budget?: number | null
+          company_id?: string | null
           daily_budget?: number | null
           filters?: Json
           global_pause?: boolean
@@ -335,6 +337,7 @@ export type Database = {
           agents_paused?: boolean
           auto_distribute?: boolean | null
           budget?: number | null
+          company_id?: string | null
           daily_budget?: number | null
           filters?: Json
           global_pause?: boolean
@@ -344,7 +347,15 @@ export type Database = {
           strategy?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "lead_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "company_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       leads: {
         Row: {
@@ -573,6 +584,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_lead_filters: {
+        Row: {
+          created_at: string
+          filter_data: Json
+          filter_name: string | null
+          id: string
+          is_default: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filter_data?: Json
+          filter_name?: string | null
+          id?: string
+          is_default?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filter_data?: Json
+          filter_name?: string | null
+          id?: string
+          is_default?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {

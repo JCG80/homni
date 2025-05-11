@@ -1,6 +1,6 @@
 
 import { describe, test, expect, beforeEach } from 'vitest';
-import { determineUserRole } from '../utils/roleUtils';
+import { determineUserRole } from '../utils/roles/determination';
 
 describe('Auth role determination', () => {
   test('should correctly identify user role from metadata', () => {

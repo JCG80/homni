@@ -1,27 +1,27 @@
+
 import { useState, useEffect } from 'react';
 import { LeadSettings } from '../types/lead-settings';
 import { supabase } from '@/integrations/supabase/client';
 import { parseLeadSettings } from '../utils/parseLeadSettings';
+import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 
-export const useLeadSettings = () => {
+export const useLeadSettings = (companyId?: string) => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { profile } = useAuth();
+  
+  // Use company ID from profile if it's a company user and none was provided
+  const effectiveCompanyId = companyId || (profile?.role === 'company' ? profile.company_id : undefined);
   
   // Load settings from database
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         setIsLoading(true);
-        const { data, error } = await supabase
-          .from('lead_settings')
-          .select('*')
-          .maybeSingle();
-        
-        if (error) throw new Error(error.message);
-        
-        const parsedSettings = parseLeadSettings(data);
-        setSettings(parsedSettings);
+        const data = await fetchLeadSettings(effectiveCompanyId);
+        setSettings(data);
       } catch (err) {
         console.error('Error fetching lead settings:', err);
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -31,36 +31,17 @@ export const useLeadSettings = () => {
     };
     
     fetchSettings();
-  }, []);
+  }, [effectiveCompanyId]);
   
   // Update settings in database
   const saveSettings = async (updatedSettings: Partial<LeadSettings>): Promise<boolean> => {
     try {
       setIsLoading(true);
       
-      // If we have existing settings, update them
-      if (settings?.id) {
-        const { error } = await supabase
-          .from('lead_settings')
-          .update({
-            ...updatedSettings,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', settings.id);
-        
-        if (error) throw new Error(error.message);
-      } 
-      // Otherwise, insert new settings
-      else {
-        const { error } = await supabase
-          .from('lead_settings')
-          .insert([{
-            ...updatedSettings,
-            updated_at: new Date().toISOString()
-          }]);
-        
-        if (error) throw new Error(error.message);
-      }
+      await updateLeadSettings({
+        ...updatedSettings,
+        company_id: effectiveCompanyId || null
+      });
       
       // Update local state with new settings
       setSettings(prev => prev ? { ...prev, ...updatedSettings } : updatedSettings as LeadSettings);
