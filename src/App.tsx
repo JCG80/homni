@@ -19,6 +19,7 @@ import { UnauthorizedPage } from './pages/UnauthorizedPage'
 import { InsuranceRequestSuccessPage } from './pages/InsuranceRequestSuccessPage'
 import { ProtectedRoute } from './modules/auth/components/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
+import { DevQuickLogin } from './modules/auth/components/DevQuickLogin'
 
 // Import module-specific routes
 import { docsRoutes } from './modules/docs/routes'
@@ -70,6 +71,8 @@ function App() {
               </Routes>
             </Suspense>
             <Toaster />
+            {/* Add development quick login component */}
+            <DevQuickLogin />
           </div>
         </AuthWrapper>
       </QueryClientProvider>

@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signInWithEmail } from '../api/auth-authentication';
 import { toast } from '@/hooks/use-toast';
 import { useAuthRetry } from '../hooks/useAuthRetry';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -18,8 +19,8 @@ interface LoginFormProps {
 export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }: LoginFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState('admin@test.local');
-  const [password, setPassword] = useState('Test1234!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   // Get redirectUrl from location state or use provided redirectTo
@@ -30,7 +31,8 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
     isSubmitting, 
     currentAttempt, 
     maxRetries,
-    executeWithRetry 
+    executeWithRetry,
+    lastError
   } = useAuthRetry({
     maxRetries: 3,
     onSuccess: () => {
@@ -63,6 +65,9 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
         
         // Handle specific error cases
         if (signInError instanceof Error) {
+          if (signInError.message.includes('Invalid login credentials')) {
+            throw new Error('Feil e-post eller passord. Vennligst prøv igjen.');
+          }
           throw signInError;
         } else if (signInError.message) {
           throw new Error(signInError.message);
@@ -88,7 +93,15 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
         <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
+      {lastError && !error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{lastError.message}</AlertDescription>
         </Alert>
       )}
       
@@ -117,9 +130,12 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
       
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? (
-          currentAttempt > 0 
-            ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
-            : 'Logger inn...'
+          <div className="flex items-center">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {currentAttempt > 0 
+              ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
+              : 'Logger inn...'}
+          </div>
         ) : (
           'Logg inn'
         )}
@@ -136,9 +152,24 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
         </Button>
       </div>
 
-      <div className="text-xs text-center text-muted-foreground">
-        <p>For utvikling: bruk '{email}' / '{password}'</p>
-      </div>
+      {import.meta.env.MODE === 'development' && (
+        <div className="text-xs mt-4">
+          <details className="text-muted-foreground">
+            <summary className="cursor-pointer">Dev info</summary>
+            <div className="mt-2 p-2 bg-muted rounded-md">
+              <p>Test users should have the following credentials:</p>
+              <ul className="list-disc pl-4 mt-1">
+                {TEST_USERS.map(user => (
+                  <li key={user.email} className="text-xs">
+                    {user.role}: {user.email} / {user.password}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2">Run <code>window.setupTestUsers()</code> in console to create these users.</p>
+            </div>
+          </details>
+        </div>
+      )}
     </form>
   );
 };

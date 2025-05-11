@@ -2,12 +2,18 @@
 import React, { useEffect, useState } from 'react';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { devLogin, TEST_USERS } from '@/modules/auth/utils/devLogin';
+import { devLogin, TEST_USERS, verifyTestUsers } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserRole } from '@/modules/auth/types/types';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from "@/components/ui/alert";
+import { AlertCircle, Info } from 'lucide-react';
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();
@@ -15,6 +21,8 @@ export const LoginPage = () => {
   const typeParam = searchParams.get('type');
   const [activeTab, setActiveTab] = useState<string>(typeParam === 'business' ? 'business' : 'private');
   const { user, isLoading } = useAuth();
+  const [missingUsers, setMissingUsers] = useState<string[]>([]);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     // If user is already logged in, redirect to dashboard
@@ -30,6 +38,25 @@ export const LoginPage = () => {
       setActiveTab('private');
     }
   }, [typeParam]);
+  
+  // Verify test users on component mount in development mode
+  useEffect(() => {
+    const checkTestUsers = async () => {
+      if (import.meta.env.MODE === 'development') {
+        setIsVerifying(true);
+        try {
+          const missing = await verifyTestUsers();
+          setMissingUsers(missing);
+        } catch (err) {
+          console.error('Error verifying test users:', err);
+        } finally {
+          setIsVerifying(false);
+        }
+      }
+    };
+    
+    checkTestUsers();
+  }, []);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -38,6 +65,17 @@ export const LoginPage = () => {
 
   const handleDevLogin = async (role: UserRole) => {
     console.log(`Attempting dev login as ${role}`);
+    const user = TEST_USERS.find(u => u.role === role);
+    
+    if (user && missingUsers.includes(user.email)) {
+      toast({
+        title: 'Test user not created',
+        description: `The ${role} test user doesn't exist in the database`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     const result = await devLogin(role);
     if (result.error) {
       toast({
@@ -47,6 +85,49 @@ export const LoginPage = () => {
       });
     }
     // Suksess-meldinger håndteres allerede i devLogin
+  };
+
+  const runSetupTestUsers = async () => {
+    try {
+      // @ts-ignore - This is defined in setupTestUsers.ts
+      if (window.setupTestUsers) {
+        toast({
+          title: 'Setting up test users',
+          description: 'Creating test users in the database...',
+        });
+        // @ts-ignore
+        await window.setupTestUsers();
+        setIsVerifying(true);
+        const missing = await verifyTestUsers();
+        setMissingUsers(missing);
+        setIsVerifying(false);
+        
+        if (missing.length === 0) {
+          toast({
+            title: 'Success',
+            description: 'All test users were created successfully',
+          });
+        } else {
+          toast({
+            title: 'Partial success',
+            description: `${missing.length} test users could not be created`,
+            variant: 'destructive',
+          });
+        }
+      } else {
+        toast({
+          title: 'Setup function not found',
+          description: 'The setupTestUsers function is not available',
+          variant: 'destructive',
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Error setting up test users',
+        description: error.message || 'An unknown error occurred',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Show loading state while checking authentication
@@ -63,6 +144,24 @@ export const LoginPage = () => {
       <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg">
         <div className="text-center">
           <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
+          
+          {import.meta.env.MODE === 'development' && missingUsers.length > 0 && (
+            <Alert variant="warning" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Test users missing</AlertTitle>
+              <AlertDescription className="text-xs">
+                Some test users are not set up in the database.
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={runSetupTestUsers}
+                  className="mt-2 w-full"
+                >
+                  Setup Test Users
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
           
           <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
             <TabsList className="grid w-full grid-cols-2 bg-white">
@@ -99,13 +198,37 @@ export const LoginPage = () => {
                   key={user.email}
                   onClick={() => handleDevLogin(user.role)}
                   className="w-full text-xs"
-                  variant="outline"
+                  variant={missingUsers.includes(user.email) ? "destructive" : "outline"}
                   size="sm"
+                  disabled={isVerifying}
                 >
+                  {missingUsers.includes(user.email) ? (
+                    <AlertCircle className="mr-2 h-3 w-3" />
+                  ) : null}
                   Logg inn som {user.name} ({user.role})
                 </Button>
               ))}
             </div>
+            
+            {import.meta.env.MODE === 'development' && (
+              <div className="mt-4 text-xs text-center">
+                <details>
+                  <summary className="cursor-pointer text-muted-foreground">Dev setup instructions</summary>
+                  <div className="mt-2 p-3 bg-muted rounded-md text-left">
+                    <p className="font-medium">To create test users:</p>
+                    <ol className="list-decimal pl-4 mt-1 space-y-1">
+                      <li>Use the "Setup Test Users" button above</li>
+                      <li>Or run <code>window.setupTestUsers()</code> in browser console</li>
+                    </ol>
+                    <p className="mt-2 font-medium">If login fails after setup:</p>
+                    <ul className="list-disc pl-4 mt-1 space-y-1">
+                      <li>Check if "Confirm Email" is disabled in Supabase Auth settings</li>
+                      <li>Verify Site URL and Redirect URLs in Supabase Auth settings</li>
+                    </ul>
+                  </div>
+                </details>
+              </div>
+            )}
           </div>
         )}
         

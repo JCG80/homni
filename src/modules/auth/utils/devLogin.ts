@@ -49,6 +49,35 @@ export interface DevLoginResult {
 }
 
 /**
+ * Helper function to verify if test users exist in the database
+ * Returns an array of emails for users that do not exist
+ */
+export async function verifyTestUsers(): Promise<string[]> {
+  const missingUsers: string[] = [];
+  
+  for (const user of TEST_USERS) {
+    try {
+      // Try to check if user with this email exists
+      // Note: This requires anon access to auth.users which may not be available
+      // Using signInWithPassword with a catch is a workaround
+      const { error } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: user.password
+      });
+
+      if (error && error.message.includes('Invalid login credentials')) {
+        missingUsers.push(user.email);
+        console.warn(`Test user ${user.email} (${user.role}) does not exist or has wrong password`);
+      }
+    } catch (err) {
+      console.error(`Error checking user ${user.email}:`, err);
+    }
+  }
+  
+  return missingUsers;
+}
+
+/**
  * Helper function for development login with predefined users
  */
 export async function devLogin(role: UserRole): Promise<DevLoginResult> {
@@ -72,12 +101,21 @@ export async function devLogin(role: UserRole): Promise<DevLoginResult> {
 
     if (error) {
       console.error('Dev login error:', error);
+      
+      // Check if the error indicates that user doesn't exist
+      if (error.message.includes('Invalid login credentials')) {
+        return { 
+          success: false, 
+          error: new Error(`Login failed: Test user '${user.email}' may not exist in the database. Check if test users have been created.`)
+        };
+      }
+      
       toast({
         title: 'Login failed',
         description: `Failed to log in as ${role}: ${error.message}`,
         variant: 'destructive',
       });
-      return { success: false, error };
+      return { success: false, error: error as Error };
     }
 
     if (data?.user) {
