@@ -4,16 +4,22 @@ import { toast } from '@/hooks/use-toast';
 
 interface AuthRetryOptions {
   maxRetries?: number;
-  onSuccess?: () => void;
-  onFinalFailure?: (error: Error) => void;
+  initialDelay?: number;
+  backoffFactor?: number;
+  onSuccess?: (data: any) => void;
+  onError?: (error: Error) => void;
   showToasts?: boolean;
 }
+
+type AuthRetryOperation<T> = () => Promise<T>;
 
 export const useAuthRetry = (options: AuthRetryOptions = {}) => {
   const {
     maxRetries = 3,
+    initialDelay = 1000,
+    backoffFactor = 2,
     onSuccess,
-    onFinalFailure,
+    onError,
     showToasts = true
   } = options;
 
@@ -21,88 +27,73 @@ export const useAuthRetry = (options: AuthRetryOptions = {}) => {
   const [currentAttempt, setCurrentAttempt] = useState(0);
   const [lastError, setLastError] = useState<Error | null>(null);
 
-  const executeWithRetry = useCallback(
-    async <T>(operation: () => Promise<T>): Promise<T | null> => {
-      setIsSubmitting(true);
-      setCurrentAttempt(prev => prev + 1);
+  const executeWithRetry = useCallback(async <T>(operation: AuthRetryOperation<T>, attempt: number = 0): Promise<T | null> => {
+    setIsSubmitting(true);
+    setCurrentAttempt(attempt + 1);
+    
+    try {
+      console.log(`Attempt ${attempt + 1}/${maxRetries}`);
+      const result = await operation();
       
-      try {
-        const result = await operation();
-        // Reset counters on success
-        setCurrentAttempt(0);
-        setLastError(null);
+      // Success
+      setCurrentAttempt(0);
+      setLastError(null);
+      setIsSubmitting(false);
+      
+      if (showToasts) {
+        toast({
+          title: "Vellykket",
+          description: "Operasjonen var vellykket",
+        });
+      }
+      
+      if (onSuccess) {
+        onSuccess(result);
+      }
+      
+      return result;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error("Ukjent feil");
+      console.error(`Attempt ${attempt + 1} failed:`, error);
+      setLastError(error);
+      
+      // Check if we should retry
+      if (attempt < maxRetries - 1) {
+        const delay = initialDelay * Math.pow(backoffFactor, attempt);
+        console.log(`Retrying in ${delay}ms...`);
+        
+        // Wait and try again
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve(executeWithRetry(operation, attempt + 1));
+          }, delay);
+        });
+      } else {
+        // Max retries reached
+        setIsSubmitting(false);
         
         if (showToasts) {
           toast({
-            title: 'Operasjon vellykket',
-            description: 'Handlingen ble utført',
+            title: "Feil",
+            description: `Kunne ikke fullføre operasjonen etter ${maxRetries} forsøk: ${error.message}`,
+            variant: "destructive",
           });
         }
         
-        if (onSuccess) onSuccess();
-        return result;
-      } catch (error) {
-        const errorObj = error instanceof Error ? error : new Error(String(error));
-        setLastError(errorObj);
-        console.error(`Attempt ${currentAttempt}/${maxRetries} failed:`, errorObj);
+        if (onError) {
+          onError(error);
+        }
         
-        if (currentAttempt < maxRetries) {
-          // Retry with exponential backoff
-          const backoffTime = Math.min(1000 * Math.pow(2, currentAttempt), 8000);
-          
-          if (showToasts) {
-            toast({
-              title: `Forsøk ${currentAttempt}/${maxRetries} feilet`,
-              description: `Prøver igjen om ${backoffTime / 1000} sekunder...`,
-              variant: 'default',
-            });
-          }
-          
-          return new Promise((resolve) => {
-            setTimeout(async () => {
-              const retryResult = await executeWithRetry(operation);
-              resolve(retryResult);
-            }, backoffTime);
-          });
-        } else {
-          // Log final failure after retries
-          console.error(`Operation failed after ${maxRetries} attempts:`, errorObj);
-          
-          if (showToasts) {
-            toast({
-              title: 'Operasjonen feilet',
-              description: `Kunne ikke fullføre etter ${maxRetries} forsøk: ${errorObj.message}`,
-              variant: 'destructive',
-            });
-          }
-          
-          setCurrentAttempt(0);
-          
-          if (onFinalFailure) {
-            onFinalFailure(errorObj);
-          }
-          
-          return null;
-        }
-      } finally {
-        if (currentAttempt >= maxRetries || lastError === null) {
-          setIsSubmitting(false);
-        }
+        return null;
       }
-    },
-    [currentAttempt, lastError, maxRetries, onFinalFailure, onSuccess, showToasts]
-  );
+    }
+  }, [maxRetries, initialDelay, backoffFactor, onSuccess, onError, showToasts]);
 
   return {
-    executeWithRetry,
     isSubmitting,
     currentAttempt,
     maxRetries,
+    executeWithRetry,
     lastError,
-    resetState: () => {
-      setCurrentAttempt(0);
-      setIsSubmitting(false);
-      setLastError(null);
-    }
   };
 };

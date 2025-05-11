@@ -3,12 +3,21 @@ import React, { useEffect, useState } from 'react';
 import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 export const RegisterPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user, isLoading } = useAuth();
   const typeParam = searchParams.get('type');
   const [activeTab, setActiveTab] = useState<string>(typeParam === 'business' ? 'business' : 'private');
+
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
+    if (user && !isLoading) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, isLoading, navigate]);
 
   useEffect(() => {
     if (typeParam === 'business') {
@@ -22,6 +31,15 @@ export const RegisterPage = () => {
     setActiveTab(value);
     navigate(`/register${value === 'business' ? '?type=business' : ''}`, { replace: true });
   };
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Laster inn...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
