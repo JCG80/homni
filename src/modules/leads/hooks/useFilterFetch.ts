@@ -1,10 +1,8 @@
-
 import { useCallback } from 'react';
-import { userFiltersApi } from '../api/filters';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useFilterRetry } from './useFilterRetry';
+import { useFilterErrorHandling } from './useFilterErrorHandling';
 import { UserLeadFilter } from '../types/user-filters';
-import { withRetry, withTimeout } from '@/utils/apiRetry';
-import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 interface UseFilterFetchProps {
   setFilters: (filters: UserLeadFilter[]) => void;
@@ -23,6 +21,8 @@ export function useFilterFetch({
   setError
 }: UseFilterFetchProps) {
   const { user } = useAuth();
+  const { fetchFiltersWithRetry } = useFilterRetry();
+  const { handleFetchError, notifyRetryAttempt } = useFilterErrorHandling();
   
   // Load user filters when component mounts with retry capability
   const loadUserFilters = useCallback(async () => {
@@ -32,30 +32,7 @@ export function useFilterFetch({
     setError(null);
     
     try {
-      const userFilters = await withRetry(
-        () => withTimeout(userFiltersApi.getUserFilters(), 10000),
-        {
-          maxAttempts: 3,
-          onRetry: (attempt, error) => {
-            console.log(`Retrying filter fetch (attempt ${attempt}):`, error);
-            toast({
-              title: `Attempt ${attempt} failed`,
-              description: "Retrying to load filters...",
-              variant: "default"
-            });
-          },
-          // Only retry on specific errors
-          retryableErrors: (error) => {
-            // Don't retry on permission errors
-            if (error?.message?.includes('permission denied')) {
-              return false;
-            }
-            
-            // Retry on network errors or server errors
-            return true;
-          }
-        }
-      );
+      const userFilters = await fetchFiltersWithRetry(notifyRetryAttempt);
       
       setFilters(userFilters);
       
@@ -71,18 +48,11 @@ export function useFilterFetch({
         setActiveFilter(null);
       }
     } catch (err) {
-      console.error('Error loading user filters after retry attempts:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      
-      toast({
-        title: 'Error loading filters',
-        description: err instanceof Error ? err.message : 'An unexpected error occurred',
-        variant: 'destructive',
-      });
+      handleFetchError(err, setError);
     } finally {
       setIsLoading(false);
     }
-  }, [user, setFilters, setActiveFilter, setIsLoading, setError]);
+  }, [user, setFilters, setActiveFilter, setIsLoading, setError, fetchFiltersWithRetry, handleFetchError, notifyRetryAttempt]);
   
   return { loadUserFilters };
 }

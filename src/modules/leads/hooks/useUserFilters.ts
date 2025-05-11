@@ -2,7 +2,10 @@
 import { useEffect } from 'react';
 import { useFilterState } from './useFilterState';
 import { useFilterFetch } from './useFilterFetch';
-import { useFilterOperations } from './useFilterOperations';
+import { useFilterCreate } from './useFilterCreate';
+import { useFilterUpdate } from './useFilterUpdate';
+import { useFilterDelete } from './useFilterDelete';
+import { useFilterPermissions } from './useFilterPermissions';
 import { toast } from '@/hooks/use-toast';
 
 /**
@@ -29,18 +32,30 @@ export function useUserFilters() {
     setError
   });
   
-  const {
-    createFilter,
-    updateFilter,
-    deleteFilter,
-    canManageFilters
-  } = useFilterOperations({
+  const { createFilter } = useFilterCreate({
     filters,
     setFilters,
     activeFilter,
     setActiveFilter,
     setIsLoading
   });
+  
+  const { updateFilter } = useFilterUpdate({
+    setFilters,
+    activeFilter,
+    setActiveFilter,
+    setIsLoading
+  });
+  
+  const { deleteFilter } = useFilterDelete({
+    filters,
+    activeFilter,
+    setFilters,
+    setActiveFilter,
+    setIsLoading
+  });
+  
+  const { canManageFilters } = useFilterPermissions();
   
   // Load filters on mount
   useEffect(() => {
