@@ -25,7 +25,7 @@ import { UserRole } from './modules/auth/utils/roles/types';
 import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
 
 // Import MasterAdmin management pages
-import MembersManagementPage from './modules/admin/pages/MembersManagementPage';
+import { MembersManagementPage } from './modules/admin/pages/MembersManagementPage';
 import CompaniesManagementPage from './modules/admin/pages/CompaniesManagementPage';
 import InternalAccessPage from './modules/admin/pages/InternalAccessPage';
 

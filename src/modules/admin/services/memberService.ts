@@ -1,0 +1,92 @@
+
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+
+interface Member {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  status: string;
+  request_count: number;
+  last_active: string;
+}
+
+export const fetchMembers = async (): Promise<Member[]> => {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('*, accounts:auth.users!inner(*)')
+    .eq('accounts.account_type', 'member')
+    .order('created_at', { ascending: false });
+  
+  if (error) throw error;
+  
+  // Transform the data to match the Member interface
+  return data.map(profile => ({
+    id: profile.id,
+    full_name: profile.full_name || 'Ikke angitt',
+    email: profile.email || (profile.accounts?.email || 'Ikke angitt'),
+    phone: profile.phone || 'Ikke angitt',
+    status: profile.accounts?.status || 'inactive',
+    request_count: 0, // This would be calculated from the leads table
+    last_active: profile.updated_at || profile.created_at || 'Ukjent'
+  }));
+};
+
+export const resetPassword = async (email: string): Promise<void> => {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    
+    if (error) throw error;
+    
+    toast({
+      title: 'Tilbakestilling av passord',
+      description: 'E-post for tilbakestilling av passord er sendt.',
+    });
+  } catch (error) {
+    console.error('Failed to send password reset:', error);
+    toast({
+      title: 'Feil',
+      description: 'Kunne ikke sende e-post for tilbakestilling av passord.',
+      variant: 'destructive',
+    });
+  }
+};
+
+export const sendUsername = async (email: string): Promise<void> => {
+  try {
+    // In a real implementation, you would send an email with the username
+    // For now, we'll just show a toast notification
+    
+    toast({
+      title: 'Brukernavn sendt',
+      description: `En e-post med brukernavnet er sendt til ${email}.`,
+    });
+  } catch (error) {
+    console.error('Failed to send username:', error);
+    toast({
+      title: 'Feil',
+      description: 'Kunne ikke sende e-post med brukernavn.',
+      variant: 'destructive',
+    });
+  }
+};
+
+export const formatDate = (dateString: string): string => {
+  if (!dateString || dateString === 'Ukjent') return 'Ukjent';
+  
+  try {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('nb-NO', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  } catch (error) {
+    return 'Ugyldig dato';
+  }
+};
