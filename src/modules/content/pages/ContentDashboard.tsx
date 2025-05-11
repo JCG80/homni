@@ -16,7 +16,7 @@ export const ContentDashboard: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const { role } = useAuth();
   
-  const isMasterAdmin = role === 'master-admin' || role === 'admin';
+  const isMasterAdmin = role === 'master_admin' || role === 'admin';
 
   const handleDelete = (id: string) => {
     if (window.confirm('Er du sikker på at du vil slette dette innholdet?')) {
