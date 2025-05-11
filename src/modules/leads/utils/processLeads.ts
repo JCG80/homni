@@ -5,6 +5,7 @@ import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
 import { isValidLeadStatus } from '@/types/leads';
 import { getCurrentStrategy } from './getCurrentStrategy';
+import { withRetry } from '@/utils/apiRetry';
 
 /**
  * Processes unassigned leads using the specified distribution strategy
@@ -24,7 +25,12 @@ export async function processUnassignedLeads(
   
   try {
     // First check if the system is paused via settings
-    const settings = await fetchLeadSettings(companyId);
+    const settings = await withRetry(() => fetchLeadSettings(companyId), {
+      maxAttempts: 3,
+      delayMs: 500,
+      backoffFactor: 2,
+      onRetry: (attempt) => console.log(`Retrying fetching lead settings (attempt ${attempt})`)
+    });
     
     if (!settings) {
       console.warn('No lead settings found, using default strategy');
@@ -63,8 +69,16 @@ export async function processUnassignedLeads(
       query = query.eq('lead_type', leadType);
     }
     
-    // Execute query
-    const { data: unassignedLeads, error } = await query;
+    // Execute query with retry
+    const { data: unassignedLeads, error } = await withRetry(
+      async () => await query,
+      {
+        maxAttempts: 3,
+        delayMs: 800,
+        backoffFactor: 1.5,
+        onRetry: (attempt) => console.log(`Retrying lead fetch (attempt ${attempt})`)
+      }
+    );
     
     if (error) {
       console.error('Error fetching unassigned leads:', error);
@@ -135,43 +149,52 @@ export async function processUnassignedLeads(
         }
       }
       
-      // Get provider based on selected strategy
-      const providerId = await distributeLeadToProvider(
-        distributionStrategy, 
-        lead.category
-      );
-      
-      if (providerId) {
-        // Update lead with the selected provider and ensure valid status
-        const { error: updateError } = await supabase
-          .from('leads')
-          .update({
-            company_id: providerId,
-            status: 'assigned',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', lead.id);
+      try {
+        // Get provider based on selected strategy with retry logic
+        const providerId = await withRetry(
+          () => distributeLeadToProvider(distributionStrategy!, lead.category),
+          {
+            maxAttempts: 3,
+            delayMs: 500,
+            backoffFactor: 1.5,
+            onRetry: (attempt) => console.log(`Retrying provider selection for lead ${lead.id} (attempt ${attempt})`)
+          }
+        );
         
-        if (updateError) {
-          console.error(`Error assigning lead ${lead.id}:`, updateError);
-        } else {
-          assignedCount++;
+        if (providerId) {
+          // Update lead with the selected provider and ensure valid status
+          const { error: updateError } = await supabase
+            .from('leads')
+            .update({
+              company_id: providerId,
+              status: 'assigned',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', lead.id);
           
-          // Log the assignment in lead_history
-          const { error: historyError } = await supabase
-            .from('lead_history')
-            .insert({
-              lead_id: lead.id,
-              assigned_to: providerId,
-              method: 'auto',
-              previous_status: 'new',
-              new_status: 'assigned'
-            });
+          if (updateError) {
+            console.error(`Error assigning lead ${lead.id}:`, updateError);
+          } else {
+            assignedCount++;
             
-          if (historyError) {
-            console.error(`Error logging lead history for ${lead.id}:`, historyError);
+            // Log the assignment in lead_history
+            const { error: historyError } = await supabase
+              .from('lead_history')
+              .insert({
+                lead_id: lead.id,
+                assigned_to: providerId,
+                method: 'auto',
+                previous_status: 'new',
+                new_status: 'assigned'
+              });
+              
+            if (historyError) {
+              console.error(`Error logging lead history for ${lead.id}:`, historyError);
+            }
           }
         }
+      } catch (error) {
+        console.error(`Error processing lead ${lead.id}:`, error);
       }
     }
     

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import {
 import { distributeLeadToProvider, DistributionStrategy, DISTRIBUTION_STRATEGIES } from '../../strategies/strategyFactory';
 import { Input } from '@/components/ui/input';
 import { processUnassignedLeads } from '../../utils/processLeads';
-import { processLeads, getCurrentStrategy, updateDistributionStrategy } from '../../utils/leadDistributor';
+import { getCurrentStrategy, updateDistributionStrategy, processLeads } from '../../utils/leadDistributor';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
@@ -60,11 +61,12 @@ export const DistributionStrategyTest = () => {
       let count;
       
       if (useEnhanced) {
-        // Use enhanced implementation
+        // Use enhanced implementation with retry capability
         count = await processLeads({
           strategy: selectedStrategy,
           showToasts: true,
-          onlyNew: true
+          onlyNew: true,
+          maxRetries: 3
         });
       } else {
         // Use legacy implementation

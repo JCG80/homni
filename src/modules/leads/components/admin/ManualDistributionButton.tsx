@@ -18,6 +18,7 @@ export const ManualDistributionButton = ({ strategy }: ManualDistributionButtonP
       await processLeads({
         strategy: strategy || undefined,
         showToasts: true,
+        maxRetries: 3
       });
       // Toast is handled inside processLeads
     } catch (error) {
