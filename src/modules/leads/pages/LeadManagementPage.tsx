@@ -25,7 +25,7 @@ export const LeadManagementPage = () => {
   };
   
   return (
-    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user']}>
+    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user'] as UserRole[]}>
       {renderLeadsPage()}
     </ProtectedRoute>
   );

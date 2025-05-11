@@ -79,27 +79,27 @@ export const AppRoutes = () => {
         
         {/* Company routes */}
         <Route path="/company/profile" element={
-          <ProtectedRoute allowedRoles={['company']}>
+          <ProtectedRoute allowedRoles={['company'] as UserRole[]}>
             <CompanyProfilePage />
           </ProtectedRoute>
         } />
         
         {/* Lead management routes */}
         <Route path="/leads" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user']}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user'] as UserRole[]}>
             <LeadManagementPage />
           </ProtectedRoute>
         } />
         
         {/* Admin routes */}
         <Route path="/admin/leads" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
             <AdminLeadsPage />
           </ProtectedRoute>
         } />
         
         <Route path="/admin/settings" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
             <LeadSettingsPage />
           </ProtectedRoute>
         } />
