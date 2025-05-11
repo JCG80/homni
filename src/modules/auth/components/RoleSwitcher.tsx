@@ -75,6 +75,7 @@ export const RoleSwitcher = () => {
               <>
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="master_admin">Master Admin</SelectItem>
+                <SelectItem value="content_editor">Innholdsredaktør</SelectItem>
               </>
             )}
           </SelectGroup>

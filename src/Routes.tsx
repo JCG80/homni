@@ -77,7 +77,7 @@ export const AppRoutes = () => {
         } />
         
         <Route path="/dashboard/member" element={
-          <ProtectedRoute allowedRoles={['user', 'member'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['member'] as UserRole[]}>
             <MemberDashboard />
           </ProtectedRoute>
         } />
@@ -101,7 +101,7 @@ export const AppRoutes = () => {
         } />
         
         <Route path="/my-account" element={
-          <ProtectedRoute allowedRoles={['user', 'member', 'company', 'admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['member', 'company', 'admin', 'master_admin'] as UserRole[]}>
             <MyAccountPage />
           </ProtectedRoute>
         } />
@@ -127,7 +127,7 @@ export const AppRoutes = () => {
         
         {/* Lead management routes */}
         <Route path="/leads" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user', 'member'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member'] as UserRole[]}>
             <LeadManagementPage />
           </ProtectedRoute>
         } />

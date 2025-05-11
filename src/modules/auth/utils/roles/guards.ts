@@ -24,29 +24,27 @@ const rolePaths: Partial<Record<UserRole, string[]>> = {
     '/insurance-company/*',
     '/lead-capture'
   ],
-  user: [
+  member: [
     '/dashboard',
     '/my-account',
     '/profile',
     '/properties',
     '/property/*',
     '/leads',
-  ],
-  member: [
     '/member-dashboard',
     '/member-leads',
   ],
   company: [
+    '/dashboard',
+    '/my-account',
+    '/profile',
+    '/properties',
+    '/property/*',
+    '/leads',
     '/company-dashboard',
     '/company-leads',
     '/company-profile',
     '/company-settings',
-  ],
-  business: [
-    '/business-dashboard',
-  ],
-  provider: [
-    '/provider-dashboard',
   ],
   admin: [
     '/admin',
@@ -90,24 +88,19 @@ export function getAllowedPathsForRole(role?: UserRole): string[] {
   // Define role hierarchy
   switch (role) {
     case 'master_admin':
-      roleHierarchy.push('master_admin', 'admin', 'company', 'user', 'anonymous');
+      roleHierarchy.push('master_admin', 'admin', 'company', 'member', 'anonymous');
       break;
     case 'admin':
-      roleHierarchy.push('admin', 'company', 'user', 'anonymous');
+      roleHierarchy.push('admin', 'company', 'member', 'anonymous');
       break;
     case 'content_editor':
-      roleHierarchy.push('content_editor', 'user', 'anonymous');
+      roleHierarchy.push('content_editor', 'member', 'anonymous');
       break;
     case 'company':
-    case 'business':
-    case 'provider':
-      roleHierarchy.push(role, 'user', 'anonymous');
+      roleHierarchy.push('company', 'member', 'anonymous');
       break;
     case 'member':
-      roleHierarchy.push('member', 'user', 'anonymous');
-      break;
-    case 'user':
-      roleHierarchy.push('user', 'anonymous');
+      roleHierarchy.push('member', 'anonymous');
       break;
     default:
       roleHierarchy.push('anonymous');
@@ -182,8 +175,8 @@ export function canAccessModule(role: UserRole, moduleId: string): boolean {
   // This would typically check against a database of module permissions
   const standardModules = ['basic', 'reports', 'dashboard'];
   
-  // Users can access standard modules
-  if (role === 'user' && standardModules.includes(moduleId)) return true;
+  // Members can access standard modules
+  if (role === 'member' && standardModules.includes(moduleId)) return true;
   
   // Companies can access company-specific modules
   if (role === 'company') {

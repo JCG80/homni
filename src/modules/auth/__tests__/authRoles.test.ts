@@ -63,7 +63,6 @@ describe('Auth role determination', () => {
     // In development mode, these emails should map to specific roles
     const adminUserData = { user: { email: 'admin@test.local', user_metadata: {} } };
     const companyUserData = { user: { email: 'company@test.local', user_metadata: {} } };
-    const providerUserData = { user: { email: 'provider@test.local', user_metadata: {} } };
     const regularUserData = { user: { email: 'user@test.local', user_metadata: {} } };
     
     // We have to mock import.meta.env.MODE for these tests
@@ -73,7 +72,6 @@ describe('Auth role determination', () => {
     
     expect(determineUserRole(adminUserData)).toBe('master_admin');
     expect(determineUserRole(companyUserData)).toBe('company');
-    expect(determineUserRole(providerUserData)).toBe('provider');
     expect(determineUserRole(regularUserData)).toBe('member');
     
     // Restore the original mode

@@ -22,25 +22,25 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-describe('User Role Access', () => {
-  test('should allow user role to access user-specific modules', () => {
-    expect(canAccessModule('user', 'dashboard')).toBe(true);
-    expect(canAccessModule('user', 'leads')).toBe(true);
-    expect(canAccessModule('user', 'leads/my')).toBe(true);
-    expect(canAccessModule('user', 'properties')).toBe(true);
-    expect(canAccessModule('user', 'maintenance')).toBe(true);
-    expect(canAccessModule('user', 'profile')).toBe(true);
-    expect(canAccessModule('user', 'my-account')).toBe(true);
+describe('Member Role Access', () => {
+  test('should allow member role to access member-specific modules', () => {
+    expect(canAccessModule('member', 'dashboard')).toBe(true);
+    expect(canAccessModule('member', 'leads')).toBe(true);
+    expect(canAccessModule('member', 'leads/my')).toBe(true);
+    expect(canAccessModule('member', 'properties')).toBe(true);
+    expect(canAccessModule('member', 'maintenance')).toBe(true);
+    expect(canAccessModule('member', 'profile')).toBe(true);
+    expect(canAccessModule('member', 'my-account')).toBe(true);
   });
 
-  test('should not allow user role to access admin or company modules', () => {
-    expect(canAccessModule('user', 'admin')).toBe(false);
-    expect(canAccessModule('user', 'company/profile')).toBe(false);
-    expect(canAccessModule('user', 'content')).toBe(false);
-    expect(canAccessModule('user', 'settings')).toBe(false);
+  test('should not allow member role to access admin or company modules', () => {
+    expect(canAccessModule('member', 'admin')).toBe(false);
+    expect(canAccessModule('member', 'company/profile')).toBe(false);
+    expect(canAccessModule('member', 'content')).toBe(false);
+    expect(canAccessModule('member', 'settings')).toBe(false);
   });
 
-  test('should redirect anonymous users from user-specific routes', () => {
+  test('should redirect anonymous users from member-specific routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
@@ -51,8 +51,8 @@ describe('User Role Access', () => {
 
     const { getByTestId } = render(
       <MemoryRouter>
-        <ProtectedRoute allowedRoles={['user']}>
-          <div>User Content</div>
+        <ProtectedRoute allowedRoles={['member']}>
+          <div>Member Content</div>
         </ProtectedRoute>
       </MemoryRouter>
     );
@@ -60,23 +60,23 @@ describe('User Role Access', () => {
     expect(getByTestId('navigate')).toHaveAttribute('data-to', '/login');
   });
 
-  test('should allow user role to access routes with user role requirement', () => {
+  test('should allow member role to access routes with member role requirement', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      user: { id: '123', role: 'user' },
-      profile: { id: '123', role: 'user' },
-      role: 'user'
+      user: { id: '123', role: 'member' },
+      profile: { id: '123', role: 'member' },
+      role: 'member'
     });
 
     const { getByText } = render(
       <MemoryRouter>
-        <ProtectedRoute allowedRoles={['user']}>
-          <div>User Content</div>
+        <ProtectedRoute allowedRoles={['member']}>
+          <div>Member Content</div>
         </ProtectedRoute>
       </MemoryRouter>
     );
 
-    expect(getByText('User Content')).toBeInTheDocument();
+    expect(getByText('Member Content')).toBeInTheDocument();
   });
 });

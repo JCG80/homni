@@ -147,7 +147,13 @@ export const useAuthState = () => {
     
     // Validate that role is a valid UserRole
     let role = profileData.role;
-    if (!isUserRole(role)) {
+    if (role === 'user') {
+      console.warn(`Deprecated role 'user' found in profile, changing to 'member'`);
+      role = 'member';
+    } else if (role === 'business' || role === 'provider') {
+      console.warn(`Deprecated role '${role}' found in profile, changing to 'company'`);
+      role = 'company';
+    } else if (!isUserRole(role)) {
       console.warn(`Invalid role '${role}' found in profile, defaulting to 'member'`);
       role = 'member';
     }
@@ -171,7 +177,7 @@ export const useAuthState = () => {
   const isAdmin = role === 'admin' || role === 'master_admin';
   const isMasterAdmin = role === 'master_admin';
   const isCompany = role === 'company';
-  const isUser = role === 'member';
+  const isMember = role === 'member';
 
   return {
     user: authState.user,
@@ -183,7 +189,7 @@ export const useAuthState = () => {
     isAdmin,
     isMasterAdmin,
     isCompany,
-    isUser,
+    isMember,
     role,
   };
 };

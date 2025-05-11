@@ -55,10 +55,6 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
     return hasRole('company') || account_type === 'company';
   }, [hasRole, account_type]);
 
-  const isUser = useCallback(() => {
-    return hasRole('user');
-  }, [hasRole]);
-
   const isMember = useCallback(() => {
     return hasRole('member') || account_type === 'member';
   }, [hasRole, account_type]);
@@ -68,7 +64,6 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
     isAdmin: isAdmin(),
     isMasterAdmin: isMasterAdmin(),
     isCompany: isCompany(),
-    isUser: isUser(),
     isMember: isMember(),
     role,
     account_type,

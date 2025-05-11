@@ -17,7 +17,6 @@ export interface AuthContextType {
   isAdmin: boolean;
   isMasterAdmin: boolean;
   isCompany: boolean;
-  isUser: boolean;
   isMember: boolean;
   role: UserRole | undefined;
   account_type?: string;
@@ -40,7 +39,6 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isMasterAdmin: false,
   isCompany: false,
-  isUser: false,
   isMember: false,
   role: undefined,
   account_type: undefined,
@@ -61,7 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const effectiveUser = devAuth.isDevMode ? devAuth.devUser : authSession.user;
   const effectiveProfile = devAuth.isDevMode ? devAuth.devUserProfile : authSession.profile;
   
-  // Get derived state like isAdmin, isUser, etc.
+  // Get derived state like isAdmin, isMember, etc.
   const derivedState = useAuthDerivedState({
     user: effectiveUser,
     profile: effectiveProfile

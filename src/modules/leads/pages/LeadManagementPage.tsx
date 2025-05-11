@@ -16,7 +16,7 @@ export const LeadManagementPage = () => {
       return <AdminLeadsPage />;
     } else if (role === 'company') {
       return <CompanyLeadsPage />;
-    } else if (role === 'user') {
+    } else if (role === 'member') {
       return <UserLeadsPage />;
     }
     
@@ -25,7 +25,7 @@ export const LeadManagementPage = () => {
   };
   
   return (
-    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user'] as UserRole[]}>
+    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member'] as UserRole[]}>
       {renderLeadsPage()}
     </ProtectedRoute>
   );

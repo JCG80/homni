@@ -10,13 +10,13 @@ export const useRoleHelpers = () => {
   const { profile, user } = authState;
 
   // Determine the role - user is either authenticated with a specific role, or anonymous
-  const currentRole: UserRole = profile?.role || (user ? 'user' : 'anonymous');
+  const currentRole: UserRole = profile?.role || (user ? 'member' : 'anonymous');
 
   return {
     role: currentRole,
     isAuthenticated: !!user,
     isAnonymous: !user,
-    isUser: currentRole === 'user',
+    isMember: currentRole === 'member',
     isCompany: currentRole === 'company',
     isAdmin: currentRole === 'admin' || currentRole === 'master_admin',
     isMasterAdmin: currentRole === 'master_admin',
