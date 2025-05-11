@@ -30,6 +30,16 @@ export interface CompanyProfile {
   admin_notes?: string;
   request_count?: number;
   last_active?: string;
+  
+  // Statistics fields
+  leads_bought?: number;
+  leads_won?: number;
+  leads_lost?: number;
+  ads_bought?: number;
+  leadsWonPercentage?: number;
+  avgResponseTime?: string;
+  customerRating?: number;
+  monthlyTrend?: string;
 }
 
 export interface PurchaseRecord {
@@ -61,4 +71,21 @@ export interface ModuleAccessRecord {
   user_id: string;
   system_module_id: string;
   internal_admin?: boolean;
+}
+
+export interface Module {
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  dependencies?: string[];
+  route?: string;
+  active?: boolean; // UI display property
+}
+
+export interface ModuleAccessManagerProps {
+  userId: string;
+  onUpdate?: () => void;
 }

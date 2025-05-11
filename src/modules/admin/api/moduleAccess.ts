@@ -2,6 +2,17 @@
 import { supabase } from '@/integrations/supabase/client';
 import { logAdminAction } from '../utils/adminLogger';
 import { Json } from '@/integrations/supabase/types';
+import { Module } from '../types/types';
+import { ModuleAccessRecord } from '../types/types';
+
+interface ModuleAccess {
+  user_id: string;
+  system_module_id: string;
+  internal_admin?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  id?: string;
+}
 
 /**
  * Fetches all available system modules
@@ -9,8 +20,8 @@ import { Json } from '@/integrations/supabase/types';
 export const fetchAvailableModules = async () => {
   try {
     const { data, error } = await supabase
-      .from('system_modules')
-      .select('*')
+      .from<Module>('system_modules')
+      .select<Module>('*')
       .order('name');
     
     if (error) throw error;
@@ -28,8 +39,8 @@ export const fetchUserModuleAccess = async (userId: string) => {
   try {
     // First, check if the user has internal_admin flag in the module_access table
     const { data: moduleAccessData, error: moduleAccessError } = await supabase
-      .from('module_access')
-      .select('system_module_id, internal_admin')
+      .from<ModuleAccess>('module_access')
+      .select<ModuleAccess>('system_module_id, internal_admin')
       .eq('user_id', userId);
     
     if (moduleAccessError) throw moduleAccessError;
@@ -62,7 +73,7 @@ export const updateUserModuleAccess = async (
   try {
     // First delete all existing module access for this user
     const { error: deleteError } = await supabase
-      .from('module_access')
+      .from<ModuleAccess>('module_access')
       .delete()
       .eq('user_id', userId);
     
@@ -77,7 +88,7 @@ export const updateUserModuleAccess = async (
       }));
       
       const { error: insertError } = await supabase
-        .from('module_access')
+        .from<ModuleAccess>('module_access')
         .insert(moduleAccessRecords);
       
       if (insertError) throw insertError;
@@ -86,14 +97,14 @@ export const updateUserModuleAccess = async (
     else if (isInternalAdmin) {
       // Get the first available module to create at least one record with internal_admin=true
       const { data: firstModule } = await supabase
-        .from('system_modules')
-        .select('id')
+        .from<Module>('system_modules')
+        .select<Module>('id')
         .limit(1)
         .single();
       
       if (firstModule) {
         const { error: insertAdminError } = await supabase
-          .from('module_access')
+          .from<ModuleAccess>('module_access')
           .insert({
             user_id: userId,
             system_module_id: firstModule.id,

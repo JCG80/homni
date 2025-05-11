@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { SystemModule } from '../types/systemModules';
+import { SystemModule } from '../types/systemTypes';
 
 /**
  * Fetch all system modules
@@ -9,7 +9,7 @@ export async function getSystemModules(): Promise<SystemModule[]> {
   try {
     const { data, error } = await supabase
       .from<SystemModule>('system_modules')
-      .select('*')
+      .select<SystemModule>('*')
       .order('name');
     
     if (error) throw error;
@@ -27,7 +27,10 @@ export async function toggleSystemModule(moduleId: string, isActive: boolean): P
   try {
     const { error } = await supabase
       .from<SystemModule>('system_modules')
-      .update({ is_active: isActive, updated_at: new Date().toISOString() })
+      .update<SystemModule>({ 
+        is_active: isActive, 
+        updated_at: new Date().toISOString() 
+      })
       .eq('id', moduleId);
     
     if (error) throw error;
@@ -45,12 +48,11 @@ export async function createSystemModule(module: Omit<SystemModule, 'id' | 'crea
   try {
     const { data, error } = await supabase
       .from<SystemModule>('system_modules')
-      .insert([module])
-      .select()
-      .single();
+      .insert<SystemModule>([module])
+      .select();
     
     if (error) throw error;
-    return data;
+    return data && data.length > 0 ? data[0] : null;
   } catch (error) {
     console.error('Error creating system module:', error);
     return null;
@@ -82,7 +84,7 @@ export async function getModuleDependencies(): Promise<Record<string, string[]>>
   try {
     const { data, error } = await supabase
       .from<SystemModule>('system_modules')
-      .select('id, dependencies');
+      .select<SystemModule>('id, dependencies');
     
     if (error) throw error;
     
