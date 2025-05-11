@@ -13,6 +13,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
 
 // Schema for login form validation
 const loginSchema = z.object({
@@ -60,6 +61,12 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
       } else {
         console.log('Redirecting after successful login to:', from);
         navigate(from, { replace: true });
+        
+        toast({
+          title: 'Innlogget',
+          description: 'Du er nå logget inn på din Homni-konto',
+          variant: 'default'
+        });
       }
     },
     showToasts: true
@@ -93,90 +100,114 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
         throw new Error('Kunne ikke logge inn - brukeren ble ikke funnet');
       }
       
-      toast({
-        title: 'Innlogget',
-        description: 'Du er nå logget inn',
-      });
-      
       return user;
     });
   };
 
+  // Animation variants for form elements
+  const fadeIn = {
+    hidden: { opacity: 0, y: 5 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+      <motion.form 
+        initial="hidden" 
+        animate="visible" 
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.05
+            }
+          }
+        }}
+        onSubmit={form.handleSubmit(handleSubmit)} 
+        className="space-y-5"
+      >
         {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
+          <motion.div variants={fadeIn}>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>
         )}
         
         {lastError && !error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{lastError.message}</AlertDescription>
-          </Alert>
+          <motion.div variants={fadeIn}>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{lastError.message}</AlertDescription>
+            </Alert>
+          </motion.div>
         )}
         
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>E-post</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Mail className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    type="email" 
-                    placeholder="din@epost.no" 
-                    className="pl-8"
-                    {...field} 
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <motion.div variants={fadeIn}>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-post</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Mail className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      type="email" 
+                      placeholder="din@epost.no" 
+                      className="pl-8 transition-all"
+                      {...field} 
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
         
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Passord</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    type="password"
-                    placeholder="••••••••"
-                    className="pl-8"
-                    {...field} 
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <motion.div variants={fadeIn}>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Passord</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      type="password"
+                      placeholder="••••••••"
+                      className="pl-8 transition-all"
+                      {...field} 
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
         
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <div className="flex items-center">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {currentAttempt > 0 
-                ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
-                : 'Logger inn...'}
-            </div>
-          ) : (
-            'Logg inn'
-          )}
-        </Button>
+        <motion.div variants={fadeIn}>
+          <Button type="submit" className="w-full transition-all hover:shadow-md" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <div className="flex items-center">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {currentAttempt > 0 
+                  ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
+                  : 'Logger inn...'}
+              </div>
+            ) : (
+              'Logg inn'
+            )}
+          </Button>
+        </motion.div>
         
-        <div className="text-center text-sm">
+        <motion.div variants={fadeIn} className="text-center text-sm">
           <span className="text-muted-foreground">Har du ikke konto?</span>{' '}
           <Button 
             variant="link" 
@@ -186,10 +217,10 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
           >
             Registrer deg
           </Button>
-        </div>
+        </motion.div>
 
         {import.meta.env.MODE === 'development' && TEST_USERS && (
-          <div className="text-xs mt-4">
+          <motion.div variants={fadeIn} className="text-xs mt-4">
             <details className="text-muted-foreground">
               <summary className="cursor-pointer">Dev info</summary>
               <div className="mt-2 p-2 bg-muted rounded-md">
@@ -204,9 +235,9 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
                 <p className="mt-2">Run <code>window.setupTestUsers()</code> in console to create these users.</p>
               </div>
             </details>
-          </div>
+          </motion.div>
         )}
-      </form>
+      </motion.form>
     </Form>
   );
 };

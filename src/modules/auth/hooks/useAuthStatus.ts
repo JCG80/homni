@@ -9,6 +9,7 @@ import { useAuth } from './useAuth';
 export const useAuthStatus = () => {
   const { user, profile, isLoading, error, isAuthenticated } = useAuth();
   const [isReady, setIsReady] = useState(false);
+  const [lastError, setLastError] = useState<Error | null>(error);
   
   // Sett isReady til true når autentiseringsprosessen er fullført
   useEffect(() => {
@@ -17,14 +18,27 @@ export const useAuthStatus = () => {
     }
   }, [isLoading]);
   
+  // Oppdater siste feil når auth-feil endres
+  useEffect(() => {
+    if (error) {
+      setLastError(error);
+    }
+  }, [error]);
+  
+  // Sjekk om brukeren er logget inn som gjest (anonym)
+  const isAnonymous = !isAuthenticated;
+  
   return {
     isAuthenticated,
-    isAnonymous: !isAuthenticated,
+    isAnonymous,
     isLoading, 
     isReady,
     user,
     profile,
-    error,
-    hasError: !!error
+    error: lastError,
+    hasError: !!lastError,
+    // Praktiske tilleggsfunksjoner
+    isAuthenticating: isLoading && !isReady,
+    isInitializing: isLoading && !isReady && !user,
   };
 };
