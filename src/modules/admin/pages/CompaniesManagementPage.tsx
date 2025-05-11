@@ -1,25 +1,15 @@
 
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Loader, Building, Key, Mail } from 'lucide-react';
-import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
-import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { Loader } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
+import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
 import { CompanyDetailView } from '../components/CompanyDetailView';
-import { Badge } from '@/components/ui/badge';
 import { CompanyProfile } from '../types/types';
+import { CompaniesTable } from '../components/companies/CompaniesTable';
+import { CompaniesLoading } from '../components/companies/CompaniesLoading';
+import { CompaniesError } from '../components/companies/CompaniesError';
+import { useCompanies } from '../hooks/useCompanies';
 
 export default function CompaniesManagementPage() {
   // Role guard to ensure only master admins can access this page
@@ -31,70 +21,8 @@ export default function CompaniesManagementPage() {
   const [selectedCompany, setSelectedCompany] = useState<CompanyProfile | null>(null);
   
   // Fetch companies data
-  const { data: companies = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['companies'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('company_profiles')
-        .select('*, accounts:user_id(*)')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      // Transform the data to match the Company interface
-      return (data as any[]).map(company => ({
-        ...company,
-        email: company.email || (company.accounts as any)?.email || 'Ikke angitt',
-        leads_bought: 0, // These would be calculated from lead statistics
-        leads_won: 0,
-        leads_lost: 0,
-        ads_bought: 0,
-      })) as CompanyProfile[];
-    },
-    enabled: isAllowed
-  });
+  const { data: companies = [], isLoading, error, refetch } = useCompanies();
   
-  const handleResetPassword = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: 'Tilbakestilling av passord',
-        description: 'E-post for tilbakestilling av passord er sendt.',
-      });
-    } catch (error) {
-      console.error('Failed to send password reset:', error);
-      toast({
-        title: 'Feil',
-        description: 'Kunne ikke sende e-post for tilbakestilling av passord.',
-        variant: 'destructive',
-      });
-    }
-  };
-  
-  const handleSendLoginDetails = async (email: string) => {
-    try {
-      // In a real implementation, you would send login details via email
-      // For now, we'll just show a toast notification
-      
-      toast({
-        title: 'Påloggingsdetaljer sendt',
-        description: `En e-post med påloggingsdetaljer er sendt til ${email}.`,
-      });
-    } catch (error) {
-      console.error('Failed to send login details:', error);
-      toast({
-        title: 'Feil',
-        description: 'Kunne ikke sende e-post med påloggingsdetaljer.',
-        variant: 'destructive',
-      });
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -114,96 +42,14 @@ export default function CompaniesManagementPage() {
       <AdminNavigation />
       
       {isLoading ? (
-        <div className="flex justify-center my-12">
-          <Loader className="h-8 w-8 animate-spin" />
-          <span className="ml-2">Laster bedrifter...</span>
-        </div>
+        <CompaniesLoading />
       ) : error ? (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md my-6">
-          <p>Feil ved lasting av bedrifter. Prøv igjen senere.</p>
-        </div>
+        <CompaniesError />
       ) : (
-        <div>
-          <div className="rounded-md border shadow-sm overflow-hidden mt-6">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Bedriftsnavn</TableHead>
-                  <TableHead>Kontaktperson / Kontaktinfo</TableHead>
-                  <TableHead>Abonnement / Rolle</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Leads</TableHead>
-                  <TableHead>Annonser</TableHead>
-                  <TableHead>Handlinger</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {companies.map((company) => (
-                  <TableRow 
-                    key={company.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => setSelectedCompany(company)}
-                  >
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <Building className="h-4 w-4" />
-                        {company.name}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>{company.contact_name}</div>
-                      <div className="text-sm text-muted-foreground">{company.email} / {company.phone}</div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="capitalize">{company.subscription_plan}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={company.status || 'unknown'} />
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <span className="font-medium">{company.leads_bought || 0}</span> kjøpt
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        <span className="text-green-600">{company.leads_won || 0}</span> vunnet / 
-                        <span className="text-red-600 ml-1">{company.leads_lost || 0}</span> tapt
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">{company.ads_bought || 0} kjøpt</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleResetPassword(company.email || '')}
-                          title="Tilbakestill passord"
-                        >
-                          <Key className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSendLoginDetails(company.email || '')}
-                          title="Send påloggingsdetaljer"
-                        >
-                          <Mail className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          
-          {companies.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-              Ingen bedrifter funnet.
-            </div>
-          )}
-        </div>
+        <CompaniesTable 
+          companies={companies} 
+          onSelectCompany={setSelectedCompany}
+        />
       )}
       
       <Dialog open={!!selectedCompany} onOpenChange={(open) => !open && setSelectedCompany(null)}>
@@ -222,17 +68,4 @@ export default function CompaniesManagementPage() {
       </Dialog>
     </div>
   );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  switch (status) {
-    case 'active':
-      return <Badge className="bg-green-500">Aktiv</Badge>;
-    case 'blocked':
-      return <Badge className="bg-red-500">Blokkert</Badge>;
-    case 'inactive':
-      return <Badge variant="outline">Inaktiv</Badge>;
-    default:
-      return <Badge variant="secondary">{status}</Badge>;
-  }
 }
