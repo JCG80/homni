@@ -28,6 +28,8 @@ export const LeadsFilterBar = ({
     initialCategoryFilter
   );
   
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
   const {
     filters,
     activeFilter,
@@ -109,6 +111,15 @@ export const LeadsFilterBar = ({
     setActiveFilter(filterId);
   };
 
+  // Create a new filter
+  const handleCreateNewFilter = () => {
+    // Clear the active filter so we can create a new one
+    setActiveFilter(null);
+    
+    // Open the dialog to create a new filter
+    setIsDialogOpen(true);
+  };
+
   // Retry loading filters if there was an error
   const handleRetryLoad = () => {
     loadUserFilters();
@@ -142,6 +153,8 @@ export const LeadsFilterBar = ({
               activeFilter={activeFilter}
               isLoading={isLoading}
               onSaveFilter={handleSaveFilter}
+              isOpen={isDialogOpen}
+              onOpenChange={setIsDialogOpen}
             />
           </div>
         )}
@@ -152,7 +165,7 @@ export const LeadsFilterBar = ({
         filters={filters}
         activeFilter={activeFilter}
         onApplyFilter={handleApplyFilter}
-        onCreateNewFilter={() => {}}
+        onCreateNewFilter={handleCreateNewFilter}
         canManageFilters={canManageFilters}
       />
     </div>

@@ -19,7 +19,7 @@ export const SavedFilters = ({
   onCreateNewFilter,
   canManageFilters = false
 }: SavedFiltersProps) => {
-  if (filters.length === 0) return null;
+  if (filters.length === 0 && !canManageFilters) return null;
   
   return (
     <div className="flex flex-wrap gap-2 mt-2">

@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { userFiltersApi } from '../api/user-filters';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { UserLeadFilter } from '../types/user-filters';
-import { withRetry } from '@/utils/apiRetry';
+import { withRetry, withTimeout } from '@/utils/apiRetry';
 import { toast } from '@/hooks/use-toast';
 
 interface UseFilterFetchProps {
@@ -14,7 +14,7 @@ interface UseFilterFetchProps {
 }
 
 /**
- * Hook for fetching user filters with retry capability
+ * Hook for fetching user filters with enhanced retry capability
  */
 export function useFilterFetch({
   setFilters,
@@ -33,11 +33,26 @@ export function useFilterFetch({
     
     try {
       const userFilters = await withRetry(
-        () => userFiltersApi.getUserFilters(),
+        () => withTimeout(userFiltersApi.getUserFilters(), 10000),
         {
           maxAttempts: 3,
           onRetry: (attempt, error) => {
             console.log(`Retrying filter fetch (attempt ${attempt}):`, error);
+            toast({
+              title: `Attempt ${attempt} failed`,
+              description: "Retrying to load filters...",
+              variant: "default"
+            });
+          },
+          // Only retry on specific errors
+          retryableErrors: (error) => {
+            // Don't retry on permission errors
+            if (error?.message?.includes('permission denied')) {
+              return false;
+            }
+            
+            // Retry on network errors or server errors
+            return true;
           }
         }
       );

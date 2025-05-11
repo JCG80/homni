@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Save } from 'lucide-react';
 import { 
@@ -19,27 +19,42 @@ interface SaveFilterDialogProps {
   activeFilter: UserLeadFilter | null;
   isLoading: boolean;
   onSaveFilter: (name: string, asDefault: boolean) => Promise<void>;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const SaveFilterDialog = ({ 
   activeFilter, 
   isLoading, 
-  onSaveFilter 
+  onSaveFilter,
+  isOpen,
+  onOpenChange
 }: SaveFilterDialogProps) => {
   const [filterName, setFilterName] = useState('');
   const [saveAsDefault, setSaveAsDefault] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = isOpen !== undefined ? isOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
+  
+  // Reset form when dialog opens or active filter changes
+  useEffect(() => {
+    if (open) {
+      setFilterName(activeFilter?.filter_name || '');
+      setSaveAsDefault(activeFilter?.is_default || false);
+    }
+  }, [open, activeFilter]);
 
   const handleSaveFilter = async () => {
     await onSaveFilter(
       filterName || activeFilter?.filter_name || 'Mitt filter',
       saveAsDefault
     );
-    setIsOpen(false);
+    setOpen(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <Save size={16} />
@@ -71,7 +86,7 @@ export const SaveFilterDialog = ({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
+          <Button variant="outline" onClick={() => setOpen(false)}>
             Avbryt
           </Button>
           <Button onClick={handleSaveFilter} disabled={isLoading}>

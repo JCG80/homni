@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useFilterState } from './useFilterState';
 import { useFilterFetch } from './useFilterFetch';
 import { useFilterOperations } from './useFilterOperations';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Unified hook for managing user lead filters with automatic retry and role-based access
@@ -43,7 +44,14 @@ export function useUserFilters() {
   
   // Load filters on mount
   useEffect(() => {
-    loadUserFilters();
+    loadUserFilters().catch(err => {
+      console.error("Failed to load filters:", err);
+      toast({
+        title: "Error",
+        description: "Could not load your saved filters. Please try again later.",
+        variant: "destructive",
+      });
+    });
   }, [loadUserFilters]);
   
   // Return the combined API
