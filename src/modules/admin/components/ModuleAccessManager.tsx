@@ -1,183 +1,230 @@
 
+// TODO: implement real logic later
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Check, X, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { Loader, Settings } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { useMutation } from '@tanstack/react-query';
+
+interface Module {
+  id: string;
+  name: string;
+  description: string;
+}
+
+interface User {
+  id: string;
+  email: string;
+  internal_admin: boolean;
+  module_access: string[];
+}
 
 interface ModuleAccessManagerProps {
   userId: string;
-  onUpdate: () => void;
 }
 
-// List of available modules
-const AVAILABLE_MODULES = [
-  { id: 'leads', name: 'Leads' },
-  { id: 'finance', name: 'Økonomi' },
-  { id: 'content', name: 'Innhold' },
-  { id: 'properties', name: 'Eiendommer' },
-  { id: 'insurance', name: 'Forsikring' },
-  { id: 'settings', name: 'Innstillinger' },
-  { id: 'statistics', name: 'Statistikk' }
-];
-
-export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerProps) {
-  const queryClient = useQueryClient();
-  const [selectedModules, setSelectedModules] = useState<string[]>([]);
+export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
+  const [modules, setModules] = useState<Module[]>([]);
+  const [userAccess, setUserAccess] = useState<string[]>([]);
   const [isInternalAdmin, setIsInternalAdmin] = useState(false);
-  
-  // Fetch user's current module access
-  const { data: userData, isLoading } = useQuery({
-    queryKey: ['user-module-access', userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('metadata')
-        .eq('id', userId)
-        .single();
-      
-      if (error) throw error;
-      
-      // Initialize the selected modules and internal admin state
-      if (data?.metadata) {
-        setIsInternalAdmin(!!data.metadata.internal_admin);
-        setSelectedModules(data.metadata.module_access || []);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch modules and user access
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Get modules
+        const { data: modulesData } = await supabase
+          .from('system_modules')
+          .select('*')
+          .order('name');
+
+        // Get user access
+        const { data: userData } = await supabase
+          .from('user_profiles')
+          .select('metadata')
+          .eq('id', userId)
+          .single();
+
+        if (userData?.metadata) {
+          const metadata = userData.metadata as Record<string, any>;
+          const internal_admin = metadata.internal_admin || false;
+          const module_access = metadata.module_access || [];
+          
+          setIsInternalAdmin(internal_admin);
+          setUserAccess(module_access);
+        }
+
+        if (modulesData) {
+          setModules(modulesData);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching module access data:', error);
+        setLoading(false);
       }
-      
-      return data;
-    }
-  });
-  
-  // Update module access mutation
-  const { mutate: updateAccess, isLoading: isUpdating } = useMutation({
+    };
+
+    fetchData();
+  }, [userId]);
+
+  // Update user access
+  const updateAccessMutation = useMutation({
     mutationFn: async () => {
-      // Get the current metadata
-      const { data: currentUser } = await supabase
-        .from('user_profiles')
-        .select('metadata')
-        .eq('id', userId)
-        .single();
-      
-      const currentMetadata = currentUser?.metadata || {};
-      
-      // Update the metadata with the new module access and internal admin flag
       const { error } = await supabase
         .from('user_profiles')
         .update({
           metadata: {
-            ...currentMetadata,
-            module_access: selectedModules,
-            internal_admin: isInternalAdmin
-          }
+            ...userAccess,
+            internal_admin: isInternalAdmin,
+            module_access: userAccess,
+          },
         })
         .eq('id', userId);
-      
+
       if (error) throw error;
-      
-      // Log this action to the admin_logs table (if it exists)
-      try {
-        await supabase.from('admin_logs').insert({
-          user_id: userId,
-          module: 'access',
-          action: 'update_access',
-          details: {
-            module_access: selectedModules,
-            internal_admin: isInternalAdmin
-          }
-        });
-      } catch (logError) {
-        console.error('Failed to log admin action:', logError);
-      }
     },
     onSuccess: () => {
       toast({
-        title: 'Modultilgang oppdatert',
-        description: 'Brukerens modultilgang er oppdatert.',
+        title: 'Success',
+        description: 'User access updated successfully',
       });
-      queryClient.invalidateQueries({ queryKey: ['user-module-access'] });
-      onUpdate();
     },
     onError: (error) => {
-      console.error('Failed to update module access:', error);
       toast({
-        title: 'Feil',
-        description: 'Kunne ikke oppdatere modultilgang.',
+        title: 'Error',
+        description: `Failed to update user access: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
-    }
+    },
   });
-  
-  const toggleModule = (moduleId: string) => {
-    setSelectedModules(current => 
-      current.includes(moduleId) 
-        ? current.filter(id => id !== moduleId) 
-        : [...current, moduleId]
-    );
+
+  // Log audit entry
+  const logAudit = async (action: string) => {
+    try {
+      await supabase
+        .from('admin_logs')
+        .insert({
+          user_id: userId,
+          action,
+          timestamp: new Date().toISOString(),
+        });
+    } catch (error) {
+      console.error('Error logging audit entry:', error);
+    }
   };
+
+  // Toggle module access
+  const toggleAccess = (moduleId: string) => {
+    if (userAccess.includes(moduleId)) {
+      setUserAccess(userAccess.filter((id) => id !== moduleId));
+      logAudit(`Removed access to module ${moduleId}`);
+    } else {
+      setUserAccess([...userAccess, moduleId]);
+      logAudit(`Granted access to module ${moduleId}`);
+    }
+  };
+
+  // Toggle internal admin status
+  const toggleInternalAdmin = () => {
+    setIsInternalAdmin(!isInternalAdmin);
+    logAudit(`${!isInternalAdmin ? 'Granted' : 'Removed'} internal admin status`);
+  };
+
+  // Save changes
+  const saveChanges = () => {
+    updateAccessMutation.mutate();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading access settings...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Settings className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Modultilgang</h3>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium">Internal Admin Status</h3>
+          <p className="text-sm text-muted-foreground">
+            Grant internal admin privileges to this user
+          </p>
         </div>
-        
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="internal-admin"
-            checked={isInternalAdmin}
-            onCheckedChange={(checked) => setIsInternalAdmin(!!checked)}
-          />
-          <label htmlFor="internal-admin" className="text-sm font-medium">
-            Intern administrator (full tilgang til alle moduler)
-          </label>
+        <Button
+          variant={isInternalAdmin ? 'default' : 'outline'}
+          onClick={toggleInternalAdmin}
+          className={isInternalAdmin ? 'bg-green-600 hover:bg-green-700' : ''}
+        >
+          {isInternalAdmin ? (
+            <>
+              <Check className="mr-2 h-4 w-4" /> Enabled
+            </>
+          ) : (
+            <>
+              <X className="mr-2 h-4 w-4" /> Disabled
+            </>
+          )}
+        </Button>
+      </div>
+
+      <div className="border-t pt-6">
+        <h3 className="text-lg font-medium mb-4">Module Access</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {modules.map((module) => (
+            <div
+              key={module.id}
+              className="flex items-center justify-between p-3 border rounded-lg"
+            >
+              <div>
+                <h4 className="font-medium">{module.name}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {module.description}
+                </p>
+              </div>
+              <Button
+                variant={userAccess.includes(module.id) ? 'default' : 'outline'}
+                onClick={() => toggleAccess(module.id)}
+                className={
+                  userAccess.includes(module.id)
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : ''
+                }
+              >
+                {userAccess.includes(module.id) ? (
+                  <>
+                    <Check className="mr-2 h-4 w-4" /> Granted
+                  </>
+                ) : (
+                  <>
+                    <X className="mr-2 h-4 w-4" /> Denied
+                  </>
+                )}
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
-      
-      {isLoading ? (
-        <div className="flex justify-center py-8">
-          <Loader className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Laster modultilgang...</span>
-        </div>
-      ) : (
-        <>
-          <Card className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {AVAILABLE_MODULES.map(module => (
-                <div key={module.id} className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={`module-${module.id}`}
-                    checked={selectedModules.includes(module.id)}
-                    onCheckedChange={() => toggleModule(module.id)}
-                    disabled={isInternalAdmin} // Disabled if internal admin is checked
-                  />
-                  <label htmlFor={`module-${module.id}`} className="text-sm font-medium">
-                    {module.name}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </Card>
-          
-          <div className="flex justify-end mt-6">
-            <Button
-              onClick={() => updateAccess()}
-              disabled={isUpdating}
-            >
-              {isUpdating ? (
-                <>
-                  <Loader className="h-4 w-4 mr-2 animate-spin" />
-                  Lagrer...
-                </>
-              ) : 'Lagre modultilgang'}
-            </Button>
-          </div>
-        </>
-      )}
+
+      <div className="flex justify-end">
+        <Button
+          onClick={saveChanges}
+          disabled={updateAccessMutation.isPending}
+        >
+          {updateAccessMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+            </>
+          ) : (
+            'Save Changes'
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

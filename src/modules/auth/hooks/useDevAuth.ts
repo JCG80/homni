@@ -6,7 +6,7 @@ import {
   DevUserProfile,
   switchDevUser
 } from '../utils/devProfiles';
-import { Profile, AuthUser } from '../types/types';
+import { UserRole } from '../utils/roles/types';
 
 /**
  * This hook is only for development purposes.
@@ -18,21 +18,21 @@ export const useDevAuth = () => {
   const [devProfile, setDevProfile] = useState<DevUserProfile | null>(null);
 
   // Convert dev profile to auth user and profile
-  const toAuthUser = (profile: DevUserProfile | null): AuthUser | null => {
+  const toAuthUser = (profile: DevUserProfile | null) => {
     if (!profile) return null;
     return {
       id: profile.id,
       email: profile.email || `${profile.id}@example.com`,
-      role: profile.role
+      role: profile.role as UserRole
     };
   };
 
-  const toProfile = (profile: DevUserProfile | null): Profile | null => {
+  const toProfile = (profile: DevUserProfile | null) => {
     if (!profile) return null;
     return {
       id: profile.id,
       full_name: profile.name,
-      role: profile.role,
+      role: profile.role as UserRole,
       company_id: profile.company_id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

@@ -41,6 +41,6 @@ describe('MembersManagementPage', () => {
     );
 
     // Verify that key elements are present
-    expect(getByText(/Members Management/i)).toBeInTheDocument();
+    expect(getByText(/Brukeradministrasjon - Medlemmer/i)).toBeInTheDocument();
   });
 });

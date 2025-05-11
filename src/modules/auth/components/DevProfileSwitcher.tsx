@@ -35,8 +35,8 @@ export const DevProfileSwitcher: React.FC<DevProfileSwitcherProps> = ({
   };
 
   // Get role color based on user role
-  const getRoleColor = (role: UserRole): string => {
-    switch (role) {
+  const getRoleColor = (role: string): string => {
+    switch (role as UserRole) {
       case 'master_admin':
         return 'bg-red-600 text-white';
       case 'admin':

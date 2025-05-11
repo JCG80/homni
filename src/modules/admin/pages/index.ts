@@ -1,3 +1,4 @@
 
-// TODO: implement real exports later
+// Export pages from the admin module
 export { MembersManagementPage } from './MembersManagementPage';
+

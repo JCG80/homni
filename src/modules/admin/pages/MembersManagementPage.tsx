@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -29,7 +30,7 @@ interface Member {
   last_active: string;
 }
 
-export default function MembersManagementPage() {
+export function MembersManagementPage() {
   // Role guard to ensure only master admins can access this page
   const { isAllowed, loading } = useRoleGuard({ 
     allowedRoles: ['master_admin'],
@@ -54,7 +55,7 @@ export default function MembersManagementPage() {
       return data.map(profile => ({
         id: profile.id,
         full_name: profile.full_name || 'Ikke angitt',
-        email: profile.email || profile.accounts?.email || 'Ikke angitt',
+        email: profile.email || (profile.accounts?.email || 'Ikke angitt'),
         phone: profile.phone || 'Ikke angitt',
         status: profile.accounts?.status || 'inactive',
         request_count: 0, // This would be calculated from the leads table
