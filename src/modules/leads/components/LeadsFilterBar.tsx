@@ -6,6 +6,7 @@ import { useUserFilters } from '../hooks/useUserFilters';
 import { FilterSelectors } from './filters/FilterSelectors';
 import { SaveFilterDialog } from './filters/SaveFilterDialog';
 import { SavedFilters } from './filters/SavedFilters';
+import { AlertCircle } from 'lucide-react';
 
 interface LeadsFilterBarProps {
   initialStatusFilter?: LeadStatus;
@@ -26,15 +27,17 @@ export const LeadsFilterBar = ({
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(
     initialCategoryFilter
   );
-  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   
   const {
     filters,
     activeFilter,
     isLoading,
+    error,
+    canManageFilters,
     createFilter,
     updateFilter,
-    setActiveFilter
+    setActiveFilter,
+    loadUserFilters
   } = useUserFilters();
 
   // Load filter when activeFilter changes
@@ -45,11 +48,17 @@ export const LeadsFilterBar = ({
       if (status) {
         setStatusFilter(status as LeadStatus);
         onStatusFilterChange(status as LeadStatus);
+      } else {
+        setStatusFilter(undefined);
+        onStatusFilterChange(undefined);
       }
       
       if (category) {
         setCategoryFilter(category);
         onCategoryFilterChange(category);
+      } else {
+        setCategoryFilter(undefined);
+        onCategoryFilterChange(undefined);
       }
     }
   }, [activeFilter, onStatusFilterChange, onCategoryFilterChange]);
@@ -74,20 +83,24 @@ export const LeadsFilterBar = ({
       category: categoryFilter
     };
     
-    if (activeFilter) {
-      // Update existing filter
-      await updateFilter(activeFilter.id, {
-        filter_name: filterName || activeFilter.filter_name,
-        filter_data: filterData,
-        is_default: asDefault
-      });
-    } else {
-      // Create new filter
-      await createFilter({
-        filter_name: filterName || 'Unnamed filter',
-        filter_data: filterData,
-        is_default: asDefault
-      });
+    try {
+      if (activeFilter) {
+        // Update existing filter
+        await updateFilter(activeFilter.id, {
+          filter_name: filterName || activeFilter.filter_name,
+          filter_data: filterData,
+          is_default: asDefault
+        });
+      } else {
+        // Create new filter
+        await createFilter({
+          filter_name: filterName || 'Unnamed filter',
+          filter_data: filterData,
+          is_default: asDefault
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save filter:', error);
     }
   };
   
@@ -96,13 +109,23 @@ export const LeadsFilterBar = ({
     setActiveFilter(filterId);
   };
 
-  // Open save dialog for new filter
-  const handleCreateNewFilter = () => {
-    setIsSaveDialogOpen(true);
+  // Retry loading filters if there was an error
+  const handleRetryLoad = () => {
+    loadUserFilters();
   };
 
   return (
     <div className="space-y-4">
+      {error && (
+        <div className="bg-destructive/10 p-3 rounded-md flex items-center gap-2">
+          <AlertCircle size={16} className="text-destructive" />
+          <span className="text-sm">{error}</span>
+          <Button variant="outline" size="sm" onClick={handleRetryLoad}>
+            Retry
+          </Button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-4 items-start">
         {/* Filter Selectors Component */}
         <FilterSelectors
@@ -112,14 +135,16 @@ export const LeadsFilterBar = ({
           onCategoryFilterChange={handleCategoryChange}
         />
         
-        {/* Save Filter Dialog */}
-        <div>
-          <SaveFilterDialog
-            activeFilter={activeFilter}
-            isLoading={isLoading}
-            onSaveFilter={handleSaveFilter}
-          />
-        </div>
+        {/* Save Filter Dialog - only visible if user has permission */}
+        {canManageFilters && (
+          <div>
+            <SaveFilterDialog
+              activeFilter={activeFilter}
+              isLoading={isLoading}
+              onSaveFilter={handleSaveFilter}
+            />
+          </div>
+        )}
       </div>
       
       {/* Saved Filters Component */}
@@ -127,7 +152,8 @@ export const LeadsFilterBar = ({
         filters={filters}
         activeFilter={activeFilter}
         onApplyFilter={handleApplyFilter}
-        onCreateNewFilter={handleCreateNewFilter}
+        onCreateNewFilter={() => {}}
+        canManageFilters={canManageFilters}
       />
     </div>
   );

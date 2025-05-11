@@ -20,7 +20,7 @@ export async function getUserFilters(): Promise<UserLeadFilter[]> {
       description: error.message,
       variant: 'destructive',
     });
-    return [];
+    throw error; // Ensure we throw for retry mechanism
   }
   
   return data as UserLeadFilter[];
@@ -39,7 +39,7 @@ export async function getDefaultFilter(): Promise<UserLeadFilter | null> {
   
   if (error) {
     console.error('Error fetching default filter:', error);
-    return null;
+    throw error; // Ensure we throw for retry mechanism
   }
   
   // If we found a default filter, return it
@@ -66,16 +66,22 @@ export async function createUserFilter(filter: CreateUserFilterRequest): Promise
     }
     
     // Get the current user
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError) {
+      console.error('Error getting current user:', userError);
+      throw userError;
+    }
     
     if (!user) {
-      console.error('No authenticated user found');
+      const authError = new Error('No authenticated user found');
+      console.error(authError);
       toast({
         title: 'Authentication error',
         description: 'You must be logged in to create filters',
         variant: 'destructive',
       });
-      return null;
+      throw authError;
     }
     
     const { data, error } = await supabase
@@ -89,18 +95,13 @@ export async function createUserFilter(filter: CreateUserFilterRequest): Promise
     
     if (error) {
       console.error('Error creating user filter:', error);
-      toast({
-        title: 'Error creating filter',
-        description: error.message,
-        variant: 'destructive',
-      });
-      return null;
+      throw error;
     }
     
     return data as UserLeadFilter;
   } catch (err) {
     console.error('Unexpected error in createUserFilter:', err);
-    return null;
+    throw err; // Ensure we throw for retry mechanism
   }
 }
 
@@ -108,61 +109,102 @@ export async function createUserFilter(filter: CreateUserFilterRequest): Promise
  * Updates an existing user filter
  */
 export async function updateUserFilter(id: string, updates: UpdateUserFilterRequest): Promise<UserLeadFilter | null> {
-  // If this is being set as default, first unset any existing defaults
-  if (updates.is_default) {
-    await unsetExistingDefaults();
+  try {
+    // Verify user has access to this filter
+    const { data: filterData, error: filterError } = await supabase
+      .from('user_lead_filters')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (filterError) {
+      console.error('Error verifying filter access:', filterError);
+      throw filterError;
+    }
+    
+    if (!filterData) {
+      const notFoundError = new Error(`Filter with ID ${id} not found`);
+      console.error(notFoundError);
+      throw notFoundError;
+    }
+    
+    // If this is being set as default, first unset any existing defaults
+    if (updates.is_default) {
+      await unsetExistingDefaults();
+    }
+    
+    const { data, error } = await supabase
+      .from('user_lead_filters')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    
+    if (error) {
+      console.error('Error updating user filter:', error);
+      throw error;
+    }
+    
+    return data as UserLeadFilter;
+  } catch (err) {
+    console.error('Error in updateUserFilter:', err);
+    throw err; // Ensure we throw for retry mechanism
   }
-  
-  const { data, error } = await supabase
-    .from('user_lead_filters')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .maybeSingle();
-  
-  if (error) {
-    console.error('Error updating user filter:', error);
-    toast({
-      title: 'Error updating filter',
-      description: error.message,
-      variant: 'destructive',
-    });
-    return null;
-  }
-  
-  return data as UserLeadFilter;
 }
 
 /**
  * Deletes a user filter
  */
 export async function deleteUserFilter(id: string): Promise<boolean> {
-  const { error } = await supabase
-    .from('user_lead_filters')
-    .delete()
-    .eq('id', id);
-  
-  if (error) {
-    console.error('Error deleting user filter:', error);
-    toast({
-      title: 'Error deleting filter',
-      description: error.message,
-      variant: 'destructive',
-    });
-    return false;
+  try {
+    // Verify user has access to this filter
+    const { data: filterData, error: filterError } = await supabase
+      .from('user_lead_filters')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (filterError) {
+      console.error('Error verifying filter access:', filterError);
+      throw filterError;
+    }
+    
+    if (!filterData) {
+      const notFoundError = new Error(`Filter with ID ${id} not found`);
+      console.error(notFoundError);
+      throw notFoundError;
+    }
+    
+    const { error } = await supabase
+      .from('user_lead_filters')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting user filter:', error);
+      throw error;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Error in deleteUserFilter:', err);
+    throw err; // Ensure we throw for retry mechanism
   }
-  
-  return true;
 }
 
 /**
  * Helper to unset any existing default filters
  */
 async function unsetExistingDefaults(): Promise<void> {
-  await supabase
+  const { error } = await supabase
     .from('user_lead_filters')
     .update({ is_default: false })
     .eq('is_default', true);
+    
+  if (error) {
+    console.error('Error unsetting existing default filters:', error);
+    throw error;
+  }
 }
 
 /**

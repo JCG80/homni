@@ -4,6 +4,9 @@ import { useFilterState } from './useFilterState';
 import { useFilterFetch } from './useFilterFetch';
 import { useFilterOperations } from './useFilterOperations';
 
+/**
+ * Unified hook for managing user lead filters with automatic retry and role-based access
+ */
 export function useUserFilters() {
   // Use the separate hooks for managing different aspects of filter state and operations
   const {
@@ -28,7 +31,8 @@ export function useUserFilters() {
   const {
     createFilter,
     updateFilter,
-    deleteFilter
+    deleteFilter,
+    canManageFilters
   } = useFilterOperations({
     filters,
     setFilters,
@@ -49,6 +53,9 @@ export function useUserFilters() {
     activeFilter,
     isLoading,
     error,
+    
+    // Access control
+    canManageFilters,
     
     // Operations
     loadUserFilters,

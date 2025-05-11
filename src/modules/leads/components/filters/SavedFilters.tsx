@@ -9,13 +9,15 @@ interface SavedFiltersProps {
   activeFilter: UserLeadFilter | null;
   onApplyFilter: (filterId: string) => void;
   onCreateNewFilter: () => void;
+  canManageFilters?: boolean;
 }
 
 export const SavedFilters = ({ 
   filters, 
   activeFilter, 
   onApplyFilter,
-  onCreateNewFilter 
+  onCreateNewFilter,
+  canManageFilters = false
 }: SavedFiltersProps) => {
   if (filters.length === 0) return null;
   
@@ -38,15 +40,17 @@ export const SavedFilters = ({
           )}
         </Button>
       ))}
-      <Button
-        size="sm"
-        variant="ghost"
-        className="flex items-center gap-1"
-        onClick={onCreateNewFilter}
-      >
-        <Plus size={14} />
-        Ny
-      </Button>
+      {canManageFilters && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="flex items-center gap-1"
+          onClick={onCreateNewFilter}
+        >
+          <Plus size={14} />
+          Ny
+        </Button>
+      )}
     </div>
   );
 };
