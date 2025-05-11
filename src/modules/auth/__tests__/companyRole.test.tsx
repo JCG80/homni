@@ -26,14 +26,14 @@ describe('Company Role Access', () => {
   test('should allow company role to access company-specific modules', () => {
     expect(canAccessModule('company', 'dashboard')).toBe(true);
     expect(canAccessModule('company', 'leads')).toBe(true);
-    expect(canAccessModule('company', 'company')).toBe(true);
-    expect(canAccessModule('company', 'company/profile')).toBe(true);
+    expect(canAccessModule('company', 'profile')).toBe(true);
     expect(canAccessModule('company', 'settings')).toBe(true);
   });
 
-  test('should not allow company role to access admin modules', () => {
+  test('should not allow company role to access admin-specific modules', () => {
     expect(canAccessModule('company', 'admin')).toBe(false);
-    expect(canAccessModule('company', 'content')).toBe(false);
+    expect(canAccessModule('company', 'roles')).toBe(false);
+    expect(canAccessModule('company', 'internal-access')).toBe(false);
   });
 
   test('should redirect anonymous users from company-specific routes', () => {

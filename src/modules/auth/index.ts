@@ -8,12 +8,14 @@
 export { Authenticated } from './components/Authenticated';
 export { ProtectedRoute } from './components/ProtectedRoute';
 export { AuthProvider } from './hooks/useAuth';
+export { DevProfileSwitcher } from './components/DevProfileSwitcher';
 
 // Export hooks
 export { useAuth } from './hooks/useAuth';
 export { useRoleGuard } from './hooks/useRoleGuard';
 export { useRoleHelpers } from './hooks/useRoleHelpers';
 export { useRoleRedirect } from './hooks/useRoleRedirect';
+export { useDevAuth } from './hooks/useDevAuth';
 
 // Export utilities
 export { 
@@ -23,6 +25,14 @@ export {
   isUserRole,
   isContentEditorRole
 } from './utils/roles';
+
+// Export dev utilities
+export {
+  switchDevUser,
+  getCurrentDevUserKey,
+  getCurrentDevUserProfile
+} from './utils/devProfiles';
+export type { DevUserProfile } from './utils/devProfiles';
 
 // Export types
 export type { UserRole } from './utils/roles/types';

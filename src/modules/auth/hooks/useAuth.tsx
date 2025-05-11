@@ -1,9 +1,10 @@
 
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { AuthUser, Profile } from '../types/types';
 import { useAuthSession } from './useAuthSession';
 import { useAuthDerivedState } from './useAuthDerivedState';
 import { UserRole } from '../utils/roles/types';
+import { useDevAuth } from './useDevAuth';
 
 // Define a comprehensive AuthContextType with all required fields
 export interface AuthContextType {
@@ -23,6 +24,9 @@ export interface AuthContextType {
   module_access: string[];
   internal_admin: boolean;
   canAccessModule: (module: string) => boolean;
+  // Add dev-specific props
+  isDevMode?: boolean;
+  switchDevUser?: (key: string) => void;
 }
 
 // Create context with default values
@@ -50,16 +54,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Get the auth session state
   const authSession = useAuthSession();
   
+  // Get dev auth functionality (only works in development)
+  const devAuth = useDevAuth();
+  
+  // Use dev user instead of real auth in development mode
+  const effectiveUser = devAuth.isDevMode ? devAuth.devUser : authSession.user;
+  const effectiveProfile = devAuth.isDevMode ? devAuth.devUserProfile : authSession.profile;
+  
   // Get derived state like isAdmin, isUser, etc.
   const derivedState = useAuthDerivedState({
-    user: authSession.user,
-    profile: authSession.profile
+    user: effectiveUser,
+    profile: effectiveProfile
   });
+  
+  // Override refresh profile in dev mode
+  const refreshProfile = async () => {
+    if (devAuth.isDevMode) {
+      // No need to refresh in dev mode
+      return;
+    }
+    return authSession.refreshProfile();
+  };
   
   // Combine the states for the context value
   const contextValue = {
     ...authSession,
     ...derivedState,
+    user: effectiveUser,
+    profile: effectiveProfile,
+    refreshProfile,
+    // Add dev-specific functionality
+    isDevMode: devAuth.isDevMode,
+    switchDevUser: devAuth.switchToDevUser,
   };
   
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
