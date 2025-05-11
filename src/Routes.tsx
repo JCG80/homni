@@ -22,6 +22,7 @@ import NotFound from './pages/NotFound';
 import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionPage';
 import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles/types';
+import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
 
 export const AppRoutes = () => {
   return (
@@ -102,6 +103,13 @@ export const AppRoutes = () => {
         <Route path="/admin/settings" element={
           <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
             <LeadSettingsPage />
+          </ProtectedRoute>
+        } />
+        
+        {/* New Role Management route - only accessible to master_admin */}
+        <Route path="/admin/roles" element={
+          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+            <RoleManagementPage />
           </ProtectedRoute>
         } />
         
