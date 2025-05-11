@@ -25,9 +25,11 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
       const email = userData.user.email.toLowerCase();
       
       // Map test emails to roles in development
-      if (email === 'admin@test.local') return 'master_admin' as UserRole;
+      if (email === 'master-admin@test.local') return 'master_admin' as UserRole;
+      if (email === 'admin@test.local') return 'admin' as UserRole;
       if (email === 'company@test.local') return 'company' as UserRole;
       if (email === 'user@test.local') return 'user' as UserRole;
+      if (email === 'provider@test.local') return 'provider' as UserRole;
     }
     
     // Validate if the role is a valid UserRole

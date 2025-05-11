@@ -1,52 +1,46 @@
 
 /**
- * Core role type definitions
+ * User role definition
  */
 
-/**
- * All possible user roles in the system
- */
-export type UserRole = 'anonymous' | 'user' | 'member' | 'company' | 'business' | 'admin' | 'master_admin' | 'provider' | 'content_editor';
+// All possible roles in the system
+export type UserRole = 
+  | 'anonymous'    // Not logged in
+  | 'user'         // Regular user
+  | 'member'       // Member user
+  | 'company'      // Company user
+  | 'business'     // Business user
+  | 'provider'     // Service provider
+  | 'admin'        // Admin user
+  | 'master_admin' // Master admin
+  | 'content_editor'; // Content editor
 
-/**
- * Constants defining role categories
- */
+// All roles (used for validation)
 export const ALL_ROLES: UserRole[] = [
+  'anonymous',
   'user',
   'member',
-  'company', 
+  'company',
   'business',
+  'provider',
   'admin',
   'master_admin',
-  'provider',
   'content_editor'
 ];
 
-export const PUBLIC_ROLES: UserRole[] = ['anonymous'];
+// Public-facing roles
+export const PUBLIC_ROLES: UserRole[] = [
+  'anonymous'
+];
 
+// Roles that require authentication
 export const AUTHENTICATED_ROLES: UserRole[] = [
   'user',
   'member',
   'company',
   'business',
+  'provider',
   'admin',
   'master_admin',
-  'provider',
   'content_editor'
 ];
-
-/**
- * Type for account types in the system (matching database)
- */
-export type AccountType = 'member' | 'company' | 'admin' | 'master_admin' | 'provider';
-
-/**
- * Interface for users with role information
- */
-export interface RoleUser {
-  id: string;
-  email?: string;
-  account_type: AccountType;
-  internal_admin: boolean;
-  module_access: string[];
-}

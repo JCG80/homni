@@ -22,7 +22,7 @@ export const TEST_USERS: TestUser[] = [
   { name: 'Test Admin', email: 'admin@test.local', role: 'admin', password: 'Test1234!' },
   { name: 'Test Company', email: 'company@test.local', role: 'company', password: 'Test1234!' },
   { name: 'Test User', email: 'user@test.local', role: 'user', password: 'Test1234!' },
-  { name: 'Test Provider', email: 'provider@test.local', role: 'user', password: 'Test1234!' }
+  { name: 'Test Provider', email: 'provider@test.local', role: 'provider', password: 'Test1234!' }
 ];
 
 /**

@@ -41,7 +41,7 @@ export const TEST_USERS: TestUser[] = [
   { 
     email: 'provider@test.local', 
     password: 'Test1234!', 
-    role: 'user',  // Changed from 'provider' to 'user'
+    role: 'provider',  // Changed from 'user' to 'provider'
     name: 'Test Provider'
   }
 ];
