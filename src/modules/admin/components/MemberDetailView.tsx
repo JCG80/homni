@@ -1,15 +1,18 @@
 
-// TODO: implement real logic later
-import React from 'react';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatusBadge } from './members/StatusBadge';
+import { formatDate } from '../services/memberService';
 
 interface Member {
   id: string;
   full_name: string;
   email: string;
-  phone?: string;
-  status?: string;
-  last_active?: string;
-  request_count?: number;
+  phone: string;
+  status: string;
+  request_count: number;
+  last_active: string;
 }
 
 interface MemberDetailViewProps {
@@ -19,45 +22,70 @@ interface MemberDetailViewProps {
 }
 
 export function MemberDetailView({ member, onClose, onUpdate }: MemberDetailViewProps) {
+  const [isUpdating, setIsUpdating] = useState(false);
+  
+  const handleUpdate = async () => {
+    setIsUpdating(true);
+    try {
+      // In a real implementation, you would update the member here
+      await new Promise(resolve => setTimeout(resolve, 500)); // Simulating API call
+      onUpdate();
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">{member.full_name}</h2>
-      
-      <div className="space-y-2">
-        <div>
-          <p className="text-sm font-medium">Email:</p>
-          <p>{member.email}</p>
-        </div>
-        
-        <div>
-          <p className="text-sm font-medium">Phone:</p>
-          <p>{member.phone || 'Not specified'}</p>
-        </div>
-        
-        <div>
-          <p className="text-sm font-medium">Status:</p>
-          <p>{member.status || 'Not specified'}</p>
-        </div>
-        
-        <div>
-          <p className="text-sm font-medium">Last Active:</p>
-          <p>{member.last_active || 'Not specified'}</p>
-        </div>
-      </div>
-      
-      <div className="mt-6 flex justify-end space-x-2">
-        <button 
-          onClick={onClose}
-          className="px-4 py-2 border rounded-md"
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">{member.full_name}</CardTitle>
+          <div className="mt-2">
+            <StatusBadge status={member.status} />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">E-post</h3>
+                <p className="mt-1">{member.email}</p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Telefon</h3>
+                <p className="mt-1">{member.phone || 'Ikke angitt'}</p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Antall forespørsler</h3>
+                <p className="mt-1">{member.request_count}</p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Sist aktiv</h3>
+                <p className="mt-1">{formatDate(member.last_active)}</p>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Aktivitetshistorikk</h3>
+              <p className="text-sm text-muted-foreground">Ingen aktivitet registrert enda.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end space-x-3">
+        <Button variant="outline" onClick={onClose}>
+          Lukk
+        </Button>
+        <Button 
+          onClick={handleUpdate} 
+          disabled={isUpdating}
         >
-          Close
-        </button>
-        <button 
-          onClick={onUpdate}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md"
-        >
-          Update
-        </button>
+          {isUpdating ? 'Oppdaterer...' : 'Oppdater'}
+        </Button>
       </div>
     </div>
   );
