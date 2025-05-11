@@ -1,14 +1,16 @@
 
 import { Json } from '@/integrations/supabase/types';
 
-/**
- * Admin module types
- */
-
-export interface Module {
+export interface Member {
   id: string;
-  name: string;
-  description: string;
+  full_name?: string;
+  email?: string;
+  status?: string;
+  request_count?: number;
+  last_active?: string;
+  created_at?: string;
+  modules_access?: string[];
+  subscription_plan?: string;
 }
 
 export interface CompanyProfile {
@@ -19,40 +21,44 @@ export interface CompanyProfile {
   email?: string;
   phone?: string;
   industry?: string;
-  subscription_plan?: string;
   status?: string;
   created_at?: string;
   updated_at?: string;
-  modules_access?: string[];
   tags?: string[];
-  metadata?: Record<string, any> | Json;
-  // Statistics fields
-  leadsWonPercentage?: number;
-  avgResponseTime?: string;
-  customerRating?: number;
-  monthlyTrend?: string;
-  // Additional fields from CompaniesManagementPage
-  leads_bought?: number;
-  leads_won?: number;
-  leads_lost?: number;
-  ads_bought?: number;
-  accounts?: any;
+  subscription_plan?: string;
+  modules_access?: string[];
+  admin_notes?: string;
+  request_count?: number;
+  last_active?: string;
 }
 
-export interface ModuleAccessManagerProps {
-  userId: string;
-  onUpdate?: () => void;
-}
-
-// Member interface for MembersManagementPage
-export interface Member {
+export interface PurchaseRecord {
   id: string;
-  full_name: string;
-  email: string;
-  phone: string;
+  product_name: string;
+  amount: number;
   status: string;
-  request_count: number;
-  last_active: string;
-  lastLogin?: string;
-  joined?: string;
+  purchase_date: string;
+}
+
+export interface CompanyStatistics {
+  leads_total: number;
+  leads_converted: number;
+  conversion_rate: number;
+  average_response_time?: number;
+}
+
+export interface AdminLog {
+  id: string;
+  admin_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string;
+  details: Json | null;
+  created_at: string;
+}
+
+export interface ModuleAccessRecord {
+  user_id: string;
+  system_module_id: string;
+  internal_admin?: boolean;
 }

@@ -8,7 +8,7 @@ import { SystemModule } from '../types/systemModules';
 export async function getSystemModules(): Promise<SystemModule[]> {
   try {
     const { data, error } = await supabase
-      .from('system_modules')
+      .from<SystemModule>('system_modules')
       .select('*')
       .order('name');
     
@@ -26,7 +26,7 @@ export async function getSystemModules(): Promise<SystemModule[]> {
 export async function toggleSystemModule(moduleId: string, isActive: boolean): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('system_modules')
+      .from<SystemModule>('system_modules')
       .update({ is_active: isActive, updated_at: new Date().toISOString() })
       .eq('id', moduleId);
     
@@ -44,7 +44,7 @@ export async function toggleSystemModule(moduleId: string, isActive: boolean): P
 export async function createSystemModule(module: Omit<SystemModule, 'id' | 'created_at' | 'updated_at'>): Promise<SystemModule | null> {
   try {
     const { data, error } = await supabase
-      .from('system_modules')
+      .from<SystemModule>('system_modules')
       .insert([module])
       .select()
       .single();
@@ -63,7 +63,7 @@ export async function createSystemModule(module: Omit<SystemModule, 'id' | 'crea
 export async function deleteSystemModule(moduleId: string): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('system_modules')
+      .from<SystemModule>('system_modules')
       .delete()
       .eq('id', moduleId);
     
@@ -81,7 +81,7 @@ export async function deleteSystemModule(moduleId: string): Promise<boolean> {
 export async function getModuleDependencies(): Promise<Record<string, string[]>> {
   try {
     const { data, error } = await supabase
-      .from('system_modules')
+      .from<SystemModule>('system_modules')
       .select('id, dependencies');
     
     if (error) throw error;

@@ -22,15 +22,15 @@ import NotFound from './pages/NotFound';
 import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionPage';
 import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles';
-import { RoleManagementPage } from './modules/admin/pages/RoleManagementPage';
+import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
 
 // Import SystemModulesPage
 import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
 
 // Import MasterAdmin management pages
 import { MembersManagementPage } from './modules/admin/pages/MembersManagementPage';
-import { CompaniesManagementPage } from './modules/admin/pages/CompaniesManagementPage';
-import { InternalAccessPage } from './modules/admin/pages/InternalAccessPage';
+import CompaniesManagementPage from './modules/admin/pages/CompaniesManagementPage';
+import InternalAccessPage from './modules/admin/pages/InternalAccessPage';
 
 // Import the dashboard pages
 import { MemberDashboard } from './pages/dashboard/MemberDashboard';

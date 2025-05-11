@@ -17,7 +17,7 @@ interface User {
   created_at?: string;
 }
 
-const RoleManagementPage: React.FC = () => {
+export const RoleManagementPage: React.FC = () => {
   const { isMasterAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState('members');
 

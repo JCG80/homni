@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Loader } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -11,7 +10,7 @@ import { CompaniesLoading } from '../components/companies/CompaniesLoading';
 import { CompaniesError } from '../components/companies/CompaniesError';
 import { useCompanies } from '../hooks/useCompanies';
 
-export default function CompaniesManagementPage() {
+export const CompaniesManagementPage = () => {
   // Role guard to ensure only master admins can access this page
   const { isAllowed, loading } = useRoleGuard({ 
     allowedRoles: ['master_admin'],
@@ -68,4 +67,6 @@ export default function CompaniesManagementPage() {
       </Dialog>
     </div>
   );
-}
+};
+
+export default CompaniesManagementPage;

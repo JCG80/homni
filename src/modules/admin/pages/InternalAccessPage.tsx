@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -36,7 +35,7 @@ interface UserProfile {
   };
 }
 
-export default function InternalAccessPage() {
+export const InternalAccessPage = () => {
   // Role guard to ensure only master admins can access this page
   const { isAllowed, loading } = useRoleGuard({ 
     allowedRoles: ['master_admin'],
@@ -190,4 +189,6 @@ export default function InternalAccessPage() {
       </Dialog>
     </div>
   );
-}
+};
+
+export default InternalAccessPage;
