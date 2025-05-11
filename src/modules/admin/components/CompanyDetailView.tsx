@@ -6,27 +6,13 @@ import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Loader, FileText, BarChart3 } from 'lucide-react';
+import { Loader, FileText, BarChart3, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ModuleAccessManager } from './ModuleAccessManager';
-
-interface Company {
-  id: string;
-  name: string;
-  contact_name: string;
-  email: string;
-  phone: string;
-  subscription_plan: string;
-  status: string;
-  leads_bought: number;
-  leads_won: number;
-  leads_lost: number;
-  ads_bought: number;
-  user_id?: string;
-}
+import { CompanyProfile } from '../types/types';
 
 interface CompanyDetailViewProps {
-  company: Company;
+  company: CompanyProfile;
   onClose: () => void;
   onUpdate: () => void;
 }
@@ -66,7 +52,7 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
     queryKey: ['company-stats', company.id],
     queryFn: async () => {
       // This would be calculated from real data
-      // For demonstration, returning mock data
+      // For demonstration, returning mock data that matches our type
       return {
         leadsWonPercentage: 65,
         avgResponseTime: '2.5 timer',
@@ -77,11 +63,11 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
   });
   
   // Fetch company's notes and module access
-  const { data: companyData, isLoading: isLoadingCompany } = useQuery({
+  const { data: companyData, isLoading: isLoadingCompany, error: companyError } = useQuery({
     queryKey: ['company-details', company.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('company_profiles')
+        .from<CompanyProfile>('company_profiles')
         .select('*')
         .eq('id', company.id)
         .single();
@@ -105,7 +91,7 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
       
       // Update the metadata with the new notes
       const { error } = await supabase
-        .from('company_profiles')
+        .from<CompanyProfile>('company_profiles')
         .update({
           metadata: {
             ...currentMetadata,
@@ -151,6 +137,25 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
     }
   };
 
+  // Error rendering helper
+  const renderError = (message: string) => (
+    <div className="flex flex-col items-center justify-center p-8 text-red-500">
+      <AlertCircle className="h-10 w-10 mb-2" />
+      <p>{message}</p>
+      <Button 
+        variant="outline" 
+        onClick={() => window.location.reload()} 
+        className="mt-4"
+      >
+        Prøv igjen
+      </Button>
+    </div>
+  );
+
+  if (companyError) {
+    return renderError(`Kunne ikke laste bedriftsdata: ${companyError instanceof Error ? companyError.message : 'Ukjent feil'}`);
+  }
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -160,19 +165,19 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
         </div>
         <div>
           <p className="text-sm font-medium">Kontaktperson:</p>
-          <p className="text-lg">{company.contact_name}</p>
+          <p className="text-lg">{company.contact_name ?? 'Ikke angitt'}</p>
         </div>
         <div>
           <p className="text-sm font-medium">E-post:</p>
-          <p className="text-lg">{company.email}</p>
+          <p className="text-lg">{company.email ?? 'Ikke angitt'}</p>
         </div>
         <div>
           <p className="text-sm font-medium">Telefon:</p>
-          <p className="text-lg">{company.phone}</p>
+          <p className="text-lg">{company.phone ?? 'Ikke angitt'}</p>
         </div>
         <div>
           <p className="text-sm font-medium">Abonnement:</p>
-          <p className="text-lg capitalize">{company.subscription_plan}</p>
+          <p className="text-lg capitalize">{company.subscription_plan ?? 'Ikke angitt'}</p>
         </div>
         <div>
           <p className="text-sm font-medium">Status:</p>
@@ -243,7 +248,7 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">{stats.leadsWonPercentage}%</div>
+                  <div className="text-3xl font-bold mb-2">{company.leadsWonPercentage ?? stats.leadsWonPercentage ?? 0}%</div>
                   <p className="text-sm text-muted-foreground">
                     Prosent av mottatte leads som resulterte i vunnet oppdrag
                   </p>
@@ -258,7 +263,7 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">{stats.avgResponseTime}</div>
+                  <div className="text-3xl font-bold mb-2">{company.avgResponseTime ?? stats.avgResponseTime ?? 'N/A'}</div>
                   <p className="text-sm text-muted-foreground">
                     Hvor raskt bedriften vanligvis svarer på nye leads
                   </p>
@@ -273,7 +278,7 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">{stats.customerRating}/5</div>
+                  <div className="text-3xl font-bold mb-2">{company.customerRating ?? stats.customerRating ?? 0}/5</div>
                   <p className="text-sm text-muted-foreground">
                     Gjennomsnittlig rating fra kunder
                   </p>
@@ -288,7 +293,7 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2 capitalize">{stats.monthlyTrend}</div>
+                  <div className="text-3xl font-bold mb-2 capitalize">{company.monthlyTrend ?? stats.monthlyTrend ?? 'Stabil'}</div>
                   <p className="text-sm text-muted-foreground">
                     Trend for konverteringsrate den siste måneden
                   </p>

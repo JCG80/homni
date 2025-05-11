@@ -4,7 +4,7 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const CompanyDashboard: React.FC = () => {
-  const { user, profile, module_access } = useAuth();
+  const { user, profile, module_access = [] } = useAuth();
   
   return (
     <div className="container mx-auto p-6">

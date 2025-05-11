@@ -113,3 +113,31 @@ export const setupTestUsers = async (): Promise<boolean> => {
     return false;
   }
 };
+
+// Verify that test users exist in the database
+export const verifyTestUsers = async (): Promise<string[]> => {
+  if (import.meta.env.MODE !== 'development') {
+    return [];
+  }
+
+  const missingUsers: string[] = [];
+
+  try {
+    for (const user of TEST_USERS) {
+      // Try to sign in with each user
+      const { error } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: user.password
+      });
+
+      if (error) {
+        console.log(`User ${user.email} does not exist or has invalid credentials.`);
+        missingUsers.push(user.email);
+      }
+    }
+  } catch (error) {
+    console.error('Error verifying test users:', error);
+  }
+
+  return missingUsers;
+};

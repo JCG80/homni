@@ -6,46 +6,39 @@ import { Button } from '@/components/ui/button';
 import { Check, X, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useMutation } from '@tanstack/react-query';
+import { Module, ModuleAccessManagerProps } from '../types/types';
 
-interface Module {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface User {
-  id: string;
-  email: string;
-  internal_admin: boolean;
-  module_access: string[];
-}
-
-interface ModuleAccessManagerProps {
-  userId: string;
-}
-
-export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
+export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerProps) {
   const [modules, setModules] = useState<Module[]>([]);
   const [userAccess, setUserAccess] = useState<string[]>([]);
   const [isInternalAdmin, setIsInternalAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   // Fetch modules and user access
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Get modules
-        const { data: modulesData } = await supabase
-          .from('system_modules')
+        const { data: modulesData, error: modulesError } = await supabase
+          .from('system_modules' as any)
           .select('*')
           .order('name');
 
+        if (modulesError) {
+          throw modulesError;
+        }
+
         // Get user access
-        const { data: userData } = await supabase
+        const { data: userData, error: userError } = await supabase
           .from('user_profiles')
           .select('metadata')
           .eq('id', userId)
           .single();
+
+        if (userError) {
+          throw userError;
+        }
 
         if (userData?.metadata) {
           const metadata = userData.metadata as Record<string, any>;
@@ -57,12 +50,14 @@ export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
         }
 
         if (modulesData) {
-          setModules(modulesData);
+          // Cast to Module[] to satisfy TypeScript
+          setModules(modulesData as unknown as Module[]);
         }
 
         setLoading(false);
       } catch (error) {
         console.error('Error fetching module access data:', error);
+        setError(error instanceof Error ? error : new Error('Unknown error'));
         setLoading(false);
       }
     };
@@ -77,7 +72,6 @@ export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
         .from('user_profiles')
         .update({
           metadata: {
-            ...userAccess,
             internal_admin: isInternalAdmin,
             module_access: userAccess,
           },
@@ -91,6 +85,9 @@ export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
         title: 'Success',
         description: 'User access updated successfully',
       });
+      if (onUpdate) {
+        onUpdate();
+      }
     },
     onError: (error) => {
       toast({
@@ -104,8 +101,9 @@ export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
   // Log audit entry
   const logAudit = async (action: string) => {
     try {
+      // Use any casting for tables not in the schema
       await supabase
-        .from('admin_logs')
+        .from('admin_logs' as any)
         .insert({
           user_id: userId,
           action,
@@ -147,6 +145,21 @@ export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        <p>Error loading access settings: {error.message}</p>
+        <Button 
+          variant="outline" 
+          onClick={() => window.location.reload()} 
+          className="mt-4"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -176,38 +189,44 @@ export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
       <div className="border-t pt-6">
         <h3 className="text-lg font-medium mb-4">Module Access</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {modules.map((module) => (
-            <div
-              key={module.id}
-              className="flex items-center justify-between p-3 border rounded-lg"
-            >
-              <div>
-                <h4 className="font-medium">{module.name}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {module.description}
-                </p>
-              </div>
-              <Button
-                variant={userAccess.includes(module.id) ? 'default' : 'outline'}
-                onClick={() => toggleAccess(module.id)}
-                className={
-                  userAccess.includes(module.id)
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : ''
-                }
+          {modules.length > 0 ? (
+            modules.map((module) => (
+              <div
+                key={module.id}
+                className="flex items-center justify-between p-3 border rounded-lg"
               >
-                {userAccess.includes(module.id) ? (
-                  <>
-                    <Check className="mr-2 h-4 w-4" /> Granted
-                  </>
-                ) : (
-                  <>
-                    <X className="mr-2 h-4 w-4" /> Denied
-                  </>
-                )}
-              </Button>
+                <div>
+                  <h4 className="font-medium">{module.name}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {module.description}
+                  </p>
+                </div>
+                <Button
+                  variant={userAccess.includes(module.id) ? 'default' : 'outline'}
+                  onClick={() => toggleAccess(module.id)}
+                  className={
+                    userAccess.includes(module.id)
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : ''
+                  }
+                >
+                  {userAccess.includes(module.id) ? (
+                    <>
+                      <Check className="mr-2 h-4 w-4" /> Granted
+                    </>
+                  ) : (
+                    <>
+                      <X className="mr-2 h-4 w-4" /> Denied
+                    </>
+                  )}
+                </Button>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-2 text-center p-4 bg-gray-50 rounded">
+              No modules available
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -228,3 +247,5 @@ export function ModuleAccessManager({ userId }: ModuleAccessManagerProps) {
     </div>
   );
 }
+
+export default ModuleAccessManager;
