@@ -1,13 +1,13 @@
 
-import { TabsContent } from '@/components/ui/tabs';
+import { TabsContent as UiTabsContent } from '@/components/ui/tabs';
 import { LoginTabContent } from '../LoginTabContent';
 import { motion } from 'framer-motion';
 
-interface TabsContentProps {
+interface LoginTabsContentProps {
   activeTab: string;
 }
 
-export const TabsContent = ({ activeTab }: TabsContentProps) => {
+export const LoginTabsContent = ({ activeTab }: LoginTabsContentProps) => {
   const tabAnimation = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 }
@@ -21,21 +21,21 @@ export const TabsContent = ({ activeTab }: TabsContentProps) => {
       transition={{ duration: 0.3 }}
       className="mt-6"
     >
-      <TabsContent value="private">
+      <UiTabsContent value="private">
         <LoginTabContent 
           title="Logg inn som privatperson"
           subtitle="Velkommen tilbake til Homni"
           userType="private"
         />
-      </TabsContent>
+      </UiTabsContent>
       
-      <TabsContent value="business">
+      <UiTabsContent value="business">
         <LoginTabContent 
           title="Logg inn som bedrift"
           subtitle="Logg inn på din bedriftskonto hos Homni"
           userType="business"
         />
-      </TabsContent>
+      </UiTabsContent>
     </motion.div>
   );
 };

@@ -2,7 +2,7 @@
 import { Tabs, TabsList } from '@/components/ui/tabs';
 import { useLoginTabs } from './hooks/useLoginTabs';
 import { TabsTriggers } from './login/TabsTriggers';
-import { TabsContent } from './login/TabsContent';
+import { LoginTabsContent } from './login/LoginTabsContent';
 import { motion } from 'framer-motion';
 
 interface LoginTabsProps {
@@ -30,7 +30,7 @@ export const LoginTabs = ({ defaultTab = 'private' }: LoginTabsProps) => {
           <TabsTriggers activeTab={activeTab} />
         </TabsList>
         
-        <TabsContent activeTab={activeTab} />
+        <LoginTabsContent activeTab={activeTab} />
       </Tabs>
     </motion.div>
   );
