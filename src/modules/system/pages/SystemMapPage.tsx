@@ -19,6 +19,7 @@ export const SystemMapPage = () => {
   const [selectedNode, setSelectedNode] = useState<SystemModule | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState<number>(0);
 
   const loadModules = useCallback(async () => {
     try {
@@ -26,6 +27,11 @@ export const SystemMapPage = () => {
       setError(null);
       
       const modulesData = await getSystemModules();
+      
+      if (!modulesData || modulesData.length === 0) {
+        throw new Error('Ingen moduler funnet');
+      }
+      
       setModules(modulesData);
       
       // Build the tree structure
@@ -33,23 +39,33 @@ export const SystemMapPage = () => {
       setTreeData(tree);
       
       // Show success toast only when retrying after an error
-      if (error) {
-        toast.success('Systemmoduler lastet inn');
+      if (retryCount > 0) {
+        toast.success('Systemmoduler lastet inn', {
+          description: `${modulesData.length} moduler funnet`
+        });
       }
       
+      setRetryCount(0);
       setError(null);
     } catch (err) {
       console.error('Failed to load system modules:', err);
-      setError('Kunne ikke laste systemmoduler. Vennligst prøv igjen senere.');
-      toast.error('Feil ved lasting av moduler');
+      const errorMessage = err instanceof Error ? err.message : 'Ukjent feil ved lasting av moduler';
+      setError(errorMessage);
+      toast.error('Feil ved lasting av moduler', {
+        description: errorMessage
+      });
     } finally {
       setLoading(false);
     }
-  }, [error]);
+  }, [retryCount]);
+
+  const handleRetry = useCallback(() => {
+    setRetryCount(prevCount => prevCount + 1);
+  }, []);
 
   useEffect(() => {
     loadModules();
-  }, [loadModules]);
+  }, [loadModules, retryCount]);
 
   // Handle node click in the tree
   const handleNodeClick = (nodeData: any) => {
@@ -67,7 +83,7 @@ export const SystemMapPage = () => {
   }
 
   if (error) {
-    return <SystemMapError error={error} onRetry={loadModules} />;
+    return <SystemMapError error={error} onRetry={handleRetry} />;
   }
 
   return (
@@ -81,10 +97,12 @@ export const SystemMapPage = () => {
               <CardTitle>Moduloversikt</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <SystemTreeVisualization 
-                treeData={treeData} 
-                onNodeClick={handleNodeClick} 
-              />
+              {treeData && (
+                <SystemTreeVisualization 
+                  treeData={treeData} 
+                  onNodeClick={handleNodeClick} 
+                />
+              )}
             </CardContent>
           </Card>
         </div>
