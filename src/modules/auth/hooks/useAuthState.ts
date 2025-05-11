@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getProfile } from '../api';
 import { AuthState } from '../types/types';
@@ -14,6 +14,7 @@ const initialState: AuthState = {
 
 /**
  * Hook for managing authentication state
+ * @deprecated Use the unified useAuthState from useAuthState.unified.ts instead
  */
 export const useAuthState = () => {
   const [authState, setAuthState] = useState<AuthState>(initialState);
@@ -119,5 +120,25 @@ export const useAuthState = () => {
     };
   }, []);
 
-  return { authState, refreshProfile };
+  // Calculate derived state
+  const isAuthenticated = !!authState.user;
+  const role = authState.profile?.role;
+  const isAdmin = role === 'admin' || role === 'master_admin';
+  const isMasterAdmin = role === 'master_admin';
+  const isCompany = role === 'company';
+  const isUser = role === 'member';
+
+  return {
+    user: authState.user,
+    profile: authState.profile,
+    isLoading: authState.isLoading,
+    error: authState.error,
+    refreshProfile,
+    isAuthenticated,
+    isAdmin,
+    isMasterAdmin,
+    isCompany,
+    isUser,
+    role,
+  };
 };

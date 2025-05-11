@@ -1,28 +1,36 @@
 
+import { AuthUser, Profile } from '../types/types';
 import { UserRole } from '../utils/roles';
-import { Profile, AuthUser } from '../types/types';
 
-interface AuthDerivedStateProps {
+interface AuthStateInput {
   user: AuthUser | null;
   profile: Profile | null;
 }
 
-/**
- * Hook that derives state from auth user and profile
- */
-export const useAuthDerivedState = ({ user, profile }: AuthDerivedStateProps) => {
-  // Determine the role - user is either authenticated with a specific role, or guest
-  const currentRole: UserRole = profile?.role || (user ? 'member' : 'guest');
+interface AuthDerivedState {
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isMasterAdmin: boolean;
+  isCompany: boolean;
+  isUser: boolean;
+  role: UserRole | undefined;
+}
+
+export const useAuthDerivedState = ({ user, profile }: AuthStateInput): AuthDerivedState => {
+  // Calculate derived state
+  const isAuthenticated = !!user;
+  const role = profile?.role;
+  const isAdmin = role === 'admin' || role === 'master_admin';
+  const isMasterAdmin = role === 'master_admin';
+  const isCompany = role === 'company';
+  const isUser = role === 'member';
 
   return {
-    role: currentRole,
-    isAuthenticated: !!user,
-    isAnonymous: !user,
-    isUser: currentRole === 'member',
-    isCompany: currentRole === 'company',
-    isAdmin: currentRole === 'admin' || currentRole === 'master_admin',
-    isMasterAdmin: currentRole === 'master_admin',
-    isProvider: currentRole === 'provider',
-    isEditor: currentRole === 'editor',
+    isAuthenticated,
+    isAdmin,
+    isMasterAdmin,
+    isCompany,
+    isUser,
+    role,
   };
 };
