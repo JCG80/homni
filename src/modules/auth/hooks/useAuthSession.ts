@@ -1,15 +1,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { AuthState, AuthUser } from '../types/types';
-import { useFetchProfile } from './useFetchProfile';
-import { useAuthDerivedState } from './useAuthDerivedState';
-import { toast } from '@/hooks/use-toast';
+import { AuthUser, AuthState } from '../types/types';
+import { useFetchUserProfile } from './useFetchUserProfile';
 
 /**
- * Hook that manages the authentication state
+ * Hook that manages the auth session state and listens for changes
  */
-export const useAuthState = () => {
+export const useAuthSession = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     profile: null,
@@ -17,7 +15,7 @@ export const useAuthState = () => {
     error: null,
   });
 
-  const { fetchProfile } = useFetchProfile();
+  const { fetchProfile } = useFetchUserProfile();
 
   // Set up effect to handle auth state
   useEffect(() => {
@@ -174,12 +172,6 @@ export const useAuthState = () => {
           ? error.message 
           : "Failed to refresh profile";
         
-        toast({
-          title: "Feil ved oppdatering av profil",
-          description: errorMessage,
-          variant: "destructive",
-        });
-        
         setAuthState(prev => ({
           ...prev,
           isLoading: false,
@@ -189,15 +181,8 @@ export const useAuthState = () => {
     }
   }, [authState.user, fetchProfile]);
 
-  // Get derived state like isAdmin, isUser, etc.
-  const derivedState = useAuthDerivedState({
-    user: authState.user,
-    profile: authState.profile
-  });
-
   return {
     ...authState,
-    ...derivedState,
     refreshProfile,
   };
 };

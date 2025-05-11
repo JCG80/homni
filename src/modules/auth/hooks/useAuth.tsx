@@ -1,7 +1,8 @@
 
 import { createContext, ReactNode, useContext } from 'react';
 import { AuthUser, Profile } from '../types/types';
-import { useAuthState } from './useAuthState.unified';
+import { useAuthSession } from './useAuthSession';
+import { useAuthDerivedState } from './useAuthDerivedState';
 import { UserRole } from '../utils/roles/types';
 
 // Define a comprehensive AuthContextType with all required fields
@@ -46,10 +47,22 @@ const AuthContext = createContext<AuthContextType>({
 
 // AuthProvider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Get the auth state from the unified hook
-  const authState = useAuthState();
+  // Get the auth session state
+  const authSession = useAuthSession();
   
-  return <AuthContext.Provider value={authState}>{children}</AuthContext.Provider>;
+  // Get derived state like isAdmin, isUser, etc.
+  const derivedState = useAuthDerivedState({
+    user: authSession.user,
+    profile: authSession.profile
+  });
+  
+  // Combine the states for the context value
+  const contextValue = {
+    ...authSession,
+    ...derivedState,
+  };
+  
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 // Named export for the useAuth hook

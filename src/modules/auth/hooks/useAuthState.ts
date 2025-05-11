@@ -1,51 +1,24 @@
-import { useCallback } from 'react';
-import { AuthUser, Profile } from '../types/types';
-import { UserRole } from '../utils/roles';
 
-interface AuthBaseState {
-  user: AuthUser | null;
-  profile: Profile | null;
-}
+import { useAuthSession } from './useAuthSession';
+import { useAuthDerivedState } from './useAuthDerivedState';
 
 /**
- * Hook that provides derived state from auth data (user and profile)
- * This separates the derived state logic from the main auth state management
+ * Hook that provides the complete auth state
+ * This is the main hook that should be used for auth related functionality
  */
-export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
-  // Check if user is authenticated
-  const isAuthenticated = !!user;
-
-  // Determine role - use profile role first, then user role, default to undefined
-  const role: UserRole | undefined = profile?.role ?? user?.role;
-
-  // Helper function to check if user has a specific role
-  const hasRole = useCallback((roleToCheck: UserRole) => {
-    return role === roleToCheck;
-  }, [role]);
-
-  // Helper functions to check common roles
-  const isAdmin = useCallback(() => {
-    return hasRole('admin') || hasRole('master_admin');
-  }, [hasRole]);
-
-  const isMasterAdmin = useCallback(() => {
-    return hasRole('master_admin');
-  }, [hasRole]);
-
-  const isCompany = useCallback(() => {
-    return hasRole('company');
-  }, [hasRole]);
-
-  const isUser = useCallback(() => {
-    return hasRole('user');
-  }, [hasRole]);
-
+export const useAuthState = () => {
+  // Get the auth session state
+  const authSession = useAuthSession();
+  
+  // Get derived state like isAdmin, isUser, etc.
+  const derivedState = useAuthDerivedState({
+    user: authSession.user,
+    profile: authSession.profile
+  });
+  
+  // Combine the states
   return {
-    isAuthenticated,
-    isAdmin: isAdmin(),
-    isMasterAdmin: isMasterAdmin(),
-    isCompany: isCompany(),
-    isUser: isUser(),
-    role,
+    ...authSession,
+    ...derivedState,
   };
 };

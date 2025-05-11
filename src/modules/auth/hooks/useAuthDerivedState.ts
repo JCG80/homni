@@ -20,13 +20,13 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
   const role: UserRole | undefined = profile?.role ?? user?.role;
 
   // Get account type from user metadata
-  const account_type = user?.metadata?.account_type || profile?.metadata?.account_type || 'member';
+  const account_type = profile?.metadata?.account_type || 'member';
   
   // Get module access from user metadata
-  const module_access = user?.metadata?.module_access || profile?.metadata?.module_access || [];
+  const module_access = profile?.metadata?.module_access || [];
   
   // Get internal admin flag from user metadata
-  const internal_admin = user?.metadata?.internal_admin || profile?.metadata?.internal_admin || false;
+  const internal_admin = profile?.metadata?.internal_admin || false;
 
   // Helper function to check if user has a specific role
   const hasRole = useCallback((roleToCheck: UserRole) => {
