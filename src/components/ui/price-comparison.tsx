@@ -3,6 +3,7 @@ import React from 'react';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Zap } from 'lucide-react';
 
 interface ComparisonItem {
   id: string;
@@ -28,14 +29,20 @@ export function PriceComparison({
   onSelect,
   currency = 'kr'
 }: PriceComparisonProps) {
+  // Sort items by price
+  const sortedItems = [...items].sort((a, b) => a.price - b.price);
+  
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-2xl font-bold">{title}</h3>
+        <div className="flex items-center gap-2">
+          <Zap className="h-5 w-5 text-primary" />
+          <h3 className="text-2xl font-bold">{title}</h3>
+        </div>
         {description && <p className="text-muted-foreground">{description}</p>}
       </div>
 
-      <div className="rounded-lg border">
+      <div className="rounded-lg border overflow-hidden">
         <Table>
           {description && <TableCaption>{description}</TableCaption>}
           <TableHeader>
@@ -47,15 +54,25 @@ export function PriceComparison({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item) => (
-              <TableRow key={item.id} className={item.highlight ? 'bg-accent/30' : ''}>
+            {sortedItems.map((item, index) => (
+              <TableRow 
+                key={item.id} 
+                className={item.highlight ? 'bg-primary/5 border-l-4 border-l-primary' : ''}
+              >
                 <TableCell className="font-medium">
-                  {item.name}
-                  {item.label && (
-                    <Badge variant="outline" className="ml-2">
-                      {item.label}
-                    </Badge>
-                  )}
+                  <div className="flex items-start gap-2">
+                    {index === 0 && (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        Billigst
+                      </Badge>
+                    )}
+                    {item.label && item.label !== 'Billigst' && (
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        {item.label}
+                      </Badge>
+                    )}
+                    <div className="mt-1">{item.name}</div>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <ul className="list-disc list-inside text-sm text-muted-foreground">
@@ -64,7 +81,7 @@ export function PriceComparison({
                     ))}
                   </ul>
                 </TableCell>
-                <TableCell className="text-right font-medium">
+                <TableCell className="text-right font-medium text-lg">
                   {item.price} {currency}
                 </TableCell>
                 <TableCell className="text-right">
@@ -72,6 +89,7 @@ export function PriceComparison({
                     onClick={() => onSelect && onSelect(item.id)}
                     variant={item.highlight ? "default" : "outline"}
                     size="sm"
+                    className={item.highlight ? "bg-primary hover:bg-primary/90" : ""}
                   >
                     Velg
                   </Button>

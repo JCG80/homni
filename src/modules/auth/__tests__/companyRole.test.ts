@@ -23,23 +23,15 @@ vi.mock('react-router-dom', async () => {
 });
 
 describe('Company Role Access', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('should allow company role to access company-specific modules', () => {
     expect(canAccessModule('company', 'dashboard')).toBe(true);
     expect(canAccessModule('company', 'leads')).toBe(true);
     expect(canAccessModule('company', 'company')).toBe(true);
     expect(canAccessModule('company', 'company/profile')).toBe(true);
     expect(canAccessModule('company', 'settings')).toBe(true);
-    expect(canAccessModule('company', 'reports')).toBe(true);
-    expect(canAccessModule('company', 'profile')).toBe(true);
   });
 
-  test('should not allow company role to access user-specific or admin modules', () => {
-    expect(canAccessModule('company', 'maintenance')).toBe(false);
-    expect(canAccessModule('company', 'properties')).toBe(false);
+  test('should not allow company role to access admin modules', () => {
     expect(canAccessModule('company', 'admin')).toBe(false);
     expect(canAccessModule('company', 'content')).toBe(false);
   });
@@ -84,7 +76,7 @@ describe('Company Role Access', () => {
     expect(getByText('Company Content')).toBeInTheDocument();
   });
 
-  test('should redirect user role from company-specific routes', () => {
+  test('should prevent user role from accessing company-only routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,

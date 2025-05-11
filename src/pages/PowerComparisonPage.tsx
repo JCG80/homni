@@ -15,7 +15,7 @@ export const PowerComparisonPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!postnr || postnr.length !== 4) {
+    if (!postnr || postnr.length !== 4 || !/^\d+$/.test(postnr)) {
       toast({
         title: "Ugyldig postnummer",
         description: "Vennligst oppgi et gyldig postnummer (4 siffer)",
@@ -27,9 +27,12 @@ export const PowerComparisonPage = () => {
   };
 
   const handleSelect = (id: string) => {
+    const providerName = id.split('-')[0];
+    const providerType = id.split('-')[1];
+    
     toast({
       title: "Strømleverandør valgt",
-      description: `Du har valgt ${id}. En representant vil kontakte deg snart.`,
+      description: `Du har valgt ${providerName.charAt(0).toUpperCase() + providerName.slice(1)} med ${providerType === 'spot' ? 'spotprisavtale' : 'fastprisavtale'}. En representant vil kontakte deg snart.`,
     });
   };
 

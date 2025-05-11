@@ -20,34 +20,56 @@ export const PowerComparisonResults: React.FC<PowerComparisonResultsProps> = ({
   handleSelect,
   resetSearch
 }) => {
-  const mockComparisonData = [
+  // Generate a monthly price based on consumption and a base rate
+  const calculateMonthlyPrice = (baseRate: number, consumption: number): number => {
+    const annualConsumption = consumption;
+    const monthlyConsumption = annualConsumption / 12;
+    // Convert øre/kWh to kr and multiply by consumption
+    return Math.round((baseRate / 100) * monthlyConsumption);
+  };
+
+  // Spot price electricity providers data
+  const spotPriceProviders = [
     {
-      id: 'fjordkraft-spot',
-      name: 'Fjordkraft',
-      price: 89.9,
-      features: ['Spotpris + 4,9 øre/kWh', 'Ingen bindingstid', 'Månedsavgift: 49 kr'],
+      id: 'tibber-spot',
+      name: 'Tibber',
+      price: calculateMonthlyPrice(79.9, consumption),
+      features: ['Spotpris + 0 øre/kWh', 'App med forbruksoversikt', 'Månedsavgift: 39 kr'],
       highlight: true,
       label: 'Populær'
     },
     {
-      id: 'tibber-spot',
-      name: 'Tibber',
-      price: 79.9,
-      features: ['Spotpris + 0 øre/kWh', 'App med forbruksoversikt', 'Månedsavgift: 39 kr'],
+      id: 'fjordkraft-spot',
+      name: 'Fjordkraft',
+      price: calculateMonthlyPrice(84.5, consumption),
+      features: ['Spotpris + 4,9 øre/kWh', 'Ingen bindingstid', 'Månedsavgift: 49 kr'],
     },
     {
       id: 'norgesenergi-spot',
       name: 'NorgesEnergi',
-      price: 84.5,
+      price: calculateMonthlyPrice(83.2, consumption),
       features: ['Spotpris + 3,9 øre/kWh', 'Første måned gratis', 'Månedsavgift: 39 kr'],
+    },
+    {
+      id: 'agva-spot',
+      name: 'Agva Kraft',
+      price: calculateMonthlyPrice(80.5, consumption),
+      features: ['Spotpris + 2,5 øre/kWh', 'Strøm til innkjøpspris', 'Månedsavgift: 45 kr'],
+    },
+    {
+      id: 'fortum-spot',
+      name: 'Fortum',
+      price: calculateMonthlyPrice(82.0, consumption),
+      features: ['Spotpris + 3,5 øre/kWh', 'App med forbrukoversikt', 'Månedsavgift: 45 kr'],
     }
   ];
 
-  const mockFixedData = [
+  // Fixed price electricity providers data
+  const fixedPriceProviders = [
     {
       id: 'fjordkraft-fixed',
       name: 'Fjordkraft Fastpris',
-      price: 109.9,
+      price: calculateMonthlyPrice(109.9, consumption),
       features: ['Fastpris i 12 måneder', 'Forutsigbare kostnader', 'Ingen månedsavgift'],
       highlight: true,
       label: 'Populær'
@@ -55,14 +77,26 @@ export const PowerComparisonResults: React.FC<PowerComparisonResultsProps> = ({
     {
       id: 'lyse-fixed',
       name: 'Lyse Fastpris',
-      price: 119.5,
+      price: calculateMonthlyPrice(119.5, consumption),
       features: ['Fastpris i 36 måneder', 'Ingen prisendringer', 'Månedsavgift: 0 kr'],
     },
     {
       id: 'hafslund-fixed',
       name: 'Hafslund Fastpris',
-      price: 114.9,
+      price: calculateMonthlyPrice(114.9, consumption),
       features: ['Fastpris i 24 måneder', 'Grønn strøm', 'Månedsavgift: 0 kr'],
+    },
+    {
+      id: 'nve-fixed',
+      name: 'NTE Fastpris',
+      price: calculateMonthlyPrice(112.5, consumption),
+      features: ['Fastpris i 12 måneder', '100% fornybar energi', 'Månedsavgift: 0 kr'],
+    },
+    {
+      id: 'folkekraft-fixed',
+      name: 'Folkekraft Fastpris',
+      price: calculateMonthlyPrice(107.8, consumption),
+      features: ['Fastpris i 6 måneder', 'Miljøvennlig strøm', 'Månedsavgift: 0 kr'],
     }
   ];
 
@@ -99,7 +133,7 @@ export const PowerComparisonResults: React.FC<PowerComparisonResultsProps> = ({
           <PriceComparison
             title={selectedType === 'spot' ? "Spotprisavtaler" : "Fastprisavtaler"}
             description={`Estimert månedlig kostnad basert på ${consumption} kWh årsforbruk`}
-            items={selectedType === 'spot' ? mockComparisonData : mockFixedData}
+            items={selectedType === 'spot' ? spotPriceProviders : fixedPriceProviders}
             onSelect={handleSelect}
             currency="kr/mnd"
           />
