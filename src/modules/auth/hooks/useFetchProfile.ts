@@ -1,31 +1,38 @@
 
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { parseProfileData } from '../utils/profileParser';
+import { Profile } from '../types/types';
+import { withRetry } from '@/utils/apiRetry';
 
-/**
- * Hook for fetching user profiles from Supabase
- */
 export const useFetchProfile = () => {
-  const fetchProfile = useCallback(async (userId: string) => {
+  const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (profileError) {
-        console.error("Error fetching profile:", profileError);
-        throw new Error(profileError.message);
-      }
-
-      return parseProfileData(profileData);
-    } catch (error: any) {
-      console.error("Unexpected error fetching profile:", error);
-      throw new Error(error.message || "Failed to fetch profile");
+      // Use withRetry to handle temporary network issues
+      const result = await withRetry(async () => {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+          
+        if (error) {
+          console.error("Error fetching profile:", error);
+          throw new Error(`Failed to fetch profile: ${error.message}`);
+        }
+        
+        return data as Profile;
+      }, {
+        maxAttempts: 3,
+        delayMs: 1000,
+        backoffFactor: 1.5
+      });
+      
+      return result;
+    } catch (error) {
+      console.error("Failed to fetch user profile after retries:", error);
+      return null;
     }
   }, []);
-
+  
   return { fetchProfile };
 };
