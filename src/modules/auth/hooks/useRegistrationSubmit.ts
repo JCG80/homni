@@ -32,7 +32,7 @@ export const useRegistrationSubmit = () => {
       
       if (user) {
         // Set the appropriate role using type guard
-        const role: UserRole = data.userType === 'business' ? 'company' : 'member';
+        const role: UserRole = data.userType === 'business' ? 'company' : 'user';
         
         if (!isUserRole(role)) {
           throw new Error("Invalid role type");
