@@ -15,14 +15,24 @@ import { InsuranceCompany } from "../../types/insurance-types";
 export const useInsuranceCompanies = () => {
   return useQuery({
     queryKey: ['insuranceCompanies'],
-    queryFn: fetchInsuranceCompanies
+    queryFn: async () => {
+      console.log('Fetching insurance companies');
+      const data = await fetchInsuranceCompanies();
+      console.log('Fetched insurance companies:', data);
+      return data;
+    }
   });
 };
 
 export const useInsuranceCompany = (id: string) => {
   return useQuery({
     queryKey: ['insuranceCompany', id],
-    queryFn: () => fetchInsuranceCompanyById(id),
+    queryFn: async () => {
+      console.log(`Fetching insurance company with id: ${id}`);
+      const data = await fetchInsuranceCompanyById(id);
+      console.log('Fetched insurance company:', data);
+      return data;
+    },
     enabled: !!id
   });
 };

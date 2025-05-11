@@ -9,6 +9,7 @@ import {
   Building, Star, ArrowLeft, Calendar, Award, User 
 } from 'lucide-react';
 import { InsuranceTypeTag } from '../components/InsuranceTypeTag';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 export const CompanyDetailsPage = () => {
   const { companyId } = useParams<{ companyId: string }>();
@@ -21,17 +22,17 @@ export const CompanyDetailsPage = () => {
   
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
+      <PageLayout title="Bedriftsdetaljer" description="Laster inn bedriftsinformasjon...">
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin h-8 w-8 rounded-full border-4 border-primary border-t-transparent"></div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
   
   if (!company) {
     return (
-      <div className="container mx-auto py-8">
+      <PageLayout title="Fant ikke bedriften" description="Vi kunne ikke finne bedriften du leter etter">
         <Card>
           <CardContent className="flex flex-col items-center py-10">
             <Building className="h-16 w-16 text-muted-foreground/30 mb-4" />
@@ -45,12 +46,15 @@ export const CompanyDetailsPage = () => {
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <PageLayout 
+      title={company.name} 
+      description={`Detaljer for forsikringsselskapet ${company.name}`}
+    >
       <div className="mb-6">
         <Button 
           variant="outline" 
@@ -185,6 +189,6 @@ export const CompanyDetailsPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };

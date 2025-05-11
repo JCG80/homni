@@ -20,6 +20,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { InsuranceRoutes } from './modules/insurance/InsuranceRoutes';
 import NotFound from './pages/NotFound';
 import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionPage';
+import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 
 export const AppRoutes = () => {
   return (
@@ -47,6 +48,9 @@ export const AppRoutes = () => {
         
         {/* Lead capture public route */}
         <Route path="/lead-capture" element={<LeadCapturePage />} />
+        
+        {/* Companies list route */}
+        <Route path="/companies" element={<CompanyListPage />} />
         
         {/* Protected routes - require authentication */}
         <Route path="/dashboard" element={

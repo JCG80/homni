@@ -25,7 +25,7 @@ const routeMap: RouteMap = {
   'strom': { label: 'Strømsammenligning', parent: '' },
   'forsikring': { label: 'Forsikring', parent: '' },
   'insurance': { label: 'Forsikring', parent: '' },
-  'companies': { label: 'Selskaper', parent: 'insurance' },
+  'companies': { label: 'Bedrifter', parent: '' },
   'compare': { label: 'Forsikringstilbud', parent: '' },
   'quote': { label: 'Få tilbud', parent: 'insurance' },
   'login': { label: 'Logg inn', parent: '' },

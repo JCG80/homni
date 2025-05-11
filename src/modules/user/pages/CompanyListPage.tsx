@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Table, 
   TableBody, 
@@ -14,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Mail, RefreshCw, UserCheck } from 'lucide-react';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 interface CompanyProfile {
   id: string;
@@ -28,6 +30,7 @@ export const CompanyListPage = () => {
   const [companies, setCompanies] = useState<CompanyProfile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const loadCompanyData = async () => {
     try {
@@ -92,19 +95,20 @@ export const CompanyListPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg">Laster bedrifter...</p>
+      <PageLayout title="Bedriftsliste" description="Oversikt over alle registrerte bedrifter">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-lg">Laster bedrifter...</p>
+          </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <PageLayout title="Bedriftsliste" description="Oversikt over alle registrerte bedrifter">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Bedriftsliste</h1>
         <Button onClick={loadCompanyData} variant="outline">
           <RefreshCw className="h-4 w-4 mr-2" />
           Oppdater
@@ -138,7 +142,14 @@ export const CompanyListPage = () => {
               <TableBody>
                 {companies.map((company) => (
                   <TableRow key={company.id}>
-                    <TableCell className="font-medium">{company.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Button 
+                        variant="link" 
+                        onClick={() => navigate(`/insurance/companies/${company.id}`)}
+                      >
+                        {company.name}
+                      </Button>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline">
                         {company.status === 'active' ? 'Aktiv' : 'Inaktiv'}
@@ -185,6 +196,6 @@ export const CompanyListPage = () => {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageLayout>
   );
 };
