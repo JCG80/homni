@@ -1,7 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { SystemModule } from '../types/systemModules';
-import { Json } from '@/integrations/supabase/types';
 
 /**
  * Fetch all system modules
@@ -80,6 +79,21 @@ export async function deleteSystemModule(moduleId: string): Promise<boolean> {
  * Get module dependencies
  */
 export async function getModuleDependencies(): Promise<Record<string, string[]>> {
-  // This is a mock implementation - in a real app this would fetch actual data
-  return {};
+  try {
+    const { data, error } = await supabase
+      .from('system_modules')
+      .select('id, dependencies');
+    
+    if (error) throw error;
+    
+    const dependencyMap: Record<string, string[]> = {};
+    (data || []).forEach((module) => {
+      dependencyMap[module.id] = module.dependencies || [];
+    });
+    
+    return dependencyMap;
+  } catch (error) {
+    console.error('Error getting module dependencies:', error);
+    return {};
+  }
 }

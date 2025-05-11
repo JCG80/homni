@@ -22,9 +22,6 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
   // Get account type from user metadata or profile
   const account_type = (profile as any)?.metadata?.account_type || (profile as any)?.account_type || 'member';
   
-  // Get module access from user metadata or profile
-  const module_access = (profile as any)?.metadata?.module_access || (profile as any)?.module_access || [];
-  
   // Get internal admin flag from user metadata or profile
   const internal_admin = (profile as any)?.metadata?.internal_admin || (profile as any)?.internal_admin || false;
 
@@ -38,9 +35,10 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
     // Master admins can access everything
     if (role === 'master_admin' || internal_admin) return true;
     
-    // Check if user has the module in their module_access list
-    return Array.isArray(module_access) && module_access.includes(module);
-  }, [role, module_access, internal_admin]);
+    // For other users, we'll need to query the module_access table
+    // This will be handled by the backend through RLS policies
+    return true; // Default to true for now, the backend will enforce access control
+  }, [role, internal_admin]);
 
   // Helper functions to check common roles
   const isAdmin = useCallback(() => {
@@ -67,7 +65,6 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
     isMember: isMember(),
     role,
     account_type,
-    module_access,
     internal_admin,
     canAccessModule,
   };

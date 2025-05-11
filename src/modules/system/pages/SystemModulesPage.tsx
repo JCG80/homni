@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { getSystemModules, toggleSystemModule } from '../services/systemModules';
+import { getSystemModules, toggleSystemModule } from '../api/systemModules';
 import { SystemModule } from '../types/systemModules';
 import { toast } from '@/hooks/use-toast';
 
@@ -119,6 +119,13 @@ export const SystemModulesPage = () => {
                   </TableCell>
                 </TableRow>
               ))}
+              {modules.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                    Ingen moduler funnet
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

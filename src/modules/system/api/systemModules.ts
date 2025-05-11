@@ -3,11 +3,15 @@
 import { 
   getSystemModules,
   toggleSystemModule,
-  getModuleDependencies
+  getModuleDependencies,
+  createSystemModule,
+  deleteSystemModule
 } from '../services/systemModules';
 
 export {
   getSystemModules,
   toggleSystemModule,
-  getModuleDependencies
+  getModuleDependencies,
+  createSystemModule,
+  deleteSystemModule
 };
