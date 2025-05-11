@@ -1,12 +1,10 @@
 
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { devLogin } from '@/modules/auth/utils/devLogin';
-import { toast } from '@/hooks/use-toast';
-import { UserRole } from '@/modules/auth/types/types';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginTabs } from '@/components/auth/LoginTabs';
 import { TestUserManager } from '@/components/auth/TestUserManager';
+import { UserRole } from '@/modules/auth/utils/roles';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -18,29 +16,6 @@ export const LoginPage = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [user, isLoading, navigate]);
-
-  const handleDevLogin = async (role: UserRole) => {
-    console.log(`Attempting dev login as ${role}`);
-    
-    try {
-      const result = await devLogin(role);
-      
-      if (result.error) {
-        toast({
-          title: 'Innlogging feilet',
-          description: result.error.message,
-          variant: 'destructive',
-        });
-      }
-      // Success notifications are handled in devLogin
-    } catch (err) {
-      toast({
-        title: 'Feil ved innlogging',
-        description: err instanceof Error ? err.message : 'Ukjent feil oppstod',
-        variant: 'destructive',
-      });
-    }
-  };
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -61,7 +36,7 @@ export const LoginPage = () => {
         </div>
         
         {import.meta.env.MODE === 'development' && (
-          <TestUserManager onLoginClick={handleDevLogin} />
+          <TestUserManager />
         )}
         
         <div className="text-center text-sm">

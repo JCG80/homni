@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { BusinessRegistrationForm } from './forms/BusinessRegistrationForm';
 import { PrivateRegistrationForm } from './forms/PrivateRegistrationForm';
 import { useAuthRetry } from '../hooks/useAuthRetry';
@@ -12,7 +12,7 @@ interface RegisterFormProps {
 
 export const RegisterForm = ({ 
   onSuccess, 
-  redirectTo = '/', 
+  redirectTo = '/dashboard', 
   userType = 'private' 
 }: RegisterFormProps) => {
   // Use our authRetry hook for registration

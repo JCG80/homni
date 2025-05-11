@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signInWithEmail } from '../api/auth-authentication';
 import { toast } from '@/hooks/use-toast';
@@ -29,7 +28,7 @@ interface LoginFormProps {
   userType?: 'private' | 'business';
 }
 
-export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'private' }: LoginFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +74,7 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
       const { user, error: signInError } = await signInWithEmail(values.email, values.password);
       
       if (signInError) {
-        console.error('Detailed login error:', JSON.stringify(signInError));
+        console.error('Detailed login error:', signInError);
         
         // Handle specific error cases
         if (signInError instanceof Error) {
@@ -180,7 +179,7 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
           </Button>
         </div>
 
-        {import.meta.env.MODE === 'development' && (
+        {import.meta.env.MODE === 'development' && TEST_USERS && (
           <div className="text-xs mt-4">
             <details className="text-muted-foreground">
               <summary className="cursor-pointer">Dev info</summary>
