@@ -1,7 +1,7 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getSystemModules, getModuleDependencies } from '../api/systemModules';
+import { getSystemModules } from '../api/systemModules';
 import type { SystemModule } from '../types/systemTypes';
 import { 
   SystemTreeVisualization, 
@@ -11,6 +11,7 @@ import {
 import { ModuleDetailsPanel } from '../components/map/ModuleDetailsPanel';
 import { SystemMapLoading } from '../components/map/SystemMapLoading';
 import { SystemMapError } from '../components/map/SystemMapError';
+import { toast } from 'sonner';
 
 export const SystemMapPage = () => {
   const [modules, setModules] = useState<SystemModule[]>([]);
@@ -19,26 +20,36 @@ export const SystemMapPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadModules() {
-      try {
-        setLoading(true);
-        const modulesData = await getSystemModules();
-        setModules(modulesData);
-        
-        // Build the tree structure
-        const tree = buildTreeData(modulesData);
-        setTreeData(tree);
-      } catch (error) {
-        console.error('Failed to load system modules:', error);
-        setError('Kunne ikke laste systemmoduler. Vennligst prøv igjen senere.');
-      } finally {
-        setLoading(false);
+  const loadModules = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const modulesData = await getSystemModules();
+      setModules(modulesData);
+      
+      // Build the tree structure
+      const tree = buildTreeData(modulesData);
+      setTreeData(tree);
+      
+      // Show success toast only when retrying after an error
+      if (error) {
+        toast.success('Systemmoduler lastet inn');
       }
+      
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load system modules:', err);
+      setError('Kunne ikke laste systemmoduler. Vennligst prøv igjen senere.');
+      toast.error('Feil ved lasting av moduler');
+    } finally {
+      setLoading(false);
     }
+  }, [error]);
 
+  useEffect(() => {
     loadModules();
-  }, []);
+  }, [loadModules]);
 
   // Handle node click in the tree
   const handleNodeClick = (nodeData: any) => {
@@ -56,7 +67,7 @@ export const SystemMapPage = () => {
   }
 
   if (error) {
-    return <SystemMapError error={error} />;
+    return <SystemMapError error={error} onRetry={loadModules} />;
   }
 
   return (
@@ -65,8 +76,8 @@ export const SystemMapPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <Card className="h-[600px] overflow-hidden">
-            <CardHeader>
+          <Card className="h-[600px] overflow-hidden shadow-sm">
+            <CardHeader className="pb-0">
               <CardTitle>Moduloversikt</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
