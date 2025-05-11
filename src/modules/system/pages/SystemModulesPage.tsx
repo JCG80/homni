@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { getSystemModules, toggleSystemModule } from '../api/systemModules';
-import { SystemModule } from '../types/systemModules';
+import type { SystemModule } from '../types/systemTypes';
 import { toast } from '@/hooks/use-toast';
 
 export const SystemModulesPage = () => {
@@ -133,3 +133,4 @@ export const SystemModulesPage = () => {
     </div>
   );
 };
+

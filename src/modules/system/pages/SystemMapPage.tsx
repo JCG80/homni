@@ -4,7 +4,7 @@ import Tree from 'react-d3-tree';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getSystemModules, getModuleDependencies } from '../api/systemModules';
-import { SystemModule } from '../types/systemModules';
+import type { SystemModule } from '../types/systemTypes';
 
 // Define the node structure for the D3 tree
 interface TreeNodeData {
@@ -236,3 +236,4 @@ export const SystemMapPage = () => {
     </div>
   );
 };
+
