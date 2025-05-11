@@ -5,7 +5,7 @@ import { AdminLeadsPage } from './AdminLeadsPage';
 import { CompanyLeadsPage } from './CompanyLeadsPage';
 import { UserLeadsPage } from './UserLeadsPage';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { UserRole } from '@/modules/auth/utils/roles';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 
 export const LeadManagementPage = () => {
   const { role } = useAuth();

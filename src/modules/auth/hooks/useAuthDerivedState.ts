@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import { AuthUser, Profile } from '../types/types';
-import { UserRole } from '../utils/roles';
+import { UserRole } from '../utils/roles/types';
 
 interface AuthBaseState {
   user: AuthUser | null;

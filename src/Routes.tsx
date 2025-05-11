@@ -21,6 +21,7 @@ import { InsuranceRoutes } from './modules/insurance/InsuranceRoutes';
 import NotFound from './pages/NotFound';
 import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionPage';
 import { CompanyListPage } from './modules/user/pages/CompanyListPage';
+import { UserRole } from './modules/auth/utils/roles/types';
 
 export const AppRoutes = () => {
   return (

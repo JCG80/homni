@@ -13,11 +13,13 @@
 - Translated user-facing messages to Norwegian for consistency
 - Maintained English variable names and comments in backend code
 - Consolidated role verification in auth utilities
+- Fixed build errors related to UserRole type mismatches
 
 ### Fixed
 - Corrected role access checks in ProtectedRoute and Authenticated components
 - Updated routes configuration to use new role names
 - Fixed BreadcrumbNav to display correct Norwegian labels
+- Fixed type errors in role references
 
 ### Removed
 - Removed unused role types and references to deprecated roles

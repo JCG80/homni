@@ -4,7 +4,7 @@
  */
 
 // Import UserRole from the new location
-import { UserRole } from '../utils/roles';
+import { UserRole } from '../utils/roles/types';
 
 export type { UserRole };
 
@@ -27,7 +27,7 @@ export interface Profile {
 export interface AuthUser {
   id: string;
   email?: string;
-  role?: UserRole;
+  role: UserRole;
 }
 
 export interface AuthState {
