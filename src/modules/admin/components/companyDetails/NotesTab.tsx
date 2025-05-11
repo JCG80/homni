@@ -26,7 +26,7 @@ export function NotesTab({ company, notes, setNotes, isLoading, onUpdate }: Note
       
       // Update the metadata with the new notes
       const { error } = await supabase
-        .from('company_profiles')
+        .from<CompanyProfile>('company_profiles')
         .update({
           metadata: {
             ...currentMetadata,

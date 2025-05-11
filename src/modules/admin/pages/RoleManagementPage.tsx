@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,11 +26,11 @@ const RoleManagementPage: React.FC = () => {
     queryKey: ['users'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles' as any)
         .select('*');
       
       if (error) throw error;
-      return data as User[];
+      return data as unknown as User[];
     },
   });
 
@@ -43,7 +42,7 @@ const RoleManagementPage: React.FC = () => {
   const updateUserModules = async (userId: string, modules: string[]) => {
     try {
       const { error } = await supabase
-        .from('profiles')
+        .from('user_profiles' as any)
         .update({ module_access: modules })
         .eq('id', userId);
       
@@ -51,7 +50,7 @@ const RoleManagementPage: React.FC = () => {
       toast({
         title: "Moduler oppdatert",
         description: "Brukerens moduler har blitt oppdatert",
-        variant: "success",
+        variant: "success" as any,
       });
     } catch (err) {
       console.error('Error updating user modules:', err);

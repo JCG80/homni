@@ -1,35 +1,34 @@
 
-/**
- * Functions for displaying and formatting user roles
- */
 import { UserRole } from './types';
 
 /**
- * Get a display name for a role
+ * Map of user roles to human-readable names
+ * Used for displaying role names in the UI
  */
-export function getRoleDisplayName(role: UserRole): string {
-  const displayNames: Record<UserRole, string> = {
-    'anonymous': 'Gjest',
-    'user': 'Bruker',
-    'company': 'Bedrift',
-    'admin': 'Administrator',
-    'master_admin': 'Master Administrator'
-  };
-  
-  return displayNames[role] || role;
-}
+export const roleNames: Partial<Record<UserRole, string>> = {
+  anonymous: 'Anonym',
+  user: 'Bruker',
+  member: 'Medlem',
+  company: 'Bedrift',
+  business: 'Bedrift',
+  provider: 'Leverandør',
+  admin: 'Administrator',
+  master_admin: 'Hovedadministrator',
+  content_editor: 'Innholdsredaktør'
+};
 
 /**
- * Get CSS classes for role badges
+ * Map of user roles to descriptions
+ * Used for displaying role descriptions in the UI
  */
-export function getRoleBadgeClass(role: UserRole): string {
-  const badgeClasses: Record<UserRole, string> = {
-    'anonymous': 'bg-gray-200 text-gray-800',
-    'user': 'bg-blue-100 text-blue-800',
-    'company': 'bg-green-100 text-green-800',
-    'admin': 'bg-purple-100 text-purple-800',
-    'master_admin': 'bg-red-100 text-red-800'
-  };
-  
-  return badgeClasses[role] || 'bg-gray-100 text-gray-800';
-}
+export const roleDescriptions: Partial<Record<UserRole, string>> = {
+  anonymous: 'Ikke innlogget bruker med begrenset tilgang.',
+  user: 'Standard bruker med grunnleggende tilgang.',
+  member: 'Medlemsbruker med utvidet tilgang.',
+  company: 'Bedriftsbruker med tilgang til bedriftsverktøy.',
+  business: 'Bedriftsbruker med tilgang til forretningsverktøy.',
+  provider: 'Leverandør med tilgang til leverandørverktøy.',
+  admin: 'Administrator med tilgang til administrasjonsverktøy.',
+  master_admin: 'Hovedadministrator med full tilgang til alle funksjoner.',
+  content_editor: 'Innholdsredaktør med tilgang til å redigere innhold.'
+};

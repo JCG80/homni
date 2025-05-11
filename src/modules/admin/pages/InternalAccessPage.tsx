@@ -26,6 +26,16 @@ interface InternalAdmin {
   module_access: string[];
 }
 
+interface UserProfile {
+  id: string;
+  full_name?: string;
+  email?: string;
+  metadata: Record<string, any>;
+  accounts?: {
+    email?: string;
+  };
+}
+
 export default function InternalAccessPage() {
   // Role guard to ensure only master admins can access this page
   const { isAllowed, loading } = useRoleGuard({ 
@@ -47,7 +57,7 @@ export default function InternalAccessPage() {
       if (error) throw error;
       
       // Filter to only include internal admins and transform data
-      return data
+      return (data as unknown as UserProfile[])
         .filter(profile => profile.metadata?.internal_admin === true)
         .map(profile => ({
           id: profile.id,

@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Table, 
@@ -19,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CompanyDetailView } from '../components/CompanyDetailView';
 import { Badge } from '@/components/ui/badge';
+import { CompanyProfile } from '../types/types';
 
 interface Company {
   id: string;
@@ -42,14 +42,14 @@ export default function CompaniesManagementPage() {
     redirectTo: '/unauthorized'
   });
 
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyProfile | null>(null);
   
   // Fetch companies data
   const { data: companies = [], isLoading, error, refetch } = useQuery({
     queryKey: ['companies'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('company_profiles')
+        .from<CompanyProfile>('company_profiles')
         .select('*, accounts:user_id(*)')
         .order('created_at', { ascending: false });
       
@@ -57,19 +57,13 @@ export default function CompaniesManagementPage() {
       
       // Transform the data to match the Company interface
       return data.map(company => ({
-        id: company.id,
-        name: company.name || 'Ikke angitt',
-        contact_name: company.contact_name || 'Ikke angitt',
-        email: company.email || company.accounts?.email || 'Ikke angitt',
-        phone: company.phone || 'Ikke angitt',
-        subscription_plan: company.subscription_plan || 'free',
-        status: company.status || 'inactive',
+        ...company,
+        email: company.email || (company.accounts as any)?.email || 'Ikke angitt',
         leads_bought: 0, // These would be calculated from lead statistics
         leads_won: 0,
         leads_lost: 0,
         ads_bought: 0,
-        user_id: company.user_id
-      }));
+      })) as CompanyProfile[];
     },
     enabled: isAllowed
   });
@@ -143,7 +137,7 @@ export default function CompaniesManagementPage() {
           <p>Feil ved lasting av bedrifter. Prøv igjen senere.</p>
         </div>
       ) : (
-        <>
+        <div>
           <div className="rounded-md border shadow-sm overflow-hidden mt-6">
             <Table>
               <TableHeader>
@@ -223,7 +217,7 @@ export default function CompaniesManagementPage() {
               Ingen bedrifter funnet.
             </div>
           )}
-        </>
+        </div>
       )}
       
       <Dialog open={!!selectedCompany} onOpenChange={(open) => !open && setSelectedCompany(null)}>

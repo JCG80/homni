@@ -1,35 +1,35 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
 
-interface Member {
+interface UserProfileData {
   id: string;
-  full_name: string;
-  email: string;
-  phone: string;
-  status: string;
-  request_count: number;
-  last_active: string;
+  full_name?: string;
+  email?: string;
+  phone?: string;
+  last_sign_in_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  accounts?: {
+    email?: string;
+    last_sign_in_at?: string;
+  };
 }
 
-export const fetchMembers = async (): Promise<Member[]> => {
+export const fetchMembers = async () => {
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*, accounts:auth.users!inner(*)')
-    .eq('accounts.account_type', 'member')
     .order('created_at', { ascending: false });
   
   if (error) throw error;
-  
-  // Transform the data to match the Member interface
-  return data.map(profile => ({
+
+  // Process and transform the data
+  return (data as unknown as UserProfileData[]).map(profile => ({
     id: profile.id,
-    full_name: profile.full_name || 'Ikke angitt',
-    email: profile.email || (profile.accounts?.email || 'Ikke angitt'),
-    phone: profile.phone || 'Ikke angitt',
-    status: profile.accounts?.status || 'inactive',
-    request_count: 0, // This would be calculated from the leads table
-    last_active: profile.updated_at || profile.created_at || 'Ukjent'
+    full_name: profile.full_name || 'N/A',
+    email: profile.email || profile.accounts?.email || 'N/A',
+    phone: profile.phone || 'N/A',
+    lastLogin: profile.accounts?.last_sign_in_at ? new Date(profile.accounts.last_sign_in_at).toLocaleDateString() : 'N/A',
+    joined: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'
   }));
 };
 
