@@ -53,26 +53,33 @@ export const createSupabaseMock = (data: any, error: Error | null = null) => ({
  * Helper to create a test supabase query builder for mocks
  */
 export const createMockQueryBuilder = () => {
-  const mockQueryBuilder = {
-    select: vi.fn().mockReturnValue(mockQueryBuilder),
-    insert: vi.fn().mockReturnValue(mockQueryBuilder),
-    update: vi.fn().mockReturnValue(mockQueryBuilder),
-    delete: vi.fn().mockReturnValue(mockQueryBuilder),
-    eq: vi.fn().mockReturnValue(mockQueryBuilder),
-    neq: vi.fn().mockReturnValue(mockQueryBuilder),
-    gt: vi.fn().mockReturnValue(mockQueryBuilder),
-    lt: vi.fn().mockReturnValue(mockQueryBuilder),
-    gte: vi.fn().mockReturnValue(mockQueryBuilder),
-    lte: vi.fn().mockReturnValue(mockQueryBuilder),
-    is: vi.fn().mockReturnValue(mockQueryBuilder),
-    in: vi.fn().mockReturnValue(mockQueryBuilder),
-    order: vi.fn().mockReturnValue(mockQueryBuilder),
-    limit: vi.fn().mockReturnValue(mockQueryBuilder),
-    single: vi.fn().mockReturnValue(mockQueryBuilder),
-    maybeSingle: vi.fn().mockReturnValue(mockQueryBuilder),
+  // Define the mock query builder object first
+  const mockBuilder = {
+    select: vi.fn(),
+    insert: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    eq: vi.fn(),
+    neq: vi.fn(),
+    gt: vi.fn(),
+    lt: vi.fn(),
+    gte: vi.fn(),
+    lte: vi.fn(),
+    is: vi.fn(),
+    in: vi.fn(),
+    order: vi.fn(),
+    limit: vi.fn(),
+    single: vi.fn(),
+    maybeSingle: vi.fn(),
   };
   
-  return mockQueryBuilder;
+  // Set the return value for each method to the builder itself
+  // This allows for method chaining
+  Object.keys(mockBuilder).forEach(key => {
+    mockBuilder[key as keyof typeof mockBuilder].mockReturnValue(mockBuilder);
+  });
+  
+  return mockBuilder;
 };
 
 /**
