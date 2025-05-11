@@ -26,18 +26,19 @@ export const fetchAvailableModules = async () => {
  */
 export const fetchUserModuleAccess = async (userId: string) => {
   try {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('metadata')
-      .eq('id', userId)
-      .single();
+    // First, check if the user has internal_admin flag in the module_access table
+    const { data: moduleAccessData, error: moduleAccessError } = await supabase
+      .from('module_access')
+      .select('system_module_id, internal_admin')
+      .eq('user_id', userId);
     
-    if (error) throw error;
+    if (moduleAccessError) throw moduleAccessError;
     
-    // Extract module_access and internal_admin from metadata
-    const metadata = data?.metadata as Record<string, any> || {};
-    const moduleAccess = metadata.module_access as string[] || [];
-    const isInternalAdmin = !!metadata.internal_admin;
+    // Get all module IDs that the user has access to
+    const moduleAccess = (moduleAccessData || []).map(item => item.system_module_id);
+    
+    // Check if any record has internal_admin = true
+    const isInternalAdmin = (moduleAccessData || []).some(item => item.internal_admin === true);
     
     return {
       moduleAccess,
@@ -59,30 +60,49 @@ export const updateUserModuleAccess = async (
   isInternalAdmin: boolean
 ) => {
   try {
-    const { data: currentData } = await supabase
-      .from('user_profiles')
-      .select('metadata')
-      .eq('id', userId)
-      .single();
+    // First delete all existing module access for this user
+    const { error: deleteError } = await supabase
+      .from('module_access')
+      .delete()
+      .eq('user_id', userId);
     
-    // Get current metadata or initialize as empty object
-    const currentMetadata = (currentData?.metadata as Record<string, any>) || {};
+    if (deleteError) throw deleteError;
     
-    // Update with new module access settings
-    const updatedMetadata = {
-      ...currentMetadata,
-      module_access: moduleAccess,
-      internal_admin: isInternalAdmin
-    };
-    
-    const { error } = await supabase
-      .from('user_profiles')
-      .update({
-        metadata: updatedMetadata as Json
-      })
-      .eq('id', userId);
-    
-    if (error) throw error;
+    // Then insert new module access
+    if (moduleAccess.length > 0) {
+      const moduleAccessRecords = moduleAccess.map(moduleId => ({
+        user_id: userId,
+        system_module_id: moduleId,
+        internal_admin: isInternalAdmin
+      }));
+      
+      const { error: insertError } = await supabase
+        .from('module_access')
+        .insert(moduleAccessRecords);
+      
+      if (insertError) throw insertError;
+    } 
+    // If isInternalAdmin is true but no modules are selected, add a special record
+    else if (isInternalAdmin) {
+      // Get the first available module to create at least one record with internal_admin=true
+      const { data: firstModule } = await supabase
+        .from('system_modules')
+        .select('id')
+        .limit(1)
+        .single();
+      
+      if (firstModule) {
+        const { error: insertAdminError } = await supabase
+          .from('module_access')
+          .insert({
+            user_id: userId,
+            system_module_id: firstModule.id,
+            internal_admin: true
+          });
+        
+        if (insertAdminError) throw insertAdminError;
+      }
+    }
     
     // Log the admin action
     await logAdminAction(
