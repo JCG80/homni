@@ -1,27 +1,13 @@
 
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { signInWithEmail } from '../api/auth-authentication';
-import { toast } from '@/hooks/use-toast';
-import { useAuthRetry } from '../hooks/useAuthRetry';
-import { AlertCircle, Loader2, Mail, Lock } from 'lucide-react';
-import { TEST_USERS } from '../utils/devLogin';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
 import { motion } from 'framer-motion';
-
-// Schema for login form validation
-const loginSchema = z.object({
-  email: z.string().email('Vennligst skriv inn en gyldig e-post'),
-  password: z.string().min(6, 'Passordet må være minst 6 tegn')
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
+import { EmailField } from './login/EmailField';
+import { PasswordField } from './login/PasswordField';
+import { SubmitButton } from './login/SubmitButton';
+import { RegisterLink } from './login/RegisterLink';
+import { FormError } from './login/FormError';
+import { DevInfo } from './login/DevInfo';
+import { useLoginForm } from './login/useLoginForm';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -30,84 +16,24 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'private' }: LoginFormProps) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [error, setError] = useState<string | null>(null);
-
-  // Get redirectUrl from location state or use provided redirectTo
-  const from = location.state?.from?.pathname || redirectTo;
-
-  // Initialize form with react-hook-form
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: ''
-    }
-  });
-  
-  // Use retry hook for authentication
-  const { 
-    isSubmitting, 
-    currentAttempt, 
+  const {
+    form,
+    handleSubmit,
+    isSubmitting,
+    currentAttempt,
     maxRetries,
-    executeWithRetry,
+    error,
     lastError
-  } = useAuthRetry({
-    maxRetries: 3,
-    onSuccess: () => {
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        console.log('Redirecting after successful login to:', from);
-        navigate(from, { replace: true });
-        
-        toast({
-          title: 'Innlogget',
-          description: 'Du er nå logget inn på din Homni-konto',
-          variant: 'default'
-        });
-      }
-    },
-    showToasts: true
-  });
-
-  const handleSubmit = async (values: LoginFormValues) => {
-    setError(null);
-
-    console.log('Attempting login with:', { email: values.email });
-    
-    executeWithRetry(async () => {
-      const { user, error: signInError } = await signInWithEmail(values.email, values.password);
-      
-      if (signInError) {
-        console.error('Detailed login error:', signInError);
-        
-        // Handle specific error cases
-        if (signInError instanceof Error) {
-          if (signInError.message.includes('Invalid login credentials')) {
-            throw new Error('Feil e-post eller passord. Vennligst prøv igjen.');
-          }
-          throw signInError;
-        } else if (signInError.message) {
-          throw new Error(signInError.message);
-        } else {
-          throw new Error('Feil ved innlogging');
-        }
-      }
-      
-      if (!user) {
-        throw new Error('Kunne ikke logge inn - brukeren ble ikke funnet');
-      }
-      
-      return user;
-    });
-  };
+  } = useLoginForm({ onSuccess, redirectTo });
 
   // Animation variants for form elements
-  const fadeIn = {
-    hidden: { opacity: 0, y: 5 },
-    visible: { opacity: 1, y: 0 }
+  const formVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
   };
 
   return (
@@ -115,128 +41,20 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
       <motion.form 
         initial="hidden" 
         animate="visible" 
-        variants={{
-          hidden: {},
-          visible: {
-            transition: {
-              staggerChildren: 0.05
-            }
-          }
-        }}
-        onSubmit={form.handleSubmit(handleSubmit)} 
+        variants={formVariants}
+        onSubmit={handleSubmit} 
         className="space-y-5"
       >
-        {error && (
-          <motion.div variants={fadeIn}>
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          </motion.div>
-        )}
-        
-        {lastError && !error && (
-          <motion.div variants={fadeIn}>
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{lastError.message}</AlertDescription>
-            </Alert>
-          </motion.div>
-        )}
-        
-        <motion.div variants={fadeIn}>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-post</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type="email" 
-                      placeholder="din@epost.no" 
-                      className="pl-8 transition-all"
-                      {...field} 
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </motion.div>
-        
-        <motion.div variants={fadeIn}>
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Passord</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type="password"
-                      placeholder="••••••••"
-                      className="pl-8 transition-all"
-                      {...field} 
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </motion.div>
-        
-        <motion.div variants={fadeIn}>
-          <Button type="submit" className="w-full transition-all hover:shadow-md" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <div className="flex items-center">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {currentAttempt > 0 
-                  ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
-                  : 'Logger inn...'}
-              </div>
-            ) : (
-              'Logg inn'
-            )}
-          </Button>
-        </motion.div>
-        
-        <motion.div variants={fadeIn} className="text-center text-sm">
-          <span className="text-muted-foreground">Har du ikke konto?</span>{' '}
-          <Button 
-            variant="link" 
-            className="p-0" 
-            onClick={() => navigate(userType === 'business' ? '/register?type=business' : '/register')}
-            type="button"
-          >
-            Registrer deg
-          </Button>
-        </motion.div>
-
-        {import.meta.env.MODE === 'development' && TEST_USERS && (
-          <motion.div variants={fadeIn} className="text-xs mt-4">
-            <details className="text-muted-foreground">
-              <summary className="cursor-pointer">Dev info</summary>
-              <div className="mt-2 p-2 bg-muted rounded-md">
-                <p>Test users should have the following credentials:</p>
-                <ul className="list-disc pl-4 mt-1">
-                  {TEST_USERS.map(user => (
-                    <li key={user.email} className="text-xs">
-                      {user.role}: {user.email} / {user.password}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2">Run <code>window.setupTestUsers()</code> in console to create these users.</p>
-              </div>
-            </details>
-          </motion.div>
-        )}
+        <FormError error={error || (lastError ? lastError.message : null)} />
+        <EmailField control={form.control} />
+        <PasswordField control={form.control} />
+        <SubmitButton 
+          isSubmitting={isSubmitting} 
+          currentAttempt={currentAttempt} 
+          maxRetries={maxRetries} 
+        />
+        <RegisterLink userType={userType} />
+        <DevInfo />
       </motion.form>
     </Form>
   );
