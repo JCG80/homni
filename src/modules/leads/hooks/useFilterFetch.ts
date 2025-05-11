@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { userFiltersApi } from '../api/user-filters';
+import { userFiltersApi } from '../api/filters';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { UserLeadFilter } from '../types/user-filters';
 import { withRetry, withTimeout } from '@/utils/apiRetry';

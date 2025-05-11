@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { userFiltersApi } from '../api/user-filters';
+import { userFiltersApi } from '../api/filters';
 import { UserLeadFilter, CreateUserFilterRequest, UpdateUserFilterRequest } from '../types/user-filters';
 import { toast } from '@/hooks/use-toast';
 import { withRetry } from '@/utils/apiRetry';
