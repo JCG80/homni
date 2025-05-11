@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '../types/types';
 import { withRetry } from '@/utils/apiRetry';
+import { parseUserProfile } from '../utils/parseUserProfile';
 
 export const useFetchProfile = () => {
   const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
@@ -20,7 +21,8 @@ export const useFetchProfile = () => {
           throw new Error(`Failed to fetch profile: ${error.message}`);
         }
         
-        return data as Profile;
+        // Use the parseUserProfile utility to properly convert database data to Profile type
+        return parseUserProfile(data);
       }, {
         maxAttempts: 3,
         delayMs: 1000,
