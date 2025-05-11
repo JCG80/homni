@@ -13,87 +13,118 @@ describe('Lead Notifications', () => {
     vi.clearAllMocks();
   });
   
-  it('should not show notifications when showToasts is false', () => {
-    showLeadProcessingNotifications({
-      showToasts: false,
-      totalLeads: 5,
-      assignedCount: 3
+  describe('showLeadProcessingNotifications', () => {
+    it('should not show notifications when showToasts is false', () => {
+      // Arrange
+      const options = {
+        showToasts: false,
+        totalLeads: 5,
+        assignedCount: 3
+      };
+      
+      // Act
+      showLeadProcessingNotifications(options);
+      
+      // Assert
+      expect(toast).not.toHaveBeenCalled();
     });
     
-    expect(toast).not.toHaveBeenCalled();
-  });
-  
-  it('should show error notification when error is provided', () => {
-    const testError = new Error('Test error');
-    
-    showLeadProcessingNotifications({
-      showToasts: true,
-      totalLeads: 5,
-      assignedCount: 0,
-      error: testError
+    it('should show error notification when error is provided', () => {
+      // Arrange
+      const testError = new Error('Test error');
+      const options = {
+        showToasts: true,
+        totalLeads: 5,
+        assignedCount: 0,
+        error: testError
+      };
+      
+      // Act
+      showLeadProcessingNotifications(options);
+      
+      // Assert
+      expect(toast).toHaveBeenCalledWith({
+        title: 'Error',
+        description: 'Test error',
+        variant: 'destructive',
+      });
     });
     
-    expect(toast).toHaveBeenCalledWith({
-      title: 'Error',
-      description: 'Test error',
-      variant: 'destructive',
-    });
-  });
-  
-  it('should show success notification when leads are assigned', () => {
-    showLeadProcessingNotifications({
-      showToasts: true,
-      totalLeads: 5,
-      assignedCount: 3
-    });
-    
-    expect(toast).toHaveBeenCalledWith({
-      title: 'Leads distributed',
-      description: 'Successfully assigned 3 of 5 leads',
-      variant: 'default',
-    });
-  });
-  
-  it('should show no matches notification when no leads could be assigned', () => {
-    showLeadProcessingNotifications({
-      showToasts: true,
-      totalLeads: 5,
-      assignedCount: 0
+    it('should show success notification when leads are assigned', () => {
+      // Arrange
+      const options = {
+        showToasts: true,
+        totalLeads: 5,
+        assignedCount: 3
+      };
+      
+      // Act
+      showLeadProcessingNotifications(options);
+      
+      // Assert
+      expect(toast).toHaveBeenCalledWith({
+        title: 'Leads distributed',
+        description: 'Successfully assigned 3 of 5 leads',
+        variant: 'default',
+      });
     });
     
-    expect(toast).toHaveBeenCalledWith({
-      title: 'No matches found',
-      description: 'Found leads but could not find matching companies',
-      variant: 'destructive',
-    });
-  });
-  
-  it('should show no leads notification when no leads to process', () => {
-    showLeadProcessingNotifications({
-      showToasts: true,
-      totalLeads: 0,
-      assignedCount: 0
-    });
-    
-    expect(toast).toHaveBeenCalledWith({
-      title: 'No leads',
-      description: 'No unassigned leads to process',
-      variant: 'default',
-    });
-  });
-  
-  it('should handle non-Error objects as errors', () => {
-    showLeadProcessingNotifications({
-      showToasts: true,
-      totalLeads: 0,
-      assignedCount: 0,
-      error: 'String error message' as unknown as Error
+    it('should show no matches notification when no leads could be assigned', () => {
+      // Arrange
+      const options = {
+        showToasts: true,
+        totalLeads: 5,
+        assignedCount: 0
+      };
+      
+      // Act
+      showLeadProcessingNotifications(options);
+      
+      // Assert
+      expect(toast).toHaveBeenCalledWith({
+        title: 'No matches found',
+        description: 'Found leads but could not find matching companies',
+        variant: 'destructive',
+      });
     });
     
-    expect(toast).toHaveBeenCalledWith({
-      title: 'Error',
-      description: 'An unknown error occurred',
-      variant: 'destructive',
+    it('should show no leads notification when no leads to process', () => {
+      // Arrange
+      const options = {
+        showToasts: true,
+        totalLeads: 0,
+        assignedCount: 0
+      };
+      
+      // Act
+      showLeadProcessingNotifications(options);
+      
+      // Assert
+      expect(toast).toHaveBeenCalledWith({
+        title: 'No leads',
+        description: 'No unassigned leads to process',
+        variant: 'default',
+      });
+    });
+    
+    it('should handle non-Error objects as errors', () => {
+      // Arrange
+      const options = {
+        showToasts: true,
+        totalLeads: 0,
+        assignedCount: 0,
+        error: 'String error message' as unknown as Error
+      };
+      
+      // Act
+      showLeadProcessingNotifications(options);
+      
+      // Assert
+      expect(toast).toHaveBeenCalledWith({
+        title: 'Error',
+        description: 'An unknown error occurred',
+        variant: 'destructive',
+      });
     });
   });
 });

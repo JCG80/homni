@@ -3,20 +3,25 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchUnassignedLeads } from '../../utils/leadQuery';
 import { supabase } from '@/integrations/supabase/client';
 import { withRetry } from '@/utils/apiRetry';
+import { Lead } from '@/types/leads';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    from: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    is: vi.fn().mockReturnThis()
+    from: vi.fn(() => mockQueryBuilder)
   }
 }));
 
 vi.mock('@/utils/apiRetry', () => ({
   withRetry: vi.fn()
 }));
+
+// Create a comprehensive mock query builder
+const mockQueryBuilder = {
+  select: vi.fn(() => mockQueryBuilder),
+  eq: vi.fn(() => mockQueryBuilder),
+  is: vi.fn(() => mockQueryBuilder)
+};
 
 describe('Lead Query', () => {
   beforeEach(() => {
@@ -27,71 +32,98 @@ describe('Lead Query', () => {
     vi.resetAllMocks();
   });
   
-  it('should fetch unassigned leads with the correct query', async () => {
-    const mockLeads = [
-      { id: 'lead-1', status: 'new' },
-      { id: 'lead-2', status: 'new' }
-    ];
-    
-    (withRetry as any).mockResolvedValue({
-      data: mockLeads,
-      error: null
-    });
-    
-    const result = await fetchUnassignedLeads({});
-    
-    expect(result).toEqual(mockLeads);
-    expect(withRetry).toHaveBeenCalledTimes(1);
-    
-    // Check that the first argument to withRetry is a function
-    // that would execute our query
-    const queryFn = (withRetry as any).mock.calls[0][0];
-    expect(typeof queryFn).toBe('function');
-  });
-  
-  it('should apply lead type filter when provided', async () => {
-    const mockLeads = [
-      { id: 'lead-1', status: 'new', lead_type: 'premium' }
-    ];
-    
-    (withRetry as any).mockImplementation(async (fn) => {
-      // Create a mock implementation where we can test if eq was called
-      // with the right parameters
-      const query = {
-        eq: vi.fn().mockReturnThis()
-      };
+  describe('fetchUnassignedLeads', () => {
+    it('should fetch unassigned leads with the correct query', async () => {
+      // Arrange
+      const mockLeads = [
+        { id: 'lead-1', status: 'new' },
+        { id: 'lead-2', status: 'new' }
+      ] as Lead[];
       
-      await fn();
-      
-      return {
+      (withRetry as any).mockResolvedValue({
         data: mockLeads,
         error: null
-      };
+      });
+      
+      // Act
+      const result = await fetchUnassignedLeads({});
+      
+      // Assert
+      expect(result).toEqual(mockLeads);
+      expect(supabase.from).toHaveBeenCalledWith('leads');
+      expect(mockQueryBuilder.select).toHaveBeenCalledWith('*');
+      expect(mockQueryBuilder.eq).toHaveBeenCalledWith('status', 'new');
+      expect(mockQueryBuilder.is).toHaveBeenCalledWith('company_id', null);
+      expect(withRetry).toHaveBeenCalledTimes(1);
     });
     
-    const result = await fetchUnassignedLeads({ leadType: 'premium' });
-    
-    expect(result).toEqual(mockLeads);
-    expect(withRetry).toHaveBeenCalledTimes(1);
-  });
-  
-  it('should handle errors and throw them', async () => {
-    const errorMessage = 'Database error';
-    (withRetry as any).mockResolvedValue({
-      data: null,
-      error: new Error(errorMessage)
+    it('should apply lead type filter when provided', async () => {
+      // Arrange
+      const mockLeads = [
+        { id: 'lead-1', status: 'new', lead_type: 'premium' }
+      ] as Lead[];
+      
+      (withRetry as any).mockResolvedValue({
+        data: mockLeads,
+        error: null
+      });
+      
+      // Act
+      const result = await fetchUnassignedLeads({ leadType: 'premium' });
+      
+      // Assert
+      expect(result).toEqual(mockLeads);
+      expect(supabase.from).toHaveBeenCalledWith('leads');
+      expect(mockQueryBuilder.select).toHaveBeenCalledWith('*');
+      expect(mockQueryBuilder.eq).toHaveBeenCalledWith('status', 'new');
+      expect(mockQueryBuilder.is).toHaveBeenCalledWith('company_id', null);
+      expect(mockQueryBuilder.eq).toHaveBeenCalledWith('lead_type', 'premium');
     });
     
-    await expect(fetchUnassignedLeads({})).rejects.toThrow();
-  });
-  
-  it('should return empty array when no leads found', async () => {
-    (withRetry as any).mockResolvedValue({
-      data: null,
-      error: null
+    it('should handle errors and throw them', async () => {
+      // Arrange
+      const errorMessage = 'Database error';
+      (withRetry as any).mockResolvedValue({
+        data: null,
+        error: new Error(errorMessage)
+      });
+      
+      // Act & Assert
+      await expect(fetchUnassignedLeads({})).rejects.toThrow(errorMessage);
     });
     
-    const result = await fetchUnassignedLeads({});
-    expect(result).toEqual([]);
+    it('should return empty array when no leads found', async () => {
+      // Arrange
+      (withRetry as any).mockResolvedValue({
+        data: null,
+        error: null
+      });
+      
+      // Act
+      const result = await fetchUnassignedLeads({});
+      
+      // Assert
+      expect(result).toEqual([]);
+    });
+    
+    it('should configure retry options correctly', async () => {
+      // Arrange
+      (withRetry as any).mockResolvedValue({
+        data: [],
+        error: null
+      });
+      
+      // Act
+      await fetchUnassignedLeads({});
+      
+      // Assert
+      const retryOptions = (withRetry as any).mock.calls[0][1];
+      expect(retryOptions).toEqual({
+        maxAttempts: 3,
+        delayMs: 800,
+        backoffFactor: 1.5,
+        onRetry: expect.any(Function)
+      });
+    });
   });
 });
