@@ -1,4 +1,6 @@
+
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface UserProfileData {
   id: string;
@@ -28,6 +30,9 @@ export const fetchMembers = async () => {
     full_name: profile.full_name || 'N/A',
     email: profile.email || profile.accounts?.email || 'N/A',
     phone: profile.phone || 'N/A',
+    status: 'active', // Default value for the missing field
+    request_count: 0, // Default value for the missing field
+    last_active: 'N/A', // Default value for the missing field
     lastLogin: profile.accounts?.last_sign_in_at ? new Date(profile.accounts.last_sign_in_at).toLocaleDateString() : 'N/A',
     joined: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'
   }));

@@ -26,3 +26,6 @@ export default function AdminLeadsPage() {
     </div>
   );
 }
+
+// Add a named export for routes that expect it
+export { AdminLeadsPage };

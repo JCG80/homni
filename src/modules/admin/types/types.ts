@@ -29,9 +29,28 @@ export interface CompanyProfile {
   avgResponseTime?: string;
   customerRating?: number;
   monthlyTrend?: string;
+  // Additional fields from CompaniesManagementPage
+  leads_bought?: number;
+  leads_won?: number;
+  leads_lost?: number;
+  ads_bought?: number;
+  accounts?: any;
 }
 
 export interface ModuleAccessManagerProps {
   userId: string;
   onUpdate?: () => void;
+}
+
+// Member interface for MembersManagementPage
+export interface Member {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  status: string;
+  request_count: number;
+  last_active: string;
+  lastLogin?: string;
+  joined?: string;
 }

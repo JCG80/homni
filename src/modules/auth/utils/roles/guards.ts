@@ -1,5 +1,8 @@
 
-import { UserRole } from './types';
+/**
+ * Role guards for access control
+ */
+import { UserRole, ALL_ROLES } from './types';
 
 /**
  * Map of allowed paths for each role
@@ -67,6 +70,13 @@ const rolePaths: Partial<Record<UserRole, string[]>> = {
 };
 
 /**
+ * Check if a string is a valid UserRole
+ */
+export const isUserRole = (role: string): role is UserRole => {
+  return ALL_ROLES.includes(role as UserRole);
+};
+
+/**
  * Get all allowed paths for a given role
  * This includes paths from the role itself and all roles below it
  */
@@ -129,6 +139,55 @@ export function canAccessPath(role: UserRole | undefined, path: string): boolean
       const basePath = allowedPath.slice(0, -2);
       if (path.startsWith(basePath)) return true;
     }
+  }
+  
+  return false;
+}
+
+/**
+ * Check if a user has the required role or a higher role
+ */
+export function hasRequiredRole(userRole: UserRole, requiredRole: UserRole): boolean {
+  if (userRole === requiredRole) return true;
+  
+  if (userRole === 'master_admin') return true;
+  
+  if (userRole === 'admin' && requiredRole !== 'master_admin') return true;
+  
+  return false;
+}
+
+/**
+ * Check if a role is an admin role (admin or master_admin)
+ */
+export function isAdminRole(role: UserRole): boolean {
+  return role === 'admin' || role === 'master_admin';
+}
+
+/**
+ * Check if a role is a content editor role
+ */
+export function isContentEditorRole(role: UserRole): boolean {
+  return role === 'content_editor';
+}
+
+/**
+ * Check if a user can access a specific module
+ */
+export function canAccessModule(role: UserRole, moduleId: string): boolean {
+  // Admin and master_admin can access all modules
+  if (role === 'admin' || role === 'master_admin') return true;
+  
+  // For other roles, specific module check would go here
+  // This would typically check against a database of module permissions
+  const standardModules = ['basic', 'reports', 'dashboard'];
+  
+  // Users can access standard modules
+  if (role === 'user' && standardModules.includes(moduleId)) return true;
+  
+  // Companies can access company-specific modules
+  if (role === 'company') {
+    return [...standardModules, 'leads', 'company-profile'].includes(moduleId);
   }
   
   return false;

@@ -1,3 +1,4 @@
+
 import { UserRole } from './roles/types';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -5,6 +6,7 @@ export interface TestUser {
   name: string;
   email: string;
   role: UserRole;
+  password?: string; // Add password property
   company_id?: string;
 }
 
@@ -14,11 +16,11 @@ export interface DevLoginResult {
 }
 
 export const TEST_USERS: TestUser[] = [
-  { name: 'Master Admin', email: 'master@example.com', role: 'master_admin' },
-  { name: 'Admin', email: 'admin@example.com', role: 'admin' },
-  { name: 'Company User', email: 'company@example.com', role: 'company', company_id: 'your_company_id' },
-  { name: 'Member User', email: 'member@example.com', role: 'member' },
-  { name: 'Regular User', email: 'user@example.com', role: 'user' },
+  { name: 'Master Admin', email: 'master@example.com', role: 'master_admin', password: 'default_password' },
+  { name: 'Admin', email: 'admin@example.com', role: 'admin', password: 'default_password' },
+  { name: 'Company User', email: 'company@example.com', role: 'company', company_id: 'your_company_id', password: 'default_password' },
+  { name: 'Member User', email: 'member@example.com', role: 'member', password: 'default_password' },
+  { name: 'Regular User', email: 'user@example.com', role: 'user', password: 'default_password' },
 ];
 
 /**
@@ -44,7 +46,7 @@ export const devLogin = async (role: UserRole): Promise<DevLoginResult> => {
     // Sign in the test user using their email and a default password
     const { error } = await supabase.auth.signInWithPassword({
       email: testUser.email,
-      password: 'default_password', // This password should be set for all test users in Supabase
+      password: testUser.password || 'default_password', // Use the password or default
     });
 
     if (error) {

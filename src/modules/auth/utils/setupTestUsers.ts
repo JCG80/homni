@@ -17,7 +17,7 @@ export async function setupTestUsers() {
       // Check if user already exists
       const { data: existingUser } = await supabase.auth.signInWithPassword({
         email: user.email,
-        password: user.password
+        password: user.password || 'default_password'
       });
       
       if (existingUser?.user) {
@@ -28,7 +28,7 @@ export async function setupTestUsers() {
       // Create user
       const { data, error } = await supabase.auth.signUp({
         email: user.email,
-        password: user.password,
+        password: user.password || 'default_password',
         options: {
           data: {
             role: user.role,

@@ -81,7 +81,7 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
     queryKey: ['company-details', company.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from<CompanyProfile>('company_profiles')
+        .from('company_profiles')
         .select('*')
         .eq('id', company.id)
         .single();

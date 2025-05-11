@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -20,21 +21,6 @@ import { CompanyDetailView } from '../components/CompanyDetailView';
 import { Badge } from '@/components/ui/badge';
 import { CompanyProfile } from '../types/types';
 
-interface Company {
-  id: string;
-  name: string;
-  contact_name: string;
-  email: string;
-  phone: string;
-  subscription_plan: string;
-  status: string;
-  leads_bought: number;
-  leads_won: number;
-  leads_lost: number;
-  ads_bought: number;
-  user_id?: string;
-}
-
 export default function CompaniesManagementPage() {
   // Role guard to ensure only master admins can access this page
   const { isAllowed, loading } = useRoleGuard({ 
@@ -49,14 +35,14 @@ export default function CompaniesManagementPage() {
     queryKey: ['companies'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from<CompanyProfile>('company_profiles')
+        .from('company_profiles')
         .select('*, accounts:user_id(*)')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
       
       // Transform the data to match the Company interface
-      return data.map(company => ({
+      return (data as any[]).map(company => ({
         ...company,
         email: company.email || (company.accounts as any)?.email || 'Ikke angitt',
         leads_bought: 0, // These would be calculated from lead statistics
@@ -172,26 +158,26 @@ export default function CompaniesManagementPage() {
                       <Badge variant="outline" className="capitalize">{company.subscription_plan}</Badge>
                     </TableCell>
                     <TableCell>
-                      <StatusBadge status={company.status} />
+                      <StatusBadge status={company.status || 'unknown'} />
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <span className="font-medium">{company.leads_bought}</span> kjøpt
+                        <span className="font-medium">{company.leads_bought || 0}</span> kjøpt
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        <span className="text-green-600">{company.leads_won}</span> vunnet / 
-                        <span className="text-red-600 ml-1">{company.leads_lost}</span> tapt
+                        <span className="text-green-600">{company.leads_won || 0}</span> vunnet / 
+                        <span className="text-red-600 ml-1">{company.leads_lost || 0}</span> tapt
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm">{company.ads_bought} kjøpt</div>
+                      <div className="text-sm">{company.ads_bought || 0} kjøpt</div>
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleResetPassword(company.email)}
+                          onClick={() => handleResetPassword(company.email || '')}
                           title="Tilbakestill passord"
                         >
                           <Key className="h-4 w-4" />
@@ -199,7 +185,7 @@ export default function CompaniesManagementPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleSendLoginDetails(company.email)}
+                          onClick={() => handleSendLoginDetails(company.email || '')}
                           title="Send påloggingsdetaljer"
                         >
                           <Mail className="h-4 w-4" />

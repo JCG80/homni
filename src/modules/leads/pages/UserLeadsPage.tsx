@@ -47,7 +47,7 @@ export const UserLeadsPage = () => {
 
       <div>
         <h2 className="text-xl font-semibold mb-4">Dine forespørsler</h2>
-        <LeadsTable userRole={role} />
+        <LeadsTable />
       </div>
     </div>
   );

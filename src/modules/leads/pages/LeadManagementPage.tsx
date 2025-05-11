@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
-import { AdminLeadsPage } from './AdminLeadsPage';
+import AdminLeadsPage from './AdminLeadsPage';
 import { CompanyLeadsPage } from './CompanyLeadsPage';
 import { UserLeadsPage } from './UserLeadsPage';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
