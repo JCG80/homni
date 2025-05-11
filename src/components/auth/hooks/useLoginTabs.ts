@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-export const useLoginTabsNavigation = (defaultTab = 'private') => {
+export const useLoginTabs = (defaultTab = 'private') => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const typeParam = searchParams.get('type');
