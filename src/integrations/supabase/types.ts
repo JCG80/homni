@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action: string
+          admin_id: string | null
+          created_at: string
+          details: Json | null
+          entity_id: string
+          entity_type: string
+          id: string
+        }
+        Insert: {
+          action: string
+          admin_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id: string
+          entity_type: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+        }
+        Relationships: []
+      }
       company_insurance_types: {
         Row: {
           company_id: string
@@ -52,6 +82,7 @@ export type Database = {
           email: string | null
           id: string
           industry: string | null
+          metadata: Json | null
           modules_access: string[] | null
           name: string
           phone: string | null
@@ -67,6 +98,7 @@ export type Database = {
           email?: string | null
           id?: string
           industry?: string | null
+          metadata?: Json | null
           modules_access?: string[] | null
           name: string
           phone?: string | null
@@ -82,6 +114,7 @@ export type Database = {
           email?: string | null
           id?: string
           industry?: string | null
+          metadata?: Json | null
           modules_access?: string[] | null
           name?: string
           phone?: string | null
@@ -584,6 +617,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_modules: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          name: string
+          requires_role: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          is_active?: boolean
+          name: string
+          requires_role?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          requires_role?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_lead_filters: {
         Row: {
