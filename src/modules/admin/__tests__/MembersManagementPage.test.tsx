@@ -13,6 +13,13 @@ vi.mock('@/modules/auth/hooks/useAuth', () => ({
   })
 }));
 
+vi.mock('@/modules/auth/hooks/useRoleGuard', () => ({
+  useRoleGuard: vi.fn().mockReturnValue({
+    isAllowed: true,
+    loading: false
+  })
+}));
+
 vi.mock('@tanstack/react-query', () => ({
   useQuery: vi.fn().mockReturnValue({
     data: [],
