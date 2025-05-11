@@ -1,7 +1,7 @@
 
 import { describe, test, expect } from 'vitest';
 import { canAccessModule } from '../utils/roles';
-import { UserRole } from '../types/types';
+import { UserRole } from '../utils/roles/types';
 
 describe('Anonymous Role Access', () => {
   test('should allow anonymous users to access public modules', () => {
