@@ -7,12 +7,12 @@ describe('Auth role determination', () => {
     // Mock user data with role in metadata
     const mockUserData = {
       user: {
-        user_metadata: { role: 'user' },
+        user_metadata: { role: 'member' },
         email: 'user@test.local'
       }
     };
     
-    expect(determineUserRole(mockUserData)).toBe('user');
+    expect(determineUserRole(mockUserData)).toBe('member');
   });
 
   test('should correctly identify company role from metadata', () => {
@@ -37,18 +37,18 @@ describe('Auth role determination', () => {
     expect(determineUserRole(mockUserData)).toBe('admin');
   });
 
-  test('should correctly identify master-admin role from metadata', () => {
+  test('should correctly identify master_admin role from metadata', () => {
     const mockUserData = {
       user: {
-        user_metadata: { role: 'master-admin' },
+        user_metadata: { role: 'master_admin' },
         email: 'master-admin@test.local'
       }
     };
     
-    expect(determineUserRole(mockUserData)).toBe('master-admin');
+    expect(determineUserRole(mockUserData)).toBe('master_admin');
   });
 
-  test('should default to user role if no role is specified', () => {
+  test('should default to member role if no role is specified', () => {
     const mockUserData = {
       user: {
         user_metadata: {},
@@ -56,7 +56,7 @@ describe('Auth role determination', () => {
       }
     };
     
-    expect(determineUserRole(mockUserData)).toBe('user');
+    expect(determineUserRole(mockUserData)).toBe('member');
   });
 
   test('should recognize development test users by email', () => {
@@ -71,10 +71,10 @@ describe('Auth role determination', () => {
     const originalMode = import.meta.env.MODE;
     import.meta.env.MODE = 'development';
     
-    expect(determineUserRole(adminUserData)).toBe('master-admin');
+    expect(determineUserRole(adminUserData)).toBe('master_admin');
     expect(determineUserRole(companyUserData)).toBe('company');
     expect(determineUserRole(providerUserData)).toBe('provider');
-    expect(determineUserRole(regularUserData)).toBe('user');
+    expect(determineUserRole(regularUserData)).toBe('member');
     
     // Restore the original mode
     import.meta.env.MODE = originalMode;

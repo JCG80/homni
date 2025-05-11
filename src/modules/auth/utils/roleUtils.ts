@@ -22,6 +22,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
     if (email === 'company@test.local') return 'company';
     if (email === 'provider@test.local') return 'provider';
     if (email === 'editor@test.local') return 'editor';
+    if (email === 'user@test.local') return 'member';
   }
   
   // Validate if the role is a valid UserRole
