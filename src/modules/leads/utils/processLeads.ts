@@ -11,6 +11,75 @@ import { assignLeadToProvider } from './leadAssignment';
 import { showLeadProcessingNotifications } from './leadNotifications';
 
 /**
+ * Checks if lead distribution is paused via settings
+ * @param companyId Optional company ID for company-specific settings
+ * @returns Promise<boolean> indicating if distribution is paused
+ */
+export async function isDistributionPaused(companyId?: string): Promise<boolean> {
+  try {
+    const settings = await withRetry(() => fetchLeadSettings(companyId), {
+      maxAttempts: 3,
+      delayMs: 500,
+      backoffFactor: 2,
+      onRetry: (attempt) => console.log(`Retrying fetching lead settings (attempt ${attempt})`)
+    });
+    
+    if (!settings) {
+      console.warn('No lead settings found, assuming not paused');
+      return false;
+    }
+    
+    return settings.paused;
+  } catch (error) {
+    console.error('Error checking pause status:', error);
+    return false; // Assume not paused on error
+  }
+}
+
+/**
+ * Determines which distribution strategy to use
+ * @param strategy Explicitly provided strategy (optional)
+ * @param settings Lead settings (optional)
+ * @param companyId Company ID for company-specific settings (optional)
+ * @returns Promise<DistributionStrategy> with the strategy to use
+ */
+export async function determineDistributionStrategy(
+  strategy?: DistributionStrategy,
+  settings?: any,
+  companyId?: string
+): Promise<DistributionStrategy> {
+  // Use provided strategy or get from settings or fallback to default
+  if (strategy) {
+    return strategy;
+  }
+  
+  // Try to get strategy from settings, or load from database if not available
+  return settings?.strategy as DistributionStrategy || await getCurrentStrategy(companyId);
+}
+
+/**
+ * Process a single lead against filters and assign to provider
+ * @param lead The lead to process
+ * @param settings Lead settings with filtering rules
+ * @param strategy Distribution strategy to use
+ * @returns boolean indicating if lead was successfully processed
+ */
+export async function processSingleLead(
+  lead: any, 
+  settings: any, 
+  strategy: DistributionStrategy
+): Promise<boolean> {
+  // Apply filters from lead settings
+  if (!applyLeadFilters(lead, settings)) {
+    console.log(`Lead ${lead.id} filtered out`);
+    return false;
+  }
+
+  // Assign lead to provider
+  return await assignLeadToProvider(lead, strategy);
+}
+
+/**
  * Processes unassigned leads using the specified distribution strategy
  * @param strategy - Which distribution strategy to use (will use the one from settings if not provided)
  * @param options - Additional options for processing
@@ -27,17 +96,9 @@ export async function processUnassignedLeads(
   const { leadType, showToasts = true, companyId } = options;
   
   try {
-    // First check if the system is paused via settings
-    const settings = await withRetry(() => fetchLeadSettings(companyId), {
-      maxAttempts: 3,
-      delayMs: 500,
-      backoffFactor: 2,
-      onRetry: (attempt) => console.log(`Retrying fetching lead settings (attempt ${attempt})`)
-    });
-    
-    if (!settings) {
-      console.warn('No lead settings found, using default strategy');
-    } else if (settings.paused) {
+    // Check if the system is paused via settings
+    const isPaused = await isDistributionPaused(companyId);
+    if (isPaused) {
       console.log('Lead distribution is paused in settings');
       if (showToasts) {
         toast({
@@ -49,15 +110,16 @@ export async function processUnassignedLeads(
       return 0;
     }
     
-    // Use provided strategy or get from settings or fallback to default
-    let distributionStrategy = strategy;
+    // Get settings
+    const settings = await withRetry(() => fetchLeadSettings(companyId), {
+      maxAttempts: 3,
+      delayMs: 500,
+      backoffFactor: 2,
+      onRetry: (attempt) => console.log(`Retrying fetching lead settings (attempt ${attempt})`)
+    });
     
-    if (!distributionStrategy) {
-      // Try to get strategy from settings, or load from database if not available
-      distributionStrategy = settings?.strategy as DistributionStrategy || 
-        await getCurrentStrategy(companyId);
-    }
-    
+    // Determine which strategy to use
+    const distributionStrategy = await determineDistributionStrategy(strategy, settings, companyId);
     console.log(`Using distribution strategy: ${distributionStrategy}`);
     
     // Fetch unassigned leads
@@ -77,13 +139,7 @@ export async function processUnassignedLeads(
     
     // Process each lead
     for (const lead of unassignedLeads) {
-      // Apply filters from lead settings
-      if (!applyLeadFilters(lead, settings)) {
-        continue;
-      }
-
-      // Assign lead to provider
-      const assigned = await assignLeadToProvider(lead, distributionStrategy!);
+      const assigned = await processSingleLead(lead, settings, distributionStrategy);
       if (assigned) {
         assignedCount++;
       }
