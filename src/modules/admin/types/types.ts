@@ -35,3 +35,4 @@ export interface ModuleAccessManagerProps {
   userId: string;
   onUpdate?: () => void;
 }
+
