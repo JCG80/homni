@@ -16,10 +16,13 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
   // Check if user is authenticated
   const isAuthenticated = !!user;
 
+  // Determine role - use profile role first, then user role, default to undefined
+  const role: UserRole | undefined = profile?.role ?? user?.role;
+
   // Helper function to check if user has a specific role
-  const hasRole = useCallback((role: UserRole) => {
-    return profile?.role === role;
-  }, [profile]);
+  const hasRole = useCallback((roleToCheck: UserRole) => {
+    return role === roleToCheck;
+  }, [role]);
 
   // Helper functions to check common roles
   const isAdmin = useCallback(() => {
@@ -35,7 +38,7 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
   }, [hasRole]);
 
   const isUser = useCallback(() => {
-    return hasRole('member');
+    return hasRole('user');
   }, [hasRole]);
 
   return {
@@ -44,6 +47,6 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
     isMasterAdmin: isMasterAdmin(),
     isCompany: isCompany(),
     isUser: isUser(),
-    role: profile?.role,
+    role,
   };
 };

@@ -22,7 +22,7 @@ export const Authenticated = ({
     return <div>Laster autentiseringsstatus...</div>;
   }
 
-  // Determine the current role - use 'anonymous' if not authenticated
+  // Determine the current role - use profile role first, then user role, default to 'anonymous'
   const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous';
   
   // If not authenticated, show fallback

@@ -12,7 +12,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
   try {
     // Primary implementation - from user data
     if (!userData) {
-      return 'user';
+      return 'anonymous';
     }
 
     // Extract role from user metadata
