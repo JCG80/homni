@@ -11,6 +11,7 @@
 - Implemented Service Selection components with responsive grid layout
 - Added lead generation for anonymous users and preference saving for authenticated users
 - Fixed build errors related to authentication context types
+- Consolidated role system around standard roles: anonymous, user, company, admin, master_admin
 
 ## Module Development Status
 
@@ -23,6 +24,7 @@
 - ✅ Created proper role-based access control system
 - ✅ Implemented guest vs. authenticated user distinction
 - ✅ Added profile handling with better error messaging
+- ✅ Standardized user roles: anonymous, user, company, admin, master_admin
 
 #### In Progress
 - 🔄 Finalizing auth components for better type safety
@@ -185,3 +187,33 @@ function getAllowedModulesForRole(role: UserRole): string[] {
   }
 }
 ```
+
+## Role System
+
+### Standard User Roles
+
+1. **Anonymous** (`anonymous`)
+   - Unauthenticated visitors
+   - Access to: home, login, register, public pages, lead submission
+   - Redirected to login when attempting to access protected content
+
+2. **User** (`user`)
+   - Standard authenticated private users/homeowners
+   - Access to: dashboard, profile, leads management, properties, maintenance, account settings
+   - Can submit and track their own leads
+   - Cannot access admin or company-specific features
+
+3. **Company** (`company`)
+   - Business users who can receive and manage leads
+   - Access to: dashboard, profile, company settings, lead management
+   - Can configure their company profile and lead preferences
+
+4. **Admin** (`admin`)
+   - System administrators with elevated privileges
+   - Access to: all user and company features plus admin dashboard, content management, system settings
+   - Can manage leads, users, and system configuration
+
+5. **Master Admin** (`master_admin`)
+   - Super users with unrestricted access
+   - Access to: everything in the system
+   - No restrictions on any module or feature

@@ -8,9 +8,9 @@ import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
 
 export const UserLeadsPage = () => {
   const [showForm, setShowForm] = useState(false);
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, role } = useAuth();
   const { loading } = useRoleGuard({
-    allowAnyAuthenticated: true, // Allow any authenticated user to access
+    allowedRoles: ['user', 'admin', 'master_admin'], // Allow user role specifically
     redirectTo: '/login'
   });
 
@@ -47,7 +47,7 @@ export const UserLeadsPage = () => {
 
       <div>
         <h2 className="text-xl font-semibold mb-4">Dine forespørsler</h2>
-        <LeadsTable />
+        <LeadsTable userRole={role} />
       </div>
     </div>
   );

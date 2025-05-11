@@ -61,7 +61,7 @@ export const AppRoutes = () => {
         } />
         
         <Route path="/my-account" element={
-          <ProtectedRoute allowAnyAuthenticated>
+          <ProtectedRoute allowedRoles={['user', 'company', 'admin', 'master_admin'] as UserRole[]}>
             <MyAccountPage />
           </ProtectedRoute>
         } />

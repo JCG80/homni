@@ -45,9 +45,9 @@ export function canAccessModule(role: UserRole, module: string): boolean {
   
   // Define module access based on role
   const moduleAccess: Record<UserRole, string[]> = {
-    'anonymous': ['home', 'login', 'register', 'public'],
-    'user': ['dashboard', 'profile', 'leads'],
-    'company': ['dashboard', 'profile', 'company', 'leads'],
+    'anonymous': ['home', 'login', 'register', 'public', 'info', 'leads/submit'],
+    'user': ['dashboard', 'profile', 'leads', 'leads/my', 'properties', 'maintenance', 'my-account'],
+    'company': ['dashboard', 'profile', 'company', 'leads', 'company/profile'],
     'admin': ['dashboard', 'profile', 'admin', 'leads', 'content', 'settings'],
     'master_admin': ['*']
   };

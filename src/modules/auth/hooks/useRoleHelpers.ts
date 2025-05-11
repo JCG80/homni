@@ -20,6 +20,5 @@ export const useRoleHelpers = () => {
     isCompany: currentRole === 'company',
     isAdmin: currentRole === 'admin' || currentRole === 'master_admin',
     isMasterAdmin: currentRole === 'master_admin',
-    // Remove deprecated roles
   };
 };
