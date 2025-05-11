@@ -2,6 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLoginTabsNavigation } from './hooks/useLoginTabsNavigation';
 import { LoginTabContent } from './LoginTabContent';
+import { User, Building } from 'lucide-react';
 
 interface LoginTabsProps {
   defaultTab?: string;
@@ -12,9 +13,15 @@ export const LoginTabs = ({ defaultTab = 'private' }: LoginTabsProps) => {
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
-      <TabsList className="grid w-full grid-cols-2 bg-white">
-        <TabsTrigger value="private">Privatperson</TabsTrigger>
-        <TabsTrigger value="business">Bedrift</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-2 bg-card">
+        <TabsTrigger value="private" className="flex items-center gap-1.5">
+          <User className="h-4 w-4" />
+          <span>Privatperson</span>
+        </TabsTrigger>
+        <TabsTrigger value="business" className="flex items-center gap-1.5">
+          <Building className="h-4 w-4" />
+          <span>Bedrift</span>
+        </TabsTrigger>
       </TabsList>
       
       <TabsContent value="private" className="mt-6">

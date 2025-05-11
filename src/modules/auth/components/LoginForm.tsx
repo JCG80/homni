@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signInWithEmail } from '../api/auth-authentication';
 import { toast } from '@/hooks/use-toast';
 import { useAuthRetry } from '../hooks/useAuthRetry';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Mail, Lock } from 'lucide-react';
 import { TEST_USERS } from '../utils/devLogin';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
@@ -104,7 +104,7 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -126,11 +126,15 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
             <FormItem>
               <FormLabel>E-post</FormLabel>
               <FormControl>
-                <Input 
-                  type="email" 
-                  placeholder="din@epost.no" 
-                  {...field} 
-                />
+                <div className="relative">
+                  <Mail className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="email" 
+                    placeholder="din@epost.no" 
+                    className="pl-8"
+                    {...field} 
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -144,10 +148,15 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
             <FormItem>
               <FormLabel>Passord</FormLabel>
               <FormControl>
-                <Input 
-                  type="password" 
-                  {...field} 
-                />
+                <div className="relative">
+                  <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="password"
+                    placeholder="••••••••"
+                    className="pl-8"
+                    {...field} 
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
