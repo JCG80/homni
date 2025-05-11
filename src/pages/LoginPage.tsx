@@ -146,7 +146,7 @@ export const LoginPage = () => {
           <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
           
           {import.meta.env.MODE === 'development' && missingUsers.length > 0 && (
-            <Alert variant="warning" className="mb-4">
+            <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Test users missing</AlertTitle>
               <AlertDescription className="text-xs">

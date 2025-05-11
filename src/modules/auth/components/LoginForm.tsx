@@ -9,6 +9,7 @@ import { signInWithEmail } from '../api/auth-authentication';
 import { toast } from '@/hooks/use-toast';
 import { useAuthRetry } from '../hooks/useAuthRetry';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { TEST_USERS } from '../utils/devLogin';
 
 interface LoginFormProps {
   onSuccess?: () => void;
