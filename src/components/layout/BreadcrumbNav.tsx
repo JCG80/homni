@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -26,7 +25,7 @@ const routeMap: RouteMap = {
   'forsikring': { label: 'Forsikring', parent: '' },
   'insurance': { label: 'Forsikring', parent: '' },
   'companies': { label: 'Selskaper', parent: 'insurance' },
-  'compare': { label: 'Sammenlign', parent: 'insurance' },
+  'compare': { label: 'Forsikringstilbud', parent: '' },
   'quote': { label: 'Få tilbud', parent: 'insurance' },
   'login': { label: 'Logg inn', parent: '' },
   'register': { label: 'Registrer deg', parent: '' },

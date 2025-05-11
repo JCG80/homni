@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -42,6 +43,9 @@ export const AppRoutes = () => {
         <Route path="/forsikring/*" element={<InsuranceRoutes />} />
         <Route path="/insurance/*" element={<InsuranceRoutes />} />
         <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
+        
+        {/* Insurance comparison route - make sure it's defined before the nested routes */}
+        <Route path="/compare" element={<InsuranceQuotePage />} />
         
         {/* Lead capture public route */}
         <Route path="/lead-capture" element={<LeadCapturePage />} />
@@ -96,11 +100,6 @@ export const AppRoutes = () => {
           <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
             <LeadSettingsPage />
           </ProtectedRoute>
-        } />
-
-        {/* Add a route for /compare that was in the console error */}
-        <Route path="/compare" element={
-          <InsuranceQuotePage />
         } />
         
         {/* Doc routes - imported from modules */}
