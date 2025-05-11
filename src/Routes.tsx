@@ -24,7 +24,12 @@ import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles/types';
 import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
 
-// Import the new dashboard pages
+// Import MasterAdmin management pages
+import MembersManagementPage from './modules/admin/pages/MembersManagementPage';
+import CompaniesManagementPage from './modules/admin/pages/CompaniesManagementPage';
+import InternalAccessPage from './modules/admin/pages/InternalAccessPage';
+
+// Import the dashboard pages
 import MemberDashboard from './pages/dashboard/MemberDashboard';
 import CompanyDashboard from './pages/dashboard/CompanyDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
@@ -137,10 +142,29 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         } />
         
-        {/* New Role Management route - only accessible to master_admin */}
+        {/* Role Management route - only accessible to master_admin */}
         <Route path="/admin/roles" element={
           <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
             <RoleManagementPage />
+          </ProtectedRoute>
+        } />
+        
+        {/* New MasterAdmin User Management routes */}
+        <Route path="/admin/members" element={
+          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+            <MembersManagementPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/companies" element={
+          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+            <CompaniesManagementPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/internal-access" element={
+          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+            <InternalAccessPage />
           </ProtectedRoute>
         } />
         
