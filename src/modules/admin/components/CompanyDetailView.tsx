@@ -19,7 +19,13 @@ interface CompanyDetailViewProps {
 
 export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailViewProps) {
   const [activeTab, setActiveTab] = useState('purchases');
-  const [notes, setNotes] = useState(company.metadata?.admin_notes || '');
+  // Initialize notes from company metadata if available, otherwise empty string
+  const initialNotes = company.metadata && 
+    typeof company.metadata === 'object' && 
+    'admin_notes' in company.metadata ? 
+    String(company.metadata.admin_notes) : '';
+  
+  const [notes, setNotes] = useState(initialNotes);
   
   const { 
     companyData, 

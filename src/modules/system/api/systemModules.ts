@@ -7,7 +7,7 @@ import { SystemModule } from '../types/systemModules';
  */
 export async function getSystemModules(): Promise<SystemModule[]> {
   try {
-    // Explicitly cast the response data to SystemModule[]
+    // Use type assertion to handle the system_modules table
     const { data, error } = await supabase
       .from('system_modules' as any)
       .select('*')

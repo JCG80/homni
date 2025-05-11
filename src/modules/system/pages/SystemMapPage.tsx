@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import Tree from 'react-d3-tree';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -204,7 +205,17 @@ export const SystemMapPage = () => {
                     </Badge>
                   </div>
 
-                  {/* We'll simplify this part since dependencies are not implemented yet */}
+                  {/* Only show dependencies if they exist */}
+                  {selectedNode.dependencies && selectedNode.dependencies.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium text-gray-500">Avhengigheter</h3>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {selectedNode.dependencies.map((dep, idx) => (
+                          <Badge key={idx} variant="outline">{dep}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   {selectedNode.route && (
                     <div className="mb-4">

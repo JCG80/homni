@@ -92,8 +92,10 @@ export function useCompanyDetails(
       const typedData = data as unknown as CompanyProfile;
       
       // Set the notes if available
-      if (typedData?.metadata?.admin_notes) {
-        setNotes(typedData.metadata.admin_notes);
+      if (typedData.metadata && 
+          typeof typedData.metadata === 'object' && 
+          'admin_notes' in typedData.metadata) {
+        setNotes(String(typedData.metadata.admin_notes));
       }
       
       return typedData;
