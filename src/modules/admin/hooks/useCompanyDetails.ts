@@ -88,17 +88,15 @@ export function useCompanyDetails(
       
       if (error) throw error;
       
-      // Cast data to the right type to include metadata
-      const typedData = data as unknown as CompanyProfile;
-      
-      // Set the notes if available
-      if (typedData.metadata && 
-          typeof typedData.metadata === 'object' && 
-          'admin_notes' in typedData.metadata) {
-        setNotes(String(typedData.metadata.admin_notes));
+      // Set the notes if available from metadata
+      if (data?.metadata && typeof data.metadata === 'object') {
+        const metadata = data.metadata as Record<string, any>;
+        if ('admin_notes' in metadata) {
+          setNotes(String(metadata.admin_notes || ''));
+        }
       }
       
-      return typedData;
+      return data as CompanyProfile;
     }
   });
 

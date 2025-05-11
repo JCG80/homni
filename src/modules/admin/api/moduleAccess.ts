@@ -9,12 +9,12 @@ import { Json } from '@/integrations/supabase/types';
 export const fetchAvailableModules = async () => {
   try {
     const { data, error } = await supabase
-      .from('system_modules' as any)
+      .from('system_modules')
       .select('*')
       .order('name');
     
     if (error) throw error;
-    return (data as any[]) || [];
+    return data || [];
   } catch (error) {
     console.error('Error fetching available modules:', error);
     return [];

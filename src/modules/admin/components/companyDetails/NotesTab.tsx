@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -21,14 +22,24 @@ export function NotesTab({ company, notes, setNotes, isLoading, onUpdate }: Note
   const saveNotes = async () => {
     setIsSaving(true);
     try {
+      // Get current metadata or initialize as empty object
+      const { data: currentData } = await supabase
+        .from('company_profiles')
+        .select('metadata')
+        .eq('id', company.id)
+        .single();
+      
+      const currentMetadata = (currentData?.metadata as Record<string, any>) || {};
+      
       // Update company profile with notes in metadata field
       const { error } = await supabase
         .from('company_profiles')
         .update({
           updated_at: new Date().toISOString(),
-          // The line below uses the spread operator to keep existing metadata
-          // and add/update only the admin_notes field
-          ...(notes ? { metadata: { admin_notes: notes } as Json } : {})
+          metadata: {
+            ...currentMetadata,
+            admin_notes: notes
+          } as Json
         })
         .eq('id', company.id);
       
