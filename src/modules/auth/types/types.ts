@@ -1,4 +1,3 @@
-
 /**
  * Core auth module types
  */
@@ -48,7 +47,7 @@ export interface RouteConfig {
 // Add test user type for easier management of test users
 export interface TestUser {
   email: string;
-  password: string;
   role: UserRole;
+  password: string;
   name: string;
 }

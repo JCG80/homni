@@ -1,98 +1,52 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import { UserRole } from './roles';
-import { toast } from '@/hooks/use-toast';
+import { UserRole } from './roles/types';
 
 export interface TestUser {
   email: string;
-  password: string;
   role: UserRole;
+  password: string;
   name: string;
 }
-
-export const TEST_USERS: TestUser[] = [
-  { 
-    email: 'user@test.local', 
-    password: 'Test1234!', 
-    role: 'user',  // Changed from 'member'
-    name: 'Test User'
-  },
-  { 
-    email: 'company@test.local', 
-    password: 'Test1234!', 
-    role: 'company',
-    name: 'Test Company'
-  },
-  { 
-    email: 'admin@test.local', 
-    password: 'Test1234!', 
-    role: 'admin',
-    name: 'Test Admin'
-  },
-  { 
-    email: 'master-admin@test.local', 
-    password: 'Test1234!', 
-    role: 'master_admin',
-    name: 'Test Master Admin'
-  },
-  { 
-    email: 'provider@test.local', 
-    password: 'Test1234!', 
-    role: 'user',  // Changed from 'provider'
-    name: 'Test Provider'
-  }
-];
 
 export interface DevLoginResult {
   success: boolean;
   error?: Error;
+  user?: any;
 }
 
-/**
- * Helper function to verify if test users exist in the database
- * Returns an array of emails for users that do not exist
- */
-export async function verifyTestUsers(): Promise<string[]> {
-  const missingUsers: string[] = [];
-  
-  for (const user of TEST_USERS) {
-    try {
-      // Try to check if user with this email exists
-      // Note: This requires anon access to auth.users which may not be available
-      // Using signInWithPassword with a catch is a workaround
-      const { error } = await supabase.auth.signInWithPassword({
-        email: user.email,
-        password: user.password
-      });
+// Define test users for quick login during development
+export const TEST_USERS: TestUser[] = [
+  { email: 'user@test.local', role: 'member', password: 'Test1234!', name: 'Test User' },
+  { email: 'company@test.local', role: 'company', password: 'Test1234!', name: 'Test Company' },
+  { email: 'admin@test.local', role: 'admin', password: 'Test1234!', name: 'Test Admin' },
+  { email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!', name: 'Test Master Admin' },
+  { email: 'provider@test.local', role: 'provider', password: 'Test1234!', name: 'Test Provider' },
+];
 
-      if (error && error.message.includes('Invalid login credentials')) {
-        missingUsers.push(user.email);
-        console.warn(`Test user ${user.email} (${user.role}) does not exist or has wrong password`);
-      }
-    } catch (err) {
-      console.error(`Error checking user ${user.email}:`, err);
-    }
+/**
+ * Development-only login function to quickly sign in as different user roles
+ * This function will only work in development mode
+ */
+export const devLogin = async (role: UserRole): Promise<DevLoginResult> => {
+  if (import.meta.env.MODE !== 'development') {
+    console.error('Dev login is only allowed in development mode');
+    return { 
+      success: false, 
+      error: new Error('Dev login is only allowed in development mode')
+    };
   }
-  
-  return missingUsers;
-}
 
-/**
- * Helper function for development login with predefined users
- */
-export async function devLogin(role: UserRole): Promise<DevLoginResult> {
   try {
-    const user = TEST_USERS.find(u => u.role === role);
+    const user = TEST_USERS.find(user => user.role === role);
+    
     if (!user) {
-      console.error(`No test user found with role: ${role}`);
       return { 
         success: false, 
-        error: new Error(`No test user found with role: ${role}`)
+        error: new Error(`No test user found for role: ${role}`) 
       };
     }
 
-    console.log(`Attempting dev login with: ${user.email} / ${user.password}`);
-
-    // Sign in with email and password
     const { data, error } = await supabase.auth.signInWithPassword({
       email: user.email,
       password: user.password
@@ -100,40 +54,62 @@ export async function devLogin(role: UserRole): Promise<DevLoginResult> {
 
     if (error) {
       console.error('Dev login error:', error);
-      
-      // Check if the error indicates that user doesn't exist
-      if (error.message.includes('Invalid login credentials')) {
-        return { 
-          success: false, 
-          error: new Error(`Login failed: Test user '${user.email}' may not exist in the database. Check if test users have been created.`)
-        };
-      }
-      
-      toast({
-        title: 'Login failed',
-        description: `Failed to log in as ${role}: ${error.message}`,
-        variant: 'destructive',
-      });
-      return { success: false, error: error as Error };
+      return { success: false, error };
     }
 
-    if (data?.user) {
-      toast({
-        title: 'Login successful',
-        description: `Logged in as ${role} (${user.email})`,
-      });
-      return { success: true };
-    }
-
-    return { 
-      success: false,
-      error: new Error('Login returned no user data')
-    };
-  } catch (error: any) {
-    console.error('Unexpected error in devLogin:', error);
+    console.log(`Development login successful as ${role} (${user.email})`);
+    return { success: true, user: data.user };
+  } catch (error) {
+    console.error('Unexpected error during dev login:', error);
     return { 
       success: false, 
-      error: new Error(`Dev login failed: ${error.message}`)
+      error: error instanceof Error ? error : new Error('Unknown error during dev login')
     };
   }
-}
+};
+
+// Setup function to register or confirm test users
+export const setupTestUsers = async (): Promise<boolean> => {
+  if (import.meta.env.MODE !== 'development') {
+    console.error('Setup test users is only allowed in development mode');
+    return false;
+  }
+
+  try {
+    for (const user of TEST_USERS) {
+      // Check if user exists
+      const { data: existingUser, error: checkError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: user.password
+      });
+
+      if (!checkError && existingUser) {
+        console.log(`User ${user.email} already exists.`);
+        continue;
+      }
+      
+      // Create user if doesn't exist
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: user.email,
+        password: user.password,
+        options: {
+          data: {
+            role: user.role,
+            full_name: user.name
+          }
+        }
+      });
+      
+      if (signUpError) {
+        console.error(`Failed to create user ${user.email}:`, signUpError);
+      } else {
+        console.log(`Created user ${user.email} with role ${user.role}`);
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error setting up test users:', error);
+    return false;
+  }
+};
