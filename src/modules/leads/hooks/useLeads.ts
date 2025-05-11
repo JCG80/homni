@@ -101,3 +101,15 @@ export const useAssignLead = () => {
     }
   });
 };
+
+// Add the missing useLeads export for backward compatibility
+export const useLeads = () => {
+  const { data: leads = [], isLoading, error, refetch } = useLeadList();
+  
+  return {
+    leads,
+    isLoading,
+    error,
+    refresh: refetch
+  };
+};
