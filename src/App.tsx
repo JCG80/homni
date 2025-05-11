@@ -19,6 +19,7 @@ import { UnauthorizedPage } from './pages/UnauthorizedPage'
 import { InsuranceRequestSuccessPage } from './pages/InsuranceRequestSuccessPage'
 import { ProtectedRoute } from './modules/auth/components/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './modules/auth/pages/RegisterPage'
 
 // Import module-specific routes
 import { docsRoutes } from './modules/docs/routes'
@@ -64,13 +65,13 @@ function App() {
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 <Route path="/insurance-request-success" element={<InsuranceRequestSuccessPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
                 
                 {/* Include module routes */}
                 {docsRoutes}
               </Routes>
             </Suspense>
             <Toaster />
-            {/* DevQuickLogin component removed as we're consolidating test login functionality */}
           </div>
         </AuthWrapper>
       </QueryClientProvider>
