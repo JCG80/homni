@@ -6,7 +6,7 @@ import { toast } from '@/hooks/use-toast';
 
 interface UseFilterOperationsProps {
   filters: UserLeadFilter[];
-  setFilters: (filters: UserLeadFilter[]) => void;
+  setFilters: (filters: UserLeadFilter[] | ((prev: UserLeadFilter[]) => UserLeadFilter[])) => void;
   activeFilter: UserLeadFilter | null;
   setActiveFilter: (filter: UserLeadFilter | null) => void;
   setIsLoading: (isLoading: boolean) => void;
