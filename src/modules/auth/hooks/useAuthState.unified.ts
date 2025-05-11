@@ -36,6 +36,7 @@ export const useAuthState = () => {
         const user: AuthUser = {
           id: session.user.id,
           email: session.user.email || undefined,
+          role: 'user' // Default role until profile is loaded
         };
 
         if (mounted) {
@@ -52,8 +53,14 @@ export const useAuthState = () => {
             const profile = await fetchProfile(user.id);
             
             if (mounted) {
+              // Update user with role from profile if available
+              if (profile?.role) {
+                user.role = profile.role;
+              }
+              
               setAuthState(prev => ({
                 ...prev,
+                user,
                 profile,
                 isLoading: false,
                 error: null
@@ -89,6 +96,7 @@ export const useAuthState = () => {
         const user: AuthUser = {
           id: session.user.id,
           email: session.user.email || undefined,
+          role: 'user' // Default role until profile is loaded
         };
 
         setAuthState(prev => ({
@@ -100,6 +108,11 @@ export const useAuthState = () => {
         fetchProfile(user.id)
           .then(profile => {
             if (mounted) {
+              // Update user with role from profile if available
+              if (profile?.role) {
+                user.role = profile.role;
+              }
+              
               setAuthState({
                 user,
                 profile,
@@ -140,8 +153,16 @@ export const useAuthState = () => {
       
       try {
         const profile = await fetchProfile(authState.user.id);
+        
+        // Update user with role from profile if available
+        const updatedUser = { ...authState.user };
+        if (profile?.role) {
+          updatedUser.role = profile.role;
+        }
+        
         setAuthState(prev => ({
           ...prev,
+          user: updatedUser,
           profile,
           isLoading: false,
           error: null,

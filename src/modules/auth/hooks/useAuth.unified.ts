@@ -40,7 +40,7 @@ export const useAuthState = () => {
   }, [hasRole]);
 
   const isUser = useCallback(() => {
-    return hasRole('member');
+    return hasRole('user');
   }, [hasRole]);
 
   // Refresh profile function
@@ -81,6 +81,7 @@ export const useAuthState = () => {
           const user: AuthUser = {
             id: session.user.id,
             email: session.user.email,
+            role: 'user' // Default role until profile is loaded
           };
 
           setAuthState(prev => ({ ...prev, user, isLoading: true }));
@@ -89,8 +90,14 @@ export const useAuthState = () => {
           try {
             const profile = await fetchProfile(user.id);
             if (mounted) {
+              // Update user with role from profile if available
+              if (profile?.role) {
+                user.role = profile.role;
+              }
+              
               setAuthState(prev => ({ 
                 ...prev, 
+                user,
                 profile, 
                 isLoading: false 
               }));
@@ -128,6 +135,7 @@ export const useAuthState = () => {
             const user: AuthUser = {
               id: session.user.id,
               email: session.user.email,
+              role: 'user' // Default role until profile is loaded
             };
             
             setAuthState(prev => ({ ...prev, user, isLoading: true }));
@@ -138,8 +146,14 @@ export const useAuthState = () => {
                 try {
                   const profile = await fetchProfile(user.id);
                   if (mounted) {
+                    // Update user with role from profile if available
+                    if (profile?.role) {
+                      user.role = profile.role;
+                    }
+                    
                     setAuthState(prev => ({ 
-                      ...prev, 
+                      ...prev,
+                      user,
                       profile, 
                       isLoading: false 
                     }));

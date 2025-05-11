@@ -1,12 +1,24 @@
-
-import { Link } from 'react-router-dom';
-import { LoginForm } from '../components/LoginForm';
-import { devLogin } from '../utils/devLogin';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { LoginTabs } from '@/components/auth/LoginTabs';
+import { TestUserManager } from '@/components/auth/TestUserManager';
+import { UserRole } from '@/modules/auth/utils/roles';
+import { devLogin } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
-import { UserRole } from '../types/types';
 
 export const LoginPage = () => {
-  // Updated to use correct UserRole types
+  const navigate = useNavigate();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
+    if (user && !isLoading) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, isLoading, navigate]);
+
+  // Handle test user login
   const handleDevLogin = async (role: UserRole) => {
     const result = await devLogin(role);
     if (result.error) {
@@ -19,57 +31,42 @@ export const LoginPage = () => {
     // Success notifications are already handled in devLogin
   };
 
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Laster inn...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Logg inn</h1>
-          <p className="text-muted-foreground mt-2">
-            Velkommen tilbake til Homni
-          </p>
+          <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
+          
+          <LoginTabs />
         </div>
         
-        <LoginForm />
-        
-        <div className="text-center space-y-1 text-sm">
-          <p>
-            Etter innlogging kan du:
-          </p>
-          <ul className="text-muted-foreground">
-            <li>Se din brukerprofil</li>
-            <li>Administrere dine eiendommer</li>
-            <li>Få oversikt over utgifter</li>
-          </ul>
-        </div>
-
         {import.meta.env.MODE === 'development' && (
-          <div className="mt-8 text-center space-x-2">
-            <button 
-              onClick={() => handleDevLogin('member')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as User
-            </button>
-            <button 
-              onClick={() => handleDevLogin('company')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as Company
-            </button>
-            <button 
-              onClick={() => handleDevLogin('admin')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as Admin
-            </button>
-            <button 
-              onClick={() => handleDevLogin('master_admin')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as Master Admin
-            </button>
-          </div>
+          <TestUserManager onLoginClick={handleDevLogin} />
         )}
+        
+        <div className="text-center text-sm">
+          <p className="text-muted-foreground mb-2">
+            Har du ikke konto?{' '}
+            <Link to="/register" className="text-primary hover:underline">
+              Registrer deg
+            </Link>
+          </p>
+          <Link to="/" className="hover:text-primary text-muted-foreground">
+            ← Tilbake til forsiden
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -35,3 +35,23 @@ export function isContentEditorRole(role: UserRole | null): boolean {
   if (!role) return false;
   return ['admin', 'master_admin'].includes(role);
 }
+
+/**
+ * Check if a role has access to a specific module
+ */
+export function canAccessModule(role: UserRole, module: string): boolean {
+  // Master admin has access to everything
+  if (role === 'master_admin') return true;
+  
+  // Define module access based on role
+  const moduleAccess: Record<UserRole, string[]> = {
+    'anonymous': ['home', 'login', 'register', 'public'],
+    'user': ['dashboard', 'profile', 'leads'],
+    'company': ['dashboard', 'profile', 'company', 'leads'],
+    'admin': ['dashboard', 'profile', 'admin', 'leads', 'content', 'settings'],
+    'master_admin': ['*']
+  };
+  
+  const allowedModules = moduleAccess[role] || [];
+  return allowedModules.includes('*') || allowedModules.includes(module);
+}

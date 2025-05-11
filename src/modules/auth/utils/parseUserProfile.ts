@@ -11,7 +11,7 @@ export const parseUserProfile = (data: any): Profile | null => {
   if (!data || !data.id) return null;
   
   // Extract role from metadata or use default role
-  let role: UserRole = 'member'; // Default role
+  let role: UserRole = 'user'; // Default role
   
   if (data.role && isUserRole(data.role)) {
     role = data.role as UserRole;

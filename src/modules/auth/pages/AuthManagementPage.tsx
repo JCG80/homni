@@ -42,10 +42,13 @@ export const AuthManagementPage = () => {
         const formattedUsers = data.map(profile => {
           const user = profile.users as any;
           const userMetadata = user.user_metadata;
-          const rawRole = userMetadata ? userMetadata.role : 'member';
+          const rawRole = userMetadata ? userMetadata.role : 'user';
           
           // Ensure role is a valid UserRole
-          const role = isUserRole(rawRole) ? rawRole : 'member';
+          let role: UserRole = 'user'; // Default role
+          if (isUserRole(rawRole)) {
+            role = rawRole as UserRole;
+          }
           
           return {
             id: profile.id,
