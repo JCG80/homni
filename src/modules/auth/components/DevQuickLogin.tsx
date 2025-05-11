@@ -1,11 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { devLogin } from '../utils/devLogin';
+import { devLogin, TEST_USERS } from '../utils/devLogin';
 import { toast } from '@/hooks/use-toast';
-import { TEST_USERS } from '../utils/devLogin';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { Loader2 } from 'lucide-react';
 
 export const DevQuickLogin: React.FC = () => {
+  const [loadingRole, setLoadingRole] = useState<string | null>(null);
+  
   // Only show in development mode
   if (import.meta.env.MODE !== 'development') {
     return null;
@@ -13,6 +23,7 @@ export const DevQuickLogin: React.FC = () => {
 
   const loginAs = async (role: string) => {
     try {
+      setLoadingRole(role);
       const user = TEST_USERS.find(u => u.role === role);
       if (!user) return;
       
@@ -26,19 +37,14 @@ export const DevQuickLogin: React.FC = () => {
         });
         return;
       }
-      
-      if (result.success) {
-        toast({
-          title: 'Login successful',
-          description: `Logged in as ${role} (${user.email})`,
-        });
-      }
     } catch (err) {
       toast({
         title: 'Login error',
         description: err instanceof Error ? err.message : 'Unknown error occurred',
         variant: 'destructive',
       });
+    } finally {
+      setLoadingRole(null);
     }
   };
 
@@ -52,9 +58,17 @@ export const DevQuickLogin: React.FC = () => {
             size="sm"
             variant="outline"
             onClick={() => loginAs(user.role)}
+            disabled={loadingRole === user.role}
             className="text-xs justify-start"
           >
-            Login as {user.role}
+            {loadingRole === user.role ? (
+              <>
+                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              <>Login as {user.role}</>
+            )}
           </Button>
         ))}
       </div>

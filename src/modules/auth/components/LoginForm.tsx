@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { signInWithEmail } from '../api/auth-authentication'; // Direkte import fra korrekt kildemodul
+import { signInWithEmail } from '../api/auth-authentication';
 import { toast } from '@/hooks/use-toast';
+import { useAuthRetry } from '../hooks/useAuthRetry';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -18,24 +19,43 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('admin@test.local');
-  const [password, setPassword] = useState('password');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [password, setPassword] = useState('Test1234!');
   const [error, setError] = useState<string | null>(null);
 
   // Get redirectUrl from location state or use provided redirectTo
   const from = location.state?.from?.pathname || redirectTo;
 
+  // Use retry hook for authentication
+  const { 
+    isSubmitting, 
+    currentAttempt, 
+    maxRetries,
+    executeWithRetry 
+  } = useAuthRetry({
+    maxRetries: 3,
+    onSuccess: () => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        console.log('Redirecting after successful login to:', from);
+        navigate(from, { replace: true });
+      }
+    },
+    showToasts: true
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setIsSubmitting(true);
 
-    try {
-      if (!email || !password) {
-        throw new Error('Du må fylle inn både e-post og passord');
-      }
+    if (!email || !password) {
+      setError('Du må fylle inn både e-post og passord');
+      return;
+    }
 
-      console.log('Attempting login with:', { email });
+    console.log('Attempting login with:', { email });
+    
+    executeWithRetry(async () => {
       const { user, error: signInError } = await signInWithEmail(email, password);
       
       if (signInError) {
@@ -51,37 +71,17 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
         }
       }
       
-      if (user) {
-        toast({
-          title: 'Innlogget',
-          description: 'Du er nå logget inn',
-        });
-        
-        if (onSuccess) {
-          onSuccess();
-        } else {
-          console.log('Redirecting after successful login to:', from);
-          navigate(from, { replace: true });
-        }
-      } else {
+      if (!user) {
         throw new Error('Kunne ikke logge inn - brukeren ble ikke funnet');
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      const errorMessage = err instanceof Error
-        ? err.message
-        : 'Feil ved innlogging - sjekk brukernavn og passord';
-      
-      setError(errorMessage);
       
       toast({
-        title: 'Innloggingsfeil',
-        description: errorMessage,
-        variant: 'destructive',
+        title: 'Innlogget',
+        description: 'Du er nå logget inn',
       });
-    } finally {
-      setIsSubmitting(false);
-    }
+      
+      return user;
+    });
   };
 
   return (
@@ -116,7 +116,13 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
       </div>
       
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Logger inn...' : 'Logg inn'}
+        {isSubmitting ? (
+          currentAttempt > 0 
+            ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
+            : 'Logger inn...'
+        ) : (
+          'Logg inn'
+        )}
       </Button>
       
       <div className="text-center text-sm">
@@ -131,7 +137,7 @@ export const LoginForm = ({ onSuccess, redirectTo = '/', userType = 'private' }:
       </div>
 
       <div className="text-xs text-center text-muted-foreground">
-        <p>For utvikling: bruk 'admin@test.local' / 'password'</p>
+        <p>For utvikling: bruk '{email}' / '{password}'</p>
       </div>
     </form>
   );

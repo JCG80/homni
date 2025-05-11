@@ -2,16 +2,26 @@
 import React, { useEffect, useState } from 'react';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { devLogin } from '@/modules/auth/utils/devLogin';
+import { devLogin, TEST_USERS } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserRole } from '@/modules/auth/types/types';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const typeParam = searchParams.get('type');
   const [activeTab, setActiveTab] = useState<string>(typeParam === 'business' ? 'business' : 'private');
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
+    if (user && !isLoading) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, isLoading, navigate]);
 
   useEffect(() => {
     if (typeParam === 'business') {
@@ -27,6 +37,7 @@ export const LoginPage = () => {
   };
 
   const handleDevLogin = async (role: UserRole) => {
+    console.log(`Attempting dev login as ${role}`);
     const result = await devLogin(role);
     if (result.error) {
       toast({
@@ -37,6 +48,15 @@ export const LoginPage = () => {
     }
     // Suksess-meldinger håndteres allerede i devLogin
   };
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Laster inn...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -71,31 +91,21 @@ export const LoginPage = () => {
         </div>
         
         {import.meta.env.MODE === 'development' && (
-          <div className="mt-8 text-center space-x-2">
-            <button 
-              onClick={() => handleDevLogin('member')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as User
-            </button>
-            <button 
-              onClick={() => handleDevLogin('company')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as Company
-            </button>
-            <button 
-              onClick={() => handleDevLogin('admin')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as Admin
-            </button>
-            <button 
-              onClick={() => handleDevLogin('master_admin')} 
-              className="px-3 py-1 bg-gray-200 rounded text-xs"
-            >
-              Login as Master Admin
-            </button>
+          <div className="mt-8">
+            <p className="text-sm text-center mb-4">Testbrukere for utvikling</p>
+            <div className="space-y-2">
+              {TEST_USERS.map((user) => (
+                <Button 
+                  key={user.email}
+                  onClick={() => handleDevLogin(user.role)}
+                  className="w-full text-xs"
+                  variant="outline"
+                  size="sm"
+                >
+                  Logg inn som {user.name} ({user.role})
+                </Button>
+              ))}
+            </div>
           </div>
         )}
         

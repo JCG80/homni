@@ -62,6 +62,8 @@ export async function devLogin(role: UserRole): Promise<DevLoginResult> {
       };
     }
 
+    console.log(`Attempting dev login with: ${user.email} / ${user.password}`);
+
     // Sign in with email and password
     const { data, error } = await supabase.auth.signInWithPassword({
       email: user.email,
