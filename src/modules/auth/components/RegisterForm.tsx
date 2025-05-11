@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BusinessRegistrationForm } from './forms/BusinessRegistrationForm';
 import { PrivateRegistrationForm } from './forms/PrivateRegistrationForm';
 import { useAuthRetry } from '../hooks/useAuthRetry';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -15,6 +16,8 @@ export const RegisterForm = ({
   redirectTo = '/dashboard', 
   userType = 'private' 
 }: RegisterFormProps) => {
+  const [activeTab, setActiveTab] = useState<'private' | 'business'>(userType);
+  
   // Use our authRetry hook for registration
   const { isSubmitting, currentAttempt, maxRetries, executeWithRetry } = useAuthRetry({
     maxRetries: 3,
@@ -29,24 +32,41 @@ export const RegisterForm = ({
     await executeWithRetry(submitFn);
   };
 
-  // Pass the retry handler to the appropriate form based on user type
-  return userType === 'business' ? (
-    <BusinessRegistrationForm 
-      onSuccess={onSuccess} 
-      redirectTo={redirectTo} 
-      isSubmitting={isSubmitting}
-      retryHandler={handleRegistration}
-      currentAttempt={currentAttempt}
-      maxRetries={maxRetries}
-    />
-  ) : (
-    <PrivateRegistrationForm 
-      onSuccess={onSuccess} 
-      redirectTo={redirectTo}
-      isSubmitting={isSubmitting}
-      retryHandler={handleRegistration}
-      currentAttempt={currentAttempt}
-      maxRetries={maxRetries}
-    />
+  // Toggle between private and business registration
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as 'private' | 'business');
+  };
+
+  return (
+    <div className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList className="grid grid-cols-2">
+          <TabsTrigger value="private">Privatperson</TabsTrigger>
+          <TabsTrigger value="business">Bedrift</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="private" className="space-y-4">
+          <PrivateRegistrationForm 
+            onSuccess={onSuccess} 
+            redirectTo={redirectTo}
+            isSubmitting={isSubmitting}
+            retryHandler={handleRegistration}
+            currentAttempt={currentAttempt}
+            maxRetries={maxRetries}
+          />
+        </TabsContent>
+        
+        <TabsContent value="business" className="space-y-4">
+          <BusinessRegistrationForm 
+            onSuccess={onSuccess} 
+            redirectTo={redirectTo} 
+            isSubmitting={isSubmitting}
+            retryHandler={handleRegistration}
+            currentAttempt={currentAttempt}
+            maxRetries={maxRetries}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };

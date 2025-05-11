@@ -9,12 +9,13 @@ import { CompanyLeadSettings } from '../components/CompanyLeadSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { UserRole } from '@/modules/auth/utils/roles';
 
 export const CompanyLeadsPage = () => {
   const { isLoading, profile, refreshProfile } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const { loading } = useRoleGuard({
-    allowedRoles: ['company', 'admin', 'master_admin'],
+    allowedRoles: ['company', 'admin', 'master_admin'] as UserRole[],
     redirectTo: '/unauthorized'
   });
 

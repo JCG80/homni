@@ -12,9 +12,9 @@ export function getAllowedModulesForRole(role: UserRole): string[] {
     case 'anonymous':
       return ['home', 'leads/submit', 'info', 'login', 'register'];
     case 'user':
-      return ['dashboard', 'leads'];
+      return ['dashboard', 'leads', 'leads/my', 'profile', 'properties', 'maintenance', 'my-account'];
     case 'company':
-      return ['dashboard', 'leads', 'settings', 'reports'];
+      return ['dashboard', 'leads', 'company', 'company/profile', 'settings', 'reports'];
     case 'admin':
       return ['admin', 'leads', 'companies', 'reports', 'content'];
     case 'master_admin':
@@ -43,7 +43,7 @@ export function getAccessibleModules(
     'company': ['company', 'admin', 'master_admin'],
     'geo': ['user', 'company', 'admin', 'master_admin'],
     'content': ['admin', 'master_admin'],
-    'settings': ['admin', 'master_admin']
+    'settings': ['company', 'admin', 'master_admin']
   }
 ): string[] {
   try {

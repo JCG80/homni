@@ -1,7 +1,7 @@
 
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { canAccessModule } from '../utils/roles';
-import { UserRole } from '../types/types';
+import { UserRole } from '../utils/roles/types';
 import { render } from '@testing-library/react';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
@@ -18,7 +18,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useLocation: () => ({ pathname: '/test' }),
-    Navigate: ({ to }: { to: string }) => <div data-testid="navigate" data-to={to}>Navigate to {to}</div>
+    Navigate: ({ to }) => <div data-testid="navigate" data-to={to}>Navigate to {to}</div>
   };
 });
 

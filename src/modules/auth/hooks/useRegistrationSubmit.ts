@@ -84,7 +84,8 @@ export const useRegistrationSubmit = () => {
               await supabase
                 .from('user_profiles')
                 .update({ 
-                  metadata: { company_id: companyProfile.id } 
+                  company_id: companyProfile.id,
+                  metadata: { ...profileData.metadata, company_id: companyProfile.id } 
                 })
                 .eq('id', user.id);
             }

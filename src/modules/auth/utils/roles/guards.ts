@@ -47,7 +47,7 @@ export function canAccessModule(role: UserRole, module: string): boolean {
   const moduleAccess: Record<UserRole, string[]> = {
     'anonymous': ['home', 'login', 'register', 'public', 'info', 'leads/submit'],
     'user': ['dashboard', 'profile', 'leads', 'leads/my', 'properties', 'maintenance', 'my-account'],
-    'company': ['dashboard', 'profile', 'company', 'leads', 'company/profile'],
+    'company': ['dashboard', 'profile', 'company', 'leads', 'company/profile', 'settings'],
     'admin': ['dashboard', 'profile', 'admin', 'leads', 'content', 'settings'],
     'master_admin': ['*']
   };

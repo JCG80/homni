@@ -1,3 +1,4 @@
+
 # Development Notes
 
 ## Project Status Overview
@@ -5,6 +6,7 @@
 ### Current Focus
 - **Authentication Module Refactoring**: Implementing better type safety and separation of concerns
 - **Service Selection Module**: Building interactive service selection experience for users
+- **Role System Implementation**: Consolidated role system with standard roles (anonymous, user, company, admin, master_admin)
 
 ### Recently Completed
 - Refactored `useAuth` hook into smaller, more maintainable components
@@ -12,6 +14,7 @@
 - Added lead generation for anonymous users and preference saving for authenticated users
 - Fixed build errors related to authentication context types
 - Consolidated role system around standard roles: anonymous, user, company, admin, master_admin
+- Enhanced company role implementation with proper permissions and tests
 
 ## Module Development Status
 
@@ -25,6 +28,7 @@
 - ✅ Implemented guest vs. authenticated user distinction
 - ✅ Added profile handling with better error messaging
 - ✅ Standardized user roles: anonymous, user, company, admin, master_admin
+- ✅ Implemented company role with proper permissions and company profile integration
 
 #### In Progress
 - 🔄 Finalizing auth components for better type safety
@@ -92,102 +96,6 @@
 - ✅ Content dashboard with filtering and search
 - ✅ Publishing scheduling with published_at field
 
-### 6. Type Safety and Error Handling
-
-#### Completed
-- ✅ Fixed TS2589 error: "Type instantiation is excessively deep and possibly infinite"
-- ✅ Created modular parseLead utility for safe Lead object creation
-- ✅ Implemented proper type safety in API functions
-- ✅ Added test suite for parseLead utility
-- ✅ Added robust fallbacks for missing or invalid data fields
-
-### 7. Geo Services
-
-#### Completed
-- ✅ Implemented modular address lookup service
-- ✅ Created provider interface for address lookup services
-- ✅ Implemented NO.ts provider for Norwegian addresses
-- ✅ Added DEFAULT.ts fallback provider
-- ✅ Created tests for address lookup functionality
-
-## Testing Overview
-
-### Current Test Coverage
-- Unit tests for address lookup module
-- Test suite for parseLead utility
-- Validation tests for lead status transitions
-- Authentication role handling tests
-
-### Testing Priorities
-1. More test coverage for lead distribution functions
-2. Tests for service selection components
-3. Authentication flow tests
-
-## Future Development Roadmap
-
-### Short-term (Next 2-4 weeks)
-1. Complete the budget tracking system
-2. Implement lead quality scoring
-3. Add more detailed reporting for companies
-4. Expand test coverage for critical modules
-5. Extend parsing utilities to other entity types
-
-### Mid-term (Next 2-3 months)
-1. Implement AI-based lead matching algorithm (priority high)
-2. Create mobile-responsive design for all pages
-3. Add notification system for important events
-4. Implement advanced filtering and search across the application
-5. Add data export capabilities for reports
-
-### Long-term
-1. Implement AI-based lead matching
-2. Create a mobile app for companies to manage leads on-the-go
-3. Integrate with CRM systems
-4. Implement a bidding system for leads
-5. Create more advanced content management features like versioning and scheduling
-
-## Best Practices and Patterns
-
-### Type Safety Examples
-
-#### Safe Lead Status Handling
-```typescript
-// Unsafe approach (don't do this)
-const leads = apiData as Lead[]; // Might include invalid status values
-
-// Safe approach (do this)
-const leads = apiData.map(item => ({
-  ...item,
-  status: isValidLeadStatus(item.status) ? item.status : 'new',
-})) as Lead[];
-```
-
-#### Safe Lead Parsing
-```typescript
-// Previously (unsafe approach - don't do this)
-const leads = apiData as Lead[]; // Might cause TS2589 error
-
-// Now (safe approach - do this)
-import { parseLead } from '../utils/parseLead';
-const leads = (apiData || []).map(parseLead);
-```
-
-### Authentication Best Practices
-
-#### Role-Based Access Implementation
-```typescript
-// Define what modules each role can access
-function getAllowedModulesForRole(role: UserRole): string[] {
-  switch (role) {
-    case 'guest':
-      return ['home', 'leads/submit', 'info'];
-    case 'member':
-      return ['dashboard', 'leads'];
-    // Other roles...
-  }
-}
-```
-
 ## Role System
 
 ### Standard User Roles
@@ -205,8 +113,9 @@ function getAllowedModulesForRole(role: UserRole): string[] {
 
 3. **Company** (`company`)
    - Business users who can receive and manage leads
-   - Access to: dashboard, profile, company settings, lead management
+   - Access to: dashboard, profile, company settings, lead management, reports
    - Can configure their company profile and lead preferences
+   - Receives leads based on their settings and distribution rules
 
 4. **Admin** (`admin`)
    - System administrators with elevated privileges
@@ -217,3 +126,29 @@ function getAllowedModulesForRole(role: UserRole): string[] {
    - Super users with unrestricted access
    - Access to: everything in the system
    - No restrictions on any module or feature
+
+## Company Role Implementation
+
+The company role has been implemented with these specific capabilities:
+
+- Company users have access to their own leads, which are assigned to them by the system
+- They can configure preferences for lead distribution through their settings
+- Each company user is linked to a company profile, which stores additional company-specific information
+- Company users can view reports related to their own leads
+- They cannot access user-specific functionality like property management
+- They cannot access admin functionality like content management
+
+### Company Registration Process
+
+1. When a user registers as a business:
+   - A user account is created with role='company'
+   - A company profile is created in the company_profiles table
+   - The user's profile is updated with a reference to the company_id
+   - The user is directed to their dashboard
+
+### Company Access Control
+
+- Routes specific to companies are protected with role-based guards
+- The `canAccessModule` function defines what modules company users can access
+- Company-specific UI components check for the company role before rendering
+- Redirects are in place to prevent unauthorized access
