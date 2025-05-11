@@ -2,7 +2,7 @@
 import { createContext, ReactNode, useContext } from 'react';
 import { AuthUser, Profile } from '../types/types';
 import { useAuthState } from './useAuthState.unified';
-import { UserRole } from '../utils/roles';
+import { UserRole } from '../utils/roles/types';
 
 // Define a comprehensive AuthContextType with all required fields
 export interface AuthContextType {
@@ -16,7 +16,12 @@ export interface AuthContextType {
   isMasterAdmin: boolean;
   isCompany: boolean;
   isUser: boolean;
+  isMember: boolean;
   role: UserRole | undefined;
+  account_type?: string;
+  module_access: string[];
+  internal_admin: boolean;
+  canAccessModule: (module: string) => boolean;
 }
 
 // Create context with default values
@@ -31,7 +36,12 @@ const AuthContext = createContext<AuthContextType>({
   isMasterAdmin: false,
   isCompany: false,
   isUser: false,
+  isMember: false,
   role: undefined,
+  account_type: undefined,
+  module_access: [],
+  internal_admin: false,
+  canAccessModule: () => false,
 });
 
 // AuthProvider component

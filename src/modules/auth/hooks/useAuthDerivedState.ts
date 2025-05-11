@@ -19,27 +19,49 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
   // Determine role - use profile role first, then user role, default to undefined
   const role: UserRole | undefined = profile?.role ?? user?.role;
 
+  // Get account type from user metadata
+  const account_type = user?.metadata?.account_type || profile?.metadata?.account_type || 'member';
+  
+  // Get module access from user metadata
+  const module_access = user?.metadata?.module_access || profile?.metadata?.module_access || [];
+  
+  // Get internal admin flag from user metadata
+  const internal_admin = user?.metadata?.internal_admin || profile?.metadata?.internal_admin || false;
+
   // Helper function to check if user has a specific role
   const hasRole = useCallback((roleToCheck: UserRole) => {
     return role === roleToCheck;
   }, [role]);
 
+  // Helper function to check if user can access a specific module
+  const canAccessModule = useCallback((module: string) => {
+    // Master admins can access everything
+    if (role === 'master_admin') return true;
+    
+    // Check if user has the module in their module_access list
+    return Array.isArray(module_access) && module_access.includes(module);
+  }, [role, module_access]);
+
   // Helper functions to check common roles
   const isAdmin = useCallback(() => {
-    return hasRole('admin') || hasRole('master_admin');
-  }, [hasRole]);
+    return hasRole('admin') || hasRole('master_admin') || internal_admin;
+  }, [hasRole, internal_admin]);
 
   const isMasterAdmin = useCallback(() => {
     return hasRole('master_admin');
   }, [hasRole]);
 
   const isCompany = useCallback(() => {
-    return hasRole('company');
-  }, [hasRole]);
+    return hasRole('company') || account_type === 'company';
+  }, [hasRole, account_type]);
 
   const isUser = useCallback(() => {
     return hasRole('user');
   }, [hasRole]);
+
+  const isMember = useCallback(() => {
+    return hasRole('member') || account_type === 'member';
+  }, [hasRole, account_type]);
 
   return {
     isAuthenticated,
@@ -47,6 +69,11 @@ export const useAuthDerivedState = ({ user, profile }: AuthBaseState) => {
     isMasterAdmin: isMasterAdmin(),
     isCompany: isCompany(),
     isUser: isUser(),
+    isMember: isMember(),
     role,
+    account_type,
+    module_access,
+    internal_admin,
+    canAccessModule,
   };
 };

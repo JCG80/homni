@@ -2,7 +2,7 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { UserRole, isUserRole, canAccessModule } from '../utils/roles';
+import { UserRole } from '../utils/roles/types';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -19,7 +19,7 @@ export const ProtectedRoute = ({
   allowAnyAuthenticated = false,
   module
 }: ProtectedRouteProps) => {
-  const { isAuthenticated, user, profile, isLoading } = useAuth();
+  const { isAuthenticated, user, profile, isLoading, account_type, role, canAccessModule } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -33,16 +33,17 @@ export const ProtectedRoute = ({
     );
   }
   
-  // Determine the current role - use profile role first, then user role, default to 'anonymous'
-  const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous';
+  // Determine the current role - use role from context
+  const currentRole: UserRole = role ?? 'anonymous';
   
   console.log('ProtectedRoute check - isAuthenticated:', isAuthenticated, 'role:', currentRole, 
-    'allowedRoles:', allowedRoles, 'allowAnyAuthenticated:', allowAnyAuthenticated,
+    'account_type:', account_type, 'allowedRoles:', allowedRoles, 
+    'allowAnyAuthenticated:', allowAnyAuthenticated,
     'module:', module);
   
   // If module is specified, check if user has access to that module
   if (module) {
-    if (!canAccessModule(currentRole, module)) {
+    if (!canAccessModule(module)) {
       // If anonymous, redirect to login. Otherwise to unauthorized.
       const redirectPath = currentRole === 'anonymous' ? '/login' : '/unauthorized';
       console.log(`User does not have access to module: ${module}, redirecting to: ${redirectPath}`);
@@ -68,10 +69,14 @@ export const ProtectedRoute = ({
       return <Navigate to={redirectTo} replace state={{ from: location }} />;
     }
     
-    console.log('Role check - Current role:', currentRole, 'Allowed roles:', allowedRoles);
+    console.log('Role check - Current role:', currentRole, 'account_type:', account_type, 'Allowed roles:', allowedRoles);
     
-    if (!allowedRoles.includes(currentRole)) {
-      console.error('Access denied. User role:', currentRole, 'Required roles:', allowedRoles);
+    // Check both role and account_type
+    const hasAllowedRole = allowedRoles.includes(currentRole) || 
+                          (account_type && allowedRoles.includes(account_type as UserRole));
+    
+    if (!hasAllowedRole) {
+      console.error('Access denied. User role:', currentRole, 'Account type:', account_type, 'Required roles:', allowedRoles);
       return <Navigate to="/unauthorized" replace />;
     }
   }

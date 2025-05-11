@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -22,6 +23,12 @@ import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionP
 import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles/types';
 import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
+
+// Import the new dashboard pages
+import MemberDashboard from './pages/dashboard/MemberDashboard';
+import CompanyDashboard from './pages/dashboard/CompanyDashboard';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
+import MasterAdminDashboard from './pages/dashboard/MasterAdminDashboard';
 
 export const AppRoutes = () => {
   return (
@@ -54,15 +61,39 @@ export const AppRoutes = () => {
         {/* Companies list route */}
         <Route path="/companies" element={<CompanyListPage />} />
         
-        {/* Protected routes - require authentication */}
+        {/* Dashboard routes based on role */}
         <Route path="/dashboard" element={
           <ProtectedRoute allowAnyAuthenticated>
             <Dashboard />
           </ProtectedRoute>
         } />
         
+        <Route path="/dashboard/member" element={
+          <ProtectedRoute allowedRoles={['user', 'member'] as UserRole[]}>
+            <MemberDashboard />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/dashboard/company" element={
+          <ProtectedRoute allowedRoles={['company'] as UserRole[]}>
+            <CompanyDashboard />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin" element={
+          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/master-admin" element={
+          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+            <MasterAdminDashboard />
+          </ProtectedRoute>
+        } />
+        
         <Route path="/my-account" element={
-          <ProtectedRoute allowedRoles={['user', 'company', 'admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['user', 'member', 'company', 'admin', 'master_admin'] as UserRole[]}>
             <MyAccountPage />
           </ProtectedRoute>
         } />
@@ -88,7 +119,7 @@ export const AppRoutes = () => {
         
         {/* Lead management routes */}
         <Route path="/leads" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'user', 'member'] as UserRole[]}>
             <LeadManagementPage />
           </ProtectedRoute>
         } />
