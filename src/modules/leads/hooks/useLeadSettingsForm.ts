@@ -1,12 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
-import { LeadSettings } from '@/types/leads';
-import { DistributionStrategy } from '../strategies/strategyFactory';
 import { toast } from '@/hooks/use-toast';
+import { DistributionStrategy } from '../strategies/strategyFactory';
+import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
+import { getCurrentStrategy, updateDistributionStrategy } from '../utils/leadDistributor';
 
-export const useLeadSettingsForm = () => {
-  const [settings, setSettings] = useState<LeadSettings | null>(null);
+// Hook for managing lead settings form state and operations
+export function useLeadSettingsForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,74 +18,68 @@ export const useLeadSettingsForm = () => {
   const [paused, setPaused] = useState(false);
   const [agentsPaused, setAgentsPaused] = useState(false);
   
+  // Load initial settings
+  useEffect(() => {
+    loadSettings();
+  }, []);
+  
   const loadSettings = async () => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchLeadSettings();
-      setSettings(data);
+      // Load strategy
+      const currentStrategy = await getCurrentStrategy();
+      setStrategy(currentStrategy);
       
-      // Initialize form with current settings
-      if (data) {
-        setStrategy(data.strategy as DistributionStrategy);
-        setDailyBudget(data.daily_budget?.toString() || '');
-        setMonthlyBudget(data.monthly_budget?.toString() || '');
-        setPaused(data.paused);
-        setAgentsPaused(data.agents_paused);
+      // Load other settings
+      const settings = await fetchLeadSettings();
+      
+      if (settings) {
+        setDailyBudget(settings.daily_budget?.toString() || '');
+        setMonthlyBudget(settings.monthly_budget?.toString() || '');
+        setPaused(settings.globally_paused || settings.global_pause);
+        setAgentsPaused(settings.agents_paused);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load settings');
+      console.error('Error loading settings:', err);
+      setError('Failed to load lead settings');
       toast({
-        title: 'Error loading settings',
-        description: err instanceof Error ? err.message : 'An unknown error occurred',
+        title: 'Error',
+        description: 'Failed to load lead settings',
         variant: 'destructive',
       });
-      console.error('Error loading settings:', err);
     } finally {
       setLoading(false);
     }
   };
   
-  useEffect(() => {
-    loadSettings();
-  }, []);
-  
+  // Save settings
   const handleSave = async () => {
+    setSaving(true);
     try {
-      setSaving(true);
+      // Update strategy if changed
+      await updateDistributionStrategy(strategy);
       
-      // Create a proper filters object
-      const filtersObj: Record<string, any> = {};
-      
-      if (settings?.categories) {
-        filtersObj.categories = settings.categories;
-      }
-      
-      if (settings?.zipCodes) {
-        filtersObj.zipCodes = settings.zipCodes;
-      }
-      
+      // Update other settings
       await updateLeadSettings({
-        strategy,
         daily_budget: dailyBudget ? parseFloat(dailyBudget) : null,
         monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
         globally_paused: paused,
         agents_paused: agentsPaused,
-        filters: filtersObj
+        filters: {}
       });
       
       toast({
         title: 'Settings saved',
-        description: 'Lead settings have been updated successfully.',
+        description: 'Lead distribution settings have been updated',
+        variant: 'default',
       });
-      
-      // Reload settings to get the latest
-      const updatedSettings = await fetchLeadSettings();
-      setSettings(updatedSettings);
     } catch (err) {
+      console.error('Error saving settings:', err);
       toast({
-        title: 'Error saving settings',
-        description: err instanceof Error ? err.message : 'An unknown error occurred',
+        title: 'Error',
+        description: 'Failed to save lead settings',
         variant: 'destructive',
       });
     } finally {
@@ -94,10 +88,9 @@ export const useLeadSettingsForm = () => {
   };
   
   return {
-    settings,
     loading,
-    saving,
     error,
+    saving,
     strategy,
     dailyBudget,
     monthlyBudget,
@@ -111,4 +104,4 @@ export const useLeadSettingsForm = () => {
     handleSave,
     loadSettings
   };
-};
+}

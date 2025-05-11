@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchLeadSettings } from '../api/leadSettings';
 import { toast } from '@/hooks/use-toast';
 import { isValidLeadStatus } from '@/types/leads';
+import { getCurrentStrategy } from './getCurrentStrategy';
 
 /**
  * Processes unassigned leads using the specified distribution strategy
@@ -16,13 +17,14 @@ export async function processUnassignedLeads(
   options: {
     leadType?: string;
     showToasts?: boolean;
+    companyId?: string;
   } = {}
 ): Promise<number> {
-  const { leadType, showToasts = true } = options;
+  const { leadType, showToasts = true, companyId } = options;
   
   try {
     // First check if the system is paused via settings
-    const settings = await fetchLeadSettings();
+    const settings = await fetchLeadSettings(companyId);
     
     if (!settings) {
       console.warn('No lead settings found, using default strategy');
@@ -38,8 +40,16 @@ export async function processUnassignedLeads(
       return 0;
     }
     
-    // Use provided strategy or get from settings
-    const distributionStrategy = strategy || (settings?.strategy as DistributionStrategy || 'roundRobin');
+    // Use provided strategy or get from settings or fallback to default
+    let distributionStrategy = strategy;
+    
+    if (!distributionStrategy) {
+      // Try to get strategy from settings, or load from database if not available
+      distributionStrategy = settings?.strategy as DistributionStrategy || 
+        await getCurrentStrategy(companyId);
+    }
+    
+    console.log(`Using distribution strategy: ${distributionStrategy}`);
     
     // Build query for unassigned leads
     let query = supabase
