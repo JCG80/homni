@@ -9,7 +9,7 @@ export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from './types';
 export type { UserRole } from './types';
 
 // Export functions from guards
-export { isUserRole, canAccessModule, hasRequiredRole, isAdminRole, isContentEditorRole } from './guards';
+export { isUserRole, getAllowedPathsForRole, canAccessPath, hasRequiredRole, isAdminRole, isContentEditorRole, canAccessModule } from './guards';
 export { determineUserRole } from './determination';
 export * from './display';
 export * from './permissions';

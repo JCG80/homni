@@ -6,6 +6,7 @@ import { useAuthDerivedState } from './useAuthDerivedState';
 import { UserRole } from '../utils/roles/types';
 import { useDevAuth } from './useDevAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { canAccessModule as checkCanAccessModule } from '../utils/roles/guards';
 
 // Define a type for module access
 export interface ModuleAccess {
@@ -107,6 +108,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     profile: effectiveProfile
   });
   
+  // Implement canAccessModule function
+  const canAccessModule = (moduleId: string): boolean => {
+    // If user is master_admin or admin, they can access all modules
+    if (derivedState.isMasterAdmin || derivedState.isAdmin) return true;
+    
+    // For other users, check module access list
+    const hasAccess = moduleAccess.some(access => access.system_module_id === moduleId);
+    
+    if (hasAccess) return true;
+    
+    // If no explicit access, use the role-based check from guards.ts
+    return checkCanAccessModule(derivedState.role || 'anonymous', moduleId);
+  };
+  
   // Override refresh profile in dev mode
   const refreshProfile = async () => {
     if (devAuth.isDevMode) {
@@ -143,6 +158,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     profile: effectiveProfile,
     refreshProfile,
     module_access: moduleAccess, // Include module access in context
+    internal_admin: moduleAccess.some(access => access.internal_admin) || false,
+    canAccessModule,
     // Add dev-specific functionality
     isDevMode: devAuth.isDevMode,
     switchDevUser: devAuth.switchToDevUser,
