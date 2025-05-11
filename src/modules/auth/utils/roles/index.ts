@@ -3,9 +3,13 @@
  * Export all role-related functionality
  */
 
-// Export specific items from each file to avoid duplicate exports
+// Export values (non-type exports)
+export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from './types';
+// Export type separately using 'export type'
+export type { UserRole } from './types';
+
+// Export functions from guards
 export { isUserRole, canAccessModule, hasRequiredRole, isAdminRole, isContentEditorRole } from './guards';
-export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES, UserRole } from './types';
 export { determineUserRole } from './determination';
 export * from './display';
 export * from './permissions';
