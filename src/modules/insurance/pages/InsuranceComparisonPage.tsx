@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useInsuranceQueries } from '../hooks/useInsuranceQueries';
 import { useNavigate } from 'react-router-dom';
 import { FilterSidebar } from '../components/comparison/FilterSidebar';
@@ -15,26 +15,56 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { InsuranceCompanyWithTypes } from '../types/insurance-types';
 
 export const InsuranceComparisonPage = () => {
   const { data: companies = [], isLoading } = useInsuranceQueries.useInsuranceCompaniesWithTypes();
   const { data: types = [] } = useInsuranceQueries.useInsuranceTypes();
   const [filterType, setFilterType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('rating');
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
-  // Filter companies by type and search term
-  const filteredCompanies = companies.filter(company => {
-    const matchesType = !filterType || 
-      (company.insurance_types && 
-       company.insurance_types.some(type => type.id === filterType));
+  // Filter and sort companies
+  const processedCompanies = useMemo(() => {
+    let result = [...companies];
     
-    const matchesSearch = !searchTerm || 
-      company.name.toLowerCase().includes(searchTerm.toLowerCase());
+    // Apply type filter
+    if (filterType) {
+      result = result.filter(company => 
+        company.insurance_types && 
+        company.insurance_types.some(type => type.id === filterType)
+      );
+    }
     
-    return matchesType && matchesSearch;
-  });
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      result = result.filter(company => 
+        company.name.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Apply sorting
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          // Sort by rating (highest first)
+          return (b.customer_rating || 0) - (a.customer_rating || 0);
+        case 'reviews':
+          // Sort by number of reviews (highest first)
+          return (b.review_count || 0) - (a.review_count || 0);
+        case 'name':
+          // Sort alphabetically by name
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+    
+    return result;
+  }, [companies, filterType, searchTerm, sortBy]);
 
   const handleCompanyClick = (companyId: string) => {
     navigate(`/insurance/companies/${companyId}`);
@@ -43,6 +73,7 @@ export const InsuranceComparisonPage = () => {
   const resetFilters = () => {
     setFilterType(null);
     setSearchTerm('');
+    setSortBy('rating');
   };
 
   return (
@@ -67,6 +98,8 @@ export const InsuranceComparisonPage = () => {
                   <SearchAndSort 
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
                   />
                 </div>
                 <FilterSidebar 
@@ -98,16 +131,18 @@ export const InsuranceComparisonPage = () => {
               <SearchAndSort 
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
               />
             )}
             
             {/* Results count */}
             <p className="text-sm text-muted-foreground mb-4">
-              Viser {filteredCompanies.length} av {companies.length} forsikringsselskaper
+              Viser {processedCompanies.length} av {companies.length} forsikringsselskaper
             </p>
             
             <InsuranceCompanyGrid 
-              companies={filteredCompanies}
+              companies={processedCompanies}
               isLoading={isLoading}
               handleCompanyClick={handleCompanyClick}
               resetFilters={resetFilters}

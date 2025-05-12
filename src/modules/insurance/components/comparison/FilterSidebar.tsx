@@ -18,6 +18,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
+  const handleReset = () => {
+    setFilterType(null);
+  };
+  
   return (
     <div className={`bg-card rounded-lg border p-4 ${isMobile ? '' : 'sticky top-24'}`}>
       <h3 className="font-medium mb-4 flex items-center">
@@ -76,8 +80,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       
       <Button 
         variant="outline" 
-        className="w-full mt-6 flex items-center"
-        onClick={() => setFilterType(null)}
+        className="w-full mt-6 flex items-center justify-center"
+        onClick={handleReset}
       >
         <SlidersHorizontal className="mr-2 h-4 w-4" /> Tilbakestill filter
       </Button>

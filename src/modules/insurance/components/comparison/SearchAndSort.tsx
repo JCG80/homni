@@ -8,11 +8,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface SearchAndSortProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
+  sortBy: string;
+  setSortBy: (sort: string) => void;
 }
 
 export const SearchAndSort: React.FC<SearchAndSortProps> = ({ 
   searchTerm, 
-  setSearchTerm 
+  setSearchTerm,
+  sortBy,
+  setSortBy
 }) => {
   const isMobile = useIsMobile();
 
@@ -28,7 +32,7 @@ export const SearchAndSort: React.FC<SearchAndSortProps> = ({
         />
       </div>
       
-      <Tabs defaultValue="rating" className="w-full">
+      <Tabs value={sortBy} onValueChange={setSortBy} className="w-full">
         <TabsList className={isMobile ? 'w-full' : undefined}>
           <TabsTrigger value="rating" className={isMobile ? 'flex-1' : undefined}>Kundetilfredshet</TabsTrigger>
           <TabsTrigger value="reviews" className={isMobile ? 'flex-1' : undefined}>Antall omtaler</TabsTrigger>
