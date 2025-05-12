@@ -1,117 +1,80 @@
 
 import React from 'react';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { DashboardWidget } from '@/components/dashboard';
-import { Button } from '@/components/ui/button';
-import { Shield, Users, Lock, Settings } from 'lucide-react';
+import { DashboardLayout } from '@/components/dashboard';
+import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { Users, Shield, Database, Settings, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/modules/auth/hooks';
 
-const MasterAdminDashboard = () => {
+export const MasterAdminDashboard = () => {
+  const { profile } = useAuth();
+  
   return (
-    <DashboardLayout title="Master Admin Dashboard">
-      {/* System Configuration Widget */}
-      <DashboardWidget title="System Konfigurasjon">
-        <div className="p-4 space-y-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">Systemmoduler</h4>
-              <p className="text-sm text-muted-foreground">12 aktive / 14 totalt</p>
-            </div>
-            <Button size="sm">
-              <Settings className="h-4 w-4 mr-1" />
-              Konfigurer
-            </Button>
-          </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">Feature Flags</h4>
-              <p className="text-sm text-muted-foreground">8 aktivert / 15 totalt</p>
-            </div>
-            <Button size="sm">
-              <Settings className="h-4 w-4 mr-1" />
-              Konfigurer
-            </Button>
-          </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">API-Endepunkter</h4>
-              <p className="text-sm text-muted-foreground">24 endepunkter</p>
-            </div>
-            <Button size="sm">
-              <Settings className="h-4 w-4 mr-1" />
-              Konfigurer
-            </Button>
+    <DashboardLayout title="Master Administrator Dashboard">
+      <DashboardWidget title="User Management">
+        <div className="flex items-center gap-3">
+          <Users className="h-8 w-8 text-primary" />
+          <div>
+            <h3 className="font-medium">User Management</h3>
+            <p className="text-sm text-muted-foreground">Manage all system users and roles</p>
           </div>
         </div>
-      </DashboardWidget>
-
-      {/* User Management Widget */}
-      <DashboardWidget title="Brukeradministrasjon">
-        <div className="p-4 space-y-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">Admin brukere</h4>
-              <p className="text-sm text-muted-foreground">5 aktive administratorer</p>
-            </div>
-            <Button size="sm">
-              <Users className="h-4 w-4 mr-1" />
-              Administrer
-            </Button>
-          </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">Interne Roller</h4>
-              <p className="text-sm text-muted-foreground">7 roller definert</p>
-            </div>
-            <Button size="sm">
-              <Users className="h-4 w-4 mr-1" />
-              Administrer
-            </Button>
-          </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">Brukermoderation</h4>
-              <p className="text-sm text-muted-foreground">0 brukerrapporter</p>
-            </div>
-            <Button size="sm">
-              <Users className="h-4 w-4 mr-1" />
-              Se rapporter
-            </Button>
-          </div>
+        <div className="mt-4 border-t pt-4 flex justify-between">
+          <span className="text-sm">Total users: 125</span>
+          <a href="/admin/members" className="text-sm text-primary hover:underline">Manage Users</a>
         </div>
       </DashboardWidget>
-
-      {/* Access Control Widget */}
-      <DashboardWidget title="Tilgangsstyring">
-        <div className="p-4 space-y-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">Tilgangsmatrise</h4>
-              <p className="text-sm text-muted-foreground">Rolle/modul-tilganger</p>
-            </div>
-            <Button size="sm">
-              <Shield className="h-4 w-4 mr-1" />
-              Konfigurer
-            </Button>
+      
+      <DashboardWidget title="Role Management">
+        <div className="flex items-center gap-3">
+          <Shield className="h-8 w-8 text-primary" />
+          <div>
+            <h3 className="font-medium">Role Management</h3>
+            <p className="text-sm text-muted-foreground">Manage user roles and permissions</p>
           </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">API Tilgangsregler</h4>
-              <p className="text-sm text-muted-foreground">31 regler konfigurert</p>
-            </div>
-            <Button size="sm">
-              <Shield className="h-4 w-4 mr-1" />
-              Konfigurer
-            </Button>
+        </div>
+        <div className="mt-4 border-t pt-4 flex justify-between">
+          <span className="text-sm">5 roles configured</span>
+          <a href="/admin/roles" className="text-sm text-primary hover:underline">Manage Roles</a>
+        </div>
+      </DashboardWidget>
+      
+      <DashboardWidget title="System Alerts">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="h-8 w-8 text-amber-500" />
+          <div>
+            <h3 className="font-medium">System Alerts</h3>
+            <p className="text-sm text-muted-foreground">Critical system notifications</p>
           </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">Internal Admin Brukere</h4>
-              <p className="text-sm text-muted-foreground">3 brukere med utvidet tilgang</p>
-            </div>
-            <Button size="sm">
-              <Lock className="h-4 w-4 mr-1" />
-              Administrer
-            </Button>
+        </div>
+        <div className="mt-4 border-t pt-4">
+          <p className="text-sm text-green-600 flex items-center">
+            <span className="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
+            All systems operational
+          </p>
+          <p className="text-sm text-muted-foreground mt-2">No critical alerts</p>
+        </div>
+      </DashboardWidget>
+      
+      <DashboardWidget title="Database Management">
+        <div className="flex items-center gap-3">
+          <Database className="h-8 w-8 text-primary" />
+          <div>
+            <h3 className="font-medium">Database Management</h3>
+            <p className="text-sm text-muted-foreground">Monitor and manage database operations</p>
+          </div>
+        </div>
+        <div className="mt-4 border-t pt-4">
+          <div className="flex justify-between mb-2">
+            <span className="text-sm">Storage usage</span>
+            <span className="text-sm font-medium">46%</span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span className="text-sm">Last backup</span>
+            <span className="text-sm font-medium">Today, 03:00</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm">Status</span>
+            <span className="text-sm font-medium text-green-600">Healthy</span>
           </div>
         </div>
       </DashboardWidget>
