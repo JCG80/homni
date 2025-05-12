@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Home, LayoutDashboard, Users, Settings, LogOut, FileText } from 'lucide-react';
+import { Home, LayoutDashboard, Users, Settings, LogOut, FileText, Database, Shield } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { SidebarContent } from './SidebarContent';
 import { SidebarNavSection } from './SidebarNavSection';
@@ -86,12 +86,14 @@ export const Sidebar = () => {
             {(role === 'admin' || role === 'master_admin') && (
               <SidebarNavSection title="Administrasjon">
                 <SidebarNavLink to="/admin/leads" icon={FileText}>Leads</SidebarNavLink>
-                <SidebarNavLink to="/admin/system-modules" icon={Settings}>Systemmoduler</SidebarNavLink>
+                <SidebarNavLink to="/admin/system-modules" icon={Database}>Systemmoduler</SidebarNavLink>
                 
                 {role === 'master_admin' && (
                   <>
-                    <SidebarNavLink to="/admin/roles" icon={Users}>Roller</SidebarNavLink>
-                    <SidebarNavLink to="/admin/members" icon={Users}>Brukere</SidebarNavLink>
+                    <SidebarNavLink to="/admin/roles" icon={Shield}>Rolleadministrasjon</SidebarNavLink>
+                    <SidebarNavLink to="/admin/members" icon={Users}>Medlemmer</SidebarNavLink>
+                    <SidebarNavLink to="/admin/companies" icon={Users}>Bedrifter</SidebarNavLink>
+                    <SidebarNavLink to="/admin/internal-access" icon={Shield}>Modultilgang</SidebarNavLink>
                   </>
                 )}
               </SidebarNavSection>

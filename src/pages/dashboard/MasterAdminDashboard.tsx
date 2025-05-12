@@ -3,6 +3,7 @@ import React from 'react';
 import { DashboardLayout } from '@/components/dashboard';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import { Users, Shield, Database, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const MasterAdminDashboard: React.FC = () => {
   return (
@@ -20,7 +21,7 @@ export const MasterAdminDashboard: React.FC = () => {
           </div>
           <div className="mt-4 border-t pt-4 flex justify-between">
             <span className="text-sm text-muted-foreground">Admin users: 5</span>
-            <a href="/admin/internal-access" className="text-sm text-primary hover:underline">Manage</a>
+            <Link to="/admin/internal-access" className="text-sm text-primary hover:underline">Manage</Link>
           </div>
         </DashboardWidget>
         
@@ -33,7 +34,7 @@ export const MasterAdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="mt-4 border-t pt-4">
-            <a href="/admin/roles" className="text-sm text-primary hover:underline">Manage roles</a>
+            <Link to="/admin/roles" className="text-sm text-primary hover:underline">Manage roles</Link>
           </div>
         </DashboardWidget>
         
@@ -46,7 +47,7 @@ export const MasterAdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="mt-4 border-t pt-4">
-            <a href="/admin/system-modules" className="text-sm text-primary hover:underline">Configure modules</a>
+            <Link to="/admin/system-modules" className="text-sm text-primary hover:underline">Configure modules</Link>
           </div>
         </DashboardWidget>
         
@@ -59,7 +60,7 @@ export const MasterAdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="mt-4 border-t pt-4">
-            <a href="/admin/settings" className="text-sm text-primary hover:underline">Configure system</a>
+            <Link to="/admin/settings" className="text-sm text-primary hover:underline">Configure system</Link>
           </div>
         </DashboardWidget>
       </div>

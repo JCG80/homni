@@ -28,6 +28,19 @@ export const CompanyDashboard: React.FC = () => {
       
       <AdStatisticsWidget />
       
+      <DashboardWidget title="Lead-marked">
+        <div className="flex items-center gap-3">
+          <BarChart className="h-8 w-8 text-primary" />
+          <div>
+            <h3 className="font-medium">Kjøp leads</h3>
+            <p className="text-sm text-muted-foreground">Utforsk tilgjengelige leads og kjøp kreditt</p>
+          </div>
+        </div>
+        <div className="mt-4 border-t pt-4">
+          <span className="text-sm text-muted-foreground">Kommer snart</span>
+        </div>
+      </DashboardWidget>
+      
       <DashboardWidget title="Bedriftsprofil">
         <div className="flex items-center gap-3">
           <Users className="h-8 w-8 text-primary" />
