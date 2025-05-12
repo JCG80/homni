@@ -9,14 +9,14 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
 /**
- * Lead Management Page that displays different content based on user role
+ * Lead Management Page that dynamically displays the appropriate leads page based on user role
  */
 export const LeadManagementPage: React.FC = () => {
   const { isLoading, isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Log the current role for debugging
+    // Log for debugging
     console.log('LeadManagementPage - Current role:', role);
   }, [role]);
 
