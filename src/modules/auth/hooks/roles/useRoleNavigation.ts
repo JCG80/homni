@@ -35,25 +35,16 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
       return;
     }
 
+    console.log("Redirecting with role:", role);
+
     // If a specific redirect path is provided, use it
     if (redirectPath) {
       navigate(redirectPath);
       return;
     }
     
-    // Determine redirect based on role
-    if (role === 'master_admin') {
-      navigate('/dashboard/master_admin');
-    } else if (role === 'admin') {
-      navigate('/dashboard/admin');
-    } else if (role === 'company') {
-      navigate('/dashboard/company');
-    } else if (role === 'content_editor') {
-      navigate('/dashboard/content_editor');
-    } else {
-      // Default to member dashboard
-      navigate('/dashboard/member');
-    }
+    // Use the main dashboard route which will handle the redirection based on role
+    navigate('/dashboard');
   };
 
   /**

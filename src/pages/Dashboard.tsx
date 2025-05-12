@@ -22,6 +22,8 @@ export const Dashboard: React.FC = () => {
     return <Navigate to="/login" />;
   }
   
+  console.log("Current user role:", role);
+  
   // Redirect to appropriate dashboard based on role
   switch (role) {
     case 'member':
