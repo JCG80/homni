@@ -14,6 +14,13 @@ export const useRoleCheck = () => {
 
   // Determine the current role - use profile role first, then user role, default to anonymous
   useEffect(() => {
+    // Log information about the role detection process
+    console.log("useRoleCheck - Starting role detection", { 
+      "profile role": profile?.role, 
+      "user role": user?.role,
+      "has user": !!user
+    });
+    
     let role: UserRole = profile?.role || user?.role || (user ? 'member' : 'anonymous');
     
     // For development testing - check emails for specific test users

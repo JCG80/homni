@@ -4,12 +4,12 @@ import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Home, LayoutDashboard, Users, Settings, LogOut, FileText } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { Button } from '@/components/ui/button';
 import { SidebarContent } from './SidebarContent';
 import { SidebarNavSection } from './SidebarNavSection';
 import { SidebarNavLink } from './SidebarNavLink';
 import { SidebarNavItem } from './SidebarNavItem';
 import { ServiceNavigation } from '@/components/navigation/ServiceNavigation';
+import { toast } from '@/hooks/use-toast';
 
 export const Sidebar = () => {
   const { isAuthenticated, role, logout } = useAuth();
@@ -18,16 +18,33 @@ export const Sidebar = () => {
     if (typeof logout === 'function') {
       try {
         await logout();
-        // If we need to redirect after logout, we can do it here
+        toast({
+          title: "Logget ut",
+          description: "Du er nå logget ut av systemet",
+        });
+        // Redirect will be handled by the auth state change
       } catch (error) {
         console.error('Error during logout:', error);
+        toast({
+          title: "Feil ved utlogging",
+          description: "Det oppstod en feil ved utlogging. Prøv igjen.",
+          variant: "destructive"
+        });
       }
     } else {
       console.error('Logout function is not available');
+      toast({
+        title: "Utloggingsfeil",
+        description: "Kunne ikke logge ut på normal måte. Prøver alternativ metode.",
+        variant: "destructive"
+      });
       // Fallback if logout function is not available
       window.location.href = '/login';
     }
   };
+  
+  // Determine correct dashboard route based on role
+  const dashboardRoute = role ? `/dashboard/${role}` : "/dashboard";
   
   return (
     <div className="pb-12">
@@ -48,9 +65,8 @@ export const Sidebar = () => {
         {isAuthenticated && (
           <>
             <SidebarNavSection title="Min konto">
-              {/* Direkte lenking til spesifikke dashboards basert på rolle */}
               {role && (
-                <SidebarNavLink to={`/dashboard/${role}`} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
+                <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
               )}
               <SidebarNavLink to="/profile" icon={Users}>Min profil</SidebarNavLink>
               <SidebarNavLink to="/leads" icon={FileText}>Forespørsler</SidebarNavLink>

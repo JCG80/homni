@@ -23,7 +23,7 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
     return null;
   }
 
-  // Determine the dashboard route based on the user's role
+  // Ensure we have a consistent dashboard route based on role
   const dashboardRoute = role ? `/dashboard/${role}` : "/dashboard";
   
   return (

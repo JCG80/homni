@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../useAuth';
@@ -24,7 +23,7 @@ interface UseRoleNavigationOptions {
  */
 export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
   const { redirectPath, autoRedirect = true } = options;
-  const { isAuthenticated, isLoading, role, isAdmin, isMasterAdmin } = useAuth();
+  const { isAuthenticated, isLoading, role } = useAuth();
   const navigate = useNavigate();
 
   /**
@@ -43,7 +42,13 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
       return;
     }
     
-    // Use the main dashboard route which will handle the redirection based on role
+    // Directly navigate to the role-specific dashboard if role is available
+    if (role) {
+      navigate(`/dashboard/${role}`);
+      return;
+    }
+    
+    // Otherwise use the main dashboard route which will handle the redirection
     navigate('/dashboard');
   };
 
@@ -64,7 +69,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     if (isAuthenticated) {
       redirectToDashboard();
     }
-  }, [isAuthenticated, isLoading, autoRedirect]);
+  }, [isAuthenticated, isLoading, autoRedirect, role]);
 
   return {
     redirectToDashboard,
