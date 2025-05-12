@@ -35,3 +35,8 @@ export const AUTHENTICATED_ROLES: UserRole[] = [
   'master_admin',
   'content_editor'
 ];
+
+// Type guard to check if a string is a valid UserRole
+export function isUserRole(role: any): role is UserRole {
+  return ALL_ROLES.includes(role);
+}

@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../useAuth';
-import { UserRole } from '../../utils/roles';
+import { UserRole } from '../../utils/roles/types';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface UseRoleProtectionOptions {
@@ -97,7 +97,7 @@ export const useRoleProtection = ({
     }
 
     // Check if user has one of the allowed roles
-    const hasAllowedRole = role ? allowedRoles.includes(role) : false;
+    const hasAllowedRole = role ? allowedRoles.includes(role as UserRole) : false;
     
     if (!hasAllowedRole) {
       console.log('Access denied: Role not allowed', { role, allowedRoles });

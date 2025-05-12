@@ -1,6 +1,7 @@
 
-import { useAuth } from '../useAuth';
+import { useState, useEffect } from 'react';
 import { UserRole } from '../../utils/roles';
+import { useAuthState } from '../useAuthState';
 
 /**
  * Hook that provides role checking functionality
@@ -8,8 +9,7 @@ import { UserRole } from '../../utils/roles';
  * @returns An object with methods to check user roles
  */
 export const useRoleCheck = () => {
-  const { authState } = useAuth();
-  const { profile, user } = authState;
+  const { user, profile, role: userRole } = useAuthState();
 
   // Determine the current role - use profile role first, then user role, default to anonymous
   const currentRole: UserRole = profile?.role || (user ? 'member' : 'anonymous');

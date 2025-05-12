@@ -1,4 +1,5 @@
 
+import { useCallback } from 'react';
 import { useAuthSession } from './useAuthSession';
 import { useAuthDerivedState } from './useAuthDerivedState';
 
@@ -20,5 +21,6 @@ export const useAuthState = () => {
   return {
     ...authSession,
     ...derivedState,
+    isLoading: authSession.isLoading,
   };
 };

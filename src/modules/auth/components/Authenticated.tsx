@@ -2,7 +2,6 @@
 import React, { ReactNode } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../utils/roles';
-import { useRoleCheck } from '../hooks/roles/useRoleCheck';
 
 interface AuthenticatedProps {
   children: ReactNode;
@@ -17,8 +16,7 @@ export const Authenticated = ({
   requiredRoles = [],
   allowAnyRole = false,
 }: AuthenticatedProps) => {
-  const { isLoading } = useAuth();
-  const { isAuthenticated, role, hasRole } = useRoleCheck();
+  const { isLoading, isAuthenticated, hasRole } = useAuth();
 
   if (isLoading) {
     return <div>Laster autentiseringsstatus...</div>;
