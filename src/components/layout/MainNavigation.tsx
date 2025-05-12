@@ -6,7 +6,6 @@ import {
   NavigationMenu, 
   NavigationMenuContent, 
   NavigationMenuItem, 
-  NavigationMenuLink, 
   NavigationMenuList, 
   NavigationMenuTrigger,
   navigationMenuTriggerStyle 
@@ -21,6 +20,22 @@ export const MainNavigation = () => {
   
   // For mobile, we'll handle navigation differently via the sidebar
   if (isMobile) return null;
+  
+  // Group services by category for better organization
+  const propertyServices = [
+    { title: 'Eiendommer', description: 'Administrér dine eiendommer', path: '/properties' },
+    { title: 'Boligkjøp', description: 'Råd og verktøy for boligkjøp', path: '/boligkjop' },
+  ];
+  
+  const utilityServices = [
+    { title: 'Strøm', description: 'Sammenlign strømpriser og finn den beste avtalen', path: '/strom' },
+    { title: 'Bredbånd', description: 'Finn den raskeste og beste løsningen', path: '/bredband' },
+  ];
+  
+  const insuranceServices = [
+    { title: 'Forsikringssammenligning', description: 'Sammenlign forsikringsselskaper', path: '/forsikring/companies' },
+    { title: 'Forsikringstilbud', description: 'Få tilbud på forsikring', path: '/forsikring/quote' },
+  ];
   
   return (
     <NavigationMenu className="hidden md:flex">
@@ -39,7 +54,29 @@ export const MainNavigation = () => {
           </NavigationMenuLink>
         </NavigationMenuItem>
 
-        {/* Services */}
+        {/* Property Services */}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>
+            <Home className="h-4 w-4 mr-2" />
+            Bolig
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid gap-3 p-4 w-[400px] md:w-[500px] lg:w-[600px] grid-cols-1">
+              {propertyServices.map((service) => (
+                <NavLink key={service.title} to={service.path} 
+                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                >
+                  <div className="mb-2 mt-4 text-lg font-medium">{service.title}</div>
+                  <p className="text-sm leading-tight text-muted-foreground">
+                    {service.description}
+                  </p>
+                </NavLink>
+              ))}
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+
+        {/* Utility Services */}
         <NavigationMenuItem>
           <NavigationMenuTrigger>
             <LayoutGrid className="h-4 w-4 mr-2" />
@@ -47,23 +84,27 @@ export const MainNavigation = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px] md:w-[500px] lg:w-[600px] lg:grid-cols-2">
-              <NavLink to="/strom" 
-                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-              >
-                <div className="mb-2 mt-4 text-lg font-medium">Strøm</div>
-                <p className="text-sm leading-tight text-muted-foreground">
-                  Sammenlign strømpriser og finn den beste avtalen.
-                </p>
-              </NavLink>
+              {utilityServices.map((service) => (
+                <NavLink key={service.title} to={service.path} 
+                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                >
+                  <div className="mb-2 mt-4 text-lg font-medium">{service.title}</div>
+                  <p className="text-sm leading-tight text-muted-foreground">
+                    {service.description}
+                  </p>
+                </NavLink>
+              ))}
               
-              <NavLink to="/forsikring/companies"
-                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-              >
-                <div className="mb-2 mt-4 text-lg font-medium">Forsikring</div>
-                <p className="text-sm leading-tight text-muted-foreground">
-                  Sammenlign forsikringsselskaper og få tilbud.
-                </p>
-              </NavLink>
+              {insuranceServices.map((service) => (
+                <NavLink key={service.title} to={service.path}
+                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                >
+                  <div className="mb-2 mt-4 text-lg font-medium">{service.title}</div>
+                  <p className="text-sm leading-tight text-muted-foreground">
+                    {service.description}
+                  </p>
+                </NavLink>
+              ))}
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>

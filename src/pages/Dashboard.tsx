@@ -3,38 +3,22 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { useRoleNavigation } from '@/modules/auth/hooks/roles/useRoleNavigation';
 
 export const Dashboard: React.FC = () => {
-  const { isAuthenticated, isLoading, role, isAdmin, isMasterAdmin } = useAuth();
-  const navigate = useNavigate();
+  const { isLoading } = useAuth();
+  const { redirectToDashboard, isLoading: isNavigationLoading } = useRoleNavigation({ autoRedirect: true });
   
-  useEffect(() => {
-    if (isLoading) return;
-    
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    
-    // Redirect based on role
-    if (isMasterAdmin) {
-      navigate('/master-admin');
-    } else if (isAdmin) {
-      navigate('/admin');
-    } else if (role === 'company') {
-      navigate('/dashboard/company');
-    } else {
-      // Default to member dashboard
-      navigate('/dashboard/member');
-    }
-  }, [isAuthenticated, isLoading, role, isAdmin, isMasterAdmin, navigate]);
-  
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-lg">Omdirigerer til riktig dashbord...</p>
+  if (isLoading || isNavigationLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-lg">Omdirigerer til riktig dashbord...</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+  
+  return null; // Redirection happens in the hook
 };

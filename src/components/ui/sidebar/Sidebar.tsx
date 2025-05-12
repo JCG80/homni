@@ -2,19 +2,19 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Home, LayoutDashboard, Users, Settings, LayoutGrid, LogOut, FileText } from 'lucide-react';
+import { Home, LayoutDashboard, Users, Settings, LogOut, FileText } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { SidebarContent } from './SidebarContent';
 import { SidebarNavSection } from './SidebarNavSection';
 import { SidebarNavLink } from './SidebarNavLink';
 import { SidebarNavItem } from './SidebarNavItem';
+import { ServiceNavigation } from '@/components/navigation/ServiceNavigation';
 
 export const Sidebar = () => {
   const { isAuthenticated, role, user } = useAuth();
   
   const handleLogout = () => {
-    // Vi bruker navigate til login siden som en fallback
     // Dette vil bli erstattet av en faktisk logout-funksjon når den er implementert
     window.location.href = '/login';
   };
@@ -25,8 +25,13 @@ export const Sidebar = () => {
         {/* Main navigation */}
         <SidebarNavSection title="Navigasjon">
           <SidebarNavLink to="/" icon={Home} end>Hjem</SidebarNavLink>
-          <SidebarNavLink to="/strom" icon={LayoutGrid}>Strøm</SidebarNavLink>
-          <SidebarNavLink to="/forsikring/companies" icon={LayoutGrid}>Forsikring</SidebarNavLink>
+        </SidebarNavSection>
+        
+        {/* Services navigation - using the standard component */}
+        <SidebarNavSection title="Tjenester">
+          <div className="px-3 py-2">
+            <ServiceNavigation variant="vertical" />
+          </div>
         </SidebarNavSection>
 
         {/* Authenticated menu items */}
@@ -35,13 +40,13 @@ export const Sidebar = () => {
             <SidebarNavSection title="Min konto">
               <SidebarNavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</SidebarNavLink>
               <SidebarNavLink to="/profile" icon={Users}>Min profil</SidebarNavLink>
-              <SidebarNavLink to="/leads" icon={LayoutGrid}>Forespørsler</SidebarNavLink>
+              <SidebarNavLink to="/leads" icon={FileText}>Forespørsler</SidebarNavLink>
             </SidebarNavSection>
             
             {/* Admin section */}
             {(role === 'admin' || role === 'master_admin') && (
               <SidebarNavSection title="Administrasjon">
-                <SidebarNavLink to="/admin/leads" icon={LayoutGrid}>Leads</SidebarNavLink>
+                <SidebarNavLink to="/admin/leads" icon={FileText}>Leads</SidebarNavLink>
                 <SidebarNavLink to="/admin/system-modules" icon={Settings}>Systemmoduler</SidebarNavLink>
                 
                 {role === 'master_admin' && (
