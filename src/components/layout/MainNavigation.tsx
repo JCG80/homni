@@ -10,6 +10,7 @@ import { HomeNavLink } from '../navigation/HomeNavLink';
 import { PropertyNavigation } from '../navigation/PropertyNavigation';
 import { ServicesNavigation } from '../navigation/ServicesNavigation';
 import { AuthenticatedNavigation } from '../navigation/AuthenticatedNavigation';
+import { UserRole } from '@/modules/auth/utils/roles/types'; // Import the UserRole type
 
 export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();
@@ -33,7 +34,7 @@ export const MainNavigation = () => {
         {/* Conditional menus based on authentication */}
         <AuthenticatedNavigation 
           isAuthenticated={isAuthenticated} 
-          role={role} 
+          role={role as UserRole} // Cast the role to UserRole type
         />
       </NavigationMenuList>
     </NavigationMenu>
