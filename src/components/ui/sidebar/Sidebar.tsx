@@ -14,11 +14,17 @@ import { ServiceNavigation } from '@/components/navigation/ServiceNavigation';
 export const Sidebar = () => {
   const { isAuthenticated, role, logout } = useAuth();
   
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (typeof logout === 'function') {
-      logout();
+      try {
+        await logout();
+        // If we need to redirect after logout, we can do it here
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
     } else {
-      // Fallback hvis logout-funksjonen ikke er tilgjengelig
+      console.error('Logout function is not available');
+      // Fallback if logout function is not available
       window.location.href = '/login';
     }
   };

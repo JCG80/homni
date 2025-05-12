@@ -23,11 +23,14 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
     return null;
   }
 
+  // Determine the dashboard route based on the user's role
+  const dashboardRoute = role ? `/dashboard/${role}` : "/dashboard";
+  
   return (
     <>
       <NavigationMenuItem>
         <NavLink 
-          to={role ? `/dashboard/${role}` : "/dashboard"} 
+          to={dashboardRoute} 
           className={({ isActive }) => 
             cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
           }

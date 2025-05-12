@@ -1,17 +1,15 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, NavLinkProps } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-interface SidebarNavLinkProps {
-  to: string;
+interface SidebarNavLinkProps extends Omit<NavLinkProps, 'className'> {
   icon: React.ElementType;
   children: React.ReactNode;
-  end?: boolean;
   className?: string;
 }
 
-export const SidebarNavLink = ({ to, icon: Icon, children, end = false, className }: SidebarNavLinkProps) => {
+export const SidebarNavLink = ({ to, icon: Icon, children, end = false, className, ...rest }: SidebarNavLinkProps) => {
   return (
     <NavLink
       to={to}
@@ -25,6 +23,7 @@ export const SidebarNavLink = ({ to, icon: Icon, children, end = false, classNam
           className
         )
       }
+      {...rest}
     >
       <Icon size={16} />
       <span>{children}</span>

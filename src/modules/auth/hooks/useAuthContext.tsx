@@ -2,6 +2,7 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useAuthState } from './useAuthState';
 import { useRoleCheck } from './roles/useRoleCheck';
+import { signOut } from '../api/auth-authentication';
 
 interface AuthContextType {
   // User state
@@ -34,6 +35,9 @@ interface AuthContextType {
   // Profile management
   refreshProfile: () => Promise<void>;
   
+  // Authentication methods
+  logout: () => Promise<void>;
+  
   // Development features
   isDevMode?: boolean;
   switchDevUser?: (profileId: string) => void;
@@ -59,6 +63,7 @@ const AuthContext = createContext<AuthContextType>({
   canPerform: () => false,
   canAccessModule: () => false,
   refreshProfile: async () => {},
+  logout: async () => {},
 });
 
 interface AuthProviderProps {
@@ -70,6 +75,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const authState = useAuthState();
   const roleChecks = useRoleCheck();
   
+  // Add the logout function implementation
+  const logout = async () => {
+    console.log('Logging out user');
+    try {
+      await signOut();
+      console.log('User logged out successfully');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+  
   // Create the combined context value
   const value: AuthContextType = {
     ...authState, // Provides user, profile, isLoading, error, refreshProfile, etc.
@@ -77,6 +93,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loading: authState.isLoading, // Alias for backward compatibility
     canAccess: roleChecks.canAccessModule, // Rename for backward compatibility
     canPerform: (action: string, resource: string) => false, // Stub implementation
+    logout, // Add the logout function to the context value
   };
   
   return (
