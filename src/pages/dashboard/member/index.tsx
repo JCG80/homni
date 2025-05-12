@@ -1,15 +1,16 @@
 
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { DashboardWidget } from '@/components/dashboard';
 
-const MemberDashboard = () => (
-  <DashboardLayout title="Member Dashboard">
-    <DashboardWidget title="My Requests" />
-    <DashboardWidget title="Property Overview" />
-    <DashboardWidget title="Maintenance Calendar" />
-    <DashboardWidget title="Recommended Services" />
-  </DashboardLayout>
-);
+const MemberDashboard = () => {
+  return (
+    <DashboardLayout title="Member Dashboard">
+      <div>MyRequests Widget</div>
+      <div>PropertyOverview Widget</div>
+      <div>MaintenanceCalendar Widget</div>
+      <div>RecommendedServices Widget</div>
+    </DashboardLayout>
+  );
+};
 
 export default MemberDashboard;

@@ -1,14 +1,15 @@
 
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { DashboardWidget } from '@/components/dashboard';
 
-const ContentEditorDashboard = () => (
-  <DashboardLayout title="Content Editor Dashboard">
-    <DashboardWidget title="Content List" />
-    <DashboardWidget title="Content Editor" />
-    <DashboardWidget title="Preview" />
-  </DashboardLayout>
-);
+const ContentEditorDashboard = () => {
+  return (
+    <DashboardLayout title="Content Editor Dashboard">
+      <div>Content Management Widget</div>
+      <div>Media Library Widget</div>
+      <div>Publishing Schedule Widget</div>
+    </DashboardLayout>
+  );
+};
 
 export default ContentEditorDashboard;

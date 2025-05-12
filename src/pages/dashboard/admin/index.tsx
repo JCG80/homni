@@ -1,15 +1,15 @@
 
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { DashboardWidget } from '@/components/dashboard';
 
-const AdminDashboard = () => (
-  <DashboardLayout title="Admin Dashboard">
-    <DashboardWidget title="User Management" />
-    <DashboardWidget title="System Modules" />
-    <DashboardWidget title="Leads Overview" />
-    <DashboardWidget title="Content Admin" />
-  </DashboardLayout>
-);
+const AdminDashboard = () => {
+  return (
+    <DashboardLayout title="Admin Dashboard">
+      <div>Admin Management Widget</div>
+      <div>System Status Widget</div>
+      <div>User Analytics Widget</div>
+    </DashboardLayout>
+  );
+};
 
 export default AdminDashboard;

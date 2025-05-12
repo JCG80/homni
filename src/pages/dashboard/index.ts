@@ -1,6 +1,14 @@
 
-export { default as MemberDashboard } from './member';
-export { default as CompanyDashboard } from './company';
-export { default as AdminDashboard } from './admin';
-export { default as MasterAdminDashboard } from './master_admin';
-export { default as ContentEditorDashboard } from './content_editor';
+import MemberDashboard from './member';
+import CompanyDashboard from './company';
+import AdminDashboard from './admin';
+import MasterAdminDashboard from './master_admin';
+import ContentEditorDashboard from './content_editor';
+
+export {
+  MemberDashboard,
+  CompanyDashboard,
+  AdminDashboard,
+  MasterAdminDashboard,
+  ContentEditorDashboard
+};

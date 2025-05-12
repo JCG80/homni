@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -32,12 +33,12 @@ import { MembersManagementPage } from './modules/admin/pages/MembersManagementPa
 import CompaniesManagementPage from './modules/admin/pages/CompaniesManagementPage';
 import InternalAccessPage from './modules/admin/pages/InternalAccessPage';
 
-// Import the dashboard pages
-import { MemberDashboard } from './pages/dashboard/member';
-import { CompanyDashboard } from './pages/dashboard/company';
-import { AdminDashboard } from './pages/dashboard/admin';
-import { MasterAdminDashboard } from './pages/dashboard/master_admin';
-import { ContentEditorDashboard } from './pages/dashboard/content_editor';
+// Import the dashboard pages as default imports
+import MemberDashboard from './pages/dashboard/member';
+import CompanyDashboard from './pages/dashboard/company';
+import AdminDashboard from './pages/dashboard/admin';
+import MasterAdminDashboard from './pages/dashboard/master_admin';
+import ContentEditorDashboard from './pages/dashboard/content_editor';
 
 export const AppRoutes = () => {
   return (
@@ -192,3 +193,4 @@ export const AppRoutes = () => {
     </Suspense>
   );
 };
+
