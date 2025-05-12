@@ -6,12 +6,15 @@ import { PowerComparisonHeader } from '@/components/power/PowerComparisonHeader'
 import { PowerComparisonFooter } from '@/components/power/PowerComparisonFooter';
 import { PowerComparisonForm } from '@/components/power/PowerComparisonForm';
 import { PowerComparisonResults } from '@/components/power/PowerComparisonResults';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ArrowLeft } from 'lucide-react';
 
 export const PowerComparisonPage = () => {
   const [postnr, setPostnr] = useState('');
   const [consumption, setConsumption] = useState(16000);
   const [showResults, setShowResults] = useState(false);
   const [selectedType, setSelectedType] = useState('spot');
+  const isMobile = useIsMobile();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,21 +48,21 @@ export const PowerComparisonPage = () => {
       <PowerComparisonHeader />
 
       <div className="flex-1">
-        <div className="container mx-auto py-8 px-4">
-          <div className="mb-8">
-            <Link to="/" className="text-primary hover:underline flex items-center mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="m15 18-6-6 6-6"/></svg>
+        <div className="container mx-auto py-6 md:py-8 px-4">
+          <div className="mb-6 md:mb-8">
+            <Link to="/" className="text-primary hover:underline flex items-center mb-3 md:mb-4">
+              <ArrowLeft className="h-4 w-4 mr-1" />
               Tilbake til forsiden
             </Link>
-            <h1 className="text-3xl font-bold">Sammenlign strømpriser</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">Sammenlign strømpriser</h1>
             <p className="text-muted-foreground mt-2">
               Finn den beste strømavtalen for din bolig
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Search Form */}
-            <div className="lg:col-span-1">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Search Form - Shown at top on mobile if no results */}
+            <div className={`${isMobile && showResults ? 'hidden' : 'block'} lg:col-span-1`}>
               <PowerComparisonForm
                 postnr={postnr}
                 setPostnr={setPostnr}
@@ -72,7 +75,7 @@ export const PowerComparisonPage = () => {
             </div>
             
             {/* Results */}
-            <div className="lg:col-span-2">
+            <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-2'}`}>
               <PowerComparisonResults 
                 showResults={showResults}
                 postnr={postnr}

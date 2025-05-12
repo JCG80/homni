@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { PriceComparison } from '@/components/ui/price-comparison';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PowerComparisonResultsProps {
   showResults: boolean;
@@ -20,6 +21,8 @@ export const PowerComparisonResults: React.FC<PowerComparisonResultsProps> = ({
   handleSelect,
   resetSearch
 }) => {
+  const isMobile = useIsMobile();
+  
   // Generate a monthly price based on consumption and a base rate
   const calculateMonthlyPrice = (baseRate: number, consumption: number): number => {
     const annualConsumption = consumption;
@@ -102,7 +105,7 @@ export const PowerComparisonResults: React.FC<PowerComparisonResultsProps> = ({
 
   if (!showResults) {
     return (
-      <div className="bg-card border rounded-lg p-8 text-center">
+      <div className="bg-card border rounded-lg p-6 md:p-8 text-center">
         <div className="mx-auto w-16 h-16 text-primary mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 2-5.5 9h11L12 2z"/><path d="m12 22 5.5-9h-11L12 22z"/></svg>
         </div>
@@ -116,20 +119,20 @@ export const PowerComparisonResults: React.FC<PowerComparisonResultsProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="bg-card border rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-card border rounded-lg p-4 md:p-6 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
           <div>
-            <h2 className="text-xl font-semibold">Resultater for {postnr}</h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-lg md:text-xl font-semibold">Resultater for {postnr}</h2>
+            <p className="text-muted-foreground text-sm md:text-base">
               Basert på {consumption} kWh årsforbruk
             </p>
           </div>
-          <Button variant="outline" onClick={resetSearch}>
+          <Button variant="outline" onClick={resetSearch} size={isMobile ? "sm" : "default"}>
             Endre søk
           </Button>
         </div>
         
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
           <PriceComparison
             title={selectedType === 'spot' ? "Spotprisavtaler" : "Fastprisavtaler"}
             description={`Estimert månedlig kostnad basert på ${consumption} kWh årsforbruk`}
@@ -140,9 +143,9 @@ export const PowerComparisonResults: React.FC<PowerComparisonResultsProps> = ({
         </div>
       </div>
       
-      <div className="bg-card border rounded-lg p-6 shadow-sm">
-        <h3 className="text-xl font-semibold mb-4">Vanlige spørsmål</h3>
-        <div className="space-y-4">
+      <div className="bg-card border rounded-lg p-4 md:p-6 shadow-sm">
+        <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Vanlige spørsmål</h3>
+        <div className="space-y-3 md:space-y-4">
           <div>
             <h4 className="font-medium">Hva er forskjellen på spotpris og fastpris?</h4>
             <p className="text-muted-foreground text-sm mt-1">

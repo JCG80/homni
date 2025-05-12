@@ -4,6 +4,7 @@ import { InsuranceCompanyCard } from '../../components/InsuranceCompanyCard';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InsuranceCompanyWithTypes } from '../../types/insurance-types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface InsuranceCompanyGridProps {
   companies: InsuranceCompanyWithTypes[];
@@ -18,10 +19,12 @@ export const InsuranceCompanyGrid: React.FC<InsuranceCompanyGridProps> = ({
   handleCompanyClick,
   resetFilters
 }) => {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(isMobile ? 3 : 6)].map((_, i) => (
           <div key={i} className="border rounded-lg p-4">
             <Skeleton className="h-6 w-3/4 mb-4" />
             <Skeleton className="h-16 w-full mb-4" />

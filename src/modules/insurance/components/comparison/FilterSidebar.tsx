@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import { InsuranceType } from '../../types/insurance-types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface FilterSidebarProps {
   types: InsuranceType[];
@@ -15,8 +16,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   filterType, 
   setFilterType 
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="bg-card rounded-lg border p-4 sticky top-24">
+    <div className={`bg-card rounded-lg border p-4 ${isMobile ? '' : 'sticky top-24'}`}>
       <h3 className="font-medium mb-4 flex items-center">
         <Filter className="h-4 w-4 mr-2" /> Filtrer selskaper
       </h3>
