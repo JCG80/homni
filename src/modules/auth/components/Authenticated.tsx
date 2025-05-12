@@ -2,6 +2,7 @@
 import React, { ReactNode } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../utils/roles';
+import { useRoleCheck } from '../hooks/roles/useRoleCheck';
 
 interface AuthenticatedProps {
   children: ReactNode;
@@ -16,15 +17,13 @@ export const Authenticated = ({
   requiredRoles = [],
   allowAnyRole = false,
 }: AuthenticatedProps) => {
-  const { isAuthenticated, isLoading, user, profile } = useAuth();
+  const { isLoading } = useAuth();
+  const { isAuthenticated, role, hasRole } = useRoleCheck();
 
   if (isLoading) {
     return <div>Laster autentiseringsstatus...</div>;
   }
 
-  // Determine the current role - use profile role first, then user role, default to 'anonymous'
-  const currentRole: UserRole = profile?.role ?? user?.role ?? 'anonymous';
-  
   // If not authenticated, show fallback
   if (!isAuthenticated) {
     return <>{fallback}</>;
@@ -37,7 +36,8 @@ export const Authenticated = ({
 
   // If specific roles are required, check if the user has one of them
   if (requiredRoles.length > 0) {
-    if (!requiredRoles.includes(currentRole)) {
+    const hasRequiredRole = requiredRoles.some(requiredRole => hasRole(requiredRole));
+    if (!hasRequiredRole) {
       return <>{fallback}</>;
     }
   }
