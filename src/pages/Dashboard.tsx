@@ -2,7 +2,6 @@
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
-import { useRoleNavigation } from '@/modules/auth/hooks/roles/useRoleNavigation';
 import { Navigate } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
@@ -37,6 +36,7 @@ export const Dashboard: React.FC = () => {
       return <Navigate to="/dashboard/content_editor" />;
     default:
       // Default to member dashboard if role is unknown
+      console.warn(`Unknown role: ${role}, defaulting to member dashboard`);
       return <Navigate to="/dashboard/member" />;
   }
 };

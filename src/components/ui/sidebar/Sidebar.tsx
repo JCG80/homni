@@ -38,6 +38,7 @@ export const Sidebar = () => {
         {isAuthenticated && (
           <>
             <SidebarNavSection title="Min konto">
+              {/* Direkte til Dashboard komponenten som håndterer videre navigering */}
               <SidebarNavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</SidebarNavLink>
               <SidebarNavLink to="/profile" icon={Users}>Min profil</SidebarNavLink>
               <SidebarNavLink to="/leads" icon={FileText}>Forespørsler</SidebarNavLink>

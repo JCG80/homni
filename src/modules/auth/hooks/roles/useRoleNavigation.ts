@@ -42,12 +42,14 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     }
     
     // Determine redirect based on role
-    if (isMasterAdmin) {
-      navigate('/master-admin');
-    } else if (isAdmin) {
-      navigate('/admin');
+    if (role === 'master_admin') {
+      navigate('/dashboard/master_admin');
+    } else if (role === 'admin') {
+      navigate('/dashboard/admin');
     } else if (role === 'company') {
       navigate('/dashboard/company');
+    } else if (role === 'content_editor') {
+      navigate('/dashboard/content_editor');
     } else {
       // Default to member dashboard
       navigate('/dashboard/member');
