@@ -1,46 +1,59 @@
 
-import { createContext, useContext, ReactNode } from 'react';
-import { useAuth, ModuleAccess } from './useAuth';
-import { AuthUser, AuthState, Profile } from '../types/types';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { useAuthState } from './useAuthState';
+import { useRoleCheck } from './roles';
 
-// For backward compatibility, maintain the old interface
 interface AuthContextType {
-  authState: AuthState & { module_access: ModuleAccess[] };
-  refreshProfile: () => Promise<void>;
+  isAuthenticated: boolean;
+  user: any | null;
+  role: string | null;
+  loading: boolean;
+  error: Error | null;
+  hasRole: (role: string | string[]) => boolean;
+  canAccess: (moduleId: string) => boolean;
+  canPerform: (action: string, resource: string) => boolean;
 }
 
-// Create a backward compatibility context
+// Create context with default values
 const AuthContext = createContext<AuthContextType>({
-  authState: {
-    user: null,
-    profile: null,
-    isLoading: true,
-    error: null,
-    module_access: [],
-  },
-  refreshProfile: async () => {},
+  isAuthenticated: false,
+  user: null,
+  role: null,
+  loading: true,
+  error: null,
+  hasRole: () => false,
+  canAccess: () => false,
+  canPerform: () => false,
 });
 
-// AuthProvider component - redirects to the main AuthProvider in useAuth.tsx
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Use the main auth hook
-  const auth = useAuth();
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+// Auth Provider component
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const authState = useAuthState();
+  const roleChecks = useRoleCheck();
   
-  // Map to the old format for backward compatibility
-  const authState: AuthState & { module_access: ModuleAccess[] } = {
-    user: auth.user,
-    profile: auth.profile,
-    isLoading: auth.isLoading,
-    error: auth.error,
-    module_access: auth.module_access,
+  const value = {
+    ...authState,
+    ...roleChecks
   };
   
   return (
-    <AuthContext.Provider value={{ authState, refreshProfile: auth.refreshProfile }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// For backward compatibility
-export const useAuthContext = () => useContext(AuthContext);
+// Custom hook to use the auth context
+export const useAuthContext = () => {
+  const context = useContext(AuthContext);
+  
+  if (!context) {
+    throw new Error('useAuthContext must be used within an AuthProvider');
+  }
+  
+  return { AuthProvider, ...context };
+};

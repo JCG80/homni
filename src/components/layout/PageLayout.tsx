@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useState } from 'react';
 import { BreadcrumbNav } from './BreadcrumbNav';
 import { Header } from './Header';
@@ -10,6 +11,7 @@ import {
 } from "../ui/sheet";
 import { Button } from '../ui/button';
 import { Menu } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -29,6 +31,7 @@ export const PageLayout = ({
   showSidebar = false
 }: PageLayoutProps) => {
   const [activeTab, setActiveTab] = useState<string>('private');
+  const isMobile = useIsMobile();
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -39,34 +42,36 @@ export const PageLayout = ({
       <Header activeTab={activeTab} handleTabChange={handleTabChange} />
       
       <div className="flex flex-grow">
-        {/* Mobile Sidebar Trigger */}
-        <div className="md:hidden fixed bottom-4 left-4 z-30">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button size="icon" className="rounded-full shadow-lg bg-primary text-primary-foreground">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[240px] sm:w-[300px]">
-              <Sidebar />
-            </SheetContent>
-          </Sheet>
-        </div>
+        {/* Mobile Sidebar Trigger - Fixed position at bottom corner */}
+        {showSidebar && isMobile && (
+          <div className="fixed bottom-4 left-4 z-30">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button size="icon" className="rounded-full shadow-lg bg-primary text-primary-foreground">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0">
+                <Sidebar />
+              </SheetContent>
+            </Sheet>
+          </div>
+        )}
         
         {/* Desktop Sidebar - Show only when showSidebar is true */}
-        {showSidebar && (
+        {showSidebar && !isMobile && (
           <div className="hidden md:block w-64 shrink-0 border-r h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
             <Sidebar />
           </div>
         )}
         
         <main className="flex-grow">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-4 py-4 md:py-8">
             {showBreadcrumbs && <BreadcrumbNav />}
             
             {(title || description) && (
-              <div className="mb-8">
-                {title && <h1 className="text-3xl font-bold mb-2">{title}</h1>}
+              <div className="mb-6 md:mb-8">
+                {title && <h1 className="text-2xl md:text-3xl font-bold mb-2">{title}</h1>}
                 {description && <p className="text-muted-foreground">{description}</p>}
               </div>
             )}

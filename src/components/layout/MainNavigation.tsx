@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { 
   NavigationMenu, 
   NavigationMenuContent, 
@@ -13,9 +13,14 @@ import {
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { Home, LayoutDashboard, Users, Settings, LayoutGrid } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();
+  const isMobile = useIsMobile();
+  
+  // For mobile, we'll handle navigation differently via the sidebar
+  if (isMobile) return null;
   
   return (
     <NavigationMenu className="hidden md:flex">

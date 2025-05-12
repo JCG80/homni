@@ -1,5 +1,7 @@
+
 import { useAuthState } from './useAuthState';
 import { useRoleCheck } from './roles/useRoleCheck';
+import { useAuthContext } from './useAuthContext';
 
 // Define the ModuleAccess type if it's used in the codebase
 export interface ModuleAccess {
@@ -16,15 +18,9 @@ export interface ModuleAccess {
  * Combines auth state with role checking capabilities
  */
 export const useAuth = () => {
-  // Get the base auth state
-  const authState = useAuthState();
+  // Get the base auth context (which includes authState and roleChecks)
+  const authContext = useAuthContext();
   
-  // Get role checking functionality
-  const roleChecks = useRoleCheck();
-  
-  // Return combined functionality
-  return {
-    ...authState,
-    ...roleChecks
-  };
+  // Return the complete auth functionality
+  return authContext;
 };
