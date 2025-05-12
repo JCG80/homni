@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../useAuth';
@@ -77,6 +78,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
       return;
     }
     
+    console.log(`goToDashboard called for role: ${targetRole}`);
     navigate(`/dashboard/${targetRole}`);
   };
 
@@ -87,6 +89,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     }
 
     if (isAuthenticated && role) {
+      console.log(`Auto-redirect triggered with role: ${role}`);
       redirectToDashboard();
     }
   }, [isAuthenticated, isLoading, autoRedirect, role]);

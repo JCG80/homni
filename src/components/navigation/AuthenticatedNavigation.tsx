@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Users, LayoutGrid } from 'lucide-react';
 import { 
@@ -19,6 +19,11 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
   isAuthenticated,
   role 
 }) => {
+  // For debugging
+  useEffect(() => {
+    console.log("AuthenticatedNavigation - Current role:", role);
+  }, [role]);
+  
   if (!isAuthenticated) {
     return null;
   }
@@ -30,6 +35,7 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
   };
   
   const dashboardRoute = getDashboardRoute();
+  console.log("AuthenticatedNavigation - Dashboard route:", dashboardRoute);
   
   return (
     <>

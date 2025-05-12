@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Home, LayoutDashboard, Users, Settings, LogOut, FileText, Database, Shield } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
@@ -13,6 +13,7 @@ import { toast } from '@/hooks/use-toast';
 
 export const Sidebar = () => {
   const { isAuthenticated, role, logout } = useAuth();
+  const navigate = useNavigate();
   
   const handleLogout = async () => {
     try {
@@ -50,12 +51,19 @@ export const Sidebar = () => {
   
   const dashboardRoute = getDashboardRoute();
   
+  // For debugging
+  console.log("Sidebar - Current role:", role);
+  console.log("Dashboard route:", dashboardRoute);
+  
   return (
     <div className="pb-12">
       <SidebarContent>
         {/* Main navigation */}
         <SidebarNavSection title="Navigasjon">
           <SidebarNavLink to="/" icon={Home} end>Hjem</SidebarNavLink>
+          {isAuthenticated && role && (
+            <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
+          )}
         </SidebarNavSection>
         
         {/* Services navigation - using the standard component */}
@@ -69,11 +77,6 @@ export const Sidebar = () => {
         {isAuthenticated && (
           <>
             <SidebarNavSection title="Min konto">
-              {role && (
-                <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>
-                  Dashboard
-                </SidebarNavLink>
-              )}
               <SidebarNavLink to="/profile" icon={Users}>
                 Min profil
               </SidebarNavLink>
