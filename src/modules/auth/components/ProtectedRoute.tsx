@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+
+import { ReactNode, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../utils/roles/types';
@@ -19,13 +20,21 @@ export const ProtectedRoute = ({
   allowAnyAuthenticated = false,
   module
 }: ProtectedRouteProps) => {
-  const { isLoading } = useAuth();
+  const { isLoading, isAuthenticated, role } = useAuth();
   const { isAllowed, loading } = useRoleProtection({
     allowedRoles,
     redirectTo,
     allowAnyAuthenticated,
     module
   });
+
+  // Add debug logging
+  useEffect(() => {
+    console.log("ProtectedRoute - Role:", role, 
+      "Authenticated:", isAuthenticated, 
+      "Allowed roles:", allowedRoles,
+      "Any authenticated allowed:", allowAnyAuthenticated);
+  }, [role, isAuthenticated, allowedRoles, allowAnyAuthenticated]);
 
   // Show loading state while checking auth or permissions
   if (isLoading || loading) {

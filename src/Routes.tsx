@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -193,4 +192,3 @@ export const AppRoutes = () => {
     </Suspense>
   );
 };
-

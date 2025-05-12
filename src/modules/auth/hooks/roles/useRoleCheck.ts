@@ -13,6 +13,9 @@ export const useRoleCheck = () => {
 
   // Determine the current role - use profile role first, then user role, default to anonymous
   const currentRole: UserRole = profile?.role || (user ? 'member' : 'anonymous');
+  
+  // Add debug log to see what role is being determined
+  console.log("useRoleCheck - Determined role:", currentRole, "Profile:", profile?.role, "Has user:", !!user);
 
   return {
     /**

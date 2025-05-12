@@ -1,11 +1,16 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
   const { isLoading, isAuthenticated, role } = useAuth();
+  
+  // Add logging to debug the role
+  useEffect(() => {
+    console.log("Dashboard component - User role:", role);
+  }, [role]);
   
   if (isLoading) {
     return (
