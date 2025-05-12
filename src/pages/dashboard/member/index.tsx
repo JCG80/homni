@@ -3,7 +3,7 @@ import React from 'react';
 import { DashboardLayout } from '@/components/dashboard';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import { useAuth } from '@/modules/auth/hooks';
-import { Bell, FileText, User, Home, CalendarClock } from 'lucide-react';
+import { Bell, FileText, User, Home, CalendarClock, ListChecks } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -46,7 +46,7 @@ const MemberDashboard: React.FC = () => {
         
         <DashboardWidget title="Dine forespørsler">
           <div className="flex items-center gap-3">
-            <FileText className="h-8 w-8 text-primary" />
+            <ListChecks className="h-8 w-8 text-primary" />
             <div>
               <h3 className="font-medium">Forespørsler og henvendelser</h3>
               <p className="text-sm text-muted-foreground">Oversikt over dine forespørsler til tjenesteleverandører</p>
