@@ -2,65 +2,55 @@
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
-import { Users, FileText, Settings, BarChart, AlertTriangle } from 'lucide-react';
-import { useAuth } from '@/modules/auth/hooks';
+import { Users, Settings, FileText } from 'lucide-react';
 
-export const AdminDashboard = () => {
-  const { profile } = useAuth();
-  
+const AdminDashboard: React.FC = () => {
   return (
-    <DashboardLayout title="Administrator Dashboard">
-      <DashboardWidget title="Lead Management">
-        <div className="flex items-center gap-3">
-          <FileText className="h-8 w-8 text-primary" />
-          <div>
-            <h3 className="font-medium">Lead Management</h3>
-            <p className="text-sm text-muted-foreground">Monitor and manage all incoming leads</p>
-          </div>
-        </div>
-        <div className="mt-4 border-t pt-4 flex justify-between">
-          <span className="text-sm text-muted-foreground">No new leads requiring attention</span>
-          <a href="/admin/leads" className="text-sm text-primary hover:underline">View All</a>
-        </div>
-      </DashboardWidget>
+    <DashboardLayout title="Admin Dashboard">
+      <h1 className="text-2xl font-bold mb-4">Admin Control Panel</h1>
       
-      <DashboardWidget title="System Modules">
-        <div className="flex items-center gap-3">
-          <Settings className="h-8 w-8 text-primary" />
-          <div>
-            <h3 className="font-medium">System Configuration</h3>
-            <p className="text-sm text-muted-foreground">Manage system modules and features</p>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <DashboardWidget title="User Management">
+          <div className="flex items-center gap-3">
+            <Users className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">Manage Users</h3>
+              <p className="text-sm text-muted-foreground">View and modify user accounts</p>
+            </div>
           </div>
-        </div>
-        <div className="mt-4 border-t pt-4 flex justify-between">
-          <span className="text-sm">10 active modules</span>
-          <a href="/admin/system-modules" className="text-sm text-primary hover:underline">Manage Modules</a>
-        </div>
-      </DashboardWidget>
-      
-      <DashboardWidget title="Performance Metrics">
-        <div className="flex items-center gap-3">
-          <BarChart className="h-8 w-8 text-primary" />
-          <div>
-            <h3 className="font-medium">System Performance</h3>
-            <p className="text-sm text-muted-foreground">Monitor key performance metrics</p>
+          <div className="mt-4 border-t pt-4 flex justify-between">
+            <span className="text-sm text-muted-foreground">Active users: 48</span>
+            <a href="/admin/users" className="text-sm text-primary hover:underline">View all</a>
           </div>
-        </div>
-        <div className="mt-4 border-t pt-4">
-          <div className="flex justify-between mb-2">
-            <span className="text-sm">Database queries</span>
-            <span className="text-sm font-medium">Good</span>
+        </DashboardWidget>
+        
+        <DashboardWidget title="System Settings">
+          <div className="flex items-center gap-3">
+            <Settings className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">Configure System</h3>
+              <p className="text-sm text-muted-foreground">Adjust system parameters and settings</p>
+            </div>
           </div>
-          <div className="flex justify-between mb-2">
-            <span className="text-sm">API response time</span>
-            <span className="text-sm font-medium">Excellent</span>
+          <div className="mt-4 border-t pt-4">
+            <a href="/admin/settings" className="text-sm text-primary hover:underline">Open settings</a>
           </div>
-          <div className="flex justify-between">
-            <span className="text-sm">Storage usage</span>
-            <span className="text-sm font-medium">43%</span>
+        </DashboardWidget>
+        
+        <DashboardWidget title="Leads Management">
+          <div className="flex items-center gap-3">
+            <FileText className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">Customer Leads</h3>
+              <p className="text-sm text-muted-foreground">View and assign customer leads</p>
+            </div>
           </div>
-        </div>
-      </DashboardWidget>
+          <div className="mt-4 border-t pt-4 flex justify-between">
+            <span className="text-sm text-muted-foreground">New leads: 12</span>
+            <a href="/admin/leads" className="text-sm text-primary hover:underline">View all</a>
+          </div>
+        </DashboardWidget>
+      </div>
     </DashboardLayout>
   );
 };

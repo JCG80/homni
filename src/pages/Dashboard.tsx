@@ -7,10 +7,11 @@ import { Navigate } from 'react-router-dom';
 export const Dashboard: React.FC = () => {
   const { isLoading, isAuthenticated, role } = useAuth();
   
-  // Add logging to debug the role
+  // Add detailed logging to debug the role
   useEffect(() => {
     console.log("Dashboard component - User role:", role);
-  }, [role]);
+    console.log("Dashboard component - Auth state:", { isAuthenticated, isLoading });
+  }, [role, isAuthenticated, isLoading]);
   
   if (isLoading) {
     return (
@@ -24,22 +25,28 @@ export const Dashboard: React.FC = () => {
   }
 
   if (!isAuthenticated) {
+    console.log("User not authenticated, redirecting to login");
     return <Navigate to="/login" />;
   }
   
-  console.log("Current user role:", role);
+  console.log("Current user role for redirection:", role);
   
   // Redirect to appropriate dashboard based on role
   switch (role) {
     case 'member':
+      console.log("Redirecting to member dashboard");
       return <Navigate to="/dashboard/member" />;
     case 'company':
+      console.log("Redirecting to company dashboard");
       return <Navigate to="/dashboard/company" />;
     case 'admin':
+      console.log("Redirecting to admin dashboard");
       return <Navigate to="/dashboard/admin" />;
     case 'master_admin':
+      console.log("Redirecting to master admin dashboard");
       return <Navigate to="/dashboard/master_admin" />;
     case 'content_editor':
+      console.log("Redirecting to content editor dashboard");
       return <Navigate to="/dashboard/content_editor" />;
     default:
       // Default to member dashboard if role is unknown

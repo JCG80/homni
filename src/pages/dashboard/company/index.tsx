@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
@@ -6,7 +5,7 @@ import { FileText, Users, BarChart } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { AdStatisticsWidget } from '@/components/dashboard/company/AdStatisticsWidget';
 
-export const CompanyDashboard = () => {
+const CompanyDashboard: React.FC = () => {
   const { profile } = useAuth();
   
   return (

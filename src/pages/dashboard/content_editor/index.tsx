@@ -4,7 +4,7 @@ import { DashboardLayout } from '@/components/dashboard';
 import { FileText, Edit, Settings } from 'lucide-react';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 
-export const ContentEditorDashboard = () => {
+const ContentEditorDashboard: React.FC = () => {
   return (
     <DashboardLayout title="Content Editor Dashboard">
       <DashboardWidget title="Content Management">

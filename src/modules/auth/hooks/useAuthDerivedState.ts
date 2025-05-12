@@ -18,8 +18,24 @@ export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthB
   // Check if user is authenticated
   const isAuthenticated = !!user;
 
-  // Determine role - use profile role first, then user role, default to undefined
-  const role: UserRole | undefined = profile?.role ?? user?.role;
+  // Determine role - first check profile role, then user role, then use testing emails if in dev mode
+  let role: UserRole | undefined = profile?.role || user?.role;
+  
+  // For development testing - check emails for specific test users
+  if (!role && user?.email && import.meta.env.MODE === 'development') {
+    const email = user.email.toLowerCase();
+    if (email === 'admin@test.local') role = 'admin';
+    if (email === 'company@test.local') role = 'company';
+    if (email === 'master-admin@test.local') role = 'master_admin';
+    if (email === 'content@test.local') role = 'content_editor';
+  }
+  
+  // If still no role, default to member for authenticated users
+  if (!role && isAuthenticated) {
+    role = 'member';
+  }
+  
+  console.log("useAuthDerivedState - Determined role:", role, "From profile:", profile?.role, "From user:", user?.role);
 
   // Get account type from user metadata or profile
   const account_type = (profile as any)?.metadata?.account_type || (profile as any)?.account_type || 'member';

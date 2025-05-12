@@ -2,82 +2,67 @@
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
-import { Users, Shield, Database, Settings, AlertTriangle } from 'lucide-react';
-import { useAuth } from '@/modules/auth/hooks';
+import { Users, Shield, Database, Settings } from 'lucide-react';
 
-export const MasterAdminDashboard = () => {
-  const { profile } = useAuth();
-  
+const MasterAdminDashboard: React.FC = () => {
   return (
-    <DashboardLayout title="Master Administrator Dashboard">
-      <DashboardWidget title="User Management">
-        <div className="flex items-center gap-3">
-          <Users className="h-8 w-8 text-primary" />
-          <div>
-            <h3 className="font-medium">User Management</h3>
-            <p className="text-sm text-muted-foreground">Manage all system users and roles</p>
-          </div>
-        </div>
-        <div className="mt-4 border-t pt-4 flex justify-between">
-          <span className="text-sm">Total users: 125</span>
-          <a href="/admin/members" className="text-sm text-primary hover:underline">Manage Users</a>
-        </div>
-      </DashboardWidget>
+    <DashboardLayout title="Master Admin Dashboard">
+      <h1 className="text-2xl font-bold mb-4">Master Admin Control Panel</h1>
       
-      <DashboardWidget title="Role Management">
-        <div className="flex items-center gap-3">
-          <Shield className="h-8 w-8 text-primary" />
-          <div>
-            <h3 className="font-medium">Role Management</h3>
-            <p className="text-sm text-muted-foreground">Manage user roles and permissions</p>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        <DashboardWidget title="Admin User Management">
+          <div className="flex items-center gap-3">
+            <Shield className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">Admin Users</h3>
+              <p className="text-sm text-muted-foreground">Manage admin accounts and permissions</p>
+            </div>
           </div>
-        </div>
-        <div className="mt-4 border-t pt-4 flex justify-between">
-          <span className="text-sm">5 roles configured</span>
-          <a href="/admin/roles" className="text-sm text-primary hover:underline">Manage Roles</a>
-        </div>
-      </DashboardWidget>
-      
-      <DashboardWidget title="System Alerts">
-        <div className="flex items-center gap-3">
-          <AlertTriangle className="h-8 w-8 text-amber-500" />
-          <div>
-            <h3 className="font-medium">System Alerts</h3>
-            <p className="text-sm text-muted-foreground">Critical system notifications</p>
+          <div className="mt-4 border-t pt-4 flex justify-between">
+            <span className="text-sm text-muted-foreground">Admin users: 5</span>
+            <a href="/admin/internal-access" className="text-sm text-primary hover:underline">Manage</a>
           </div>
-        </div>
-        <div className="mt-4 border-t pt-4">
-          <p className="text-sm text-green-600 flex items-center">
-            <span className="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
-            All systems operational
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">No critical alerts</p>
-        </div>
-      </DashboardWidget>
-      
-      <DashboardWidget title="Database Management">
-        <div className="flex items-center gap-3">
-          <Database className="h-8 w-8 text-primary" />
-          <div>
-            <h3 className="font-medium">Database Management</h3>
-            <p className="text-sm text-muted-foreground">Monitor and manage database operations</p>
+        </DashboardWidget>
+        
+        <DashboardWidget title="Role Management">
+          <div className="flex items-center gap-3">
+            <Users className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">User Roles</h3>
+              <p className="text-sm text-muted-foreground">Configure roles and permissions</p>
+            </div>
           </div>
-        </div>
-        <div className="mt-4 border-t pt-4">
-          <div className="flex justify-between mb-2">
-            <span className="text-sm">Storage usage</span>
-            <span className="text-sm font-medium">46%</span>
+          <div className="mt-4 border-t pt-4">
+            <a href="/admin/roles" className="text-sm text-primary hover:underline">Manage roles</a>
           </div>
-          <div className="flex justify-between mb-2">
-            <span className="text-sm">Last backup</span>
-            <span className="text-sm font-medium">Today, 03:00</span>
+        </DashboardWidget>
+        
+        <DashboardWidget title="System Modules">
+          <div className="flex items-center gap-3">
+            <Database className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">System Modules</h3>
+              <p className="text-sm text-muted-foreground">Configure system modules and integrations</p>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-sm">Status</span>
-            <span className="text-sm font-medium text-green-600">Healthy</span>
+          <div className="mt-4 border-t pt-4">
+            <a href="/admin/system-modules" className="text-sm text-primary hover:underline">Configure modules</a>
           </div>
-        </div>
-      </DashboardWidget>
+        </DashboardWidget>
+        
+        <DashboardWidget title="Global Settings">
+          <div className="flex items-center gap-3">
+            <Settings className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">System Configuration</h3>
+              <p className="text-sm text-muted-foreground">Global system settings and parameters</p>
+            </div>
+          </div>
+          <div className="mt-4 border-t pt-4">
+            <a href="/admin/settings" className="text-sm text-primary hover:underline">Configure system</a>
+          </div>
+        </DashboardWidget>
+      </div>
     </DashboardLayout>
   );
 };
