@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -22,6 +23,7 @@ import { ServiceSelectionPage } from './modules/services/pages/ServiceSelectionP
 import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles';
 import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
+import { OnboardingPage } from './pages/OnboardingPage';
 
 // Import SystemModulesPage
 import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
@@ -53,6 +55,7 @@ export const AppRoutes = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         
         {/* Service comparison routes */}

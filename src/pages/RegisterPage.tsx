@@ -4,6 +4,7 @@ import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 export const RegisterPage = () => {
   const [searchParams] = useSearchParams();
@@ -30,6 +31,10 @@ export const RegisterPage = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     navigate(`/register${value === 'business' ? '?type=business' : ''}`, { replace: true });
+  };
+
+  const handleTryOnboardingWizard = () => {
+    navigate('/onboarding');
   };
 
   // Show loading state while checking authentication
@@ -71,6 +76,12 @@ export const RegisterPage = () => {
               <RegisterForm redirectTo="/dashboard" userType="business" />
             </TabsContent>
           </Tabs>
+        </div>
+        
+        <div className="text-center">
+          <Button variant="link" onClick={handleTryOnboardingWizard}>
+            Try our new guided onboarding wizard
+          </Button>
         </div>
         
         <div className="text-center text-sm">
