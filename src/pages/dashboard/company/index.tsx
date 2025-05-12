@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import { FileText, Users, BarChart } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { AdStatisticsWidget } from '@/components/dashboard/company/AdStatisticsWidget';
+import { Link } from 'react-router-dom';
 
 const CompanyDashboard: React.FC = () => {
   const { profile } = useAuth();
@@ -20,7 +22,7 @@ const CompanyDashboard: React.FC = () => {
         </div>
         <div className="mt-4 border-t pt-4 flex justify-between">
           <span className="text-sm text-muted-foreground">Ingen nye forespørsler</span>
-          <a href="/leads" className="text-sm text-primary hover:underline">Se alle</a>
+          <Link to="/leads" className="text-sm text-primary hover:underline">Se alle</Link>
         </div>
       </DashboardWidget>
       
@@ -35,7 +37,7 @@ const CompanyDashboard: React.FC = () => {
           </div>
         </div>
         <div className="mt-4 pt-2">
-          <a href="/company/profile" className="text-sm text-primary hover:underline">Rediger profil</a>
+          <Link to="/company/profile" className="text-sm text-primary hover:underline">Rediger profil</Link>
         </div>
       </DashboardWidget>
     </DashboardLayout>

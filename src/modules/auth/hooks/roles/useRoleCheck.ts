@@ -10,18 +10,35 @@ import { useAuthState } from '../useAuthState';
  */
 export const useRoleCheck = () => {
   const { user, profile, role: userRole } = useAuthState();
+  const [detectedRole, setDetectedRole] = useState<UserRole | undefined>(undefined);
 
   // Determine the current role - use profile role first, then user role, default to anonymous
-  const currentRole: UserRole = profile?.role || user?.role || (user ? 'member' : 'anonymous');
-  
-  // Add debug log to see what role is being determined
-  console.log("useRoleCheck - Determined role:", currentRole, "Profile:", profile?.role, "User role:", user?.role, "Has user:", !!user);
+  useEffect(() => {
+    let role: UserRole = profile?.role || user?.role || (user ? 'member' : 'anonymous');
+    
+    // For development testing - check emails for specific test users
+    if (!role && user?.email && import.meta.env.MODE === 'development') {
+      const email = user.email.toLowerCase();
+      if (email === 'admin@test.local') role = 'admin';
+      if (email === 'company@test.local') role = 'company';
+      if (email === 'master-admin@test.local') role = 'master_admin';
+      if (email === 'content@test.local') role = 'content_editor';
+    }
+    
+    // If still no role, default to member for authenticated users
+    if (!role && !!user) {
+      role = 'member';
+    }
+    
+    console.log("useRoleCheck - Determined role:", role, "Profile:", profile?.role, "User role:", user?.role, "Has user:", !!user);
+    setDetectedRole(role);
+  }, [user, profile]);
 
   return {
     /**
      * The user's current role
      */
-    role: currentRole,
+    role: detectedRole,
     
     /**
      * Check if the user is authenticated
@@ -36,27 +53,27 @@ export const useRoleCheck = () => {
     /**
      * Check if the user has the member role
      */
-    isMember: currentRole === 'member',
+    isMember: detectedRole === 'member',
     
     /**
      * Check if the user has the company role
      */
-    isCompany: currentRole === 'company',
+    isCompany: detectedRole === 'company',
     
     /**
      * Check if the user has an admin role (admin or master_admin)
      */
-    isAdmin: currentRole === 'admin' || currentRole === 'master_admin',
+    isAdmin: detectedRole === 'admin' || detectedRole === 'master_admin',
     
     /**
      * Check if the user has the master_admin role
      */
-    isMasterAdmin: currentRole === 'master_admin',
+    isMasterAdmin: detectedRole === 'master_admin',
     
     /**
      * Check if the user has the content_editor role
      */
-    isContentEditor: currentRole === 'content_editor',
+    isContentEditor: detectedRole === 'content_editor',
     
     /**
      * Check if the user has at least one of the specified roles
@@ -65,8 +82,9 @@ export const useRoleCheck = () => {
      * @returns True if the user has at least one of the specified roles
      */
     hasRole: (roles: UserRole | UserRole[]): boolean => {
+      if (!detectedRole) return false;
       const rolesToCheck = Array.isArray(roles) ? roles : [roles];
-      return rolesToCheck.includes(currentRole);
+      return rolesToCheck.includes(detectedRole);
     },
 
     /**
@@ -77,14 +95,14 @@ export const useRoleCheck = () => {
      */
     canAccessModule: (moduleId: string): boolean => {
       // Master admin can access everything
-      if (currentRole === 'master_admin') {
+      if (detectedRole === 'master_admin') {
         return true;
       }
       
       try {
         // Import the canAccessModule function directly to avoid circular dependencies
         const { canAccessModule } = require('../../utils/roles/guards');
-        return canAccessModule(currentRole, moduleId);
+        return canAccessModule(detectedRole, moduleId);
       } catch (error) {
         console.error('Error checking module access:', error);
         return false;

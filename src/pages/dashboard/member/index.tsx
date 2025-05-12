@@ -4,6 +4,7 @@ import { DashboardLayout } from '@/components/dashboard';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import { useAuth } from '@/modules/auth/hooks';
 import { Bell, FileText, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const MemberDashboard: React.FC = () => {
   const { profile } = useAuth();
@@ -19,7 +20,7 @@ const MemberDashboard: React.FC = () => {
           </div>
         </div>
         <div className="mt-4 border-t pt-4">
-          <a href="/profile" className="text-sm text-primary hover:underline">Se profil</a>
+          <Link to="/profile" className="text-sm text-primary hover:underline">Se profil</Link>
         </div>
       </DashboardWidget>
       
@@ -33,7 +34,7 @@ const MemberDashboard: React.FC = () => {
         </div>
         <div className="mt-4 border-t pt-4 flex justify-between">
           <span className="text-sm text-muted-foreground">Ingen aktive forespørsler</span>
-          <a href="/leads" className="text-sm text-primary hover:underline">Se alle</a>
+          <Link to="/leads" className="text-sm text-primary hover:underline">Se alle</Link>
         </div>
       </DashboardWidget>
       

@@ -12,11 +12,15 @@ import { SidebarNavItem } from './SidebarNavItem';
 import { ServiceNavigation } from '@/components/navigation/ServiceNavigation';
 
 export const Sidebar = () => {
-  const { isAuthenticated, role, user } = useAuth();
+  const { isAuthenticated, role, logout } = useAuth();
   
   const handleLogout = () => {
-    // Dette vil bli erstattet av en faktisk logout-funksjon når den er implementert
-    window.location.href = '/login';
+    if (typeof logout === 'function') {
+      logout();
+    } else {
+      // Fallback hvis logout-funksjonen ikke er tilgjengelig
+      window.location.href = '/login';
+    }
   };
   
   return (
@@ -38,8 +42,10 @@ export const Sidebar = () => {
         {isAuthenticated && (
           <>
             <SidebarNavSection title="Min konto">
-              {/* Direkte til Dashboard komponenten som håndterer videre navigering */}
-              <SidebarNavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</SidebarNavLink>
+              {/* Direkte lenking til spesifikke dashboards basert på rolle */}
+              {role && (
+                <SidebarNavLink to={`/dashboard/${role}`} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
+              )}
               <SidebarNavLink to="/profile" icon={Users}>Min profil</SidebarNavLink>
               <SidebarNavLink to="/leads" icon={FileText}>Forespørsler</SidebarNavLink>
             </SidebarNavSection>

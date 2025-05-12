@@ -8,9 +8,10 @@ interface SidebarNavLinkProps {
   icon: React.ElementType;
   children: React.ReactNode;
   end?: boolean;
+  className?: string;
 }
 
-export const SidebarNavLink = ({ to, icon: Icon, children, end = false }: SidebarNavLinkProps) => {
+export const SidebarNavLink = ({ to, icon: Icon, children, end = false, className }: SidebarNavLinkProps) => {
   return (
     <NavLink
       to={to}
@@ -20,7 +21,8 @@ export const SidebarNavLink = ({ to, icon: Icon, children, end = false }: Sideba
           "flex items-center gap-x-2 rounded-md px-3 py-2 text-sm font-medium",
           isActive
             ? "bg-accent text-foreground"
-            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+          className
         )
       }
     >

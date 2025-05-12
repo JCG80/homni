@@ -27,7 +27,7 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
     <>
       <NavigationMenuItem>
         <NavLink 
-          to="/dashboard" 
+          to={role ? `/dashboard/${role}` : "/dashboard"} 
           className={({ isActive }) => 
             cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
           }
