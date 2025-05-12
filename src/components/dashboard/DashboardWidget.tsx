@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface DashboardWidgetProps {
-  title: string;
+  title: ReactNode;
   children?: ReactNode;
 }
 
@@ -16,7 +16,7 @@ export const DashboardWidget = ({ title, children }: DashboardWidgetProps) => {
       <CardContent>
         {children || (
           <div className="flex h-40 items-center justify-center text-muted-foreground">
-            {title} content will be implemented soon
+            {typeof title === 'string' ? title : 'Content'} will be implemented soon
           </div>
         )}
       </CardContent>
