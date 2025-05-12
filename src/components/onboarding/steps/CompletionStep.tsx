@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight } from 'lucide-react';
@@ -32,7 +31,7 @@ export const CompletionStep = ({ userType, formData, onComplete, onBack }: Compl
       fullName: formData.fullName,
       companyName: formData.companyName,
       phoneNumber: formData.phoneNumber,
-      userType: mappedUserType,
+      userType: mappedUserType as 'private' | 'business',
       redirectTo: `/dashboard/${userType}`,
       onSuccess: onComplete,
     };
