@@ -8,7 +8,7 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
-  const { role, module_access } = useAuth();
+  const { role } = useAuth();
 
   return (
     <div className="container mx-auto px-4 py-8">
