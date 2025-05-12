@@ -1,0 +1,72 @@
+
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { Home, LayoutDashboard, Users, Settings, LayoutGrid, LogOut, FileText } from 'lucide-react';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { SidebarContent } from './SidebarContent';
+import { SidebarNavSection } from './SidebarNavSection';
+import { SidebarNavLink } from './SidebarNavLink';
+import { SidebarNavItem } from './SidebarNavItem';
+
+export const Sidebar = () => {
+  const { isAuthenticated, role, user } = useAuth();
+  
+  const handleLogout = () => {
+    // Vi bruker navigate til login siden som en fallback
+    // Dette vil bli erstattet av en faktisk logout-funksjon når den er implementert
+    window.location.href = '/login';
+  };
+  
+  return (
+    <div className="pb-12">
+      <SidebarContent>
+        {/* Main navigation */}
+        <SidebarNavSection title="Navigasjon">
+          <SidebarNavLink to="/" icon={Home} end>Hjem</SidebarNavLink>
+          <SidebarNavLink to="/strom" icon={LayoutGrid}>Strøm</SidebarNavLink>
+          <SidebarNavLink to="/forsikring/companies" icon={LayoutGrid}>Forsikring</SidebarNavLink>
+        </SidebarNavSection>
+
+        {/* Authenticated menu items */}
+        {isAuthenticated && (
+          <>
+            <SidebarNavSection title="Min konto">
+              <SidebarNavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</SidebarNavLink>
+              <SidebarNavLink to="/profile" icon={Users}>Min profil</SidebarNavLink>
+              <SidebarNavLink to="/leads" icon={LayoutGrid}>Forespørsler</SidebarNavLink>
+            </SidebarNavSection>
+            
+            {/* Admin section */}
+            {(role === 'admin' || role === 'master_admin') && (
+              <SidebarNavSection title="Administrasjon">
+                <SidebarNavLink to="/admin/leads" icon={LayoutGrid}>Leads</SidebarNavLink>
+                <SidebarNavLink to="/admin/system-modules" icon={Settings}>Systemmoduler</SidebarNavLink>
+                
+                {role === 'master_admin' && (
+                  <>
+                    <SidebarNavLink to="/admin/roles" icon={Users}>Roller</SidebarNavLink>
+                    <SidebarNavLink to="/admin/members" icon={Users}>Brukere</SidebarNavLink>
+                  </>
+                )}
+              </SidebarNavSection>
+            )}
+            
+            {/* Logout button */}
+            <div className="px-3 py-2">
+              <SidebarNavItem icon={LogOut} onClick={handleLogout}>
+                Logg ut
+              </SidebarNavItem>
+            </div>
+          </>
+        )}
+
+        {/* Documentation section */}
+        <SidebarNavSection title="Dokumentasjon">
+          <SidebarNavLink to="/docs/project-plan" icon={FileText}>Prosjektplan</SidebarNavLink>
+        </SidebarNavSection>
+      </SidebarContent>
+    </div>
+  );
+};
