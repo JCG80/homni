@@ -15,36 +15,40 @@ export const Sidebar = () => {
   const { isAuthenticated, role, logout } = useAuth();
   
   const handleLogout = async () => {
-    if (typeof logout === 'function') {
-      try {
+    try {
+      if (logout) {
         await logout();
         toast({
           title: "Logget ut",
           description: "Du er nå logget ut av systemet",
         });
-        // Redirect will be handled by the auth state change
-      } catch (error) {
-        console.error('Error during logout:', error);
+      } else {
+        console.error('Logout function is not available');
         toast({
-          title: "Feil ved utlogging",
-          description: "Det oppstod en feil ved utlogging. Prøv igjen.",
+          title: "Utloggingsfeil",
+          description: "Kunne ikke logge ut på normal måte. Prøver alternativ metode.",
           variant: "destructive"
         });
+        // Fallback if logout function is not available
+        window.location.href = '/login';
       }
-    } else {
-      console.error('Logout function is not available');
+    } catch (error) {
+      console.error('Error during logout:', error);
       toast({
-        title: "Utloggingsfeil",
-        description: "Kunne ikke logge ut på normal måte. Prøver alternativ metode.",
+        title: "Feil ved utlogging",
+        description: "Det oppstod en feil ved utlogging. Prøv igjen.",
         variant: "destructive"
       });
-      // Fallback if logout function is not available
-      window.location.href = '/login';
     }
   };
   
-  // Determine correct dashboard route based on role
-  const dashboardRoute = role ? `/dashboard/${role}` : "/dashboard";
+  // Get correct dashboard route based on role
+  const getDashboardRoute = () => {
+    if (!role) return "/dashboard";
+    return `/dashboard/${role}`;
+  };
+  
+  const dashboardRoute = getDashboardRoute();
   
   return (
     <div className="pb-12">
@@ -66,10 +70,16 @@ export const Sidebar = () => {
           <>
             <SidebarNavSection title="Min konto">
               {role && (
-                <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
+                <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>
+                  Dashboard
+                </SidebarNavLink>
               )}
-              <SidebarNavLink to="/profile" icon={Users}>Min profil</SidebarNavLink>
-              <SidebarNavLink to="/leads" icon={FileText}>Forespørsler</SidebarNavLink>
+              <SidebarNavLink to="/profile" icon={Users}>
+                Min profil
+              </SidebarNavLink>
+              <SidebarNavLink to="/leads" icon={FileText}>
+                Forespørsler
+              </SidebarNavLink>
             </SidebarNavSection>
             
             {/* Admin section */}
@@ -84,6 +94,13 @@ export const Sidebar = () => {
                     <SidebarNavLink to="/admin/members" icon={Users}>Brukere</SidebarNavLink>
                   </>
                 )}
+              </SidebarNavSection>
+            )}
+
+            {/* Content editor section */}
+            {(role === 'content_editor' || role === 'admin' || role === 'master_admin') && (
+              <SidebarNavSection title="Innhold">
+                <SidebarNavLink to="/admin/content" icon={FileText}>Innholdsredigering</SidebarNavLink>
               </SidebarNavSection>
             )}
             

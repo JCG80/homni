@@ -31,6 +31,10 @@ const MemberDashboard: React.FC = () => {
                 <span className="text-sm font-medium">E-post</span>
                 <span className="text-sm text-muted-foreground">{user?.email || 'Ikke angitt'}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Rolle</span>
+                <span className="text-sm text-muted-foreground">Medlem</span>
+              </div>
             </div>
             <div className="mt-4">
               <Link to="/profile">

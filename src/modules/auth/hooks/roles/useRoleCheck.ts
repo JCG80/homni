@@ -21,10 +21,18 @@ export const useRoleCheck = () => {
       "has user": !!user
     });
     
-    let role: UserRole = profile?.role || user?.role || (user ? 'member' : 'anonymous');
+    let role: UserRole | undefined = undefined;
     
+    // Check profile role first (most authoritative)
+    if (profile?.role) {
+      role = profile.role;
+    } 
+    // Then check user role
+    else if (user?.role) {
+      role = user.role;
+    } 
     // For development testing - check emails for specific test users
-    if (!role && user?.email && import.meta.env.MODE === 'development') {
+    else if (user?.email && import.meta.env.MODE === 'development') {
       const email = user.email.toLowerCase();
       if (email === 'admin@test.local') role = 'admin';
       if (email === 'company@test.local') role = 'company';
@@ -35,6 +43,11 @@ export const useRoleCheck = () => {
     // If still no role, default to member for authenticated users
     if (!role && !!user) {
       role = 'member';
+    }
+    
+    // Default to anonymous for non-authenticated users
+    if (!role && !user) {
+      role = 'anonymous';
     }
     
     console.log("useRoleCheck - Determined role:", role, "Profile:", profile?.role, "User role:", user?.role, "Has user:", !!user);

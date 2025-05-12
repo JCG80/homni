@@ -1,32 +1,48 @@
 
 import React from 'react';
-import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
-import AdminLeadsPage from './AdminLeadsPage';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { AdminLeadsPage } from './AdminLeadsPage';
 import { CompanyLeadsPage } from './CompanyLeadsPage';
 import { UserLeadsPage } from './UserLeadsPage';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { Loader2 } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 
-export const LeadManagementPage = () => {
-  const { role } = useAuth();
-  
+/**
+ * Lead Management Page that displays different content based on user role
+ */
+export const LeadManagementPage: React.FC = () => {
+  const { isLoading, isAuthenticated, role } = useAuth();
+
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-lg">Laster inn...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
   // Render the appropriate leads page based on user role
-  const renderLeadsPage = () => {
-    if (role === 'admin' || role === 'master_admin') {
+  switch (role) {
+    case 'admin':
+    case 'master_admin':
       return <AdminLeadsPage />;
-    } else if (role === 'company') {
+    case 'company':
       return <CompanyLeadsPage />;
-    } else if (role === 'member') {
+    case 'member':
       return <UserLeadsPage />;
-    }
-    
-    // Fallback - should not happen due to ProtectedRoute
-    return <div>Uautorisert</div>;
-  };
-  
-  return (
-    <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member'] as UserRole[]}>
-      {renderLeadsPage()}
-    </ProtectedRoute>
-  );
+    default:
+      // If role is unrecognized, redirect to unauthorized
+      return <Navigate to="/unauthorized" />;
+  }
 };
+
+export default LeadManagementPage;

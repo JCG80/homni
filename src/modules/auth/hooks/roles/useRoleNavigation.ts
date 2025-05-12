@@ -31,25 +31,32 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
    */
   const redirectToDashboard = () => {
     if (!isAuthenticated) {
+      console.log("Not redirecting - user not authenticated");
       return;
     }
 
     console.log("Redirecting with role:", role);
 
-    // If a specific redirect path is provided, use it
-    if (redirectPath) {
-      navigate(redirectPath);
-      return;
+    try {
+      // If a specific redirect path is provided, use it
+      if (redirectPath) {
+        navigate(redirectPath, { replace: true });
+        return;
+      }
+      
+      // Directly navigate to the role-specific dashboard if role is available
+      if (role) {
+        const dashboardPath = `/dashboard/${role}`;
+        console.log(`Navigating to role dashboard: ${dashboardPath}`);
+        navigate(dashboardPath, { replace: true });
+        return;
+      }
+      
+      // Otherwise use the main dashboard route which will handle the redirection
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      console.error("Navigation error:", error);
     }
-    
-    // Directly navigate to the role-specific dashboard if role is available
-    if (role) {
-      navigate(`/dashboard/${role}`);
-      return;
-    }
-    
-    // Otherwise use the main dashboard route which will handle the redirection
-    navigate('/dashboard');
   };
 
   /**
@@ -60,13 +67,26 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     navigate(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
   };
 
+  /**
+   * Navigate to a specific role dashboard
+   */
+  const goToDashboard = (specificRole?: string) => {
+    const targetRole = specificRole || role;
+    if (!targetRole) {
+      navigate('/dashboard');
+      return;
+    }
+    
+    navigate(`/dashboard/${targetRole}`);
+  };
+
   // Auto-redirect if enabled
   useEffect(() => {
     if (!autoRedirect || isLoading) {
       return;
     }
 
-    if (isAuthenticated) {
+    if (isAuthenticated && role) {
       redirectToDashboard();
     }
   }, [isAuthenticated, isLoading, autoRedirect, role]);
@@ -74,6 +94,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
   return {
     redirectToDashboard,
     redirectToLogin,
+    goToDashboard,
     isLoading
   };
 };

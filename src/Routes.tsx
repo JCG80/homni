@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -32,12 +33,14 @@ import { MembersManagementPage } from './modules/admin/pages/MembersManagementPa
 import CompaniesManagementPage from './modules/admin/pages/CompaniesManagementPage';
 import InternalAccessPage from './modules/admin/pages/InternalAccessPage';
 
-// Import the dashboard pages as default imports
-import MemberDashboard from './pages/dashboard/member';
-import CompanyDashboard from './pages/dashboard/company';
-import AdminDashboard from './pages/dashboard/admin';
-import MasterAdminDashboard from './pages/dashboard/master_admin';
-import ContentEditorDashboard from './pages/dashboard/content_editor';
+// Import the dashboard pages
+import {
+  MemberDashboard,
+  CompanyDashboard,
+  AdminDashboard,
+  MasterAdminDashboard,
+  ContentEditorDashboard
+} from './pages/dashboard';
 
 export const AppRoutes = () => {
   return (
@@ -71,45 +74,48 @@ export const AppRoutes = () => {
         {/* Companies list route */}
         <Route path="/companies" element={<CompanyListPage />} />
         
-        {/* Dashboard routes based on role */}
+        {/* Dashboard routes */}
+        {/* Main dashboard route - redirects to role-specific dashboard */}
         <Route path="/dashboard" element={
           <ProtectedRoute allowAnyAuthenticated>
             <Dashboard />
           </ProtectedRoute>
         } />
         
+        {/* Role-specific dashboard routes */}
         <Route path="/dashboard/member" element={
-          <ProtectedRoute allowedRoles={['member'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['member']}>
             <MemberDashboard />
           </ProtectedRoute>
         } />
         
         <Route path="/dashboard/company" element={
-          <ProtectedRoute allowedRoles={['company'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['company']}>
             <CompanyDashboard />
           </ProtectedRoute>
         } />
         
         <Route path="/dashboard/admin" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
             <AdminDashboard />
           </ProtectedRoute>
         } />
         
         <Route path="/dashboard/master_admin" element={
-          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['master_admin']}>
             <MasterAdminDashboard />
           </ProtectedRoute>
         } />
         
         <Route path="/dashboard/content_editor" element={
-          <ProtectedRoute allowedRoles={['content_editor', 'admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['content_editor', 'admin', 'master_admin']}>
             <ContentEditorDashboard />
           </ProtectedRoute>
         } />
         
+        {/* User account and profile routes */}
         <Route path="/my-account" element={
-          <ProtectedRoute allowedRoles={['member', 'company', 'admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowAnyAuthenticated>
             <MyAccountPage />
           </ProtectedRoute>
         } />
@@ -128,61 +134,69 @@ export const AppRoutes = () => {
         
         {/* Company routes */}
         <Route path="/company/profile" element={
-          <ProtectedRoute allowedRoles={['company'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['company']}>
             <CompanyProfilePage />
           </ProtectedRoute>
         } />
         
         {/* Lead management routes */}
         <Route path="/leads" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin', 'company', 'member']}>
             <LeadManagementPage />
           </ProtectedRoute>
         } />
         
         {/* Admin routes */}
         <Route path="/admin/leads" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
             <AdminLeadsPage />
           </ProtectedRoute>
         } />
         
         <Route path="/admin/settings" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
             <LeadSettingsPage />
           </ProtectedRoute>
         } />
 
         {/* System Modules route */}
         <Route path="/admin/system-modules" element={
-          <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
             <SystemModulesPage />
           </ProtectedRoute>
         } />
         
         {/* Role Management route - only accessible to master_admin */}
         <Route path="/admin/roles" element={
-          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['master_admin']}>
             <RoleManagementPage />
           </ProtectedRoute>
         } />
         
-        {/* New MasterAdmin User Management routes */}
+        {/* MasterAdmin User Management routes */}
         <Route path="/admin/members" element={
-          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['master_admin']}>
             <MembersManagementPage />
           </ProtectedRoute>
         } />
         
         <Route path="/admin/companies" element={
-          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['master_admin']}>
             <CompaniesManagementPage />
           </ProtectedRoute>
         } />
         
         <Route path="/admin/internal-access" element={
-          <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
+          <ProtectedRoute allowedRoles={['master_admin']}>
             <InternalAccessPage />
+          </ProtectedRoute>
+        } />
+        
+        {/* Content editor routes */}
+        <Route path="/admin/content/*" element={
+          <ProtectedRoute allowedRoles={['content_editor', 'admin', 'master_admin']}>
+            {/* Content module routes would go here */}
+            <Navigate to="/dashboard/content_editor" replace />
           </ProtectedRoute>
         } />
         
