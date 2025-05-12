@@ -32,7 +32,7 @@ export const SystemMapError = ({ error, onRetry }: SystemMapErrorProps) => {
             <div className="mt-6 flex justify-center">
               <Button 
                 variant="outline" 
-                className="bg-white hover:bg-red-50 border-red-200" 
+                className="bg-white hover:bg-red-50 border-red-200 flex items-center" 
                 onClick={onRetry}
               >
                 <RefreshCw className="mr-2 h-4 w-4" />

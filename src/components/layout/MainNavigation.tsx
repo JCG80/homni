@@ -12,6 +12,7 @@ import {
   navigationMenuTriggerStyle 
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
+import { Home, LayoutDashboard, Users, Settings, LayoutGrid } from 'lucide-react';
 
 export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();
@@ -27,6 +28,7 @@ export const MainNavigation = () => {
                 cn({ "bg-accent text-accent-foreground": isActive })
               }
             >
+              <Home className="h-4 w-4 mr-2" />
               Hjem
             </NavLink>
           </NavigationMenuLink>
@@ -34,7 +36,10 @@ export const MainNavigation = () => {
 
         {/* Services */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Tjenester</NavigationMenuTrigger>
+          <NavigationMenuTrigger>
+            <LayoutGrid className="h-4 w-4 mr-2" />
+            Tjenester
+          </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 w-[400px] md:w-[500px] lg:w-[600px] lg:grid-cols-2">
               <NavLink to="/strom" 
@@ -58,39 +63,6 @@ export const MainNavigation = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
 
-        {/* Comparison Pages */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Sammenligninger</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid gap-3 p-4 w-[400px] md:grid-cols-2">
-              <li>
-                <NavigationMenuLink asChild>
-                  <NavLink to="/strom"
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                  >
-                    <div className="text-sm font-medium leading-none">Strøm</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                      Sammenlign strømleverandører og finn beste priser.
-                    </p>
-                  </NavLink>
-                </NavigationMenuLink>
-              </li>
-              <li>
-                <NavigationMenuLink asChild>
-                  <NavLink to="/forsikring/compare"
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                  >
-                    <div className="text-sm font-medium leading-none">Forsikring</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                      Få tilbud på forsikring fra flere selskaper.
-                    </p>
-                  </NavLink>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-
         {/* Conditional menus based on authentication */}
         {isAuthenticated && (
           <>
@@ -101,6 +73,7 @@ export const MainNavigation = () => {
                     cn({ "bg-accent text-accent-foreground": isActive })
                   }
                 >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
                   Dashboard
                 </NavLink>
               </NavigationMenuLink>
@@ -113,6 +86,7 @@ export const MainNavigation = () => {
                     cn({ "bg-accent text-accent-foreground": isActive })
                   }
                 >
+                  <Users className="h-4 w-4 mr-2" />
                   Min profil
                 </NavLink>
               </NavigationMenuLink>
@@ -125,6 +99,7 @@ export const MainNavigation = () => {
                     cn({ "bg-accent text-accent-foreground": isActive })
                   }
                 >
+                  <LayoutGrid className="h-4 w-4 mr-2" />
                   Forespørsler
                 </NavLink>
               </NavigationMenuLink>
@@ -133,24 +108,21 @@ export const MainNavigation = () => {
             {/* Admin section with System Modules */}
             {(role === 'admin' || role === 'master_admin') && (
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Admin</NavigationMenuTrigger>
+                <NavigationMenuTrigger>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Admin
+                </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[200px] gap-3 p-4">
+                  <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] md:grid-cols-2">
                     <li>
                       <NavigationMenuLink asChild>
                         <NavLink to="/admin/leads"
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">Leads</div>
-                        </NavLink>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <NavLink to="/admin/roles"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">Roller</div>
+                          <p className="line-clamp-2 text-xs text-muted-foreground mt-1">
+                            Håndtering av kundeforespørsler
+                          </p>
                         </NavLink>
                       </NavigationMenuLink>
                     </li>
@@ -160,9 +132,40 @@ export const MainNavigation = () => {
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">Systemmoduler</div>
+                          <p className="line-clamp-2 text-xs text-muted-foreground mt-1">
+                            Oversikt over systemmoduler
+                          </p>
                         </NavLink>
                       </NavigationMenuLink>
                     </li>
+                    {role === 'master_admin' && (
+                      <>
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <NavLink to="/admin/roles"
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            >
+                              <div className="text-sm font-medium leading-none">Roller</div>
+                              <p className="line-clamp-2 text-xs text-muted-foreground mt-1">
+                                Håndtering av brukerroller
+                              </p>
+                            </NavLink>
+                          </NavigationMenuLink>
+                        </li>
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <NavLink to="/admin/members"
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            >
+                              <div className="text-sm font-medium leading-none">Brukere</div>
+                              <p className="line-clamp-2 text-xs text-muted-foreground mt-1">
+                                Administrasjon av medlemmer
+                              </p>
+                            </NavLink>
+                          </NavigationMenuLink>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>

@@ -6,6 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MainNavigation } from './MainNavigation';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { UserNav } from './UserNav';
+import { Menu } from 'lucide-react';
+import { 
+  Sheet,
+  SheetContent,
+  SheetTrigger
+} from "@/components/ui/sheet";
+import { Sidebar } from '../ui/sidebar';
 
 interface HeaderProps {
   activeTab: string;
@@ -28,8 +35,25 @@ export const Header = ({ activeTab, handleTabChange }: HeaderProps) => {
           Homni
         </Link>
         
-        {/* Main Navigation */}
+        {/* Main Navigation - Desktop */}
         <MainNavigation />
+        
+        {/* Main Navigation - Mobile */}
+        <div className="block md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Åpne meny</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[240px] sm:w-[300px]">
+              <div className="py-4">
+                <Sidebar />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
         
         {/* Auth/User Section */}
         <div className="flex items-center space-x-4">

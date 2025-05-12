@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 
 interface StepNavigationButtonsProps {
   currentStep: number;
@@ -31,7 +32,9 @@ export const StepNavigationButtons: React.FC<StepNavigationButtonsProps> = ({
         <Button 
           variant="outline"
           onClick={onBack}
+          className="flex items-center"
         >
+          <ChevronLeft className="mr-2 h-4 w-4" />
           Tilbake
         </Button>
       )}
@@ -43,14 +46,17 @@ export const StepNavigationButtons: React.FC<StepNavigationButtonsProps> = ({
             onClick={onSkip}
           >
             {skipLabel || "Hopp over"}
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         )}
         
         <Button
           onClick={onNext}
           disabled={isNextDisabled}
+          className="flex items-center"
         >
           {nextLabel || (isLastStep ? "Fullfør" : "Neste")}
+          {!isLastStep && <ChevronRight className="ml-2 h-4 w-4" />}
         </Button>
       </div>
     </div>
