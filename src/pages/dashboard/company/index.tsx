@@ -1,18 +1,11 @@
-
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { DashboardWidget } from '@/components/dashboard';
-import { LeadKanbanBoard } from '@/components/dashboard/company/LeadKanbanBoard';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useApiCall } from '@/hooks/use-api-call';
-import { toast } from '@/hooks/use-toast';
-import { 
-  BarChart, 
-  CreditCard, 
-  Megaphone,
-  PlusCircle
-} from 'lucide-react';
+import { QuickActionsBar } from '@/components/dashboard/company/QuickActionsBar';
+import { LeadKanbanWidget } from '@/components/dashboard/company/LeadKanbanWidget';
+import { SubscriptionStatusWidget } from '@/components/dashboard/company/SubscriptionStatusWidget';
+import { AdStatisticsWidget } from '@/components/dashboard/company/AdStatisticsWidget';
+import type { Lead } from '@/components/dashboard/company/LeadKanbanBoard';
 
 // Mock data for development
 const MOCK_LEADS = [
@@ -166,72 +159,31 @@ const CompanyDashboard = () => {
   const wonLeads = leads.filter(lead => lead.status === 'won').length;
   const lostLeads = leads.filter(lead => lead.status === 'lost').length;
   
+  const leadCounts = {
+    new: newLeads,
+    in_progress: inProgressLeads,
+    won: wonLeads,
+    lost: lostLeads
+  };
+  
   return (
     <DashboardLayout title="Bedrift Dashboard">
       {/* Quick Actions */}
-      <div className="flex gap-4 mb-6">
-        <Button className="flex items-center gap-2">
-          <PlusCircle className="h-4 w-4" />
-          Nytt Lead
-        </Button>
-        <Button variant="outline" className="flex items-center gap-2">
-          <CreditCard className="h-4 w-4" />
-          Kjøp kreditter
-        </Button>
-        <Button variant="outline" className="flex items-center gap-2">
-          <Megaphone className="h-4 w-4" />
-          Annonser
-        </Button>
-      </div>
+      <QuickActionsBar />
       
       {/* Main lead kanban board */}
       <div className="col-span-3 mb-6">
-        <DashboardWidget title={
-          <div className="flex justify-between items-center">
-            <span>Mine Leads</span>
-            <div className="flex gap-2">
-              <Badge variant="secondary">Nye: {newLeads}</Badge>
-              <Badge variant="secondary">I arbeid: {inProgressLeads}</Badge>
-              <Badge variant="secondary">Vunnet: {wonLeads}</Badge>
-              <Badge variant="secondary">Tapt: {lostLeads}</Badge>
-            </div>
-          </div>
-        }>
-          <LeadKanbanBoard 
-            leads={leads} 
-            onLeadStatusChange={handleLeadStatusChange}
-            isLoading={isLoading}
-          />
-        </DashboardWidget>
+        <LeadKanbanWidget 
+          leads={leads} 
+          onLeadStatusChange={handleLeadStatusChange}
+          isLoading={isLoading}
+          leadCounts={leadCounts}
+        />
       </div>
       
       {/* Stats widgets */}
-      <DashboardWidget title="Abonnement Status">
-        <div className="flex flex-col gap-4 p-4">
-          <div className="flex justify-between items-center">
-            <span>Aktive kreditter:</span>
-            <Badge>24</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span>Abonnement:</span>
-            <Badge variant="outline">Pro</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span>Neste fornying:</span>
-            <span>01.06.2025</span>
-          </div>
-          <Button className="w-full mt-2">Oppgrader abonnement</Button>
-        </div>
-      </DashboardWidget>
-      
-      <DashboardWidget title="Annonse Statistikk">
-        <div className="flex items-center justify-center py-8 text-center">
-          <div>
-            <BarChart className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-            <p className="mt-2 text-muted-foreground">Annonse statistikk vil vises her</p>
-          </div>
-        </div>
-      </DashboardWidget>
+      <SubscriptionStatusWidget />
+      <AdStatisticsWidget />
     </DashboardLayout>
   );
 };
