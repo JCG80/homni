@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -33,10 +32,11 @@ import CompaniesManagementPage from './modules/admin/pages/CompaniesManagementPa
 import InternalAccessPage from './modules/admin/pages/InternalAccessPage';
 
 // Import the dashboard pages
-import { MemberDashboard } from './pages/dashboard/MemberDashboard';
-import { CompanyDashboard } from './pages/dashboard/CompanyDashboard';
-import { AdminDashboard } from './pages/dashboard/AdminDashboard';
-import { MasterAdminDashboard } from './pages/dashboard/MasterAdminDashboard';
+import { MemberDashboardPage } from './pages/dashboard/member';
+import { CompanyDashboardPage } from './pages/dashboard/company';
+import { AdminDashboardPage } from './pages/dashboard/admin';
+import { MasterAdminDashboardPage } from './pages/dashboard/master_admin';
+import { ContentEditorDashboardPage } from './pages/dashboard/content_editor';
 
 export const AppRoutes = () => {
   return (
@@ -78,25 +78,31 @@ export const AppRoutes = () => {
         
         <Route path="/dashboard/member" element={
           <ProtectedRoute allowedRoles={['member'] as UserRole[]}>
-            <MemberDashboard />
+            <MemberDashboardPage />
           </ProtectedRoute>
         } />
         
         <Route path="/dashboard/company" element={
           <ProtectedRoute allowedRoles={['company'] as UserRole[]}>
-            <CompanyDashboard />
+            <CompanyDashboardPage />
           </ProtectedRoute>
         } />
         
-        <Route path="/admin" element={
+        <Route path="/dashboard/admin" element={
           <ProtectedRoute allowedRoles={['admin', 'master_admin'] as UserRole[]}>
-            <AdminDashboard />
+            <AdminDashboardPage />
           </ProtectedRoute>
         } />
         
-        <Route path="/master-admin" element={
+        <Route path="/dashboard/master_admin" element={
           <ProtectedRoute allowedRoles={['master_admin'] as UserRole[]}>
-            <MasterAdminDashboard />
+            <MasterAdminDashboardPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/dashboard/content_editor" element={
+          <ProtectedRoute allowedRoles={['content_editor', 'admin', 'master_admin'] as UserRole[]}>
+            <ContentEditorDashboardPage />
           </ProtectedRoute>
         } />
         
