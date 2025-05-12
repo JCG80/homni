@@ -22,28 +22,20 @@ export const CompletionStep = ({ userType, formData, onComplete, onBack }: Compl
   const { handleSubmit, isSubmitting, error } = useRegistrationSubmit();
   
   const completeRegistration = async () => {
-    await handleSubmit(() => {
-      return new Promise((resolve, reject) => {
-        try {
-          // Complete registration with Supabase
-          const registrationData = {
-            email: formData.email,
-            password: formData.password,
-            fullName: formData.fullName,
-            companyName: formData.companyName,
-            phoneNumber: formData.phoneNumber,
-            userType: userType,
-            redirectTo: `/dashboard/${userType}`,
-            onSuccess: onComplete,
-          };
-          
-          // Resolve the promise to indicate success
-          resolve(registrationData);
-        } catch (err) {
-          reject(err);
-        }
-      });
-    });
+    // Create registration data object directly
+    const registrationData = {
+      email: formData.email,
+      password: formData.password,
+      fullName: formData.fullName,
+      companyName: formData.companyName,
+      phoneNumber: formData.phoneNumber,
+      userType: userType,
+      redirectTo: `/dashboard/${userType}`,
+      onSuccess: onComplete,
+    };
+    
+    // Pass the data object directly to handleSubmit
+    await handleSubmit(registrationData);
   };
 
   return (
