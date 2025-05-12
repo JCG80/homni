@@ -5,6 +5,7 @@ import { UserLeadFilter } from '../types/user-filters';
 import { toast } from '@/hooks/use-toast';
 import { withRetry } from '@/utils/apiRetry';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 import { canAccessModule } from '@/modules/auth/utils/roleUtils';
 
 interface UseFilterDeleteProps {
@@ -28,7 +29,7 @@ export function useFilterDelete({
   const { role } = useAuth();
   
   // Check if user has access to manage filters
-  const canManageFilters = role ? canAccessModule(role, 'leads') : false;
+  const canManageFilters = role ? canAccessModule(role as UserRole, 'leads') : false;
   
   // Delete a filter with retry logic
   const deleteFilter = useCallback(async (id: string): Promise<boolean> => {

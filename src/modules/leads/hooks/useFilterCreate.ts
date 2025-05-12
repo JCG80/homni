@@ -5,6 +5,7 @@ import { UserLeadFilter, CreateUserFilterRequest } from '../types/user-filters';
 import { toast } from '@/hooks/use-toast';
 import { withRetry } from '@/utils/apiRetry';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 import { canAccessModule } from '@/modules/auth/utils/roleUtils';
 
 interface UseFilterCreateProps {
@@ -27,7 +28,7 @@ export function useFilterCreate({
   const { role } = useAuth();
   
   // Check if user has access to manage filters
-  const canManageFilters = role ? canAccessModule(role, 'leads') : false;
+  const canManageFilters = role ? canAccessModule(role as UserRole, 'leads') : false;
   
   // Create a new filter with retry logic
   const createFilter = useCallback(async (filter: CreateUserFilterRequest): Promise<boolean> => {

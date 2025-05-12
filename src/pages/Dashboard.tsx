@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 export const Dashboard: React.FC = () => {
-  const { isAuthenticated, isLoading, role, account_type, isAdmin, isMasterAdmin } = useAuth();
+  const { isAuthenticated, isLoading, role, isAdmin, isMasterAdmin } = useAuth();
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -20,13 +20,13 @@ export const Dashboard: React.FC = () => {
       navigate('/master-admin');
     } else if (isAdmin) {
       navigate('/admin');
-    } else if (role === 'company' || account_type === 'company') {
+    } else if (role === 'company') {
       navigate('/dashboard/company');
     } else {
       // Default to member dashboard
       navigate('/dashboard/member');
     }
-  }, [isAuthenticated, isLoading, role, account_type, isAdmin, isMasterAdmin, navigate]);
+  }, [isAuthenticated, isLoading, role, isAdmin, isMasterAdmin, navigate]);
   
   return (
     <div className="flex items-center justify-center min-h-screen">
