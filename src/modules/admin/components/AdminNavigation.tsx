@@ -3,7 +3,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { UserRole } from '@/modules/auth/utils/roles/types';
-import { Users, Building, Settings } from 'lucide-react';
+import { Users, Building, Settings, LayoutGrid, Shield, DatabaseIcon } from 'lucide-react';
 
 export const AdminNavigation: React.FC = () => {
   const { role } = useAuth();
@@ -18,7 +18,19 @@ export const AdminNavigation: React.FC = () => {
               isActive ? "font-medium text-primary border-b-2 border-primary pb-2 flex items-center gap-1" : "text-muted-foreground hover:text-foreground flex items-center gap-1"
             }
           >
+            <LayoutGrid className="h-4 w-4" />
             Leads
+          </NavLink>
+        </li>
+        <li>
+          <NavLink 
+            to="/admin/system-modules" 
+            className={({isActive}) => 
+              isActive ? "font-medium text-primary border-b-2 border-primary pb-2 flex items-center gap-1" : "text-muted-foreground hover:text-foreground flex items-center gap-1"
+            }
+          >
+            <DatabaseIcon className="h-4 w-4" />
+            Systemmoduler
           </NavLink>
         </li>
         <li>
@@ -38,9 +50,10 @@ export const AdminNavigation: React.FC = () => {
               <NavLink 
                 to="/admin/roles" 
                 className={({isActive}) => 
-                  isActive ? "font-medium text-primary border-b-2 border-primary pb-2" : "text-muted-foreground hover:text-foreground"
+                  isActive ? "font-medium text-primary border-b-2 border-primary pb-2 flex items-center gap-1" : "text-muted-foreground hover:text-foreground flex items-center gap-1"
                 }
               >
+                <Shield className="h-4 w-4" />
                 Rolleadministrasjon
               </NavLink>
             </li>
@@ -73,7 +86,7 @@ export const AdminNavigation: React.FC = () => {
                   isActive ? "font-medium text-primary border-b-2 border-primary pb-2 flex items-center gap-1" : "text-muted-foreground hover:text-foreground flex items-center gap-1"
                 }
               >
-                <Settings className="h-4 w-4" />
+                <Shield className="h-4 w-4" />
                 Modultilgang
               </NavLink>
             </li>

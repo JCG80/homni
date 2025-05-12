@@ -13,29 +13,32 @@ interface SystemMapErrorProps {
 export const SystemMapError = ({ error, onRetry }: SystemMapErrorProps) => {
   return (
     <div className="container mx-auto p-6">
-      <Card className="shadow-sm">
-        <CardHeader>
+      <Card className="shadow-sm border-destructive/20">
+        <CardHeader className="border-b border-destructive/10">
           <CardTitle className="text-destructive flex items-center">
             <AlertCircle className="mr-2 h-5 w-5" />
             Problem med systemkart
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Alert variant="destructive" className="bg-red-50 border-red-200">
-            <AlertDescription className="text-red-700 text-sm">
-              <p className="font-medium mb-2">Kunne ikke laste systemmoduler:</p>
-              <p className="bg-red-100 p-2 rounded text-sm font-mono">{error}</p>
+        <CardContent className="pt-6">
+          <Alert variant="destructive" className="mb-6">
+            <AlertTitle className="flex items-center">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              Kunne ikke laste systemmoduler
+            </AlertTitle>
+            <AlertDescription className="mt-2">
+              <div className="bg-destructive/10 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">{error}</div>
             </AlertDescription>
           </Alert>
           
           {onRetry && (
-            <div className="mt-6 flex justify-center">
+            <div className="flex justify-center">
               <Button 
                 variant="outline" 
-                className="bg-white hover:bg-red-50 border-red-200 flex items-center" 
+                className="border-destructive/50 hover:border-destructive hover:bg-destructive/10 flex items-center gap-2"
                 onClick={onRetry}
               >
-                <RefreshCw className="mr-2 h-4 w-4" />
+                <RefreshCw className="h-4 w-4" />
                 Prøv igjen
               </Button>
             </div>

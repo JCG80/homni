@@ -7,7 +7,13 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Button } from './button';
 
 export const Sidebar = () => {
-  const { isAuthenticated, role, logout } = useAuth();
+  const { isAuthenticated, role, user } = useAuth();
+  
+  const handleLogout = () => {
+    // Vi bruker navigate til login siden som en fallback
+    // Dette vil bli erstattet av en faktisk logout-funksjon når den er implementert
+    window.location.href = '/login';
+  };
   
   return (
     <div className="pb-12">
@@ -200,7 +206,7 @@ export const Sidebar = () => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                onClick={() => logout && logout()}
+                onClick={handleLogout}
               >
                 <LogOut size={16} className="mr-2" />
                 <span>Logg ut</span>
