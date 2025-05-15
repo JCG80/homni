@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from './modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
