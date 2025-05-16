@@ -2,6 +2,7 @@
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { motion } from 'framer-motion';
 import { TabHeader } from './login/TabHeader';
+import { useSearchParams } from 'react-router-dom';
 
 interface LoginTabContentProps {
   title: string;
@@ -16,6 +17,9 @@ export const LoginTabContent: React.FC<LoginTabContentProps> = ({
   userType, 
   redirectTo = '/dashboard' 
 }) => {
+  const [searchParams] = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl') || redirectTo;
+  
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 }
@@ -35,7 +39,7 @@ export const LoginTabContent: React.FC<LoginTabContentProps> = ({
         userType={userType} 
       />
       
-      <LoginForm redirectTo={redirectTo} userType={userType} />
+      <LoginForm redirectTo={returnUrl} userType={userType} />
     </motion.div>
   );
 };

@@ -1,12 +1,12 @@
-
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInWithEmail } from '../../api/auth-authentication';
 import { toast } from '@/hooks/use-toast';
 import { useAuthRetry } from '../../hooks/useAuthRetry';
 import { loginSchema, LoginFormValues } from './types';
+import { useRoleNavigation } from '../../hooks/roles/useRoleNavigation';
 
 interface UseLoginFormProps {
   onSuccess?: () => void;
@@ -16,10 +16,16 @@ interface UseLoginFormProps {
 export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard' }: UseLoginFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const { redirectToDashboard } = useRoleNavigation({ autoRedirect: false });
 
-  // Get redirectUrl from location state or use provided redirectTo
-  const from = location.state?.from?.pathname || redirectTo;
+  // Get return URL either from search params, location state, or use provided redirectTo
+  const returnUrl = searchParams.get('returnUrl') || 
+                    (location.state?.from?.pathname) || 
+                    redirectTo;
+  
+  console.log("useLoginForm - Return URL:", returnUrl);
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
@@ -43,8 +49,15 @@ export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard' }: UseLoginF
       if (onSuccess) {
         onSuccess();
       } else {
-        console.log('Redirecting after successful login to:', from);
-        navigate(from, { replace: true });
+        console.log(`useLoginForm - Login successful, redirecting to: ${returnUrl}`);
+        
+        // If it's a specific path, navigate directly
+        if (returnUrl && returnUrl !== '/login' && returnUrl !== '/dashboard') {
+          navigate(returnUrl, { replace: true });
+        } else {
+          // Otherwise, use role-based redirection
+          redirectToDashboard();
+        }
         
         toast({
           title: 'Innlogget',
@@ -95,6 +108,7 @@ export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard' }: UseLoginF
     currentAttempt,
     maxRetries,
     error,
-    lastError
+    lastError,
+    returnUrl
   };
 };

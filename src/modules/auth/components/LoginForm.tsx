@@ -8,6 +8,7 @@ import { RegisterLink } from './login/RegisterLink';
 import { FormError } from './login/FormError';
 import { DevInfo } from './login/DevInfo';
 import { useLoginForm } from './login/useLoginForm';
+import { useSearchParams } from 'react-router-dom';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -15,7 +16,10 @@ interface LoginFormProps {
   userType?: 'private' | 'business';
 }
 
-export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'private' }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: LoginFormProps) => {
+  const [searchParams] = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl') || redirectTo;
+  
   const {
     form,
     handleSubmit,
@@ -24,7 +28,10 @@ export const LoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'pr
     maxRetries,
     error,
     lastError
-  } = useLoginForm({ onSuccess, redirectTo });
+  } = useLoginForm({ 
+    onSuccess, 
+    redirectTo: returnUrl 
+  });
 
   // Animation variants for form elements
   const formVariants = {

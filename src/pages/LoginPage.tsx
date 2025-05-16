@@ -1,36 +1,70 @@
 
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginTabs } from '@/components/auth/LoginTabs';
 import { TestUserManager } from '@/components/auth/TestUserManager';
 import { UserRole } from '@/modules/auth/utils/roles';
 import { devLogin } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
+import { useRoleNavigation } from '@/modules/auth/hooks/roles/useRoleNavigation';
 import { Globe, Lock, ShieldCheck } from 'lucide-react';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
-
+  const [searchParams] = useSearchParams();
+  const { user, isLoading, isAuthenticated, role } = useAuth();
+  const { redirectToDashboard } = useRoleNavigation({ autoRedirect: false });
+  
+  // Get return URL from query parameters if available
+  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
+  
+  // Log authentication state for debugging
   useEffect(() => {
-    // If user is already logged in, redirect to dashboard
-    if (user && !isLoading) {
-      navigate('/dashboard', { replace: true });
+    console.log("LoginPage - Authentication state:", { 
+      isAuthenticated, 
+      role, 
+      returnUrl
+    });
+  }, [isAuthenticated, role, returnUrl]);
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (isAuthenticated && role && !isLoading) {
+      console.log(`LoginPage - User already authenticated, redirecting to: ${returnUrl}`);
+      
+      // Use returnUrl if provided, otherwise use role-based dashboard
+      if (returnUrl && returnUrl !== '/login' && returnUrl !== '/dashboard') {
+        navigate(returnUrl, { replace: true });
+      } else {
+        redirectToDashboard();
+      }
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isLoading, isAuthenticated, role, navigate, returnUrl, redirectToDashboard]);
 
   // Handle test user login
   const handleDevLogin = async (role: UserRole) => {
-    const result = await devLogin(role);
-    if (result.error) {
+    try {
+      const result = await devLogin(role);
+      if (result.error) {
+        toast({
+          title: 'Innlogging feilet',
+          description: result.error.message,
+          variant: 'destructive',
+        });
+      } else {
+        console.log(`LoginPage - Dev login successful for role: ${role}`);
+        // Success notifications are already handled in devLogin
+        redirectToDashboard();
+      }
+    } catch (error) {
+      console.error("LoginPage - Dev login error:", error);
       toast({
         title: 'Innlogging feilet',
-        description: result.error.message,
+        description: 'En uventet feil oppstod ved innlogging',
         variant: 'destructive',
       });
     }
-    // Success notifications are already handled in devLogin
   };
 
   // Show loading state while checking authentication

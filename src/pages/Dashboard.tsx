@@ -1,11 +1,12 @@
 
 import React, { useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { isLoading, role, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   
   // Enhanced logging for debugging
   useEffect(() => {
@@ -24,9 +25,15 @@ export const Dashboard: React.FC = () => {
     );
   }
   
-  // If user is not authenticated or lacks role, send them to login
-  if (!isAuthenticated || !role) {
-    console.log("Dashboard - Redirecting to login: Not authenticated or missing role");
+  // If user is not authenticated, send them to login
+  if (!isAuthenticated) {
+    console.log("Dashboard - Redirecting to login: Not authenticated");
+    return <Navigate to="/login" replace />;
+  }
+  
+  // If user is authenticated but lacks role, send them to login
+  if (!role) {
+    console.log("Dashboard - Redirecting to login: Missing role");
     return <Navigate to="/login" replace />;
   }
   

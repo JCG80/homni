@@ -1,11 +1,18 @@
 
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { ShieldCheck } from 'lucide-react';
 
 export const Unauthenticated = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  // Create a return URL to redirect back after login
+  const returnUrl = location.pathname !== '/login' ? location.pathname : undefined;
+  
+  // Debug info
+  console.log("Unauthenticated - Current path:", location.pathname, "Return URL:", returnUrl);
 
   if (isLoading) {
     return (
@@ -18,7 +25,8 @@ export const Unauthenticated = () => {
     );
   }
 
-  if (user) {
+  if (isAuthenticated) {
+    console.log("Unauthenticated - User is authenticated, redirecting to dashboard");
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -35,7 +43,7 @@ export const Unauthenticated = () => {
       </div>
       
       <div className="max-w-md mx-auto bg-card p-8 rounded-lg shadow-lg">
-        <LoginForm />
+        <LoginForm redirectTo={returnUrl} />
       </div>
     </div>
   );
