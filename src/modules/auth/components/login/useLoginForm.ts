@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -11,9 +12,10 @@ import { useRoleNavigation } from '../../hooks/roles/useRoleNavigation';
 interface UseLoginFormProps {
   onSuccess?: () => void;
   redirectTo?: string;
+  userType?: 'private' | 'business';
 }
 
-export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard' }: UseLoginFormProps) => {
+export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'private' }: UseLoginFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -25,7 +27,7 @@ export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard' }: UseLoginF
                     (location.state?.from?.pathname) || 
                     redirectTo;
   
-  console.log("useLoginForm - Return URL:", returnUrl);
+  console.log("useLoginForm - Return URL:", returnUrl, "User Type:", userType);
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
@@ -72,7 +74,7 @@ export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard' }: UseLoginF
   const handleSubmit = async (values: LoginFormValues) => {
     setError(null);
 
-    console.log('Attempting login with:', { email: values.email });
+    console.log('Attempting login with:', { email: values.email, userType });
     
     executeWithRetry(async () => {
       const { user, error: signInError } = await signInWithEmail(values.email, values.password);
