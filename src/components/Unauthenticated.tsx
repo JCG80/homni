@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export const Unauthenticated = () => {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -18,8 +19,11 @@ export const Unauthenticated = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg">Laster inn...</p>
+          <div className="relative">
+            <div className="h-16 w-16 rounded-full border-4 border-muted animate-pulse"></div>
+            <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+          </div>
+          <p className="text-lg mt-4">Verifiserer pålogging...</p>
         </div>
       </div>
     );
@@ -31,20 +35,30 @@ export const Unauthenticated = () => {
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center">
-            <ShieldCheck className="h-7 w-7 text-white" />
+    <div className="container mx-auto p-8 min-h-screen flex flex-col justify-center">
+      <motion.div 
+        className="text-center mb-10"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex items-center justify-center mb-6">
+          <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <ShieldCheck className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold ml-3">Homni</h1>
         </div>
-        <p className="text-muted-foreground">Du må logge inn for å få tilgang til denne siden</p>
-      </div>
+        <h1 className="text-3xl font-bold mb-2">Logg inn</h1>
+        <p className="text-muted-foreground max-w-md mx-auto">Du må logge inn for å få tilgang til denne siden. Logg inn med din Homni-konto nedenfor.</p>
+      </motion.div>
       
-      <div className="max-w-md mx-auto bg-card p-8 rounded-lg shadow-lg">
+      <motion.div 
+        className="max-w-md mx-auto bg-card p-8 rounded-lg shadow-lg border border-border/50"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+      >
         <LoginForm redirectTo={returnUrl} />
-      </div>
+      </motion.div>
     </div>
   );
 };

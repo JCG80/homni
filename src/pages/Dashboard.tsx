@@ -18,8 +18,12 @@ export const Dashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-lg">Laster inn dashboard...</p>
+          <div className="relative">
+            <div className="h-16 w-16 rounded-full border-4 border-muted animate-pulse"></div>
+            <Loader2 className="h-10 w-10 animate-spin text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <p className="text-lg mt-4">Laster inn dashboard...</p>
+          <p className="text-sm text-muted-foreground">Sjekker tilgangsnivå</p>
         </div>
       </div>
     );

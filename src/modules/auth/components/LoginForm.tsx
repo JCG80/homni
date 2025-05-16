@@ -9,6 +9,7 @@ import { FormError } from './login/FormError';
 import { DevInfo } from './login/DevInfo';
 import { useLoginForm } from './login/useLoginForm';
 import { useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -20,6 +21,11 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
   const [searchParams] = useSearchParams();
   const returnUrl = searchParams.get('returnUrl') || redirectTo;
   
+  // Enhanced logging for debugging
+  useEffect(() => {
+    console.log("LoginForm - Props:", { redirectTo, returnUrl, userType });
+  }, [redirectTo, returnUrl, userType]);
+  
   const {
     form,
     handleSubmit,
@@ -30,7 +36,8 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
     lastError
   } = useLoginForm({ 
     onSuccess, 
-    redirectTo: returnUrl 
+    redirectTo: returnUrl,
+    userType 
   });
 
   // Animation variants for form elements
@@ -38,9 +45,14 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.05
+        staggerChildren: 0.08
       }
     }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
   };
 
   return (
@@ -53,15 +65,30 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
         className="space-y-5"
       >
         <FormError error={error || (lastError ? lastError.message : null)} />
-        <EmailField control={form.control} />
-        <PasswordField control={form.control} />
-        <SubmitButton 
-          isSubmitting={isSubmitting} 
-          currentAttempt={currentAttempt} 
-          maxRetries={maxRetries} 
-        />
-        <RegisterLink userType={userType} />
-        <DevInfo />
+        
+        <motion.div variants={itemVariants}>
+          <EmailField control={form.control} />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <PasswordField control={form.control} />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <SubmitButton 
+            isSubmitting={isSubmitting} 
+            currentAttempt={currentAttempt} 
+            maxRetries={maxRetries} 
+          />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <RegisterLink userType={userType} />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <DevInfo />
+        </motion.div>
       </motion.form>
     </Form>
   );
