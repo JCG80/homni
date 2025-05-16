@@ -5,14 +5,14 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
-  const { isLoading, role } = useAuth();
+  const { isLoading, role, isAuthenticated } = useAuth();
   
-  // Logg informasjon for debugging
+  // Enhanced logging for debugging
   useEffect(() => {
-    console.log("Dashboard - Current role:", role);
-  }, [role]);
+    console.log("Dashboard - Authentication state:", { isAuthenticated, role, isLoading });
+  }, [role, isAuthenticated, isLoading]);
   
-  // Vis lasteskjerm mens vi sjekker autentisering
+  // Show loading screen while checking authentication
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -24,14 +24,15 @@ export const Dashboard: React.FC = () => {
     );
   }
   
-  // Hvis bruker ikke er autentisert eller mangler rolle, send dem til login
-  if (!role) {
+  // If user is not authenticated or lacks role, send them to login
+  if (!isAuthenticated || !role) {
+    console.log("Dashboard - Redirecting to login: Not authenticated or missing role");
     return <Navigate to="/login" replace />;
   }
   
-  // Hvis brukeren har en rolle, send dem til deres rollebaserte dashboard
+  // If the user has a role, send them to their role-based dashboard
   const dashboardPath = `/dashboard/${role}`;
-  console.log(`Redirecting to: ${dashboardPath}`);
+  console.log(`Dashboard - Redirecting to role-specific dashboard: ${dashboardPath}`);
   
   return <Navigate to={dashboardPath} replace />;
 };

@@ -15,6 +15,9 @@ export const Sidebar = () => {
   const { isAuthenticated, role, logout } = useAuth();
   const navigate = useNavigate();
   
+  // Enhanced logging for debugging
+  console.log("Sidebar - Current auth state:", { isAuthenticated, role });
+  
   const handleLogout = async () => {
     try {
       if (logout) {
@@ -45,15 +48,16 @@ export const Sidebar = () => {
   
   // Get correct dashboard route based on role
   const getDashboardRoute = () => {
-    if (!role) return "/dashboard";
-    return `/dashboard/${role}`;
+    if (!role) {
+      console.log("Sidebar - No role detected, using default dashboard route");
+      return "/dashboard";
+    }
+    const route = `/dashboard/${role}`;
+    console.log(`Sidebar - Using role-specific dashboard route: ${route}`);
+    return route;
   };
   
   const dashboardRoute = getDashboardRoute();
-  
-  // For debugging
-  console.log("Sidebar - Current role:", role);
-  console.log("Dashboard route:", dashboardRoute);
   
   return (
     <div className="pb-12">
@@ -61,7 +65,7 @@ export const Sidebar = () => {
         {/* Main navigation */}
         <SidebarNavSection title="Navigasjon">
           <SidebarNavLink to="/" icon={Home} end>Hjem</SidebarNavLink>
-          {isAuthenticated && role && (
+          {isAuthenticated && (
             <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
           )}
         </SidebarNavSection>

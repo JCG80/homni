@@ -19,23 +19,28 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
   isAuthenticated,
   role 
 }) => {
-  // For debugging
+  // Enhanced debugging
   useEffect(() => {
-    console.log("AuthenticatedNavigation - Current role:", role);
-  }, [role]);
+    console.log("AuthenticatedNavigation - Rendering with:", { isAuthenticated, role });
+  }, [isAuthenticated, role]);
   
   if (!isAuthenticated) {
+    console.log("AuthenticatedNavigation - Not rendering: User not authenticated");
     return null;
   }
 
   // Ensure we have a consistent dashboard route based on role
   const getDashboardRoute = () => {
-    if (!role) return "/dashboard";
-    return `/dashboard/${role}`;
+    if (!role) {
+      console.log("AuthenticatedNavigation - No role, using default dashboard route");
+      return "/dashboard";
+    }
+    const route = `/dashboard/${role}`;
+    console.log(`AuthenticatedNavigation - Using role-specific dashboard route: ${route}`);
+    return route;
   };
   
   const dashboardRoute = getDashboardRoute();
-  console.log("AuthenticatedNavigation - Dashboard route:", dashboardRoute);
   
   return (
     <>

@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../useAuth';
@@ -32,15 +31,16 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
    */
   const redirectToDashboard = () => {
     if (!isAuthenticated) {
-      console.log("Not redirecting - user not authenticated");
+      console.log("[useRoleNavigation] Not redirecting - user not authenticated");
       return;
     }
 
-    console.log("Redirecting with role:", role);
+    console.log("[useRoleNavigation] Redirecting with role:", role);
 
     try {
       // If a specific redirect path is provided, use it
       if (redirectPath) {
+        console.log(`[useRoleNavigation] Using specified redirect path: ${redirectPath}`);
         navigate(redirectPath, { replace: true });
         return;
       }
@@ -48,15 +48,16 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
       // Directly navigate to the role-specific dashboard if role is available
       if (role) {
         const dashboardPath = `/dashboard/${role}`;
-        console.log(`Navigating to role dashboard: ${dashboardPath}`);
+        console.log(`[useRoleNavigation] Navigating to role dashboard: ${dashboardPath}`);
         navigate(dashboardPath, { replace: true });
         return;
       }
       
       // Otherwise use the main dashboard route which will handle the redirection
+      console.log("[useRoleNavigation] No role available, using main dashboard route");
       navigate('/dashboard', { replace: true });
     } catch (error) {
-      console.error("Navigation error:", error);
+      console.error("[useRoleNavigation] Navigation error:", error);
     }
   };
 
@@ -65,6 +66,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
    */
   const redirectToLogin = (returnPath?: string) => {
     const returnUrl = returnPath || window.location.pathname;
+    console.log(`[useRoleNavigation] Redirecting to login with return URL: ${returnUrl}`);
     navigate(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
   };
 
@@ -74,11 +76,12 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
   const goToDashboard = (specificRole?: string) => {
     const targetRole = specificRole || role;
     if (!targetRole) {
+      console.log("[useRoleNavigation] No role specified, using main dashboard");
       navigate('/dashboard');
       return;
     }
     
-    console.log(`goToDashboard called for role: ${targetRole}`);
+    console.log(`[useRoleNavigation] goToDashboard called for role: ${targetRole}`);
     navigate(`/dashboard/${targetRole}`);
   };
 
@@ -89,7 +92,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     }
 
     if (isAuthenticated && role) {
-      console.log(`Auto-redirect triggered with role: ${role}`);
+      console.log(`[useRoleNavigation] Auto-redirect triggered with role: ${role}`);
       redirectToDashboard();
     }
   }, [isAuthenticated, isLoading, autoRedirect, role]);
