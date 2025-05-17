@@ -1,55 +1,60 @@
 
 import React from 'react';
-import { Check } from 'lucide-react';
 import { Service } from '../types/services';
 import { OfferCountBadge } from './OfferCountBadge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ServiceSelectorGridProps {
   services: Service[];
   selectedServices: string[];
-  onSelect: (serviceId: string) => void;
+  onSelect: (id: string) => void;
+  isLoading?: boolean;
 }
 
 export const ServiceSelectorGrid: React.FC<ServiceSelectorGridProps> = ({
   services,
   selectedServices,
   onSelect,
+  isLoading = false
 }) => {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {Array(8).fill(0).map((_, index) => (
+          <div key={index} className="h-28 rounded-lg border border-gray-200 p-4 flex flex-col items-center justify-center">
+            <Skeleton className="h-10 w-10 rounded-full mb-2" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {services.map((service) => {
         const isSelected = selectedServices.includes(service.id);
         
         return (
           <div
             key={service.id}
+            onClick={() => onSelect(service.id)}
             className={`
-              relative p-4 rounded-lg border cursor-pointer transition-all
+              h-28 rounded-lg border cursor-pointer p-4
+              flex flex-col items-center justify-center gap-2
+              transition-all duration-200 hover:border-primary/50
               ${isSelected 
-                ? 'border-primary bg-primary/5 shadow-sm' 
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                ? 'border-primary bg-primary/5' 
+                : 'border-gray-200 hover:shadow-sm'
               }
             `}
-            onClick={() => onSelect(service.id)}
           >
-            <div className="flex flex-col items-center text-center">
-              <div className={`
-                w-14 h-14 flex items-center justify-center rounded-full mb-3
-                ${isSelected ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-600'}
-              `}>
-                {/* Replace with dynamic icon based on service.icon */}
-                <span className="text-2xl">{service.icon}</span>
-              </div>
-              
-              <h3 className="font-medium text-lg">{service.name}</h3>
-              
-              {isSelected && (
-                <div className="absolute top-2 right-2 text-primary">
-                  <Check className="h-5 w-5" />
-                </div>
+            <div className="text-3xl">{service.icon}</div>
+            <div className="flex flex-col items-center">
+              <span className="text-sm font-medium">{service.name}</span>
+              {service.offerCount > 0 && (
+                <OfferCountBadge count={service.offerCount} />
               )}
-              
-              <OfferCountBadge count={service.offerCount} />
             </div>
           </div>
         );

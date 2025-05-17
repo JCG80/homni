@@ -5,13 +5,13 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
-  const { isLoading, role, isAuthenticated } = useAuth();
+  const { isLoading, role, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   
   // Enhanced logging for debugging
   useEffect(() => {
-    console.log("Dashboard - Authentication state:", { isAuthenticated, role, isLoading });
-  }, [role, isAuthenticated, isLoading]);
+    console.log("Dashboard - Authentication state:", { isAuthenticated, role, isLoading, userId: user?.id });
+  }, [role, isAuthenticated, isLoading, user]);
   
   // Show loading screen while checking authentication
   if (isLoading) {

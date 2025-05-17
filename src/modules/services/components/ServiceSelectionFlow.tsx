@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { toast } from 'sonner';
@@ -7,6 +8,7 @@ import { StepProgressBar } from './StepProgressBar';
 import { StepNavigationButtons } from './StepNavigationButtons';
 import { Card, CardContent } from '@/components/ui/card';
 import { useServicePreferences } from '../hooks/useServicePreferences';
+import { useNavigate } from 'react-router-dom';
 
 // Mock services data - to be replaced with actual API call
 const MOCK_SERVICES: Service[] = [
@@ -22,15 +24,49 @@ const MOCK_SERVICES: Service[] = [
 
 interface ServiceSelectionFlowProps {
   onComplete?: (services: ServicePreference[]) => void;
+  onCreateLead?: (service: Service) => void;
 }
 
 export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({ 
-  onComplete 
+  onComplete, 
+  onCreateLead 
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
+  const [isLoadingPrefs, setIsLoadingPrefs] = useState(true);
   const { isAuthenticated, user } = useAuth();
-  const { savePreferences, isLoading } = useServicePreferences();
+  const { savePreferences, loadPreferences, isLoading } = useServicePreferences();
+  const navigate = useNavigate();
+  
+  // Load saved preferences when component mounts if user is authenticated
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      if (isAuthenticated && user) {
+        try {
+          setIsLoadingPrefs(true);
+          const prefs = await loadPreferences();
+          
+          if (prefs.length > 0) {
+            // Extract service IDs from preferences
+            const serviceIds = prefs
+              .filter(pref => pref.selected)
+              .map(pref => pref.serviceId);
+            
+            setSelectedServiceIds(serviceIds);
+          }
+        } catch (error) {
+          console.error("Error loading preferences:", error);
+          toast.error("Kunne ikke laste inn lagrede preferanser");
+        } finally {
+          setIsLoadingPrefs(false);
+        }
+      } else {
+        setIsLoadingPrefs(false);
+      }
+    };
+    
+    fetchPreferences();
+  }, [isAuthenticated, user]);
   
   const handleServiceSelect = (serviceId: string) => {
     setSelectedServiceIds(prev => 
@@ -60,15 +96,29 @@ export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({
       if (isAuthenticated && user) {
         try {
           await savePreferences(servicePreferences);
-          toast.success("Preferanser lagret!");
+          
+          // Find selected services for lead creation
+          const selectedServices = MOCK_SERVICES.filter(service => 
+            selectedServiceIds.includes(service.id)
+          );
+          
+          // Create leads for services that require more details
+          for (const service of selectedServices) {
+            if (service.detailsRequired && onCreateLead) {
+              onCreateLead(service);
+            }
+          }
+          
+          toast.success("Dine preferanser er lagret!");
+          navigate('/dashboard');
         } catch (error) {
           toast.error("Kunne ikke lagre preferanser");
           console.error(error);
         }
       } else {
-        // For non-authenticated users, we would create a lead here
-        // or redirect to a contact form
-        toast.success("Takk for din interesse!");
+        // For non-authenticated users, we would create a lead or prompt to sign up
+        toast.success("Takk for din interesse! Logg inn eller registrer deg for å få tilpassede tilbud.");
+        navigate('/login');
       }
       
       // Call onComplete if provided
@@ -86,6 +136,7 @@ export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({
       if (onComplete) {
         onComplete([]);
       }
+      navigate('/dashboard');
     }
   };
   
@@ -103,6 +154,7 @@ export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({
               services={MOCK_SERVICES}
               selectedServices={selectedServiceIds}
               onSelect={handleServiceSelect}
+              isLoading={isLoadingPrefs}
             />
           </>
         );
@@ -136,9 +188,18 @@ export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({
             <p className="text-gray-600 mb-4">
               {isAuthenticated 
                 ? "Klikk på Fullfør for å lagre dine preferanser." 
-                : "Fyll inn din kontaktinformasjon for å få relevante tilbud."}
+                : "For å få relevante tilbud, vennligst logg inn eller registrer deg."}
             </p>
-            {/* In a real app, this would include a contact form for non-authenticated users */}
+            {!isAuthenticated && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-md">
+                <p className="text-sm">
+                  For å få mest mulig ut av Homni, anbefaler vi at du 
+                  <a href="/login" className="text-primary font-medium mx-1">logger inn</a>
+                  eller
+                  <a href="/register" className="text-primary font-medium mx-1">registrerer deg</a>.
+                </p>
+              </div>
+            )}
           </>
         );
       default:

@@ -3,13 +3,20 @@ import React from 'react';
 import { ServiceSelectionFlow } from '../components/ServiceSelectionFlow';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useServiceLeadCreation } from '@/modules/leads/hooks/useServiceLeadCreation';
+import { Service } from '../types/services';
 
 export const ServiceSelectionPage: React.FC = () => {
   const navigate = useNavigate();
+  const { createLeadFromService, isCreating } = useServiceLeadCreation();
   
   const handleComplete = () => {
     toast.success("Takk for dine valg!");
     navigate('/dashboard');
+  };
+  
+  const handleCreateLead = (service: Service) => {
+    createLeadFromService(service);
   };
   
   return (
@@ -22,7 +29,10 @@ export const ServiceSelectionPage: React.FC = () => {
           </p>
         </div>
         
-        <ServiceSelectionFlow onComplete={handleComplete} />
+        <ServiceSelectionFlow 
+          onComplete={handleComplete} 
+          onCreateLead={handleCreateLead}
+        />
       </div>
     </div>
   );

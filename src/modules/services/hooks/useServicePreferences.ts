@@ -3,46 +3,60 @@ import { useState } from 'react';
 import { ServicePreference } from '../types/services';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { toast } from 'sonner';
 
 export const useServicePreferences = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const savePreferences = async (preferences: ServicePreference[]): Promise<boolean> => {
-    if (!user) {
-      throw new Error('User must be authenticated to save preferences');
+    if (!isAuthenticated || !user) {
+      toast.error('Du må være logget inn for å lagre preferanser');
+      return false;
     }
     
     setIsLoading(true);
     setError(null);
     
     try {
-      // In a real implementation, this would save to the database
-      // For now, just simulate the API call with a timeout
       console.log('Saving preferences for user', user.id, preferences);
       
-      // This is where you'd make the actual Supabase call
-      // Example (uncomment when the table exists):
-      /*
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          services: preferences,
-          updated_at: new Date().toISOString()
-        });
+      // Delete existing preferences first to avoid conflicts
+      const { error: deleteError } = await supabase
+        .from('user_service_preferences')
+        .delete()
+        .eq('user_id', user.id);
         
-      if (error) throw error;
-      */
+      if (deleteError) {
+        console.error('Error deleting existing preferences:', deleteError);
+        throw deleteError;
+      }
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Insert new preferences
+      if (preferences.length > 0) {
+        const prefsToInsert = preferences.map(pref => ({
+          user_id: user.id,
+          service_id: pref.serviceId,
+          selected: pref.selected
+        }));
+        
+        const { error: insertError } = await supabase
+          .from('user_service_preferences')
+          .insert(prefsToInsert);
+          
+        if (insertError) {
+          console.error('Error inserting preferences:', insertError);
+          throw insertError;
+        }
+      }
       
+      toast.success('Preferanser lagret!');
       return true;
     } catch (err: any) {
       console.error('Error saving preferences:', err);
       setError(err);
+      toast.error('Kunne ikke lagre preferanser: ' + (err.message || 'Ukjent feil'));
       return false;
     } finally {
       setIsLoading(false);
@@ -50,7 +64,7 @@ export const useServicePreferences = () => {
   };
   
   const loadPreferences = async (): Promise<ServicePreference[]> => {
-    if (!user) {
+    if (!isAuthenticated || !user) {
       return [];
     }
     
@@ -58,27 +72,23 @@ export const useServicePreferences = () => {
     setError(null);
     
     try {
-      // In a real implementation, this would load from the database
-      // For now, just return an empty array
       console.log('Loading preferences for user', user.id);
       
-      // This is where you'd make the actual Supabase call
-      // Example (uncomment when the table exists):
-      /*
       const { data, error } = await supabase
-        .from('user_preferences')
-        .select('services')
-        .eq('user_id', user.id)
-        .single();
+        .from('user_service_preferences')
+        .select('service_id, selected')
+        .eq('user_id', user.id);
         
-      if (error) throw error;
-      return data?.services || [];
-      */
+      if (error) {
+        console.error('Error loading preferences:', error);
+        throw error;
+      }
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      return [];
+      // Convert from database format to ServicePreference format
+      return data.map(item => ({
+        serviceId: item.service_id,
+        selected: item.selected
+      }));
     } catch (err: any) {
       console.error('Error loading preferences:', err);
       setError(err);
