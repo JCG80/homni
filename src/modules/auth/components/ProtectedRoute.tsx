@@ -76,15 +76,18 @@ export const ProtectedRoute = ({
     checkAccess();
   }, [isLoading, isAuthenticated, role, allowedRoles, allowAnyAuthenticated, module, canAccessModule]);
 
-  // Add debug logging
+  // Add enhanced debug logging
   useEffect(() => {
-    console.log("ProtectedRoute - Role:", role, 
-      "Authenticated:", isAuthenticated, 
-      "Allowed roles:", allowedRoles,
-      "Any authenticated allowed:", allowAnyAuthenticated,
-      "Module required:", module,
-      "Is allowed:", isAllowed);
-  }, [role, isAuthenticated, allowedRoles, allowAnyAuthenticated, module, isAllowed]);
+    console.log("ProtectedRoute - Auth state:", { 
+      path: location.pathname,
+      isAuthenticated, 
+      role, 
+      isLoading,
+      isCheckingPermission,
+      allowedRoles,
+      isAllowed
+    });
+  }, [location.pathname, isAuthenticated, role, isLoading, isCheckingPermission, allowedRoles, isAllowed]);
 
   // Show loading state while checking auth or permissions
   if (isLoading || isCheckingPermission || isAllowed === null) {

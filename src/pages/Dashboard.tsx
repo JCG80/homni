@@ -10,7 +10,13 @@ export const Dashboard: React.FC = () => {
   
   // Enhanced logging for debugging
   useEffect(() => {
-    console.log("Dashboard - Authentication state:", { isAuthenticated, role, isLoading, userId: user?.id });
+    console.log("Dashboard - Authentication state:", { 
+      isAuthenticated, 
+      role, 
+      isLoading, 
+      userId: user?.id,
+      authError: !isAuthenticated && !isLoading ? 'Not authenticated' : null
+    });
   }, [role, isAuthenticated, isLoading, user]);
   
   // Show loading screen while checking authentication
@@ -32,7 +38,9 @@ export const Dashboard: React.FC = () => {
   // If user is not authenticated, send them to login
   if (!isAuthenticated) {
     console.log("Dashboard - Redirecting to login: Not authenticated");
-    return <Navigate to="/login" replace />;
+    // Store current location to return after login
+    const returnPath = encodeURIComponent('/dashboard');
+    return <Navigate to={`/login?returnUrl=${returnPath}`} replace />;
   }
   
   // If user is authenticated but lacks role, send them to login

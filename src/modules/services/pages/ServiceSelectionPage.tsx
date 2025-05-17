@@ -1,14 +1,28 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ServiceSelectionFlow } from '../components/ServiceSelectionFlow';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useServiceLeadCreation } from '@/modules/leads/hooks/useServiceLeadCreation';
 import { Service } from '../types/services';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 export const ServiceSelectionPage: React.FC = () => {
   const navigate = useNavigate();
-  const { createLeadFromService, isCreating } = useServiceLeadCreation();
+  const { createLeadFromService, isCreating, checkPendingServiceRequests } = useServiceLeadCreation();
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  // Check for pending service requests after login
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      const pendingService = checkPendingServiceRequests();
+      
+      if (pendingService) {
+        toast.info(`Fortsetter forespørsel om ${pendingService.name}`);
+        createLeadFromService(pendingService as Service);
+      }
+    }
+  }, [isAuthenticated, isLoading]);
   
   const handleComplete = () => {
     toast.success("Takk for dine valg!");

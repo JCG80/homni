@@ -12,8 +12,14 @@ export const Unauthenticated = () => {
   // Create a return URL to redirect back after login
   const returnUrl = location.pathname !== '/login' ? location.pathname : undefined;
   
-  // Debug info
-  console.log("Unauthenticated - Current path:", location.pathname, "Return URL:", returnUrl);
+  // Enhanced debug info
+  console.log("Unauthenticated - Auth state:", { 
+    currentPath: location.pathname, 
+    returnUrl, 
+    isAuthenticated, 
+    isLoading,
+    hasUser: !!user
+  });
 
   if (isLoading) {
     return (
@@ -31,6 +37,14 @@ export const Unauthenticated = () => {
 
   if (isAuthenticated) {
     console.log("Unauthenticated - User is authenticated, redirecting to dashboard");
+    
+    // Check if there's a pending service selection to continue
+    const hasPendingServiceRequest = sessionStorage.getItem('pendingServiceRequest');
+    if (hasPendingServiceRequest) {
+      console.log("Found pending service request, redirecting to service selection");
+      return <Navigate to="/select-services" replace />;
+    }
+    
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -48,7 +62,10 @@ export const Unauthenticated = () => {
           </div>
         </div>
         <h1 className="text-3xl font-bold mb-2">Logg inn</h1>
-        <p className="text-muted-foreground max-w-md mx-auto">Du må logge inn for å få tilgang til denne siden. Logg inn med din Homni-konto nedenfor.</p>
+        <p className="text-muted-foreground max-w-md mx-auto">
+          Du må logge inn for å få tilgang til denne siden. 
+          {returnUrl && " Vi sender deg tilbake når du har logget inn."}
+        </p>
       </motion.div>
       
       <motion.div 
