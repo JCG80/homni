@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { insertLead } from '../api/lead-create';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
@@ -54,19 +55,19 @@ export const useCreateLead = () => {
 };
 
 export const useLeadsList = () => {
-  // Implementing a proper useLeadsList hook that returns leads, isLoading and error
-  const { data: leads = [], isLoading, error } = useQuery({
+  // Fix: return a proper object with leads, isLoading, and error properties
+  const { data: leads = [], isPending, error } = useQuery({
     queryKey: ['leads'],
     queryFn: async () => {
       // This is a placeholder. In a real implementation, you would fetch leads from your API
-      // For now, we'll return mock data to fix the type errors
+      console.log('Fetching leads...');
       return [] as Lead[];
     }
   });
 
   return {
     leads,
-    isLoading,
+    isLoading: isPending,
     error
   };
 };
