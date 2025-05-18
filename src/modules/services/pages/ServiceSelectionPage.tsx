@@ -13,6 +13,7 @@ export const ServiceSelectionPage: React.FC = () => {
   const { createLeadFromService, isCreating, checkPendingServiceRequests } = useServiceLeadCreation();
   const { isAuthenticated, isLoading } = useAuth();
   const [isProcessingPending, setIsProcessingPending] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   
   // Enhanced handling for pending service requests after login
   useEffect(() => {
@@ -48,6 +49,12 @@ export const ServiceSelectionPage: React.FC = () => {
     createLeadFromService(service);
   };
   
+  // Add the onSelectService handler
+  const handleSelectService = (service: Service) => {
+    setSelectedService(service);
+    console.log('Service selected:', service);
+  };
+  
   // Show loading indicator when processing a pending request
   if (isProcessingPending) {
     return (
@@ -72,6 +79,7 @@ export const ServiceSelectionPage: React.FC = () => {
         </div>
         
         <ServiceSelectionFlow 
+          onSelectService={handleSelectService}
           onComplete={handleComplete} 
           onCreateLead={handleCreateLead}
           isCreating={isCreating}
