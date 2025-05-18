@@ -2,7 +2,10 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Home, LayoutDashboard, Users, Settings, LogOut, FileText, Database, Shield, Building, Coins } from 'lucide-react';
+import { 
+  Home, LayoutDashboard, Users, Settings, LogOut, FileText, 
+  Database, Shield, Building, Coins, HelpCircle
+} from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { SidebarContent } from './SidebarContent';
 import { SidebarNavSection } from './SidebarNavSection';
@@ -125,9 +128,10 @@ export const Sidebar = () => {
           </>
         )}
 
-        {/* Documentation section */}
+        {/* Documentation section - updated to include FAQ */}
         <SidebarNavSection title="Dokumentasjon">
           <SidebarNavLink to="/docs/project-plan" icon={FileText}>Prosjektplan</SidebarNavLink>
+          <SidebarNavLink to="/docs/faq" icon={HelpCircle}>FAQ</SidebarNavLink>
         </SidebarNavSection>
 
         {/* Companies section */}

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Building, Coins, ArrowRight, FileText, Users } from 'lucide-react';
+import { Shield, Building, Coins, ArrowRight, FileText, Users, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 const Index = () => {
@@ -94,12 +94,12 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Additional Resources Section */}
+      {/* Additional Resources Section - updated to include FAQ */}
       <div className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Ressurser</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-lg shadow-md text-center">
               <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-3">Prosjektplan</h3>
@@ -108,6 +108,17 @@ const Index = () => {
               </p>
               <Button variant="outline" onClick={() => navigate('/docs/project-plan')}>
                 Se prosjektplan
+              </Button>
+            </div>
+            
+            <div className="bg-white p-8 rounded-lg shadow-md text-center">
+              <HelpCircle className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-3">FAQ</h3>
+              <p className="text-gray-600 mb-4">
+                Svar på ofte stilte spørsmål om våre tjenester
+              </p>
+              <Button variant="outline" onClick={() => navigate('/docs/faq')}>
+                Se FAQ
               </Button>
             </div>
             

@@ -9,13 +9,14 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { HomeNavLink } from '../navigation/HomeNavLink';
 import { PropertyNavigation } from '../navigation/PropertyNavigation';
 import { ServicesNavigation } from '../navigation/ServicesNavigation';
+import { DocsNavigation } from '../navigation/DocsNavigation';
 import { AuthenticatedNavigation } from '../navigation/AuthenticatedNavigation';
 import { UserRole } from '@/modules/auth/utils/roles/types'; 
 import { NavigationMenuItem } from '@/components/ui/navigation-menu';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { FileText, Users } from 'lucide-react';
+import { Building } from 'lucide-react';
 
 export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();
@@ -36,18 +37,8 @@ export const MainNavigation = () => {
         {/* Utility Services */}
         <ServicesNavigation />
 
-        {/* Documentation Link */}
-        <NavigationMenuItem>
-          <NavLink 
-            to="/docs/project-plan" 
-            className={({ isActive }) => 
-              cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
-            }
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Prosjektplan
-          </NavLink>
-        </NavigationMenuItem>
+        {/* Documentation - now using the DocsNavigation component */}
+        <DocsNavigation />
 
         {/* Companies Link */}
         <NavigationMenuItem>
@@ -57,7 +48,7 @@ export const MainNavigation = () => {
               cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
             }
           >
-            <Users className="h-4 w-4 mr-2" />
+            <Building className="h-4 w-4 mr-2" />
             Partnere
           </NavLink>
         </NavigationMenuItem>
