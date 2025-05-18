@@ -7,3 +7,8 @@ export interface Service {
   description?: string;
   price?: number;
 }
+
+export interface ServicePreference {
+  serviceId: string;
+  selected: boolean;
+}
