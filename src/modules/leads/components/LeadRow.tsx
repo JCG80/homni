@@ -1,19 +1,34 @@
+
 import React from 'react';
-import { Lead } from '@/types/leads';
+import { Lead, LeadStatus } from '@/types/leads';
 import { LeadStatusBadge } from './LeadStatusBadge';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useUpdateLeadStatus } from '../hooks/useLeads';
 
-interface LeadRowProps {
+export interface LeadRowProps {
   lead: Lead;
+  showCompany?: boolean;
+  canChangeStatus?: (lead: Lead, status: LeadStatus) => boolean;
+  isAdmin?: boolean;
+  isCompany?: boolean;
 }
 
-export const LeadRow: React.FC<LeadRowProps> = ({ lead }) => {
+export const LeadRow: React.FC<LeadRowProps> = ({ 
+  lead, 
+  showCompany = false,
+  canChangeStatus = () => true,
+  isAdmin: propIsAdmin,
+  isCompany: propIsCompany
+}) => {
   const navigate = useNavigate();
-  const { isAdmin, isCompany } = useAuth();
+  const { isAdmin: authIsAdmin, isCompany: authIsCompany } = useAuth();
   const { updateStatus, isLoading: isUpdating } = useUpdateLeadStatus();
+  
+  // Use props values if provided, otherwise fall back to auth context
+  const isAdmin = propIsAdmin !== undefined ? propIsAdmin : authIsAdmin;
+  const isCompany = propIsCompany !== undefined ? propIsCompany : authIsCompany;
 
   const handleViewDetails = () => {
     navigate(`/leads/${lead.id}`);
@@ -28,7 +43,7 @@ export const LeadRow: React.FC<LeadRowProps> = ({ lead }) => {
       <td className="py-2 px-4 border-b">{lead.id}</td>
       <td className="py-2 px-4 border-b">{lead.title}</td>
       <td className="py-2 px-4 border-b">{lead.category}</td>
-      <td className="py-2 px-4 border-b">{lead.description}</td>
+      {showCompany && <td className="py-2 px-4 border-b">{lead.company_id}</td>}
       <td className="py-2 px-4 border-b">
         <LeadStatusBadge status={lead.status} />
       </td>

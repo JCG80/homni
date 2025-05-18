@@ -3,8 +3,13 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LeadsTable } from './LeadsTable';
 import { InsuranceLeadsTab } from './tabs/InsuranceLeadsTab';
+import { useLeadsList } from '../hooks/useLeads';
+import { Lead } from '@/types/leads';
 
 export const LeadsTabs = () => {
+  // Create empty leads array as a fallback
+  const emptyLeads: Lead[] = [];
+  
   return (
     <Tabs defaultValue="all">
       <TabsList className="mb-4">
@@ -13,7 +18,7 @@ export const LeadsTabs = () => {
       </TabsList>
       
       <TabsContent value="all">
-        <LeadsTable />
+        <LeadsTable leads={emptyLeads} />
       </TabsContent>
       
       <TabsContent value="insurance">

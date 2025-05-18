@@ -1,64 +1,56 @@
 
 import React from 'react';
 import { Service } from '../types/services';
-import { OfferCountBadge } from './OfferCountBadge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Zap, Shield, Phone, Link } from 'lucide-react';
 
 interface ServiceSelectorGridProps {
-  services: Service[];
-  selectedServices: string[];
-  onSelect: (id: string) => void;
-  isLoading?: boolean;
+  onSelect: (service: Service) => void;
+  selectedService: Service | null;
 }
 
 export const ServiceSelectorGrid: React.FC<ServiceSelectorGridProps> = ({
-  services,
-  selectedServices,
   onSelect,
-  isLoading = false
+  selectedService,
 }) => {
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {Array(8).fill(0).map((_, index) => (
-          <div key={index} className="h-28 rounded-lg border border-gray-200 p-4 flex flex-col items-center justify-center">
-            <Skeleton className="h-10 w-10 rounded-full mb-2" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        ))}
-      </div>
-    );
-  }
+  // Sample services
+  const services: Service[] = [
+    { id: "strom", name: "Strøm", icon: "Zap", category: "utilities" },
+    { id: "forsikring", name: "Forsikring", icon: "Shield", category: "insurance" },
+    { id: "mobil", name: "Mobilabonnement", icon: "Phone", category: "telecom" },
+    { id: "bredband", name: "Bredbånd", icon: "Link", category: "telecom" },
+  ];
+
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'Zap':
+        return <Zap className="h-6 w-6" />;
+      case 'Shield':
+        return <Shield className="h-6 w-6" />;
+      case 'Phone':
+        return <Phone className="h-6 w-6" />;
+      case 'Link':
+        return <Link className="h-6 w-6" />;
+      default:
+        return <Zap className="h-6 w-6" />;
+    }
+  };
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {services.map((service) => {
-        const isSelected = selectedServices.includes(service.id);
-        
-        return (
-          <div
-            key={service.id}
-            onClick={() => onSelect(service.id)}
-            className={`
-              h-28 rounded-lg border cursor-pointer p-4
-              flex flex-col items-center justify-center gap-2
-              transition-all duration-200 hover:border-primary/50
-              ${isSelected 
-                ? 'border-primary bg-primary/5' 
-                : 'border-gray-200 hover:shadow-sm'
-              }
-            `}
-          >
-            <div className="text-3xl">{service.icon}</div>
-            <div className="flex flex-col items-center">
-              <span className="text-sm font-medium">{service.name}</span>
-              {service.offerCount > 0 && (
-                <OfferCountBadge count={service.offerCount} />
-              )}
-            </div>
-          </div>
-        );
-      })}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {services.map((service) => (
+        <Button
+          key={service.id}
+          variant={selectedService?.id === service.id ? "default" : "outline"}
+          className={`h-24 flex flex-col items-center justify-center ${
+            selectedService?.id === service.id ? "bg-primary text-primary-foreground" : ""
+          }`}
+          onClick={() => onSelect(service)}
+        >
+          <div className="mb-2">{getIconComponent(service.icon)}</div>
+          <span>{service.name}</span>
+        </Button>
+      ))}
     </div>
   );
 };

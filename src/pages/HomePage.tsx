@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 import { CallToAction } from '@/components/sections/CallToAction';
@@ -12,6 +12,11 @@ import { useServiceLeadCreation } from '@/modules/leads/hooks/useServiceLeadCrea
 export const HomePage = () => {
   const navigate = useNavigate();
   const { createLeadFromService, isCreating } = useServiceLeadCreation();
+  const [activeTab, setActiveTab] = useState<string>('private');
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
 
   const handleComplete = () => {
     navigate('/dashboard');
@@ -23,9 +28,9 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen">
-      <HeroSection />
-      <ServicesSection />
-      <CallToAction />
+      <HeroSection activeTab={activeTab} handleTabChange={handleTabChange} />
+      <ServicesSection activeTab={activeTab} />
+      <CallToAction activeTab={activeTab} />
     </div>
   );
 };
