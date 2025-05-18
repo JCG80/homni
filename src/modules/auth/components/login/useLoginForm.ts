@@ -1,116 +1,124 @@
 
-import { useState } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signInWithEmail } from '../../api/auth-authentication';
-import { toast } from '@/hooks/use-toast';
-import { useAuthRetry } from '../../hooks/useAuthRetry';
-import { loginSchema, LoginFormValues } from './types';
-import { useRoleNavigation } from '../../hooks/roles/useRoleNavigation';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+// Enhanced validation schema with more helpful error messages
+const formSchema = z.object({
+  email: z.string()
+    .email("Vennligst oppgi en gyldig e-postadresse")
+    .min(1, "E-postadresse er påkrevd"),
+  password: z.string()
+    .min(1, "Passord er påkrevd")
+    .min(6, "Passordet må være minst 6 tegn"),
+});
+
+export type LoginFormValues = z.infer<typeof formSchema>;
 
 interface UseLoginFormProps {
   onSuccess?: () => void;
   redirectTo?: string;
-  userType?: 'private' | 'business';
+  userType?: 'private' | 'business'; 
 }
 
-export const useLoginForm = ({ onSuccess, redirectTo = '/dashboard', userType = 'private' }: UseLoginFormProps) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
+export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: UseLoginFormProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { redirectToDashboard } = useRoleNavigation({ autoRedirect: false });
+  const [currentAttempt, setCurrentAttempt] = useState(0);
+  const [lastError, setLastError] = useState<Error | null>(null);
+  const maxRetries = 3;
+  const navigate = useNavigate();
 
-  // Get return URL either from search params, location state, or use provided redirectTo
-  const returnUrl = searchParams.get('returnUrl') || 
-                    (location.state?.from?.pathname) || 
-                    redirectTo;
-  
-  console.log("useLoginForm - Return URL:", returnUrl, "User Type:", userType);
-
-  // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: ''
-    }
-  });
-  
-  // Use retry hook for authentication
-  const { 
-    isSubmitting, 
-    currentAttempt, 
-    maxRetries,
-    executeWithRetry,
-    lastError
-  } = useAuthRetry({
-    maxRetries: 3,
-    onSuccess: () => {
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        console.log(`useLoginForm - Login successful, redirecting to: ${returnUrl}`);
-        
-        // If it's a specific path, navigate directly
-        if (returnUrl && returnUrl !== '/login' && returnUrl !== '/dashboard') {
-          navigate(returnUrl, { replace: true });
-        } else {
-          // Otherwise, use role-based redirection
-          redirectToDashboard();
-        }
-        
-        toast({
-          title: 'Innlogget',
-          description: 'Du er nå logget inn på din Homni-konto',
-          variant: 'default'
-        });
-      }
+      email: "",
+      password: "",
     },
-    showToasts: true
   });
 
   const handleSubmit = async (values: LoginFormValues) => {
+    setIsSubmitting(true);
     setError(null);
-
-    console.log('Attempting login with:', { email: values.email, userType });
+    setCurrentAttempt(prev => prev + 1);
     
-    executeWithRetry(async () => {
-      const { user, error: signInError } = await signInWithEmail(values.email, values.password);
+    try {
+      console.log(`Logging in user: ${values.email} (type: ${userType})`);
       
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
       if (signInError) {
-        console.error('Detailed login error:', signInError);
+        console.error("Login error:", signInError);
+        setLastError(signInError);
         
-        // Handle specific error cases
-        if (signInError instanceof Error) {
-          if (signInError.message.includes('Invalid login credentials')) {
-            throw new Error('Feil e-post eller passord. Vennligst prøv igjen.');
-          }
-          throw signInError;
-        } else if (signInError.message) {
-          throw new Error(signInError.message);
+        // Provide more user-friendly error messages
+        if (signInError.message.includes("credentials")) {
+          setError("Ugyldig e-postadresse eller passord");
+        } else if (signInError.message.includes("email")) {
+          setError("E-postadressen er ikke verifisert. Sjekk innboksen din.");
         } else {
-          throw new Error('Feil ved innlogging');
+          setError(signInError.message);
+        }
+        
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Success handling
+      console.log("Login success:", data);
+      toast.success("Du er nå logget inn");
+      
+      // Handle any pending redirects
+      let returnPath = redirectTo;
+      
+      // Check query parameters for a returnUrl
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrlParam = urlParams.get('returnUrl');
+      
+      if (returnUrlParam) {
+        try {
+          returnPath = decodeURIComponent(returnUrlParam);
+          console.log(`Using return URL from query parameter: ${returnPath}`);
+        } catch (error) {
+          console.error("Error decoding return URL:", error);
         }
       }
       
-      if (!user) {
-        throw new Error('Kunne ikke logge inn - brukeren ble ikke funnet');
+      // Handle custom success callback if provided
+      if (onSuccess) {
+        onSuccess();
       }
       
-      return user;
-    });
+      // Redirect to the appropriate path
+      if (returnPath) {
+        navigate(returnPath, { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+      
+    } catch (error: any) {
+      console.error("Unexpected login error:", error);
+      setLastError(error);
+      setError(`En feil oppstod: ${error.message || 'Ukjent feil'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return {
     form,
     handleSubmit: form.handleSubmit(handleSubmit),
     isSubmitting,
+    error,
     currentAttempt,
     maxRetries,
-    error,
     lastError,
-    returnUrl
   };
 };

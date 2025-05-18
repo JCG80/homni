@@ -4,6 +4,7 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 export const Unauthenticated = () => {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -13,13 +14,15 @@ export const Unauthenticated = () => {
   const returnUrl = location.pathname !== '/login' ? location.pathname : undefined;
   
   // Enhanced debug info
-  console.log("Unauthenticated - Auth state:", { 
-    currentPath: location.pathname, 
-    returnUrl, 
-    isAuthenticated, 
-    isLoading,
-    hasUser: !!user
-  });
+  useEffect(() => {
+    console.log("Unauthenticated - Auth state:", { 
+      currentPath: location.pathname, 
+      returnUrl, 
+      isAuthenticated, 
+      isLoading,
+      hasUser: !!user
+    });
+  }, [location.pathname, returnUrl, isAuthenticated, isLoading, user]);
 
   if (isLoading) {
     return (
@@ -38,13 +41,31 @@ export const Unauthenticated = () => {
   if (isAuthenticated) {
     console.log("Unauthenticated - User is authenticated, redirecting to dashboard");
     
-    // Check if there's a pending service selection to continue
+    // Enhanced check for pending service requests after login
     const hasPendingServiceRequest = sessionStorage.getItem('pendingServiceRequest');
     if (hasPendingServiceRequest) {
       console.log("Found pending service request, redirecting to service selection");
       return <Navigate to="/select-services" replace />;
     }
     
+    // Get any specific return URL from query parameters
+    const searchParams = new URLSearchParams(location.search);
+    const specifiedReturnUrl = searchParams.get('returnUrl');
+    
+    if (specifiedReturnUrl) {
+      try {
+        // Decode the return URL and navigate there
+        const decodedReturnUrl = decodeURIComponent(specifiedReturnUrl);
+        console.log(`Redirecting to specified return URL: ${decodedReturnUrl}`);
+        return <Navigate to={decodedReturnUrl} replace />;
+      } catch (error) {
+        console.error("Error decoding return URL:", error);
+        // Fall back to dashboard if we can't decode the return URL
+        return <Navigate to="/dashboard" replace />;
+      }
+    }
+    
+    // Default to dashboard if no specific return URL is provided
     return <Navigate to="/dashboard" replace />;
   }
 

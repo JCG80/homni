@@ -166,6 +166,8 @@ export const useAuthSession = () => {
           isLoading: false,
           error: null,
         }));
+
+        return profile;
       } catch (error) {
         console.error("Error refreshing profile:", error);
         
@@ -178,6 +180,8 @@ export const useAuthSession = () => {
           isLoading: false,
           error: error instanceof Error ? error : new Error(errorMessage),
         }));
+
+        throw error;
       }
     }
   }, [authState.user, fetchProfile]);

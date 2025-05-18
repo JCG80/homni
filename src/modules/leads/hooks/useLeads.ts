@@ -1,118 +1,59 @@
-
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  getLeads, 
-  getUserLeads, 
-  getCompanyLeads, 
-  createLead, 
-  updateLeadStatus, 
-  assignLeadToCompany, 
-  getLeadById 
-} from '../api';
-import { Lead, LeadFormValues, LeadStatus, LeadFilter } from '@/types/leads';
+import { useState } from 'react';
+import { insertLead } from '../api/lead-create';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Lead } from '@/types/leads';
 
-// Hook to get leads based on user role
-export const useLeadList = (filters: LeadFilter = {}) => {
-  const { user, profile, isAdmin, isCompany } = useAuth();
-  
-  return useQuery({
-    queryKey: ['leads', filters, user?.id, profile?.role],
-    queryFn: async () => {
-      if (!user) return [];
-      
-      console.log('Fetching leads with role:', profile?.role);
-      
-      // Admin sees all leads, with optional filters
-      if (isAdmin) {
-        console.log('Admin user, fetching all leads with filters:', filters);
-        return getLeads();
-      }
-      
-      // Company sees assigned leads
-      if (isCompany && profile?.company_id) {
-        console.log('Company user, fetching leads for company ID:', profile.company_id);
-        return getCompanyLeads(profile.company_id);
-      } else if (isCompany) {
-        console.log('Company user without company_id, returning empty array');
-        return [];
-      }
-      
-      // Regular user sees own leads
-      console.log('Regular user, fetching leads for user ID:', user.id);
-      return getUserLeads(user.id);
-    },
-    enabled: !!user,
-    retry: false // Prevent retrying on permission errors
-  });
-};
-
-// Hook to get a specific lead
-export const useLead = (leadId?: string) => {
-  const { user } = useAuth();
-  
-  return useQuery({
-    queryKey: ['lead', leadId],
-    queryFn: () => getLeadById(leadId as string),
-    enabled: !!leadId && !!user
-  });
-};
-
-// Hook to create a new lead
 export const useCreateLead = () => {
-  const queryClient = useQueryClient();
   const { user } = useAuth();
-  
-  return useMutation({
-    mutationFn: (newLead: LeadFormValues) => {
-      if (!user) throw new Error('User is not authenticated');
-      return createLead(newLead, user.id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
-    }
-  });
-};
-
-// Hook to update lead status
-export const useUpdateLeadStatus = () => {
   const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ leadId, status }: { leadId: string; status: LeadStatus }) => {
-      return updateLeadStatus(leadId, status);
+  const [error, setError] = useState<Error | null>(null);
+
+  // Improved error handling in the useMutation hook
+  const { mutate, isLoading } = useMutation({
+    mutationFn: async (leadData: Partial<Lead>) => {
+      if (!user) {
+        throw new Error('Authentication required to create a lead');
+      }
+      
+      try {
+        return await insertLead({
+          ...leadData,
+          submitted_by: user.id,
+        });
+      } catch (err: any) {
+        console.error('Error creating lead:', err);
+        // Enhanced error logging
+        if (err.code === 'PGRST301') {
+          throw new Error('Authentication error: Your session may have expired');
+        } else if (err.code === '42501') {
+          throw new Error('Authorization error: You do not have permission to create leads');
+        } else {
+          throw err;
+        }
+      }
     },
     onSuccess: () => {
+      // Clear any previous errors
+      setError(null);
+      
+      // Invalidate relevant queries to refresh the data
       queryClient.invalidateQueries({ queryKey: ['leads'] });
-    }
-  });
-};
-
-// Hook to assign lead to company
-export const useAssignLead = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ leadId, companyId }: { leadId: string; companyId: string }) => {
-      return assignLeadToCompany(leadId, companyId);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    onError: (err: Error) => {
+      console.error('Mutation error:', err);
+      setError(err);
     }
   });
-};
 
-/**
- * Main useLeads hook that returns leads, loading state, error, and refresh function
- * This is exported for backward compatibility and used in the AdminLeadsPage
- */
-export const useLeads = () => {
-  const { data: leads = [], isLoading, error, refetch } = useLeadList();
-  
   return {
-    leads,
+    createLead: mutate,
     isLoading,
-    error,
-    refresh: refetch
+    error
   };
+};
+
+export const useLeadsList = () => {
+  // Implementation for listing leads would go here
+  // This is a placeholder for future implementation
 };

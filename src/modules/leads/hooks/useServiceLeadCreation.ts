@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Service } from '@/modules/services/types/services';
 import { useCreateLead } from './useLeads';
 import { toast } from 'sonner';
@@ -16,7 +16,7 @@ export const useServiceLeadCreation = () => {
     setIsCreating(true);
     
     try {
-      // Check if user is authenticated before creating lead
+      // Enhanced check for user authentication before creating lead
       if (!isAuthenticated || !user) {
         console.log("User not authenticated, redirecting to login");
         toast.error("Du må logge inn for å opprette en forespørsel");
@@ -42,17 +42,28 @@ export const useServiceLeadCreation = () => {
         category: service.name.toLowerCase(),
       };
       
-      // Create the lead
+      // Create the lead with enhanced error handling
       createLead(leadData, {
         onSuccess: () => {
+          // Clear any pending request after successful creation
+          sessionStorage.removeItem('pendingServiceRequest');
           toast.success(`Forespørsel om ${service.name} er opprettet`);
+          
+          // Navigate to dashboard after successful lead creation
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 500);
         },
-        onError: (error) => {
+        onError: (error: any) => {
           console.error("Failed to create lead:", error);
           
           // Provide more user-friendly error messages
-          if (error.message?.includes('auth')) {
+          if (error.message?.includes('auth') || error.status === 401) {
             toast.error("Autentiseringsfeil: Vennligst logg inn på nytt");
+            // Redirect to login if authentication error
+            setTimeout(() => {
+              navigate('/login?returnUrl=/select-services');
+            }, 500);
           } else {
             toast.error(`Kunne ikke opprette forespørsel om ${service.name}: ${error.message || 'Ukjent feil'}`);
           }
@@ -63,7 +74,7 @@ export const useServiceLeadCreation = () => {
       });
       
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating lead from service:", error);
       
       // More detailed error logging and handling
@@ -74,7 +85,7 @@ export const useServiceLeadCreation = () => {
         
         if (error.message.includes('auth') || error.message.includes('Authentication')) {
           toast.error("Autentiseringsfeil: Vennligst logg inn på nytt");
-          navigate('/login');
+          navigate('/login?returnUrl=/select-services');
         } else {
           toast.error(`En feil oppstod: ${error.message}`);
         }
@@ -88,12 +99,13 @@ export const useServiceLeadCreation = () => {
   };
   
   // Function to check for pending service requests after login
-  const checkPendingServiceRequests = () => {
+  const checkPendingServiceRequests = useCallback(() => {
     const pendingRequest = sessionStorage.getItem('pendingServiceRequest');
     
     if (pendingRequest) {
       try {
-        const { serviceId, serviceName, timestamp } = JSON.parse(pendingRequest);
+        const parsedRequest = JSON.parse(pendingRequest);
+        const { serviceId, serviceName, timestamp } = parsedRequest;
         
         // Check if request is still valid (not older than 30 minutes)
         const requestTime = new Date(timestamp).getTime();
@@ -102,14 +114,13 @@ export const useServiceLeadCreation = () => {
         const maxAge = 30 * 60 * 1000; // 30 minutes
         
         if (timeDifference < maxAge) {
-          // Clear the pending request
-          sessionStorage.removeItem('pendingServiceRequest');
-          
           // Return the service info to recreate the request
           return { id: serviceId, name: serviceName };
         } else {
           // Clear expired request
+          console.log("Pending service request expired, clearing");
           sessionStorage.removeItem('pendingServiceRequest');
+          toast.info("Din tidligere forespørsel er utløpt. Vennligst velg tjeneste på nytt.");
         }
       } catch (error) {
         console.error("Error parsing pending service request:", error);
@@ -118,7 +129,7 @@ export const useServiceLeadCreation = () => {
     }
     
     return null;
-  };
+  }, []);
   
   return {
     createLeadFromService,
