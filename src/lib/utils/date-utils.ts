@@ -1,45 +1,58 @@
 
-import { format, parseISO, isValid } from "date-fns";
-import { nb } from "date-fns/locale";
-
-export const formatDate = (dateString: string | null | undefined): string => {
-  if (!dateString) return 'Ukjent dato';
+/**
+ * Formats a date as a readable string (DD.MM.YYYY)
+ */
+export const formatDate = (date: Date | string | null): string => {
+  if (!date) return 'N/A';
   
-  try {
-    const date = parseISO(dateString);
-    if (!isValid(date)) return 'Ugyldig dato';
-    
-    return format(date, 'PPP', { locale: nb });
-  } catch (error) {
-    console.error('Error formatting date:', error);
-    return 'Feil ved formatering av dato';
-  }
+  const d = date instanceof Date ? date : new Date(date);
+  
+  if (isNaN(d.getTime())) return 'Invalid date';
+  
+  return d.toLocaleDateString('nb-NO', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
 };
 
-export const formatDateTime = (dateString: string | null | undefined): string => {
-  if (!dateString) return 'Ukjent tidspunkt';
+/**
+ * Formats a date with time (DD.MM.YYYY HH:MM)
+ */
+export const formatDateTime = (date: Date | string | null): string => {
+  if (!date) return 'N/A';
   
-  try {
-    const date = parseISO(dateString);
-    if (!isValid(date)) return 'Ugyldig tidspunkt';
-    
-    return format(date, 'PPP HH:mm', { locale: nb });
-  } catch (error) {
-    console.error('Error formatting datetime:', error);
-    return 'Feil ved formatering av tidspunkt';
-  }
+  const d = date instanceof Date ? date : new Date(date);
+  
+  if (isNaN(d.getTime())) return 'Invalid date';
+  
+  return d.toLocaleDateString('nb-NO', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 
-export const formatTime = (dateString: string | null | undefined): string => {
-  if (!dateString) return 'Ukjent tid';
+/**
+ * Returns a relative time description (e.g., "3 days ago")
+ */
+export const getRelativeTimeString = (date: Date | string | null): string => {
+  if (!date) return 'N/A';
   
-  try {
-    const date = parseISO(dateString);
-    if (!isValid(date)) return 'Ugyldig tid';
-    
-    return format(date, 'HH:mm', { locale: nb });
-  } catch (error) {
-    console.error('Error formatting time:', error);
-    return 'Feil ved formatering av tid';
-  }
+  const d = date instanceof Date ? date : new Date(date);
+  
+  if (isNaN(d.getTime())) return 'Invalid date';
+
+  const rtf = new Intl.RelativeTimeFormat('nb-NO', { numeric: 'auto' });
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - d.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) return rtf.format(-diffInSeconds, 'second');
+  if (diffInSeconds < 3600) return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
+  if (diffInSeconds < 86400) return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
+  if (diffInSeconds < 2592000) return rtf.format(-Math.floor(diffInSeconds / 86400), 'day');
+  if (diffInSeconds < 31536000) return rtf.format(-Math.floor(diffInSeconds / 2592000), 'month');
+  return rtf.format(-Math.floor(diffInSeconds / 31536000), 'year');
 };

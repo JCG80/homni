@@ -7,8 +7,8 @@ import { useLeadsList } from '../hooks/useLeads';
 import { Lead } from '@/types/leads';
 
 export const LeadsTabs = () => {
-  // Create empty leads array as a fallback
-  const emptyLeads: Lead[] = [];
+  // Use the useLeadsList hook to fetch leads data
+  const { leads = [], isLoading, error } = useLeadsList();
   
   return (
     <Tabs defaultValue="all">
@@ -18,7 +18,7 @@ export const LeadsTabs = () => {
       </TabsList>
       
       <TabsContent value="all">
-        <LeadsTable leads={emptyLeads} />
+        <LeadsTable leads={leads} />
       </TabsContent>
       
       <TabsContent value="insurance">
