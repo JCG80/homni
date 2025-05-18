@@ -85,15 +85,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Error logging out:', error);
     }
   };
+
+  // Create a wrapper for refreshProfile that returns void
+  const refreshProfileWrapper = async (): Promise<void> => {
+    await authState.refreshProfile();
+  };
   
   // Create the combined context value
   const value: AuthContextType = {
-    ...authState, // Provides user, profile, isLoading, error, refreshProfile, etc.
+    ...authState, // Provides user, profile, isLoading, error, etc.
     ...roleChecks, // Provides role, isAdmin, isMasterAdmin, hasRole, etc.
     loading: authState.isLoading, // Alias for backward compatibility
     canAccess: roleChecks.canAccessModule, // Rename for backward compatibility
     canPerform: (action: string, resource: string) => false, // Stub implementation
     logout, // Add the logout function to the context value
+    refreshProfile: refreshProfileWrapper, // Use the wrapper function
   };
   
   return (

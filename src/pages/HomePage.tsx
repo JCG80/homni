@@ -1,45 +1,33 @@
 
 import React from 'react';
-import { Sidebar } from '@/components/ui/sidebar';
+import { HeroSection } from '@/components/sections/HeroSection';
+import { ServicesSection } from '@/components/sections/ServicesSection';
+import { CallToAction } from '@/components/sections/CallToAction';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { ServiceSelectionFlow } from '@/modules/services/components/ServiceSelectionFlow';
+import { Service } from '@/modules/services/types/services';
+import { useServiceLeadCreation } from '@/modules/leads/hooks/useServiceLeadCreation';
 
 export const HomePage = () => {
+  const navigate = useNavigate();
+  const { createLeadFromService, isCreating } = useServiceLeadCreation();
+
+  const handleComplete = () => {
+    navigate('/dashboard');
+  };
+
+  const handleCreateLead = (service: Service) => {
+    createLeadFromService(service);
+  };
+
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="w-64 border-r border-border bg-card">
-        <Sidebar />
-      </aside>
-      <main className="flex-1 p-6">
-        <h1 className="text-3xl font-bold mb-6">Velkommen</h1>
-        <p className="text-muted-foreground mb-6">
-          Velg en modul fra sidemenyen for å komme i gang eller velg tjenester du er interessert i nedenfor.
-        </p>
-        
-        <div className="mb-10">
-          <ServiceSelectionFlow />
-        </div>
-        
-        <h2 className="text-2xl font-semibold mb-4">Andre tjenester</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-          <div className="bg-card border rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-2">Prosjektdokumentasjon</h2>
-            <p className="text-muted-foreground mb-4">Se prosjektplanen og dokumentasjon</p>
-            <a href="/docs/project-plan" className="text-primary hover:underline">Gå til prosjektplan →</a>
-          </div>
-          
-          <div className="bg-card border rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-2">Lead håndtering</h2>
-            <p className="text-muted-foreground mb-4">Administrer leads og innstillinger</p>
-            <a href="/lead-management" className="text-primary hover:underline">Se leads →</a>
-          </div>
-          
-          <div className="bg-card border rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-2">Brukeradministrasjon</h2>
-            <p className="text-muted-foreground mb-4">Administrer brukere og roller</p>
-            <a href="/auth-management" className="text-primary hover:underline">Gå til administrasjon →</a>
-          </div>
-        </div>
-      </main>
+    <div className="min-h-screen">
+      <HeroSection />
+      <ServicesSection />
+      <CallToAction />
     </div>
   );
 };
+
+export default HomePage;

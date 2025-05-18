@@ -13,6 +13,16 @@ interface ServiceSelectionFlowProps {
   isCreating?: boolean;
 }
 
+interface StepNavigationProps {
+  currentStep: number;
+  totalSteps: number;
+  onNext: () => void;
+  onPrevStep?: () => void; // Make optional to match StepNavigationButtons
+  onComplete: () => void;
+  disableNext?: boolean;
+  isLoading?: boolean;
+}
+
 export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({ 
   onComplete, 
   onCreateLead,
@@ -113,7 +123,7 @@ export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({
         currentStep={currentStep} 
         totalSteps={3}
         onNext={handleNextStep}
-        onPrevious={handlePreviousStep}
+        onPrevStep={handlePreviousStep}
         onComplete={onComplete}
         disableNext={currentStep === 1 && !selectedService}
         isLoading={isCreating}

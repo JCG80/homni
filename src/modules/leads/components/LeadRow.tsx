@@ -1,104 +1,70 @@
-
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { TableCell, TableRow } from '@/components/ui/table';
-import { toast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { Lead, LeadStatus, LEAD_STATUSES } from '../types/types';
+import React from 'react';
+import { Lead } from '@/types/leads';
 import { LeadStatusBadge } from './LeadStatusBadge';
-import { isStatusTransitionAllowed } from '../utils/lead-utils';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useUpdateLeadStatus } from '../hooks/useLeads';
 
 interface LeadRowProps {
   lead: Lead;
-  canChangeStatus: (lead: Lead, status: LeadStatus) => boolean;
-  isAdmin: boolean;
-  isCompany: boolean;
 }
 
-export const LeadRow = ({ 
-  lead, 
-  canChangeStatus, 
-  isAdmin, 
-  isCompany 
-}: LeadRowProps) => {
+export const LeadRow: React.FC<LeadRowProps> = ({ lead }) => {
   const navigate = useNavigate();
-  const { mutate: updateStatus } = useUpdateLeadStatus();
+  const { isAdmin, isCompany } = useAuth();
+  const { updateStatus, isLoading: isUpdating } = useUpdateLeadStatus();
 
-  const handleStatusChange = (newStatus: LeadStatus) => {
-    updateStatus(
-      { leadId: lead.id, status: newStatus },
-      {
-        onSuccess: () => {
-          toast({
-            title: 'Status oppdatert',
-            description: 'Lead-status har blitt oppdatert',
-          });
-        },
-        onError: () => {
-          toast({
-            title: 'Feil',
-            description: 'Kunne ikke oppdatere status',
-            variant: 'destructive',
-          });
-        },
-      }
-    );
+  const handleViewDetails = () => {
+    navigate(`/leads/${lead.id}`);
+  };
+
+  const handleStatusUpdate = (newStatus: string) => {
+    updateStatus(lead.id, newStatus);
   };
 
   return (
-    <TableRow key={lead.id}>
-      <TableCell className="font-medium">{lead.title}</TableCell>
-      <TableCell>
-        {lead.category.charAt(0).toUpperCase() + lead.category.slice(1)}
-      </TableCell>
-      <TableCell>
+    <tr>
+      <td className="py-2 px-4 border-b">{lead.id}</td>
+      <td className="py-2 px-4 border-b">{lead.title}</td>
+      <td className="py-2 px-4 border-b">{lead.category}</td>
+      <td className="py-2 px-4 border-b">{lead.description}</td>
+      <td className="py-2 px-4 border-b">
         <LeadStatusBadge status={lead.status} />
-      </TableCell>
-      <TableCell>
-        {new Date(lead.created_at).toLocaleDateString('nb-NO')}
-      </TableCell>
-      <TableCell className="text-right">
-        <div className="flex justify-end gap-2">
-          {(isAdmin || isCompany) && (
-            <Select
-              disabled={!isAdmin && !isCompany}
-              value={lead.status}
-              onValueChange={(value) =>
-                handleStatusChange(value as LeadStatus)
-              }
-            >
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="Endre status" />
-              </SelectTrigger>
-              <SelectContent>
-                {LEAD_STATUSES.map((status) => (
-                  <SelectItem
-                    key={status}
-                    value={status}
-                    disabled={!canChangeStatus(lead, status)}
-                  >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate(`/leads/${lead.id}`)}
+      </td>
+      <td className="py-2 px-4 border-b">
+        {isAdmin && (
+          <select
+            value={lead.status}
+            onChange={(e) => handleStatusUpdate(e.target.value)}
+            className="border rounded px-2 py-1"
+            disabled={isUpdating}
           >
-            Se detaljer
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
+            <option value="new">Ny</option>
+            <option value="in_progress">Under behandling</option>
+            <option value="completed">Fullført</option>
+            <option value="rejected">Avvist</option>
+          </select>
+        )}
+        {isCompany && (
+          <select
+            value={lead.status}
+            onChange={(e) => handleStatusUpdate(e.target.value)}
+            className="border rounded px-2 py-1"
+            disabled={isUpdating}
+          >
+            <option value="new">Ny</option>
+            <option value="in_progress">Under behandling</option>
+            <option value="completed">Fullført</option>
+            <option value="rejected">Avvist</option>
+          </select>
+        )}
+      </td>
+      <td className="py-2 px-4 border-b">
+        <Button onClick={handleViewDetails} variant="secondary" size="sm">
+          Se detaljer
+        </Button>
+      </td>
+    </tr>
   );
 };

@@ -1,80 +1,76 @@
 import React from 'react';
-import { useLeadList } from '../hooks/useLeads';
-import { formatDate } from '@/lib/utils';
-import { LeadStatusBadge } from './LeadStatusBadge';
+import { useLeadsList } from "../hooks/useLeads";
+import { LeadRow } from "./LeadRow";
+import { LeadsTableBody } from "./LeadsTableBody";
+import { 
+  Table, 
+  TableBody, 
+  TableCaption, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { Lead } from '@/types/leads';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { CompanyLeadActions } from './CompanyLeadActions';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 
-export const LeadsTable = () => {
-  const { data: leads = [], isLoading, refetch } = useLeadList();
-  const { role } = useAuth();
+interface LeadsTableProps {
+  leads: Lead[];
+  isLoading?: boolean;
+  emptyMessage?: string;
+  showCompany?: boolean;
+}
+
+export const LeadsTable = ({ 
+  leads, 
+  isLoading = false, 
+  emptyMessage = "Ingen forespørsler funnet", 
+  showCompany = false 
+}: LeadsTableProps) => {
+  const { isAdmin } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-3 text-lg">Laster forespørsler...</span>
+      </div>
+    );
+  }
+
+  if (!leads || leads.length === 0) {
+    return (
+      <div className="text-center py-12 border rounded-md bg-muted/10">
+        <p className="text-muted-foreground">{emptyMessage}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {isLoading && (
-        <div className="flex justify-center p-4">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-        </div>
-      )}
-      
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tittel</TableHead>
-              <TableHead>Kategori</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Opprettet</TableHead>
-              <TableHead className="text-right">Handlinger</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  Laster inn...
-                </TableCell>
-              </TableRow>
-            ) : leads.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  Ingen leads funnet.
-                </TableCell>
-              </TableRow>
-            ) : (
-              leads.map((lead) => (
-                <TableRow key={lead.id}>
-                  <TableCell className="font-medium">{lead.title}</TableCell>
-                  <TableCell>{lead.category}</TableCell>
-                  <TableCell>{lead.lead_type || 'general'}</TableCell>
-                  <TableCell>
-                    <LeadStatusBadge status={lead.status} />
-                  </TableCell>
-                  <TableCell>{formatDate(lead.created_at)}</TableCell>
-                  <TableCell className="text-right">
-                    {role === 'company' && (
-                      <CompanyLeadActions
-                        leadId={lead.id}
-                        currentStatus={lead.status}
-                        onStatusUpdated={refetch}
-                      />
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+    <div className="border rounded-md overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">ID</TableHead>
+            <TableHead>Tittel</TableHead>
+            <TableHead>Kategori</TableHead>
+            {showCompany && <TableHead>Bedrift</TableHead>}
+            <TableHead>Status</TableHead>
+            <TableHead>Dato</TableHead>
+            <TableHead className="text-right">Handlinger</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {leads.map((lead) => (
+            <LeadRow 
+              key={lead.id} 
+              lead={lead} 
+              showCompany={showCompany}
+            />
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

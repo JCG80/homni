@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { insertLead } from '../api/lead-create';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
@@ -10,7 +11,7 @@ export const useCreateLead = () => {
   const [error, setError] = useState<Error | null>(null);
 
   // Improved error handling in the useMutation hook
-  const { mutate, isLoading } = useMutation({
+  const mutation = useMutation({
     mutationFn: async (leadData: Partial<Lead>) => {
       if (!user) {
         throw new Error('Authentication required to create a lead');
@@ -47,8 +48,8 @@ export const useCreateLead = () => {
   });
 
   return {
-    createLead: mutate,
-    isLoading,
+    createLead: mutation.mutate,
+    isLoading: mutation.isPending, // Changed isLoading to isPending for the new TanStack Query v5 API
     error
   };
 };
@@ -56,4 +57,22 @@ export const useCreateLead = () => {
 export const useLeadsList = () => {
   // Implementation for listing leads would go here
   // This is a placeholder for future implementation
+};
+
+// Add needed hook implementations that were referenced but missing
+export const useLead = (id: string) => {
+  // Placeholder implementation
+  return {
+    lead: null,
+    isLoading: false,
+    error: null
+  };
+};
+
+export const useUpdateLeadStatus = () => {
+  // Placeholder implementation
+  return {
+    updateStatus: (leadId: string, status: string) => {},
+    isLoading: false
+  };
 };

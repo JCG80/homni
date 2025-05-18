@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const useServiceLeadCreation = () => {
   const [isCreating, setIsCreating] = useState(false);
-  const { mutate: createLead } = useCreateLead();
+  const { createLead, isLoading } = useCreateLead();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   
@@ -133,7 +133,7 @@ export const useServiceLeadCreation = () => {
   
   return {
     createLeadFromService,
-    isCreating,
+    isCreating: isCreating || isLoading,
     checkPendingServiceRequests
   };
 };
