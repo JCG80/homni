@@ -41,12 +41,20 @@ export const ServiceSelectionPage: React.FC = () => {
   }, [isAuthenticated, isLoading, checkPendingServiceRequests, createLeadFromService]);
   
   const handleComplete = () => {
-    toast.success("Takk for dine valg!");
+    if (selectedService) {
+      toast.success(`Takk for din forespørsel om ${selectedService.name}!`);
+    } else {
+      toast.success("Takk for dine valg!");
+    }
     navigate('/dashboard');
   };
   
-  const handleCreateLead = (service: Service) => {
-    createLeadFromService(service);
+  const handleCreateLead = async (service: Service) => {
+    try {
+      await createLeadFromService(service);
+    } catch (error) {
+      console.error('Error in handleCreateLead:', error);
+    }
   };
   
   // Add the onSelectService handler

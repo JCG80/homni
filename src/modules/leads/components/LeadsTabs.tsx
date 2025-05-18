@@ -1,13 +1,42 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useLeadsList } from '../hooks/useLeads';
 import { LeadRow } from './LeadRow';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { Lead } from '@/types/leads';
 
 export const LeadsTabs = () => {
-  // Fix: useLeadsList() now properly returns leads, isLoading, and error
   const { leads, isLoading, error } = useLeadsList();
+
+  // Group leads by category using useMemo for performance
+  const groupedLeads = useMemo(() => {
+    if (!leads || leads.length === 0) return {
+      insurance: [],
+      property: [],
+      finance: [],
+      other: []
+    };
+
+    return {
+      insurance: leads.filter(lead => lead.category?.toLowerCase().includes('insurance') || 
+                                      lead.category?.toLowerCase().includes('forsikring')),
+      property: leads.filter(lead => lead.category?.toLowerCase().includes('property') || 
+                                     lead.category?.toLowerCase().includes('eiendom')),
+      finance: leads.filter(lead => lead.category?.toLowerCase().includes('finance') || 
+                                    lead.category?.toLowerCase().includes('finans')),
+      other: leads.filter(lead => {
+        const category = lead.category?.toLowerCase();
+        return !category?.includes('insurance') && 
+               !category?.includes('forsikring') && 
+               !category?.includes('property') && 
+               !category?.includes('eiendom') && 
+               !category?.includes('finance') && 
+               !category?.includes('finans');
+      })
+    };
+  }, [leads]);
 
   if (isLoading) {
     return (
@@ -18,85 +47,73 @@ export const LeadsTabs = () => {
   }
 
   if (error) {
+    // Use toast to show error message
+    toast.error("Kunne ikke laste inn leads");
+    
     return (
       <div className="p-4 text-center text-red-500">
         <p>Det oppstod en feil ved lasting av leads.</p>
+        <p className="text-sm">{error instanceof Error ? error.message : 'Ukjent feil'}</p>
       </div>
     );
   }
 
-  // Group leads by category
-  const insuranceLeads = leads.filter(lead => lead.category === 'insurance' || lead.category === 'forsikring');
-  const propertyLeads = leads.filter(lead => lead.category === 'property' || lead.category === 'eiendom');
-  const financeLeads = leads.filter(lead => lead.category === 'finance' || lead.category === 'finans');
-  const otherLeads = leads.filter(lead => 
-    !['insurance', 'property', 'finance', 'forsikring', 'eiendom', 'finans'].includes(lead.category)
+  // Function to render table with leads
+  const renderLeadsTable = (categoryLeads: Lead[]) => (
+    <div className="border rounded-md overflow-hidden">
+      <table className="w-full">
+        <thead className="bg-muted/50">
+          <tr>
+            <th className="text-left p-2">Tittel</th>
+            <th className="text-left p-2">Kategori</th>
+            <th className="text-left p-2">Status</th>
+            <th className="text-left p-2">Dato</th>
+          </tr>
+        </thead>
+        <tbody>
+          {categoryLeads.length > 0 ? (
+            categoryLeads.map(lead => (
+              <LeadRow key={lead.id} lead={lead} />
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4} className="p-4 text-center">Ingen leads funnet.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 
   return (
     <Tabs defaultValue="all" className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="all">Alle ({leads.length})</TabsTrigger>
-        <TabsTrigger value="insurance">Forsikring ({insuranceLeads.length})</TabsTrigger>
-        <TabsTrigger value="property">Eiendom ({propertyLeads.length})</TabsTrigger>
-        <TabsTrigger value="finance">Finans ({financeLeads.length})</TabsTrigger>
-        <TabsTrigger value="other">Andre ({otherLeads.length})</TabsTrigger>
+        <TabsTrigger value="insurance">Forsikring ({groupedLeads.insurance.length})</TabsTrigger>
+        <TabsTrigger value="property">Eiendom ({groupedLeads.property.length})</TabsTrigger>
+        <TabsTrigger value="finance">Finans ({groupedLeads.finance.length})</TabsTrigger>
+        <TabsTrigger value="other">Andre ({groupedLeads.other.length})</TabsTrigger>
       </TabsList>
 
       <TabsContent value="all">
-        <div className="border rounded-md overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="text-left p-2">Tittel</th>
-                <th className="text-left p-2">Kategori</th>
-                <th className="text-left p-2">Status</th>
-                <th className="text-left p-2">Dato</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leads.length > 0 ? (
-                leads.map(lead => (
-                  <LeadRow key={lead.id} lead={lead} />
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="p-4 text-center">Ingen leads funnet.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {renderLeadsTable(leads)}
       </TabsContent>
 
-      {/* Similar TabsContent components for other categories */}
       <TabsContent value="insurance">
-        <div className="border rounded-md overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="text-left p-2">Tittel</th>
-                <th className="text-left p-2">Kategori</th>
-                <th className="text-left p-2">Status</th>
-                <th className="text-left p-2">Dato</th>
-              </tr>
-            </thead>
-            <tbody>
-              {insuranceLeads.length > 0 ? (
-                insuranceLeads.map(lead => (
-                  <LeadRow key={lead.id} lead={lead} />
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="p-4 text-center">Ingen forsikrings-leads funnet.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {renderLeadsTable(groupedLeads.insurance)}
       </TabsContent>
 
-      {/* Remaining tab content sections follow similar pattern */}
+      <TabsContent value="property">
+        {renderLeadsTable(groupedLeads.property)}
+      </TabsContent>
+
+      <TabsContent value="finance">
+        {renderLeadsTable(groupedLeads.finance)}
+      </TabsContent>
+
+      <TabsContent value="other">
+        {renderLeadsTable(groupedLeads.other)}
+      </TabsContent>
     </Tabs>
   );
 };
