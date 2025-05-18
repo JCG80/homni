@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Service } from '../types/services';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Shield, Building, Coins } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface ServiceSelectionFlowProps {
   onSelectService: (service: Service) => void;
@@ -64,17 +65,34 @@ export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({
     }
   };
 
+  const getServiceIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'shield':
+        return <Shield className="h-8 w-8 text-primary mb-2" />;
+      case 'building':
+        return <Building className="h-8 w-8 text-primary mb-2" />;
+      case 'currency':
+        return <Coins className="h-8 w-8 text-primary mb-2" />;
+      default:
+        return <Shield className="h-8 w-8 text-primary mb-2" />;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {services.map((service) => (
           <div 
             key={service.id}
-            className={`p-6 border rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
-              selectedServiceId === service.id ? 'ring-2 ring-primary' : ''
-            }`}
+            className={cn(
+              "p-6 border rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer",
+              "flex flex-col items-center text-center",
+              selectedServiceId === service.id ? "ring-2 ring-primary bg-primary/5" : ""
+            )}
             onClick={() => handleServiceSelection(service)}
+            data-testid={`service-card-${service.id}`}
           >
+            {getServiceIcon(service.icon)}
             <h3 className="text-lg font-medium">{service.name}</h3>
             <p className="text-sm text-gray-500 mt-2">{service.description}</p>
           </div>
@@ -86,7 +104,7 @@ export const ServiceSelectionFlow: React.FC<ServiceSelectionFlowProps> = ({
           <Button 
             onClick={onComplete}
             className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-            disabled={isCreating}
+            disabled={isCreating || !selectedServiceId}
           >
             {isCreating ? (
               <>

@@ -40,18 +40,41 @@ export const ServiceSelectionPage: React.FC = () => {
     handlePendingRequests();
   }, [isAuthenticated, isLoading, checkPendingServiceRequests, createLeadFromService]);
   
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (selectedService) {
+      if (!isAuthenticated) {
+        // Store selection and redirect to login
+        toast.info("Du må logge inn for å fullføre forespørselen");
+        navigate('/login', { state: { returnUrl: '/select-services' } });
+        return;
+      }
+      
       toast.success(`Takk for din forespørsel om ${selectedService.name}!`);
+      
+      // If not already created, create lead
+      if (!isCreating) {
+        try {
+          await createLeadFromService(selectedService);
+        } catch (error) {
+          console.error("Error creating lead:", error);
+          // Error is handled within createLeadFromService
+        }
+      }
+      
+      navigate('/dashboard');
     } else {
-      toast.success("Takk for dine valg!");
+      toast.info("Vennligst velg en tjeneste først");
     }
-    navigate('/dashboard');
   };
   
   const handleCreateLead = async (service: Service) => {
     try {
-      await createLeadFromService(service);
+      if (isAuthenticated) {
+        await createLeadFromService(service);
+      } else {
+        setSelectedService(service);
+        // Don't create lead immediately if not authenticated
+      }
     } catch (error) {
       console.error('Error in handleCreateLead:', error);
     }
@@ -84,6 +107,11 @@ export const ServiceSelectionPage: React.FC = () => {
           <p className="text-gray-600">
             Velg tjenester du er interessert i for å få tilpassede tilbud
           </p>
+          {!isAuthenticated && (
+            <p className="text-sm text-primary mt-2">
+              Du kan velge tjenester nå, men må logge inn for å fullføre forespørselen
+            </p>
+          )}
         </div>
         
         <ServiceSelectionFlow 

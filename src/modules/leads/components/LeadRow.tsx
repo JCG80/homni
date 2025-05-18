@@ -1,6 +1,18 @@
 
 import React from 'react';
 import { Lead, LeadStatus } from '@/types/leads';
+import { TableCell, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { formatDistanceToNow } from 'date-fns';
+import { Eye, MoreHorizontal } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 export interface LeadRowProps {
   lead: Lead;
@@ -17,14 +29,119 @@ export const LeadRow: React.FC<LeadRowProps> = ({
   isAdmin = false,
   isCompany = false 
 }) => {
-  // This is a placeholder component that would typically render a lead row
+  const navigate = useNavigate();
+  
+  // Helper to render status badge with appropriate color
+  const renderStatusBadge = (status: string) => {
+    let variant: "default" | "secondary" | "destructive" | "outline" = "default";
+    
+    switch (status) {
+      case 'new':
+        variant = "default";
+        break;
+      case 'in_progress':
+        variant = "secondary";
+        break;
+      case 'completed':
+        variant = "outline";
+        break;
+      case 'won':
+        variant = "default"; // Could use a custom green variant
+        break;
+      case 'lost':
+        variant = "destructive";
+        break;
+      default:
+        variant = "outline";
+    }
+    
+    return <Badge variant={variant}>{formatStatus(status)}</Badge>;
+  };
+  
+  // Format status for display
+  const formatStatus = (status: string): string => {
+    const statusMap: Record<string, string> = {
+      'new': 'Ny',
+      'assigned': 'Tildelt',
+      'in_progress': 'Under behandling',
+      'completed': 'Fullført',
+      'archived': 'Arkivert',
+      'won': 'Vunnet',
+      'lost': 'Tapt'
+    };
+    
+    return statusMap[status] || status;
+  };
+  
+  // Format category for display
+  const formatCategory = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      'insurance': 'Forsikring',
+      'property': 'Eiendom',
+      'finance': 'Finans',
+      'forsikring': 'Forsikring',
+      'eiendom': 'Eiendom',
+      'finans': 'Finans'
+    };
+    
+    return categoryMap[category.toLowerCase()] || category;
+  };
+
+  // Generate a shortened ID for display
+  const shortId = lead.id.substring(0, 8);
+  
+  // Format date as relative time
+  const formattedDate = formatDistanceToNow(new Date(lead.created_at), { addSuffix: true });
+  
   return (
-    <tr>
-      <td>{lead.title}</td>
-      <td>{lead.category}</td>
-      <td>{lead.status}</td>
-      {showCompany && <td>{lead.company_id || 'Ikke tildelt'}</td>}
-      <td>{new Date(lead.created_at).toLocaleDateString()}</td>
-    </tr>
+    <TableRow className="hover:bg-muted/5">
+      <TableCell className="font-mono text-xs text-muted-foreground">
+        {shortId}
+      </TableCell>
+      <TableCell>{lead.title}</TableCell>
+      <TableCell>
+        <Badge variant="outline">{formatCategory(lead.category)}</Badge>
+      </TableCell>
+      {showCompany && (
+        <TableCell>{lead.company_id || 'Ikke tildelt'}</TableCell>
+      )}
+      <TableCell>{renderStatusBadge(lead.status)}</TableCell>
+      <TableCell className="text-muted-foreground text-sm">
+        {formattedDate}
+      </TableCell>
+      <TableCell className="text-right">
+        <div className="flex justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(`/leads/${lead.id}`)}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {(isAdmin || isCompany) && lead.status === 'new' && (
+                <DropdownMenuItem 
+                  onClick={() => console.log('Assign lead', lead.id)}
+                >
+                  Tildel forespørsel
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                onClick={() => navigate(`/leads/${lead.id}`)}
+              >
+                Se detaljer
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </TableCell>
+    </TableRow>
   );
 };

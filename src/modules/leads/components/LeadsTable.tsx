@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { useLeadsList } from "../hooks/useLeads";
 import { LeadRow } from "./LeadRow";
-import { LeadsTableBody } from "./LeadsTableBody";
 import { 
   Table, 
   TableBody, 
@@ -12,8 +12,9 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Lead } from '@/types/leads';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { Badge } from '@/components/ui/badge';
 
 interface LeadsTableProps {
   leads: Lead[];
@@ -33,8 +34,8 @@ export const LeadsTable = ({
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-3 text-lg">Laster forespørsler...</span>
+        <Loader2 className="h-8 w-8 animate-spin text-primary mr-3" />
+        <span className="text-lg">Laster forespørsler...</span>
       </div>
     );
   }
@@ -42,13 +43,23 @@ export const LeadsTable = ({
   if (!leads || leads.length === 0) {
     return (
       <div className="text-center py-12 border rounded-md bg-muted/10">
+        <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
         <p className="text-muted-foreground">{emptyMessage}</p>
+        <p className="text-sm text-muted-foreground mt-2">Opprette en ny forespørsel via "Velg tjenester"</p>
       </div>
     );
   }
 
   return (
     <div className="border rounded-md overflow-hidden">
+      <div className="bg-muted/20 p-3 border-b flex justify-between items-center">
+        <div>
+          <h3 className="font-medium">Forespørsler</h3>
+          <p className="text-sm text-muted-foreground">Totalt: {leads.length}</p>
+        </div>
+        <Badge variant="outline">{leads.length} totalt</Badge>
+      </div>
+      
       <Table>
         <TableHeader>
           <TableRow>
@@ -67,6 +78,7 @@ export const LeadsTable = ({
               key={lead.id} 
               lead={lead} 
               showCompany={showCompany}
+              isAdmin={isAdmin}
             />
           ))}
         </TableBody>

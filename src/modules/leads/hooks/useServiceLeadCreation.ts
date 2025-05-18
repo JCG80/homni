@@ -25,6 +25,7 @@ export const useServiceLeadCreation = () => {
         sessionStorage.setItem('pendingServiceRequest', JSON.stringify({
           serviceId: service.id,
           serviceName: service.name,
+          serviceCategory: service.category,
           timestamp: new Date().toISOString()
         }));
         
@@ -35,11 +36,27 @@ export const useServiceLeadCreation = () => {
         return false;
       }
       
+      // Map service category to lead category with improved logic
+      const mapServiceCategoryToLeadCategory = (category: string): string => {
+        const mappings: Record<string, string> = {
+          'forsikring': 'insurance',
+          'eiendom': 'property',
+          'finans': 'finance'
+        };
+        
+        return mappings[category.toLowerCase()] || category.toLowerCase();
+      };
+      
       // Create a lead title and description based on the service
       const leadData = {
         title: `Forespørsel om ${service.name}`,
         description: `Jeg er interessert i å få tilbud på ${service.name}. Vennligst kontakt meg for mer informasjon.`,
-        category: service.name.toLowerCase(),
+        category: mapServiceCategoryToLeadCategory(service.category),
+        lead_type: service.category,
+        metadata: {
+          serviceId: service.id,
+          serviceName: service.name
+        }
       };
       
       // Create the lead with enhanced error handling
@@ -105,7 +122,7 @@ export const useServiceLeadCreation = () => {
     if (pendingRequest) {
       try {
         const parsedRequest = JSON.parse(pendingRequest);
-        const { serviceId, serviceName, timestamp } = parsedRequest;
+        const { serviceId, serviceName, serviceCategory, timestamp } = parsedRequest;
         
         // Check if request is still valid (not older than 30 minutes)
         const requestTime = new Date(timestamp).getTime();
@@ -115,7 +132,11 @@ export const useServiceLeadCreation = () => {
         
         if (timeDifference < maxAge) {
           // Return the service info to recreate the request
-          return { id: serviceId, name: serviceName };
+          return { 
+            id: serviceId, 
+            name: serviceName,
+            category: serviceCategory || 'forsikring'
+          };
         } else {
           // Clear expired request
           console.log("Pending service request expired, clearing");
