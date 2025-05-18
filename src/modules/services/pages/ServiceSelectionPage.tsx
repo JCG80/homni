@@ -6,7 +6,8 @@ import { toast } from 'sonner';
 import { useServiceLeadCreation } from '@/modules/leads/hooks/useServiceLeadCreation';
 import { Service } from '../types/services';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const ServiceSelectionPage: React.FC = () => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ export const ServiceSelectionPage: React.FC = () => {
       
       toast.success(`Takk for din forespørsel om ${selectedService.name}!`);
       
-      // If not already created, create lead
+      // If not already creating, create lead
       if (!isCreating) {
         try {
           await createLeadFromService(selectedService);
@@ -61,7 +62,7 @@ export const ServiceSelectionPage: React.FC = () => {
         }
       }
       
-      navigate('/dashboard');
+      navigate('/leads');
     } else {
       toast.info("Vennligst velg en tjeneste først");
     }
@@ -101,6 +102,17 @@ export const ServiceSelectionPage: React.FC = () => {
   
   return (
     <div className="container mx-auto py-8 px-4">
+      <div className="mb-6 flex items-center">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => navigate('/')}
+          className="mr-2"
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake til forsiden
+        </Button>
+      </div>
+      
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Velg tjenester</h1>
@@ -120,6 +132,20 @@ export const ServiceSelectionPage: React.FC = () => {
           onCreateLead={handleCreateLead}
           isCreating={isCreating}
         />
+        
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500">
+            Etter at du har valgt tjenester vil du kunne se dine forespørsler på 
+            <Button 
+              variant="link" 
+              onClick={() => navigate('/leads')}
+              className="p-0 mx-1 h-auto"
+            >
+              Forespørsler
+            </Button>
+            siden.
+          </p>
+        </div>
       </div>
     </div>
   );

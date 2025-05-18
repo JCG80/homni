@@ -24,6 +24,7 @@ import { CompanyListPage } from './modules/user/pages/CompanyListPage';
 import { UserRole } from './modules/auth/utils/roles';
 import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import Index from './pages/Index';
 
 // Import SystemModulesPage
 import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
@@ -42,6 +43,9 @@ import {
   ContentEditorDashboard
 } from './pages/dashboard';
 
+// Import docs routes
+import { docsRoutes } from './modules/docs/routes';
+
 export const AppRoutes = () => {
   return (
     <Suspense fallback={
@@ -54,7 +58,8 @@ export const AppRoutes = () => {
     }>
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Index />} />
+        <Route path="/landing" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
@@ -73,6 +78,9 @@ export const AppRoutes = () => {
         
         {/* Companies list route */}
         <Route path="/companies" element={<CompanyListPage />} />
+        
+        {/* Documentation routes */}
+        {docsRoutes}
         
         {/* Dashboard routes */}
         {/* Main dashboard route - redirects to role-specific dashboard */}
@@ -127,9 +135,7 @@ export const AppRoutes = () => {
         } />
         
         <Route path="/select-services" element={
-          <ProtectedRoute allowAnyAuthenticated>
-            <ServiceSelectionPage />
-          </ProtectedRoute>
+          <ServiceSelectionPage />
         } />
         
         {/* Company routes */}

@@ -10,7 +10,12 @@ import { HomeNavLink } from '../navigation/HomeNavLink';
 import { PropertyNavigation } from '../navigation/PropertyNavigation';
 import { ServicesNavigation } from '../navigation/ServicesNavigation';
 import { AuthenticatedNavigation } from '../navigation/AuthenticatedNavigation';
-import { UserRole } from '@/modules/auth/utils/roles/types'; // Import the UserRole type
+import { UserRole } from '@/modules/auth/utils/roles/types'; 
+import { NavigationMenuItem } from '@/components/ui/navigation-menu';
+import { NavLink } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
+import { FileText, Users } from 'lucide-react';
 
 export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();
@@ -31,10 +36,36 @@ export const MainNavigation = () => {
         {/* Utility Services */}
         <ServicesNavigation />
 
+        {/* Documentation Link */}
+        <NavigationMenuItem>
+          <NavLink 
+            to="/docs/project-plan" 
+            className={({ isActive }) => 
+              cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
+            }
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Prosjektplan
+          </NavLink>
+        </NavigationMenuItem>
+
+        {/* Companies Link */}
+        <NavigationMenuItem>
+          <NavLink 
+            to="/companies" 
+            className={({ isActive }) => 
+              cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
+            }
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Partnere
+          </NavLink>
+        </NavigationMenuItem>
+
         {/* Conditional menus based on authentication */}
         <AuthenticatedNavigation 
           isAuthenticated={isAuthenticated} 
-          role={role as UserRole} // Cast the role to UserRole type
+          role={role as UserRole}
         />
       </NavigationMenuList>
     </NavigationMenu>

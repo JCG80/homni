@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Home, LayoutDashboard, Users, Settings, LogOut, FileText, Database, Shield } from 'lucide-react';
+import { Home, LayoutDashboard, Users, Settings, LogOut, FileText, Database, Shield, Building, Coins } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { SidebarContent } from './SidebarContent';
 import { SidebarNavSection } from './SidebarNavSection';
@@ -72,6 +72,9 @@ export const Sidebar = () => {
         
         {/* Services navigation - using the standard component */}
         <SidebarNavSection title="Tjenester">
+          <SidebarNavLink to="/select-services" icon={Database}>Velg tjenester</SidebarNavLink>
+          <SidebarNavLink to="/forsikring" icon={Shield}>Forsikring</SidebarNavLink>
+          <SidebarNavLink to="/strom" icon={Building}>Strøm</SidebarNavLink>
           <div className="px-3 py-2">
             <ServiceNavigation variant="vertical" />
           </div>
@@ -125,6 +128,11 @@ export const Sidebar = () => {
         {/* Documentation section */}
         <SidebarNavSection title="Dokumentasjon">
           <SidebarNavLink to="/docs/project-plan" icon={FileText}>Prosjektplan</SidebarNavLink>
+        </SidebarNavSection>
+
+        {/* Companies section */}
+        <SidebarNavSection title="Partnere">
+          <SidebarNavLink to="/companies" icon={Building}>Våre partnere</SidebarNavLink>
         </SidebarNavSection>
       </SidebarContent>
     </div>
