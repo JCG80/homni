@@ -22,6 +22,17 @@ export const useAuthSession = () => {
   useEffect(() => {
     let mounted = true;
 
+    // Initialize auth state - maximum wait time for loading
+    const authTimeout = setTimeout(() => {
+      if (mounted && authState.isLoading) {
+        console.log('Auth loading timeout exceeded, setting to not loading');
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false
+        }));
+      }
+    }, 5000); // 5 second maximum loading time
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Skip initial session event as we'll handle it separately
@@ -141,6 +152,7 @@ export const useAuthSession = () => {
 
     return () => {
       mounted = false;
+      clearTimeout(authTimeout);
       subscription.unsubscribe();
     };
   }, [fetchProfile]);

@@ -25,6 +25,31 @@ export const ProtectedRoute = ({
   const location = useLocation();
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
   const [isCheckingPermission, setIsCheckingPermission] = useState(true);
+  const [showLoadingUI, setShowLoadingUI] = useState(false);
+
+  // Only show loading UI if it takes more than a short time
+  useEffect(() => {
+    if (isLoading || isCheckingPermission) {
+      const timer = setTimeout(() => setShowLoadingUI(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setShowLoadingUI(false);
+    }
+  }, [isLoading, isCheckingPermission]);
+
+  // Protection against infinite loading state
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (isCheckingPermission) {
+        console.warn('Permission check taking too long, finishing check');
+        setIsCheckingPermission(false);
+        // Default to allowing access after timeout
+        setIsAllowed(true);
+      }
+    }, 5000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [isCheckingPermission]);
 
   // Check if user is allowed to access this route
   useEffect(() => {
@@ -89,8 +114,8 @@ export const ProtectedRoute = ({
     });
   }, [location.pathname, isAuthenticated, role, isLoading, isCheckingPermission, allowedRoles, isAllowed]);
 
-  // Show loading state while checking auth or permissions
-  if (isLoading || isCheckingPermission || isAllowed === null) {
+  // Show loading state while checking auth or permissions, but only if it takes more than a moment
+  if ((isLoading || isCheckingPermission || isAllowed === null) && showLoadingUI) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -101,8 +126,8 @@ export const ProtectedRoute = ({
     );
   }
   
-  // If user is not authenticated, redirect to login with return URL
-  if (!isAuthenticated) {
+  // If auth check is complete but user is not authenticated, redirect to login with return URL
+  if (!isLoading && !isCheckingPermission && !isAuthenticated) {
     toast({
       title: "Pålogging kreves",
       description: "Du må logge inn for å se denne siden",
@@ -113,14 +138,19 @@ export const ProtectedRoute = ({
     return <Navigate to={`${redirectTo}?returnUrl=${returnPath}`} replace />;
   }
 
-  // If user is authenticated but not allowed, redirect to unauthorized
-  if (isAuthenticated && !isAllowed) {
+  // If auth check is complete but user is not allowed, redirect to unauthorized
+  if (!isLoading && !isCheckingPermission && isAuthenticated && isAllowed === false) {
     toast({
       title: "Ingen tilgang",
       description: "Du har ikke tilgang til denne siden",
       variant: "destructive"
     });
     return <Navigate to="/unauthorized" replace />;
+  }
+  
+  // If we're still loading or checking permissions, render nothing (or minimal placeholder)
+  if (isLoading || isCheckingPermission || isAllowed === null) {
+    return <></>; // Minimal placeholder to avoid flicker
   }
   
   // User is authenticated and allowed to access this route
