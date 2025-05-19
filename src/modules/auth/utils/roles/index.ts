@@ -29,4 +29,3 @@ export { getRoleDisplayName, roleNames, roleDescriptions } from './display';
 
 // Re-export permissions functions
 export { getRolePermissions, getAllowedModulesForRole, getAccessibleModules } from './permissions';
-

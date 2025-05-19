@@ -19,6 +19,8 @@ export function getAllowedModulesForRole(role: UserRole): string[] {
       return ['admin', 'leads', 'companies', 'reports', 'content'];
     case 'master_admin':
       return ['*']; // access to all modules
+    case 'content_editor':
+      return ['dashboard', 'content', 'profile'];
     default:
       return [];
   }
@@ -42,7 +44,7 @@ export function getAccessibleModules(
     'admin': ['admin', 'master_admin'],
     'company': ['company', 'admin', 'master_admin'],
     'geo': ['member', 'company', 'admin', 'master_admin'],
-    'content': ['admin', 'master_admin'],
+    'content': ['content_editor', 'admin', 'master_admin'],
     'settings': ['company', 'admin', 'master_admin']
   }
 ): string[] {
