@@ -22,6 +22,7 @@ export const useUserModules = () => {
       }
       
       try {
+        // Use the get_user_enabled_modules RPC function
         const { data, error: rpcError } = await supabase
           .rpc('get_user_enabled_modules');
         
@@ -80,7 +81,7 @@ export const useModuleAccess = (moduleName: string) => {
   const [hasAccess, setHasAccess] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
-  const { user } = useAuth();
+  const { user, canAccessModule } = useAuth();
   
   useEffect(() => {
     const checkModuleAccess = async () => {
@@ -91,6 +92,14 @@ export const useModuleAccess = (moduleName: string) => {
       }
       
       try {
+        // First try the synchronous method if available
+        if (typeof canAccessModule === 'function') {
+          setHasAccess(canAccessModule(moduleName));
+          setIsLoading(false);
+          return;
+        }
+        
+        // Fallback to RPC call
         const { data, error: rpcError } = await supabase
           .rpc('has_module_access', {
             module_name: moduleName
@@ -111,7 +120,7 @@ export const useModuleAccess = (moduleName: string) => {
     };
     
     checkModuleAccess();
-  }, [moduleName, user]);
+  }, [moduleName, user, canAccessModule]);
   
   return {
     hasAccess,

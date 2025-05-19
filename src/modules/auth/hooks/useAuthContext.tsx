@@ -3,45 +3,8 @@ import React, { createContext, useContext, ReactNode, useState, useEffect } from
 import { useAuthState } from './useAuthState';
 import { useRoleCheck } from './roles/useRoleCheck';
 import { signOut } from '../api/auth-authentication';
-
-interface AuthContextType {
-  // User state
-  user: any | null;
-  profile: any | null;
-  
-  // Status flags
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  loading: boolean; // Alias for isLoading for backward compatibility
-  error: Error | null;
-  
-  // Role properties
-  role: string | null;
-  isAdmin: boolean;
-  isMasterAdmin: boolean;
-  isCompany: boolean;
-  isMember: boolean;
-  isContentEditor: boolean;
-  isAnonymous: boolean;
-  
-  // Role checking methods
-  hasRole: (role: string | string[]) => boolean;
-  
-  // Access control methods
-  canAccess: (moduleId: string) => boolean;
-  canPerform: (action: string, resource: string) => boolean;
-  canAccessModule: (moduleId: string) => boolean;
-  
-  // Profile management
-  refreshProfile: () => Promise<void>;
-  
-  // Authentication methods
-  logout: () => Promise<void>;
-  
-  // Development features
-  isDevMode?: boolean;
-  switchDevUser?: (profileId: string) => void;
-}
+import { useDevAuth } from './useDevAuth';
+import { AuthContextType } from './useAuth';
 
 // Create context with default values
 const AuthContext = createContext<AuthContextType>({
@@ -74,6 +37,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const authState = useAuthState();
   const roleChecks = useRoleCheck();
+  const devAuth = useDevAuth();
   
   // Add the logout function implementation
   const logout = async () => {
@@ -88,7 +52,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Create a wrapper for refreshProfile that returns void
   const refreshProfileWrapper = async (): Promise<void> => {
-    await authState.refreshProfile();
+    if (authState.refreshProfile) {
+      await authState.refreshProfile();
+    }
+  };
+  
+  // Implement synchronous canAccessModule
+  const canAccessModuleSync = (moduleId: string): boolean => {
+    // If user is master admin or has internal admin role, allow access to everything
+    if (roleChecks.isMasterAdmin || (authState.profile?.metadata?.internal_admin === true)) {
+      return true;
+    }
+    
+    // Check if module access is in the profile metadata
+    const modulesAccess = authState.profile?.metadata?.modules_access || [];
+    return modulesAccess.includes(moduleId);
   };
   
   // Create the combined context value
@@ -96,10 +74,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     ...authState, // Provides user, profile, isLoading, error, etc.
     ...roleChecks, // Provides role, isAdmin, isMasterAdmin, hasRole, etc.
     loading: authState.isLoading, // Alias for backward compatibility
-    canAccess: roleChecks.canAccessModule, // Rename for backward compatibility
+    canAccess: canAccessModuleSync, // Rename for backward compatibility
+    canAccessModule: canAccessModuleSync, 
     canPerform: (action: string, resource: string) => false, // Stub implementation
     logout, // Add the logout function to the context value
     refreshProfile: refreshProfileWrapper, // Use the wrapper function
+    isDevMode: devAuth.isDevMode,
+    switchDevUser: devAuth.switchToDevUser,
   };
   
   return (

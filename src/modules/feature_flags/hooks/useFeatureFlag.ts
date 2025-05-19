@@ -25,6 +25,7 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
       }
       
       try {
+        // Call the is_feature_enabled RPC function
         const { data, error: rpcError } = await supabase
           .rpc('is_feature_enabled', {
             flag_name: flagName

@@ -5,9 +5,18 @@
 
 // Import UserRole from the new location
 import { UserRole } from '../utils/roles/types';
-import { ModuleAccess } from '../hooks/useAuth';
 
 export type { UserRole };
+
+// Define ModuleAccess type explicitly
+export interface ModuleAccess {
+  id: string;
+  user_id: string;
+  system_module_id: string;
+  internal_admin?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export interface Profile {
   id: string;
@@ -29,6 +38,7 @@ export interface AuthUser {
   id: string;
   email?: string;
   role: UserRole;
+  company_id?: string; // Added to fix company_id errors
 }
 
 export interface AuthState {

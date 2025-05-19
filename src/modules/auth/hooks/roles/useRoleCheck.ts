@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { UserRole } from '../../utils/roles';
+import { UserRole } from '../../utils/roles/types';
 import { useAuthState } from '../useAuthState';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -56,12 +55,13 @@ export const useRoleCheck = () => {
   }, [user, profile]);
 
   /**
-  * Check if the user can access a specific module
-  * 
-  * @param moduleId - The name of the module to check
-  * @returns True if the user can access the module
-  */
-  const canAccessModule = async (moduleName: string): Promise<boolean> => {
+   * Check if the user can access a specific module - synchronous version
+   * This uses cached module access information
+   * 
+   * @param moduleId - The name or ID of the module to check
+   * @returns True if the user can access the module
+   */
+  const canAccessModule = (moduleId: string): boolean => {
     // Master admin can access everything
     if (detectedRole === 'master_admin') {
       return true;
@@ -71,22 +71,9 @@ export const useRoleCheck = () => {
       return false;
     }
     
-    try {
-      const { data, error } = await supabase
-        .rpc('has_module_access', { 
-          module_name: moduleName 
-        });
-      
-      if (error) {
-        console.error('Error checking module access:', error);
-        return false;
-      }
-      
-      return data === true;
-    } catch (err) {
-      console.error('Error checking module access:', err);
-      return false;
-    }
+    // Check if module access is in the profile metadata
+    const modulesAccess = profile?.metadata?.modules_access || [];
+    return modulesAccess.includes(moduleId);
   };
 
   return {
