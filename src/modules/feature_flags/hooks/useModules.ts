@@ -48,7 +48,7 @@ export const useUserModules = () => {
           
           // Combine the data with type safety
           const combinedModules = fullModules.map(module => {
-            const userModule = userModules?.find(um => um.module_id === module.id);
+            const userModule = userModules?.find((um: any) => um.module_id === module.id);
             return {
               ...module,
               userSettings: userModule ? userModule as unknown as UserModule : undefined

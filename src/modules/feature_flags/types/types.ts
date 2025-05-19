@@ -95,10 +95,10 @@ export type ModuleDependencyUpdate = {
 };
 
 // Extended SystemModule type that includes the new fields
-export interface ExtendedSystemModule extends TablesRow['system_modules']['Row'] {
+export type ExtendedSystemModule = TablesRow['system_modules']['Row'] & {
   feature_flags_enabled?: boolean;
   extended_metadata?: Record<string, any>;
-}
+};
 
 // Helper type for module relationship
 export type ModuleRelationshipType = 'requires' | 'enhances' | 'conflicts' | 'optional';

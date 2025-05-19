@@ -233,6 +233,39 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_flags: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_enabled: boolean
+          name: string
+          percentage_rollout: number | null
+          target_roles: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_enabled?: boolean
+          name: string
+          percentage_rollout?: number | null
+          target_roles?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_enabled?: boolean
+          name?: string
+          percentage_rollout?: number | null
+          target_roles?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       insurance_companies: {
         Row: {
           created_at: string
@@ -467,6 +500,48 @@ export type Database = {
           },
         ]
       }
+      module_dependencies: {
+        Row: {
+          created_at: string
+          dependency_id: string
+          id: string
+          module_id: string
+          relationship_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dependency_id: string
+          id?: string
+          module_id: string
+          relationship_type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dependency_id?: string
+          id?: string
+          module_id?: string
+          relationship_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_dependencies_dependency_id_fkey"
+            columns: ["dependency_id"]
+            isOneToOne: false
+            referencedRelation: "system_modules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "module_dependencies_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "system_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_docs: {
         Row: {
           content: string
@@ -653,6 +728,41 @@ export type Database = {
           },
         ]
       }
+      service_modules: {
+        Row: {
+          created_at: string
+          id: string
+          module_id: string
+          service_id: string
+          settings: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          module_id: string
+          service_id: string
+          settings?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          module_id?: string
+          service_id?: string
+          settings?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_modules_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "system_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       system_modules: {
         Row: {
           created_at: string | null
@@ -715,6 +825,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_modules: {
+        Row: {
+          created_at: string
+          id: string
+          is_enabled: boolean
+          module_id: string
+          settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          module_id: string
+          settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          module_id?: string
+          settings?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_modules_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "system_modules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_profiles: {
         Row: {
