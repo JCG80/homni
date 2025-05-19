@@ -5,6 +5,9 @@ import { LeadKanbanBoard } from '../LeadKanbanBoard';
 import { KanbanColumn } from '../../../hooks/useKanbanBoard';
 import { Lead } from '@/types/leads';
 
+// Import vitest directly
+import { describe, it, expect, vi } from 'vitest';
+
 // Mock react-beautiful-dnd
 vi.mock('react-beautiful-dnd', () => ({
   DragDropContext: ({ children }: { children: React.ReactNode }) => <div data-testid="drag-drop-context">{children}</div>,
