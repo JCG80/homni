@@ -1,7 +1,7 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createUser, validateRlsPolicies, getExpectedModulesForRole } from '../seedTestUsers';
-import { UserRole } from '../../src/modules/auth/types/types';
+import { UserRole } from '../../src/modules/auth/utils/roles/types';
 
 // Mock Supabase
 vi.mock('@supabase/supabase-js', () => {

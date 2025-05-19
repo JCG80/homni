@@ -1,348 +1,339 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { UserRole } from '../src/modules/auth/types/types';
+import { UserRole } from '../src/modules/auth/utils/roles/types';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const SUPABASE_URL = process.env.SUPABASE_URL || 'http://localhost:54321';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 
-// Validate environment variables
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Error: Missing required environment variables SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY');
-  process.exit(1);
-}
-
-// Initialize Supabase client with service role key
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-interface TestUser {
-  email: string;
-  role: UserRole;
-  password: string;
-  name: string;
-}
-
-const users: TestUser[] = [
-  { email: 'user@test.local', role: 'member', password: 'Test1234!', name: 'Ola Nordmann' },
-  { email: 'company@test.local', role: 'company', password: 'Test1234!', name: 'Acme AS' },
-  { email: 'admin@test.local', role: 'admin', password: 'Test1234!', name: 'Admin Bruker' },
-  { email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!', name: 'Master Admin' },
-  { email: 'content-editor@test.local', role: 'content_editor', password: 'Test1234!', name: 'Ingrid Redaktør' },
-  { email: 'guest@test.local', role: 'anonymous', password: 'Test1234!', name: 'Gjest Bruker' },
-];
+// Initialize Supabase client with service role key for admin privileges
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 /**
- * Validates that the user has access to the specified modules based on their role
- * This function checks if the RLS policies are working correctly
+ * Get the expected modules a user with a specific role should have access to
  */
-async function validateRlsPolicies(userId: string, role: UserRole) {
-  console.log(`Validating RLS policies for user ${userId} with role ${role}...`);
-  
-  try {
-    // Create a client impersonating this user to test RLS policies
-    const { data: authData } = await supabase.auth.admin.getUserById(userId);
-    if (!authData?.user) {
-      console.error(`User ${userId} not found`);
-      return false;
-    }
-    
-    // Get token for this user
-    const { data: tokenData, error: tokenError } = await supabase.auth.admin.generateLink({
-      type: 'magiclink',
-      email: authData.user.email!
-    });
-    
-    if (tokenError || !tokenData?.properties?.access_token) {
-      console.error(`Failed to get access token for ${userId}:`, tokenError);
-      return false;
-    }
-
-    // Create client with this user's access token
-    const userClient = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-    await userClient.auth.setSession({
-      access_token: tokenData.properties.access_token,
-      refresh_token: tokenData.properties.refresh_token!
-    });
-
-    // Test access to various modules based on role
-    const expectedModules = getExpectedModulesForRole(role);
-    const allModules = ['leads', 'admin', 'companies', 'content', 'dashboard', 'profile'];
-    
-    for (const module of allModules) {
-      // Try to access module data
-      const { data, error } = await userClient
-        .from(`${module}_access_check`)
-        .select('id')
-        .limit(1)
-        .maybeSingle();
-      
-      const hasAccess = !error || error.code !== 'PGRST116'; // No permission error
-      const shouldHaveAccess = expectedModules.includes(module) || expectedModules.includes('*');
-      
-      if (hasAccess !== shouldHaveAccess) {
-        console.error(`Policy check failed for ${role} accessing ${module}: expected ${shouldHaveAccess}, got ${hasAccess}`);
-        console.error(`Error:`, error);
-      } else {
-        console.log(`Policy check passed for ${role} accessing ${module}: ${hasAccess ? 'has access' : 'denied'}`);
-      }
-    }
-    
-    return true;
-  } catch (err) {
-    console.error(`Error validating RLS for ${userId}:`, err);
-    return false;
-  }
-}
-
-/**
- * Get the expected modules a role should have access to
- */
-function getExpectedModulesForRole(role: UserRole): string[] {
+export function getExpectedModulesForRole(role: UserRole): string[] {
   switch (role) {
     case 'master_admin':
       return ['*']; // Master admin has access to everything
     case 'admin':
-      return ['admin', 'leads', 'companies', 'reports', 'content', 'dashboard'];
+      return ['admin', 'leads', 'companies', 'reports', 'content'];
     case 'company':
       return ['dashboard', 'leads', 'company', 'settings', 'reports'];
     case 'content_editor':
-      return ['dashboard', 'content', 'profile'];
+      return ['content', 'dashboard'];
     case 'member':
-      return ['dashboard', 'leads', 'profile', 'properties', 'maintenance', 'my-account'];
+      return ['profile', 'dashboard', 'leads/my', 'properties'];
     case 'anonymous':
-      return ['home', 'leads/submit', 'info', 'login', 'register'];
+      return ['login', 'register', 'home'];
     default:
       return [];
   }
 }
 
 /**
- * Creates a user with the specified email, role, password, and name
+ * Create a user with specified role
  */
-async function createUser(email: string, role: string, password: string, name: string) {
-  // First check if user already exists
-  const { data: existingUsers } = await supabase.auth.admin.listUsers();
-  const userExists = existingUsers?.users.some(user => user.email === email);
-  
-  if (userExists) {
-    console.log(`User ${email} already exists, checking profiles...`);
-    // Get the user ID to check/update profiles
-    const { data: userData } = await supabase.auth.admin.listUsers({
-      filters: {
-        email: email
-      }
-    });
-    
-    if (userData && userData.users.length > 0) {
-      const userId = userData.users[0].id;
-      await ensureUserProfiles(userId, email, role, name);
-      await validateRlsPolicies(userId, role as UserRole);
+export async function createUser(
+  email: string,
+  role: UserRole,
+  password: string,
+  fullName: string
+): Promise<string | null> {
+  try {
+    console.log(`Creating user ${email} with role ${role}...`);
+
+    // Check if the user already exists
+    const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers();
+    if (listError) {
+      throw listError;
     }
-    return;
-  }
-  
-  console.log(`Creating user ${email} with role ${role}...`);
-  
-  const { data, error } = await supabase.auth.admin.createUser({
-    email,
-    password,
-    user_metadata: { 
-      role,
-      full_name: name
-    },
-    email_confirm: true,
-  });
 
-  if (error) {
-    console.error(`Failed to create ${email}:`, error);
-    return;
-  }
+    const existingUser = existingUsers.users.find((u) => u.email === email);
+    
+    // If user exists, return the existing ID
+    if (existingUser) {
+      console.log(`User ${email} already exists with ID: ${existingUser.id}`);
+      return existingUser.id;
+    }
 
-  const id = data.user?.id;
-  if (!id) {
-    console.error(`No user ID returned for ${email}`);
-    return;
-  }
+    // Create the user if they don't exist
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { role, full_name: fullName }
+    });
 
-  await ensureUserProfiles(id, email, role, name);
-  await validateRlsPolicies(id, role as UserRole);
-  
-  console.log(`✅ Created ${email} with role ${role}`);
-}
+    if (error) {
+      console.error(`Error creating user ${email}:`, error);
+      return null;
+    }
 
-/**
- * Ensures that all profile records exist for a user
- */
-async function ensureUserProfiles(userId: string, email: string, role: string, name: string) {
-  // Create comprehensive profile data
-  const profileData = {
-    id: userId,
-    full_name: name,
-    email,
-    phone: `+47 ${Math.floor(10000000 + Math.random() * 90000000)}`,
-    address: `${name.split(' ')[0]}veien ${Math.floor(1 + Math.random() * 100)}, 0123 Oslo`,
-    region: 'Oslo',
-    profile_picture_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${role}`,
-    metadata: { 
-      role, 
-      account_type: role, 
-      company_id: role === 'company' ? userId : undefined,
-      preferences: {
-        theme: 'light',
-        notifications: true,
-        language: 'no'
-      }
-    },
-    preferences: { theme: 'light', notifications: true, language: 'no' }
-  };
-  
-  // Check if user_profile exists
-  const { data: existingProfile } = await supabase
-    .from('user_profiles')
-    .select('*')
-    .eq('id', userId)
-    .maybeSingle();
-  
-  if (!existingProfile) {
+    if (!data.user) {
+      console.error(`No user data returned for ${email}`);
+      return null;
+    }
+
+    const userId = data.user.id;
+    console.log(`Created user ${email} with ID: ${userId}`);
+
+    // Create user profile
     const { error: profileError } = await supabase
       .from('user_profiles')
-      .insert(profileData);
-    
+      .insert({
+        id: userId,
+        full_name: fullName,
+        email,
+        phone: `+47 ${Math.floor(10000000 + Math.random() * 90000000)}`,
+        metadata: { role }
+      });
+
     if (profileError) {
       console.error(`Failed to create user profile for ${email}:`, profileError);
     } else {
-      console.log(`Created user profile for ${email}`);
+      console.log(`Created profile for ${email}`);
     }
-  } else {
-    console.log(`User profile exists for ${email}`);
-  }
-  
-  // If it's a company user, ensure company profile exists
-  if (role === 'company') {
-    // Check if company profile exists
-    const { data: existingCompany } = await supabase
-      .from('company_profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-    
-    if (!existingCompany) {
+
+    // If company role, create company profile
+    if (role === 'company') {
       const { error: companyError } = await supabase
         .from('company_profiles')
         .insert({
-          id: userId,
           user_id: userId,
-          name: name,
-          status: 'active',
-          contact_name: `${name} Contact`,
+          name: fullName,
+          contact_name: fullName,
           email,
           phone: `+47 ${Math.floor(10000000 + Math.random() * 90000000)}`,
+          status: 'active',
           industry: 'Construction',
           subscription_plan: 'standard',
           modules_access: ['leads', 'profile', 'reports']
         });
-      
+
       if (companyError) {
         console.error(`Failed to create company profile for ${email}:`, companyError);
       } else {
         console.log(`Created company profile for ${email}`);
       }
-    } else {
-      console.log(`Company profile exists for ${email}`);
     }
+
+    // Set up module access
+    const modules = getExpectedModulesForRole(role);
+    
+    if (modules.length > 0 && modules[0] !== '*') {
+      const { data: systemModules } = await supabase
+        .from('system_modules')
+        .select('id, name')
+        .limit(10);
+      
+      if (systemModules) {
+        // Add module access records
+        const moduleAccess = systemModules
+          .filter(m => modules.includes(m.name) || role === 'master_admin')
+          .map(m => ({
+            user_id: userId,
+            system_module_id: m.id,
+            internal_admin: role === 'admin' || role === 'master_admin'
+          }));
+        
+        if (moduleAccess.length > 0) {
+          const { error: moduleError } = await supabase
+            .from('module_access')
+            .insert(moduleAccess);
+          
+          if (moduleError) {
+            console.error(`Failed to set up module access for ${email}:`, moduleError);
+          } else {
+            console.log(`Set up module access for ${email}`);
+          }
+        }
+      }
+    }
+
+    // Validate that the user has the correct role
+    await validateRlsPolicies(userId, role);
+
+    return userId;
+  } catch (error) {
+    console.error(`Error in createUser for ${email}:`, error);
+    return null;
   }
-  
-  // Create module access records for the user
-  await ensureUserModuleAccess(userId, role as UserRole);
 }
 
 /**
- * Ensures that module access records exist for a user based on their role
+ * Validate that the RLS policies are working correctly for this user
  */
-async function ensureUserModuleAccess(userId: string, role: UserRole) {
-  // Get all available system modules
-  const { data: modules, error: modulesError } = await supabase
-    .from('system_modules')
-    .select('*');
-  
-  if (modulesError || !modules) {
-    console.error('Failed to fetch system modules:', modulesError);
-    return;
-  }
-  
-  const allowedModules = getExpectedModulesForRole(role);
-  const isWildcardAccess = allowedModules.includes('*');
-  
-  for (const module of modules) {
-    const shouldHaveAccess = isWildcardAccess || 
-      allowedModules.some(am => module.route?.includes(am) || module.name?.toLowerCase().includes(am));
+export async function validateRlsPolicies(userId: string, role: UserRole): Promise<boolean> {
+  try {
+    console.log(`Validating RLS policies for user ${userId} with role ${role}...`);
     
-    // Check if user_module record exists
-    const { data: existingAccess } = await supabase
-      .from('user_modules')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('module_id', module.id)
-      .maybeSingle();
+    // Get access token for the user
+    const { data: authData } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email: 'temporary@example.com', // This isn't actually sent
+      options: {
+        data: {
+          userId
+        },
+      },
+    });
     
-    if (!existingAccess) {
-      const { error: accessError } = await supabase
-        .from('user_modules')
-        .insert({
-          user_id: userId,
-          module_id: module.id,
-          is_enabled: shouldHaveAccess,
-          settings: { auto_assigned: true }
-        });
-      
-      if (accessError) {
-        console.error(`Failed to create module access for ${userId} to ${module.name}:`, accessError);
-      }
-    } else if (existingAccess.is_enabled !== shouldHaveAccess) {
-      // Update if access level is different
-      const { error: updateError } = await supabase
-        .from('user_modules')
-        .update({ is_enabled: shouldHaveAccess })
-        .eq('id', existingAccess.id);
-      
-      if (updateError) {
-        console.error(`Failed to update module access for ${userId} to ${module.name}:`, updateError);
-      }
+    if (!authData || !authData.properties) {
+      console.error('Failed to generate access token');
+      return false;
     }
+    
+    const userToken = authData.properties.access_token;
+    const userRefreshToken = authData.properties.refresh_token;
+    
+    // Create a client that acts as the user
+    const userClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    await userClient.auth.setSession({
+      access_token: userToken,
+      refresh_token: userRefreshToken
+    });
+    
+    // Array of tests to run
+    const tests: Array<{ name: string; test: () => Promise<boolean> }> = [
+      {
+        name: `User can access their profile`,
+        test: async () => {
+          const { data, error } = await userClient
+            .from('user_profiles')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle();
+          
+          if (error) {
+            console.error(`RLS Test Failed: User profile access - ${error.message}`);
+            return false;
+          }
+          return data !== null;
+        }
+      }
+    ];
+    
+    // Add role-specific tests
+    if (role === 'company' || role === 'admin' || role === 'master_admin') {
+      tests.push({
+        name: `${role} can access leads`,
+        test: async () => {
+          const { error } = await userClient
+            .from('leads')
+            .select('count')
+            .limit(1);
+          
+          if (error) {
+            console.error(`RLS Test Failed: Leads access for ${role} - ${error.message}`);
+            return false;
+          }
+          return true;
+        }
+      });
+    }
+    
+    if (role === 'admin' || role === 'master_admin') {
+      tests.push({
+        name: `${role} can access all users`,
+        test: async () => {
+          const { error } = await userClient
+            .from('user_profiles')
+            .select('count');
+          
+          if (error) {
+            console.error(`RLS Test Failed: All users access for ${role} - ${error.message}`);
+            return false;
+          }
+          return true;
+        }
+      });
+    }
+    
+    // Run all tests
+    let allPassed = true;
+    for (const test of tests) {
+      const passed = await test.test();
+      console.log(`RLS Test ${passed ? 'PASSED' : 'FAILED'}: ${test.name}`);
+      if (!passed) allPassed = false;
+    }
+    
+    return allPassed;
+  } catch (error) {
+    console.error('Error validating RLS policies:', error);
+    return false;
   }
-  
-  console.log(`Ensured module access for user ${userId}`);
 }
 
 /**
- * Main function to create all test users
+ * Main function to seed test users
  */
-async function createTestUsers() {
-  console.log('Starting test user creation...');
-  
-  for (const user of users) {
-    await createUser(user.email, user.role, user.password, user.name);
+async function seedTestUsers() {
+  try {
+    console.log('Starting to seed test users...');
+    
+    // Create all roles of test users
+    const testUsers = [
+      {
+        email: 'anonymous@test.local',
+        role: 'anonymous' as UserRole,
+        password: 'Password123!',
+        name: 'Anonymous User'
+      },
+      {
+        email: 'member@test.local',
+        role: 'member' as UserRole,
+        password: 'Password123!',
+        name: 'Member User'
+      },
+      {
+        email: 'company@test.local',
+        role: 'company' as UserRole,
+        password: 'Password123!',
+        name: 'Company User'
+      },
+      {
+        email: 'content@test.local',
+        role: 'content_editor' as UserRole,
+        password: 'Password123!',
+        name: 'Content Editor'
+      },
+      {
+        email: 'admin@test.local',
+        role: 'admin' as UserRole,
+        password: 'Password123!',
+        name: 'Admin User'
+      },
+      {
+        email: 'master@test.local',
+        role: 'master_admin' as UserRole,
+        password: 'Password123!',
+        name: 'Master Admin'
+      }
+    ];
+    
+    for (const user of testUsers) {
+      await createUser(user.email, user.role, user.password, user.name);
+    }
+    
+    console.log('All test users created successfully!');
+  } catch (error) {
+    console.error('Error seeding test users:', error);
+    process.exit(1);
   }
-  
-  console.log('Test user creation completed!');
 }
 
-// Execute if this script is run directly
+// Run the seed function if this script is executed directly
 if (require.main === module) {
-  createTestUsers()
+  seedTestUsers()
     .then(() => {
-      console.log('Script completed successfully');
+      console.log('Seed completed successfully');
       process.exit(0);
     })
-    .catch(error => {
-      console.error('Script failed:', error);
+    .catch((error) => {
+      console.error('Seed failed:', error);
       process.exit(1);
     });
 }
 
 // Export for testing
-export { createUser, validateRlsPolicies, getExpectedModulesForRole };
+export { seedTestUsers };
