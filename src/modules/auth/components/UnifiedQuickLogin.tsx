@@ -7,9 +7,10 @@ import { toast } from '@/hooks/use-toast';
 
 interface QuickLoginProps {
   redirectTo?: string;
+  onSuccess?: () => void;
 }
 
-export const UnifiedQuickLogin: React.FC<QuickLoginProps> = ({ redirectTo }) => {
+export const UnifiedQuickLogin: React.FC<QuickLoginProps> = ({ redirectTo, onSuccess }) => {
   if (import.meta.env.MODE !== 'development') {
     return null; // Only show in development mode
   }
@@ -23,6 +24,11 @@ export const UnifiedQuickLogin: React.FC<QuickLoginProps> = ({ redirectTo }) => 
       });
       
       await setupTestUsers(role);
+      
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
       
       // Redirect is handled by setupTestUsers through page reload
     } catch (error) {
