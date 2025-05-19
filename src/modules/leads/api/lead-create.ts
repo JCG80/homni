@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, LeadFormValues, LEAD_STATUSES } from '@/types/leads';
+import { Lead, LeadFormValues, LEAD_STATUSES, LeadStatus } from '@/types/leads';
 
 // Create a new lead
 export const createLead = async (leadData: LeadFormValues, userId: string): Promise<Lead> => {
@@ -22,7 +22,9 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
  */
 export async function insertLead(lead: Partial<Lead>) {
   // Validate the status if provided
-  if (lead.status && !LEAD_STATUSES.includes(lead.status)) {
+  const leadStatus = (lead.status || 'new') as LeadStatus;
+  
+  if (lead.status && !LEAD_STATUSES.includes(lead.status as typeof LEAD_STATUSES[number])) {
     throw new Error(`Invalid status: ${lead.status}. Must be one of: ${LEAD_STATUSES.join(', ')}`);
   }
 
@@ -46,7 +48,7 @@ export async function insertLead(lead: Partial<Lead>) {
         title: lead.title,
         description: lead.description,
         category: lead.category,
-        status: lead.status ?? 'new',
+        status: leadStatus,
         company_id: lead.company_id,
         submitted_by: currentUserId, // Always use the current authenticated user's ID
         created_at: new Date().toISOString(),

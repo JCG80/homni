@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Home, LayoutDashboard, Users, Settings, LogOut, FileText, 
-  Database, Shield, Building, Coins, HelpCircle, LayoutKanban
+  Database, Shield, Building, Coins, HelpCircle, Kanban
 } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { SidebarContent } from './SidebarContent';
@@ -93,7 +93,7 @@ export const Sidebar = () => {
               <SidebarNavLink to="/leads" icon={FileText}>
                 Forespørsler
               </SidebarNavLink>
-              <SidebarNavLink to="/leads/kanban" icon={LayoutKanban}>
+              <SidebarNavLink to="/leads/kanban" icon={Kanban}>
                 Kanban-tavle
               </SidebarNavLink>
             </SidebarNavSection>

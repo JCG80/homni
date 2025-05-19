@@ -47,10 +47,13 @@ export const useKanbanBoard = () => {
       // Fetch leads
       const fetchedLeads = await fetchLeads(companyId, userId);
       
-      // Ensure lead status is a valid LeadStatus
-      const typedLeads = fetchedLeads?.map(lead => ({
+      // Convert fetched leads to proper Lead type
+      const typedLeads: Lead[] = fetchedLeads?.map(lead => ({
         ...lead,
-        status: lead.status as LeadStatus
+        status: lead.status as LeadStatus,
+        metadata: lead.metadata ? 
+          (typeof lead.metadata === 'object' ? lead.metadata : JSON.parse(lead.metadata as string)) 
+          : {}
       })) || [];
       
       setLeads(typedLeads);

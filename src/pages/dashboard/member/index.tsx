@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { LayoutKanban } from 'lucide-react';
+import { Kanban } from 'lucide-react';
 
 const MemberDashboard = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const MemberDashboard = () => {
             onClick={() => navigate('/leads/kanban')}
             className="w-full"
           >
-            <LayoutKanban className="mr-2 h-4 w-4" />
+            <Kanban className="mr-2 h-4 w-4" />
             Gå til Kanban
           </Button>
         </div>
