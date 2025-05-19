@@ -23,7 +23,8 @@ export const useUserModules = () => {
       
       try {
         // Call the RPC function to get enabled modules
-        const { data: enabledModules, error: rpcError } = await supabase.rpc('get_user_enabled_modules');
+        const { data: enabledModules, error: rpcError } = await supabase
+          .rpc('get_user_enabled_modules');
         
         if (rpcError) throw rpcError;
         
@@ -99,9 +100,10 @@ export const useModuleAccess = (moduleName: string) => {
       
       try {
         // Call the RPC function to check module access
-        const { data, error: rpcError } = await supabase.rpc('has_module_access', {
-          module_name: moduleName
-        });
+        const { data, error: rpcError } = await supabase
+          .rpc('has_module_access', {
+            module_name: moduleName
+          });
         
         if (rpcError) throw rpcError;
         

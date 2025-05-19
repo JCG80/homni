@@ -25,15 +25,16 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
       }
       
       try {
-        // Call the RPC function directly
-        const { data, error: rpcError } = await supabase.rpc('is_feature_enabled', {
-          flag_name: flagName
-        });
+        // Call the RPC function directly with proper typing
+        const { data, error: rpcError } = await supabase
+          .rpc('is_feature_enabled', {
+            flag_name: flagName
+          });
         
         if (rpcError) throw rpcError;
         
         // data will be a boolean from the RPC function
-        setIsEnabled(data === true ? true : fallbackValue);
+        setIsEnabled(data === true);
         setError(null);
       } catch (err) {
         console.error('Error checking feature flag:', err);
