@@ -1,17 +1,25 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { TestUser } from '../src/modules/auth/types/types';
+import { UserRole } from '../src/modules/auth/types/types';
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+interface TestUser {
+  email: string;
+  role: UserRole;
+  password: string;
+  name: string;
+}
+
 const users: TestUser[] = [
-  { email: 'user@test.local', role: 'member', password: 'Test1234!', name: 'Test User' },
-  { email: 'company@test.local', role: 'company', password: 'Test1234!', name: 'Test Company' },
-  { email: 'admin@test.local', role: 'admin', password: 'Test1234!', name: 'Test Admin' },
-  { email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!', name: 'Test Master Admin' },
-  { email: 'provider@test.local', role: 'provider', password: 'Test1234!', name: 'Test Provider' },
+  { email: 'user@test.local', role: 'member', password: 'Test1234!', name: 'Ola Nordmann' },
+  { email: 'company@test.local', role: 'company', password: 'Test1234!', name: 'Acme AS' },
+  { email: 'admin@test.local', role: 'admin', password: 'Test1234!', name: 'Admin Bruker' },
+  { email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!', name: 'Master Admin' },
+  { email: 'content-editor@test.local', role: 'content_editor', password: 'Test1234!', name: 'Ingrid Redaktør' },
+  { email: 'guest@test.local', role: 'anonymous', password: 'Test1234!', name: 'Gjest Bruker' },
 ];
 
 async function createUser(email: string, role: string, password: string, name: string) {
@@ -53,7 +61,7 @@ async function createUser(email: string, role: string, password: string, name: s
     address: `${name.split(' ')[0]}veien ${Math.floor(1 + Math.random() * 100)}, 0123 Oslo`,
     region: 'Oslo',
     profile_picture_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${role}`,
-    metadata: { role },
+    metadata: { role, account_type: role, company_id: role === 'company' ? id : undefined },
     preferences: { theme: 'light', notifications: true, language: 'no' }
   };
   

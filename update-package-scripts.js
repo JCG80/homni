@@ -9,6 +9,7 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 // Add or update scripts
 packageJson.scripts = {
   ...packageJson.scripts,
+  "seed:users": "ts-node scripts/seedTestUsers.ts",
   "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
   "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
   "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css}\"",
