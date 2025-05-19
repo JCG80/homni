@@ -18,10 +18,10 @@ export const useAllUsers = () => {
 
       try {
         setLoading(true);
-        // First, get user profiles which contain role information
+        // First, get user profiles 
         const { data: profiles, error: profilesError } = await supabase
           .from('user_profiles')
-          .select('id, full_name, email, metadata, role');
+          .select('id, full_name, email, metadata');
 
         if (profilesError) {
           throw new Error(`Failed to fetch profiles: ${profilesError.message}`);
@@ -29,11 +29,9 @@ export const useAllUsers = () => {
 
         // Convert profiles to TestUser format
         const formattedUsers: TestUser[] = profiles.map(profile => {
-          // Extract role from profile or metadata
+          // Extract role from metadata
           let role: UserRole = 'member';
-          if (profile.role) {
-            role = profile.role as UserRole;
-          } else if (profile.metadata && typeof profile.metadata === 'object') {
+          if (profile.metadata && typeof profile.metadata === 'object') {
             if (profile.metadata.role) {
               role = profile.metadata.role as UserRole;
             }

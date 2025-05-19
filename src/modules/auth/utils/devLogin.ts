@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 export interface TestUser {
+  id: string;
   name: string;
   email: string;
   role: UserRole;
@@ -17,11 +18,11 @@ export interface DevLoginResult {
 
 // Make sure these match exactly what's in the database
 export const TEST_USERS: TestUser[] = [
-  { name: 'Test Master Admin', email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!' },
-  { name: 'Test Admin', email: 'admin@test.local', role: 'admin', password: 'Test1234!' },
-  { name: 'Test Company', email: 'company@test.local', role: 'company', password: 'Test1234!' },
-  { name: 'Test User', email: 'user@test.local', role: 'member', password: 'Test1234!' },
-  { name: 'Test Provider', email: 'provider@test.local', role: 'company', password: 'Test1234!' }
+  { id: 'master-admin', name: 'Test Master Admin', email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!' },
+  { id: 'admin', name: 'Test Admin', email: 'admin@test.local', role: 'admin', password: 'Test1234!' },
+  { id: 'company', name: 'Test Company', email: 'company@test.local', role: 'company', password: 'Test1234!' },
+  { id: 'user', name: 'Test User', email: 'user@test.local', role: 'member', password: 'Test1234!' },
+  { id: 'provider', name: 'Test Provider', email: 'provider@test.local', role: 'company', password: 'Test1234!' }
 ];
 
 /**
