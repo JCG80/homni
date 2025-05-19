@@ -13,7 +13,8 @@ packageJson.scripts = {
   "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
   "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css}\"",
   "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css}\"",
-  "test:e2e": "playwright test"
+  "test:e2e": "playwright test",
+  "deps:check": "npm ls"
 };
 
 // Write the updated package.json back to disk
