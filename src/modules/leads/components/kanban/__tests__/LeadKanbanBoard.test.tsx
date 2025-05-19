@@ -38,6 +38,10 @@ describe('LeadKanbanBoard', () => {
     status: 'new',
     created_at: new Date().toISOString(),
     submitted_by: 'user-123',
+    customer_name: 'John Doe',
+    customer_email: 'john@example.com',
+    customer_phone: '123-456-7890',
+    service_type: 'Insurance Quote',
   };
 
   const mockColumns: KanbanColumn[] = [

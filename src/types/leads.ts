@@ -26,9 +26,9 @@ export type LeadPriority = 'low' | 'medium' | 'high' | 'urgent' | null;
 // Main Lead interface matching the database schema
 export interface Lead {
   id: string;
-  title?: string;
+  title: string;
   description: string;
-  category?: string;
+  category: string;
   status: LeadStatus;
   priority?: LeadPriority;
   content?: any;
@@ -47,9 +47,9 @@ export interface Lead {
 
 // Form values for creating/editing leads
 export interface LeadFormValues {
-  title?: string;
+  title: string;
   description: string;
-  category?: string;
+  category: string;
   status?: LeadStatus;
   priority?: LeadPriority;
   customer_name?: string;

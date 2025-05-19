@@ -7,7 +7,14 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
   const { data, error } = await supabase
     .from('leads')
     .insert({
-      ...leadData,
+      title: leadData.title,
+      description: leadData.description,
+      category: leadData.category,
+      status: leadData.status || 'new',
+      customer_name: leadData.customer_name || '',
+      customer_email: leadData.customer_email || '',
+      customer_phone: leadData.customer_phone || '',
+      service_type: leadData.service_type || '',
       submitted_by: userId,
     })
     .select()
@@ -45,15 +52,21 @@ export async function insertLead(lead: Partial<Lead>) {
     .from('leads')
     .insert([
       {
-        title: lead.title,
-        description: lead.description,
-        category: lead.category,
+        title: lead.title || 'Untitled Lead',
+        description: lead.description || '',
+        category: lead.category || 'general',
         status: leadStatus,
+        customer_name: lead.customer_name || '',
+        customer_email: lead.customer_email || '',
+        customer_phone: lead.customer_phone || '',
+        service_type: lead.service_type || '',
         company_id: lead.company_id,
         submitted_by: currentUserId, // Always use the current authenticated user's ID
         created_at: new Date().toISOString(),
         ...(lead.priority && { priority: lead.priority }),
         ...(lead.content && { content: lead.content }),
+        ...(lead.lead_type && { lead_type: lead.lead_type }),
+        ...(lead.metadata && { metadata: lead.metadata }),
       }
     ])
     .select()
