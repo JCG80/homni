@@ -1,10 +1,10 @@
 
-import { UserRole } from './types';
-
 /**
  * Map of user roles to human-readable names
  * Used for displaying role names in the UI
  */
+import { UserRole } from './types';
+
 export const roleNames: Partial<Record<UserRole, string>> = {
   anonymous: 'Anonym',
   member: 'Bruker',
