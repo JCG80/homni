@@ -18,7 +18,7 @@ import { TestUser } from '../types/types';
 import { toast } from '@/hooks/use-toast';
 import { Key, Search, Users, ChevronRight } from 'lucide-react';
 import { useAllUsers } from '../hooks/useAllUsers';
-import { impersonateUser } from '../utils/impersonateUser';
+import { smartDevLogin } from '../utils/passwordlessLogin';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 
@@ -56,12 +56,8 @@ export const QuickLoginEnhanced: React.FC<QuickLoginEnhancedProps> = ({ onSucces
 
   const handleLoginAs = async (user: TestUser) => {
     try {
-      const result = await impersonateUser(user);
+      const result = await smartDevLogin(user);
       if (result.success) {
-        toast({
-          title: "Login successful",
-          description: `Logged in as ${user.name || user.email} (${user.role})`,
-        });
         if (onSuccess) onSuccess();
       } else {
         toast({
@@ -136,7 +132,7 @@ export const QuickLoginEnhanced: React.FC<QuickLoginEnhancedProps> = ({ onSucces
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="capitalize">
                     <Users className="mr-2 h-4 w-4" />
-                    {role} ({roleUsers.length})
+                    {role.replace('_', ' ')} ({roleUsers.length})
                     <ChevronRight className="ml-auto h-4 w-4" />
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
@@ -159,7 +155,7 @@ export const QuickLoginEnhanced: React.FC<QuickLoginEnhancedProps> = ({ onSucces
                   data-test-id={`quick-login-user-${user.id}`}
                 >
                   {user.name || user.email}
-                  <Badge className="ml-2 text-xs" variant="outline">{role}</Badge>
+                  <Badge className="ml-2 text-xs" variant="outline">{role.replace('_', ' ')}</Badge>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>

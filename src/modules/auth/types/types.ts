@@ -62,7 +62,7 @@ export interface TestUser {
   name: string;
   email: string;
   role: UserRole;
-  password: string;
+  password?: string; // Make password optional for password-less login
   company_id?: string;
 }
 

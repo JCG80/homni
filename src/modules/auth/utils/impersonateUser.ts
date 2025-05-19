@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { TestUser } from '../types/types';
 import { toast } from '@/hooks/use-toast';
+import { smartDevLogin } from './passwordlessLogin';
 
 export interface ImpersonationResult {
   success: boolean;
@@ -22,27 +23,8 @@ export const impersonateUser = async (user: TestUser): Promise<ImpersonationResu
   }
 
   try {
-    // Sign out any existing user
-    await supabase.auth.signOut();
-
-    // For development, we'll use the existing devLogin function
-    // which signs in with email/password
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: user.password,
-    });
-
-    if (error) {
-      console.error('Impersonation error details:', error);
-      throw error;
-    }
-
-    toast({
-      title: 'Impersonation successful',
-      description: `You are now logged in as ${user.name || user.email} (${user.role})`,
-    });
-
-    return { success: true };
+    // Use our smart login that tries passwordless first, then falls back to password
+    return await smartDevLogin(user);
   } catch (error: any) {
     console.error('Impersonation error:', error);
     return { success: false, error };

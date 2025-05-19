@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { TestUser } from '../types/types';
 import { UserRole } from '../utils/roles/types';
 
+/**
+ * Hook to fetch all available test users from the database
+ */
 export const useAllUsers = () => {
   const [users, setUsers] = useState<TestUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,10 +21,11 @@ export const useAllUsers = () => {
 
       try {
         setLoading(true);
-        // First, get user profiles 
+        // Query user profiles directly - now that we have ensured they exist and have the correct metadata
         const { data: profiles, error: profilesError } = await supabase
           .from('user_profiles')
-          .select('id, full_name, email, metadata');
+          .select('id, full_name, email, metadata')
+          .filter('email', 'ilike', '%@test.local');
 
         if (profilesError) {
           throw new Error(`Failed to fetch profiles: ${profilesError.message}`);
@@ -32,7 +36,6 @@ export const useAllUsers = () => {
           // Extract role from metadata
           let role: UserRole = 'member';
           if (profile.metadata && typeof profile.metadata === 'object') {
-            // Since metadata can be an object or array, we need to check it's an object first
             const metadataObj = profile.metadata as Record<string, any>;
             if (metadataObj.role) {
               role = metadataObj.role as UserRole;
@@ -41,11 +44,10 @@ export const useAllUsers = () => {
 
           return {
             id: profile.id,
-            name: profile.full_name || '',
+            name: profile.full_name || profile.email.split('@')[0],
             email: profile.email || '',
             role,
-            // Default password for dev login - not actually used for authentication
-            password: 'Test1234!'  
+            // No password needed for passwordless login
           };
         });
 
@@ -54,7 +56,8 @@ export const useAllUsers = () => {
           'master_admin': 1,
           'admin': 2,
           'company': 3,
-          'member': 4
+          'member': 4,
+          'content_editor': 5
         };
 
         formattedUsers.sort((a, b) => {
