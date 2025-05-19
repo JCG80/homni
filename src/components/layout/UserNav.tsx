@@ -8,18 +8,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { DevProfileSwitcher } from '@/modules/auth/components/DevProfileSwitcher';
-import { Check } from 'lucide-react';
+import { Check, Users, Layers, ActivitySquare, Settings, LogOut } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export function UserNav() {
   const { 
@@ -28,7 +35,9 @@ export function UserNav() {
     isDevMode, 
     switchDevUser, 
     role,
-    logout
+    logout,
+    isAdmin,
+    isMasterAdmin
   } = useAuth();
   const navigate = useNavigate();
   
@@ -82,6 +91,14 @@ export function UserNav() {
     }
   };
 
+  const toggleDevMode = () => {
+    // This function would need to be implemented in the Auth context
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('devMode', isDevMode ? 'false' : 'true');
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="flex items-center gap-2">
       {/* Show dev profile switcher only in development mode */}
@@ -121,17 +138,56 @@ export function UserNav() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                  Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/profile')}>
-                  Min profil
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/my-account')}>
-                  Min konto
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                    <ActivitySquare className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <Users className="h-4 w-4 mr-2" />
+                    Min profil
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/my-account')}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Min konto
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                
+                {(isAdmin || isMasterAdmin) && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={() => navigate('/admin/leads')}>
+                        Admin Leads
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/admin/feature-flags')}>
+                        Feature Flags
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/admin/system-modules')}>
+                        System Modules
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </>
+                )}
+                
+                {(isAdmin || isMasterAdmin) && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Developer Tools</DropdownMenuLabel>
+                    <DropdownMenuItem className="flex items-center justify-between cursor-default">
+                      <Label htmlFor="dev-mode" className="cursor-pointer">Dev Mode</Label>
+                      <Switch 
+                        id="dev-mode" 
+                        checked={isDevMode} 
+                        onCheckedChange={toggleDevMode}
+                      />
+                    </DropdownMenuItem>
+                  </>
+                )}
+                
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
                   Logg ut
                 </DropdownMenuItem>
               </DropdownMenuContent>

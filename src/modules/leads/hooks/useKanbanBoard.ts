@@ -1,169 +1,144 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/modules/auth/hooks';
 import { fetchLeads, updateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
-import { toast } from '@/hooks/use-toast';
-import { Lead, LeadStatus } from '@/types/leads';
+import { LeadStatus, Lead, LeadCounts } from '@/types/leads';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export interface KanbanColumn {
-  id: string;
+  id: LeadStatus;
   title: string;
   leads: Lead[];
 }
 
-export interface LeadCounts {
-  new: number;
-  in_progress: number;
-  won: number;
-  lost: number;
-}
-
 export const useKanbanBoard = () => {
-  const [columns, setColumns] = useState<KanbanColumn[]>([]);
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, isAuthenticated, profile, role, isCompany, isMember } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
-  const [leadCounts, setLeadCounts] = useState<LeadCounts>({ new: 0, in_progress: 0, won: 0, lost: 0 });
-  const { user, role } = useAuth();
+  const queryClient = useQueryClient();
   
-  // Status definitions
-  const columnDefinitions = [
-    { id: 'new', title: 'Nye' },
-    { id: 'in_progress', title: 'Pågående' },
-    { id: 'won', title: 'Vunnet' },
-    { id: 'lost', title: 'Tapt' }
-  ];
+  // Fetch leads based on user role
+  const { 
+    data: leads = [], 
+    isLoading, 
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['leads', user?.id, user?.company_id, role],
+    queryFn: async () => {
+      try {
+        // For company users, filter by company_id
+        // For member users, filter by user_id
+        const companyId = isCompany ? user?.company_id : undefined;
+        const userId = isMember ? user?.id : undefined;
+        
+        if (!companyId && !userId && isAuthenticated) {
+          console.warn('No company ID or user ID available for leads query');
+        }
+        
+        return await fetchLeads(companyId, userId);
+      } catch (error) {
+        console.error('Error fetching leads:', error);
+        throw error;
+      }
+    },
+    enabled: isAuthenticated && (!!user?.company_id || !!user?.id)
+  });
   
-  // Load leads
-  const loadLeads = async () => {
-    setIsLoading(true);
-    try {
-      if (!user) return;
-      
-      // For company users, use company_id, otherwise use user_id
-      const companyId = user.company_id;
-      const userId = user.id;
-      
-      // Fetch leads
-      const fetchedLeads = await fetchLeads(companyId, userId);
-      
-      // Convert fetched leads to proper Lead type
-      const typedLeads: Lead[] = fetchedLeads?.map(lead => ({
-        ...lead,
-        status: lead.status as LeadStatus,
-        metadata: lead.metadata ? 
-          (typeof lead.metadata === 'object' ? lead.metadata : JSON.parse(lead.metadata as string)) 
-          : {}
-      })) || [];
-      
-      setLeads(typedLeads);
-      
-      // Get lead counts by status
-      const counts = await getLeadCountsByStatus(companyId, userId);
-      setLeadCounts(counts);
-      
-      // Organize leads into columns
-      organizeLeadsIntoColumns(typedLeads);
-    } catch (error) {
-      console.error("Error loading kanban data:", error);
+  // Fetch lead counts
+  const { 
+    data: leadCountsData = { new: 0, in_progress: 0, won: 0, lost: 0 },
+    refetch: refetchCounts
+  } = useQuery({
+    queryKey: ['lead-counts', user?.id, user?.company_id, role],
+    queryFn: async () => {
+      try {
+        const companyId = isCompany ? user?.company_id : undefined;
+        const userId = isMember ? user?.id : undefined;
+        
+        if (!companyId && !userId && isAuthenticated) {
+          return { new: 0, in_progress: 0, won: 0, lost: 0 } as LeadCounts;
+        }
+        
+        return await getLeadCountsByStatus(companyId, userId);
+      } catch (error) {
+        console.error('Error fetching lead counts:', error);
+        return { new: 0, in_progress: 0, won: 0, lost: 0 } as LeadCounts;
+      }
+    },
+    enabled: isAuthenticated && (!!user?.company_id || !!user?.id)
+  });
+  
+  // Update lead status mutation
+  const { mutate } = useMutation({
+    mutationFn: ({ leadId, newStatus }: { leadId: string; newStatus: LeadStatus }) => {
+      setIsUpdating(true);
+      return updateLeadStatus(leadId, newStatus);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+      queryClient.invalidateQueries({ queryKey: ['lead-counts'] });
       toast({
-        title: "Feil ved lasting av Kanban",
-        description: "Kunne ikke laste inn leads. Vennligst prøv igjen.",
+        title: "Status updated",
+        description: "Lead status has been updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update failed",
+        description: error.message || "Failed to update lead status",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Organize leads into columns
-  const organizeLeadsIntoColumns = (leads: Lead[]) => {
-    const newColumns = columnDefinitions.map(col => ({
-      ...col,
-      leads: leads.filter(lead => lead.status === col.id)
-    }));
-    
-    setColumns(newColumns);
-  };
-  
-  // Update lead status
-  const handleUpdateLeadStatus = async (leadId: string, newStatus: LeadStatus) => {
-    // Find the lead to update
-    const leadToUpdate = leads.find(lead => lead.id === leadId);
-    if (!leadToUpdate) return;
-    
-    // Store the original status for rollback if needed
-    const originalStatus = leadToUpdate.status;
-    
-    // Optimistically update UI
-    const updatedLeads = leads.map(lead => 
-      lead.id === leadId ? { ...lead, status: newStatus } : lead
-    );
-    
-    setLeads(updatedLeads);
-    organizeLeadsIntoColumns(updatedLeads);
-    
-    // Update lead counts optimistically
-    const newCounts = { ...leadCounts };
-    if (originalStatus === 'new') newCounts.new--;
-    if (originalStatus === 'in_progress') newCounts.in_progress--;
-    if (originalStatus === 'won') newCounts.won--;
-    if (originalStatus === 'lost') newCounts.lost--;
-    
-    if (newStatus === 'new') newCounts.new++;
-    if (newStatus === 'in_progress') newCounts.in_progress++;
-    if (newStatus === 'won') newCounts.won++;
-    if (newStatus === 'lost') newCounts.lost++;
-    
-    setLeadCounts(newCounts);
-    
-    // Show updating indicator
-    setIsUpdating(true);
-    
-    try {
-      // Update in database
-      await updateLeadStatus(leadId, newStatus);
-      
-      toast({
-        title: "Lead oppdatert",
-        description: `Status endret til ${newStatus}`,
-      });
-    } catch (error) {
-      console.error("Failed to update lead status:", error);
-      
-      // Roll back optimistic update
-      const rolledBackLeads = leads.map(lead => 
-        lead.id === leadId ? { ...lead, status: originalStatus } : lead
-      );
-      
-      setLeads(rolledBackLeads);
-      organizeLeadsIntoColumns(rolledBackLeads);
-      
-      // Roll back lead counts
-      setLeadCounts(leadCounts);
-      
-      toast({
-        title: "Feil ved oppdatering",
-        description: "Kunne ikke oppdatere lead-status. Status er rullet tilbake.",
-        variant: "destructive"
-      });
-    } finally {
+    },
+    onSettled: () => {
       setIsUpdating(false);
     }
+  });
+  
+  // Create columns with leads organized by status
+  const columns = useMemo(() => {
+    const statusMap: Record<LeadStatus, { id: LeadStatus, title: string }> = {
+      'new': { id: 'new', title: 'New' },
+      'in_progress': { id: 'in_progress', title: 'In Progress' },
+      'won': { id: 'won', title: 'Won' },
+      'lost': { id: 'lost', title: 'Lost' },
+      'archived': { id: 'archived', title: 'Archived' }
+    };
+    
+    const columnsData: KanbanColumn[] = [];
+    
+    // Create columns in specific order (excluding archived)
+    ['new', 'in_progress', 'won', 'lost'].forEach(status => {
+      const statusKey = status as LeadStatus;
+      columnsData.push({
+        id: statusKey,
+        title: statusMap[statusKey].title,
+        leads: leads.filter(lead => lead.status === statusKey)
+      });
+    });
+    
+    return columnsData;
+  }, [leads]);
+  
+  // Handle updating lead status
+  const updateLeadStatus = (leadId: string, newStatus: LeadStatus) => {
+    mutate({ leadId, newStatus });
   };
   
-  // Load data on component mount
-  useEffect(() => {
-    loadLeads();
-  }, [user]);
+  // Refresh all data
+  const refreshLeads = () => {
+    refetch();
+    refetchCounts();
+  };
   
   return {
     columns,
     leads,
     isLoading,
     isUpdating,
-    leadCounts,
-    updateLeadStatus: handleUpdateLeadStatus,
-    refreshLeads: loadLeads
+    error,
+    leadCounts: leadCountsData,
+    updateLeadStatus,
+    refreshLeads
   };
 };

@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -24,6 +25,8 @@ import { UserRole } from './modules/auth/utils/roles';
 import RoleManagementPage from './modules/admin/pages/RoleManagementPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import Index from './pages/Index';
+import { LeadKanbanPage } from './modules/leads/pages/LeadKanbanPage';
+import { FeatureFlagsAdminPage } from './modules/feature_flags/pages/FeatureFlagsAdminPage';
 
 // Import SystemModulesPage
 import { SystemModulesPage } from './modules/system/pages/SystemModulesPage';
@@ -77,6 +80,16 @@ export const AppRoutes = () => {
         
         {/* Companies list route */}
         <Route path="/companies" element={<CompanyListPage />} />
+        
+        {/* Lead Kanban route */}
+        <Route path="/leads/kanban" element={<LeadKanbanPage />} />
+        
+        {/* Feature Flags Admin UI */}
+        <Route path="/admin/feature-flags" element={
+          <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
+            <FeatureFlagsAdminPage />
+          </ProtectedRoute>
+        } />
         
         {/* Documentation routes */}
         {docsRoutes}

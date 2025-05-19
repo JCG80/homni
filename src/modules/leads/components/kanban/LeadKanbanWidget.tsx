@@ -5,8 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { LeadKanbanBoard } from './LeadKanbanBoard';
-import { useKanbanBoard, LeadCounts } from '../../hooks/useKanbanBoard';
-import { LeadStatus } from '@/types/leads';
+import { useKanbanBoard } from '../../hooks/useKanbanBoard';
 
 interface LeadKanbanWidgetProps {
   title?: React.ReactNode;
@@ -14,7 +13,7 @@ interface LeadKanbanWidgetProps {
 }
 
 export const LeadKanbanWidget: React.FC<LeadKanbanWidgetProps> = ({ 
-  title = "Mine Leads",
+  title = "My Leads",
   className 
 }) => {
   const { 
@@ -43,15 +42,15 @@ export const LeadKanbanWidget: React.FC<LeadKanbanWidgetProps> = ({
               onClick={handleRefresh}
             >
               <RefreshCw className="h-4 w-4" />
-              <span className="sr-only">Oppdater</span>
+              <span className="sr-only">Refresh</span>
             </Button>
           </div>
           
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">Nye: {leadCounts.new}</Badge>
-            <Badge variant="secondary">Pågående: {leadCounts.in_progress}</Badge>
-            <Badge variant="secondary">Vunnet: {leadCounts.won}</Badge>
-            <Badge variant="secondary">Tapt: {leadCounts.lost}</Badge>
+            <Badge variant="secondary">New: {leadCounts.new}</Badge>
+            <Badge variant="secondary">In Progress: {leadCounts.in_progress}</Badge>
+            <Badge variant="secondary">Won: {leadCounts.won}</Badge>
+            <Badge variant="secondary">Lost: {leadCounts.lost}</Badge>
           </div>
         </div>
       }

@@ -1,37 +1,81 @@
 
 import React from 'react';
+import { DashboardLayout } from '@/components/dashboard';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Kanban } from 'lucide-react';
+import { Kanban, BarChart, MessageSquare } from 'lucide-react';
+import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { useFeatureFlag } from '@/modules/feature_flags/hooks/useFeatureFlag';
+import { LeadKanbanWidget } from '@/modules/leads/components/kanban/LeadKanbanWidget';
 
-const MemberDashboard = () => {
+const MemberDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { isEnabled: showKanban } = useFeatureFlag('member_dashboard_kanban', true);
   
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Medlemsdashboard</h1>
-      
+    <DashboardLayout title="Medlemsdashboard">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {/* Quick access cards */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-medium mb-4">Lead Kanban</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Administrer dine leads med vårt Kanban-bord. Dra og slipp leads mellom kolonner for å endre status.
-          </p>
+        <DashboardWidget title="Lead Kanban">
+          <div className="flex items-center gap-3 mb-4">
+            <Kanban className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">Lead Management</h3>
+              <p className="text-sm text-muted-foreground">Manage your leads with our Kanban board</p>
+            </div>
+          </div>
           <Button 
             onClick={() => navigate('/leads/kanban')}
             className="w-full"
           >
             <Kanban className="mr-2 h-4 w-4" />
-            Gå til Kanban
+            Go to Kanban
           </Button>
-        </div>
+        </DashboardWidget>
         
-        {/* Other dashboard content can go here */}
+        <DashboardWidget title="Statistics">
+          <div className="flex items-center gap-3 mb-4">
+            <BarChart className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">Performance Metrics</h3>
+              <p className="text-sm text-muted-foreground">View your lead conversion rates</p>
+            </div>
+          </div>
+          <Button 
+            onClick={() => navigate('/statistics')}
+            className="w-full"
+            variant="outline"
+          >
+            <BarChart className="mr-2 h-4 w-4" />
+            View Statistics
+          </Button>
+        </DashboardWidget>
+        
+        <DashboardWidget title="Support">
+          <div className="flex items-center gap-3 mb-4">
+            <MessageSquare className="h-8 w-8 text-primary" />
+            <div>
+              <h3 className="font-medium">Contact Support</h3>
+              <p className="text-sm text-muted-foreground">Get help from our support team</p>
+            </div>
+          </div>
+          <Button 
+            onClick={() => navigate('/support')}
+            className="w-full"
+            variant="outline"
+          >
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Contact Support
+          </Button>
+        </DashboardWidget>
       </div>
       
-      {/* Rest of dashboard content */}
-    </div>
+      {showKanban && (
+        <div className="mb-8">
+          <LeadKanbanWidget />
+        </div>
+      )}
+    </DashboardLayout>
   );
 };
 
