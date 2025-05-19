@@ -222,3 +222,65 @@ jobs:
       - name: Check for outdated packages
         run: npm outdated
         continue-on-error: true
+
+  deploy-staging:
+    needs: [build, validate-migrations]
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: dist
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      - name: Deploy to staging
+        run: echo "Deploying to staging environment..."
+        # Add your actual deployment command here
+      
+      - name: Apply migrations to staging
+        run: echo "Applying migrations to staging database..."
+        # Add your migration command here
+      
+      - name: Run smoke tests
+        run: echo "Running smoke tests against staging..."
+        # Add your smoke test command here
+
+  deploy-production:
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: dist
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      - name: Deploy to production
+        run: echo "Deploying to production environment..."
+        # Add your actual deployment command here
+      
+      - name: Apply migrations to production
+        run: echo "Applying migrations to production database..."
+        # Add your migration command here
+      
+      - name: Run smoke tests
+        run: echo "Running smoke tests against production..."
+        # Add your smoke test command here
