@@ -1,6 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +27,6 @@ export interface QuickLoginEnhancedProps {
 
 export const QuickLoginEnhanced: React.FC<QuickLoginEnhancedProps> = ({ onSuccess }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
   const { 
     users, 
     loading, 

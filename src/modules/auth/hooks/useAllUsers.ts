@@ -32,8 +32,10 @@ export const useAllUsers = () => {
           // Extract role from metadata
           let role: UserRole = 'member';
           if (profile.metadata && typeof profile.metadata === 'object') {
-            if (profile.metadata.role) {
-              role = profile.metadata.role as UserRole;
+            // Since metadata can be an object or array, we need to check it's an object first
+            const metadataObj = profile.metadata as Record<string, any>;
+            if (metadataObj.role) {
+              role = metadataObj.role as UserRole;
             }
           }
 
