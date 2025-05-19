@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { TestUser } from './devLogin';
+import { TestUser } from '../types/types';
 import { toast } from '@/hooks/use-toast';
 
 export interface ImpersonationResult {

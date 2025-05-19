@@ -56,12 +56,14 @@ export interface RouteConfig {
   allowAnyRole?: boolean;
 }
 
-// Add test user type for easier management of test users
+// Standardized test user interface that matches database structure
 export interface TestUser {
+  id: string;
+  name: string;
   email: string;
   role: UserRole;
   password: string;
-  name: string;
+  company_id?: string;
 }
 
 // Extended Auth Context Type with both canAccess and canAccessModule for backwards compatibility

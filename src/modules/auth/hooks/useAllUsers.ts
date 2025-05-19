@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { TestUser } from '../utils/devLogin';
+import { TestUser } from '../types/types';
 import { UserRole } from '../utils/roles/types';
 
 export const useAllUsers = () => {
