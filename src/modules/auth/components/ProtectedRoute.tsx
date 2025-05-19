@@ -52,7 +52,7 @@ export const ProtectedRoute = ({
       
       // If specific module access is required, check it
       if (module) {
-        const hasModuleAccess = canAccessModule(module);
+        const hasModuleAccess = await canAccessModule(module);
         console.log(`Checking module access for ${module}:`, hasModuleAccess);
         setIsAllowed(hasModuleAccess);
         setIsCheckingPermission(false);

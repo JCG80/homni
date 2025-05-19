@@ -14,7 +14,7 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
   const [isEnabled, setIsEnabled] = useState<boolean>(fallbackValue);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
-  const { user, role } = useAuth();
+  const { user } = useAuth();
   
   useEffect(() => {
     const checkFeatureEnabled = async () => {
@@ -25,15 +25,14 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
       }
       
       try {
-        // Using explicit type assertion for RPC call
         const { data, error: rpcError } = await supabase
           .rpc('is_feature_enabled', {
             flag_name: flagName
-          }) as { data: boolean | null, error: Error | null };
+          });
         
         if (rpcError) throw rpcError;
         
-        // data will be a boolean from the RPC function
+        // RPC function returns a boolean
         setIsEnabled(data === true);
         setError(null);
       } catch (err) {
@@ -46,7 +45,7 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
     };
     
     checkFeatureEnabled();
-  }, [flagName, fallbackValue, user, role]);
+  }, [flagName, fallbackValue, user]);
   
   return {
     isEnabled,

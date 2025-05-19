@@ -1,24 +1,34 @@
 
-import { useAuthContext } from './useAuthContext';
+import { createContext, useContext, ReactNode } from 'react';
+import { useAuthState } from './useAuthState';
+import { useRoleCheck } from './roles/useRoleCheck';
 
-// Define the ModuleAccess type if it's used in the codebase
-export interface ModuleAccess {
-  id: string;
-  user_id: string;
-  system_module_id: string;
-  access_level: string;
-  internal_admin?: boolean;
-  created_at?: string;
-}
+// Create a merged auth context type
+interface AuthContextType extends ReturnType<typeof useAuthState>, ReturnType<typeof useRoleCheck> {}
 
-/**
- * Main hook for authentication and authorization
- * Combines auth state with role checking capabilities
- */
-export const useAuth = () => {
-  // Get the base auth context (which includes authState and roleChecks)
-  const authContext = useAuthContext();
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const authState = useAuthState();
+  const roleCheck = useRoleCheck();
   
-  // Return the complete auth functionality
-  return authContext;
+  // Merge the contexts
+  const mergedContext = {
+    ...authState,
+    ...roleCheck,
+  };
+  
+  return (
+    <AuthContext.Provider value={mergedContext}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

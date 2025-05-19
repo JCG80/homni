@@ -22,24 +22,14 @@ export const useUserModules = () => {
       }
       
       try {
-        // Using explicit type assertion for RPC call
-        const { data: enabledModules, error: rpcError } = await supabase
-          .rpc('get_user_enabled_modules') as { 
-            data: { 
-              id: string; 
-              name: string; 
-              description: string | null; 
-              route: string | null; 
-              settings: Record<string, any> 
-            }[] | null, 
-            error: Error | null 
-          };
+        const { data, error: rpcError } = await supabase
+          .rpc('get_user_enabled_modules');
         
         if (rpcError) throw rpcError;
         
         // Transform the data into the expected format
-        if (enabledModules && enabledModules.length > 0) {
-          const combinedModules = enabledModules.map(module => {
+        if (data && data.length > 0) {
+          const combinedModules = data.map(module => {
             return {
               id: module.id,
               name: module.name,
@@ -101,11 +91,10 @@ export const useModuleAccess = (moduleName: string) => {
       }
       
       try {
-        // Using explicit type assertion for RPC call
         const { data, error: rpcError } = await supabase
           .rpc('has_module_access', {
             module_name: moduleName
-          }) as { data: boolean | null, error: Error | null };
+          });
         
         if (rpcError) throw rpcError;
         

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { UserRole } from '../../utils/roles';
 import { useAuthState } from '../useAuthState';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Hook that provides role checking functionality
@@ -53,6 +54,40 @@ export const useRoleCheck = () => {
     console.log("useRoleCheck - Determined role:", role, "Profile:", profile?.role, "User role:", user?.role, "Has user:", !!user);
     setDetectedRole(role);
   }, [user, profile]);
+
+  /**
+  * Check if the user can access a specific module
+  * 
+  * @param moduleId - The name of the module to check
+  * @returns True if the user can access the module
+  */
+  const canAccessModule = async (moduleName: string): Promise<boolean> => {
+    // Master admin can access everything
+    if (detectedRole === 'master_admin') {
+      return true;
+    }
+
+    if (!user) {
+      return false;
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('has_module_access', { 
+          module_name: moduleName 
+        });
+      
+      if (error) {
+        console.error('Error checking module access:', error);
+        return false;
+      }
+      
+      return data === true;
+    } catch (err) {
+      console.error('Error checking module access:', err);
+      return false;
+    }
+  };
 
   return {
     /**
@@ -109,24 +144,7 @@ export const useRoleCheck = () => {
 
     /**
      * Check if the user can access a specific module
-     * 
-     * @param moduleId - The ID of the module to check
-     * @returns True if the user can access the module
      */
-    canAccessModule: (moduleId: string): boolean => {
-      // Master admin can access everything
-      if (detectedRole === 'master_admin') {
-        return true;
-      }
-      
-      try {
-        // Import the canAccessModule function directly to avoid circular dependencies
-        const { canAccessModule } = require('../../utils/roles/guards');
-        return canAccessModule(detectedRole, moduleId);
-      } catch (error) {
-        console.error('Error checking module access:', error);
-        return false;
-      }
-    }
+    canAccessModule
   };
 };

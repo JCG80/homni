@@ -1,4 +1,3 @@
-
 name: CI
 
 on:
@@ -35,8 +34,8 @@ jobs:
         run: npm ci
       - name: Generate Supabase Types
         run: |
-          npm install -g supabase
-          npx supabase gen types typescript --project-id ${{ secrets.SUPABASE_PROJECT_ID }} > src/integrations/supabase/types.ts
+          chmod +x scripts/generate-supabase-types.sh
+          SUPABASE_PROJECT_ID=${{ secrets.SUPABASE_PROJECT_ID }} ./scripts/generate-supabase-types.sh
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       - name: Build project
