@@ -13,4 +13,4 @@ export * from './types/types';
 export * from './hooks/useAuth';
 
 // Re-export the utility functions
-export { isUserRole, canAccessPath } from './utils/roles/guards';
+export { isUserRole, canAccessPath, getRoleDisplayName, getRolePermissions } from './utils/roles';
