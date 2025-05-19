@@ -7,7 +7,7 @@ import { useDevAuth } from './useDevAuth';
 import { AuthContextType } from '../types/types';
 
 // Create context with default values
-const AuthContext = createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   user: null,
   profile: null,
