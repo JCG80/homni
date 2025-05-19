@@ -542,6 +542,121 @@ export type Database = {
           },
         ]
       }
+      plugin_manifests: {
+        Row: {
+          author: string | null
+          created_at: string | null
+          dependencies: Json | null
+          description: string | null
+          entry_point: string
+          homepage: string | null
+          id: string
+          is_enabled: boolean | null
+          metadata: Json | null
+          name: string
+          repository: string | null
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string | null
+          dependencies?: Json | null
+          description?: string | null
+          entry_point: string
+          homepage?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          metadata?: Json | null
+          name: string
+          repository?: string | null
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          author?: string | null
+          created_at?: string | null
+          dependencies?: Json | null
+          description?: string | null
+          entry_point?: string
+          homepage?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          metadata?: Json | null
+          name?: string
+          repository?: string | null
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
+      plugin_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          plugin_id: string
+          settings: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          plugin_id: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          plugin_id?: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plugin_settings_plugin_id_fkey"
+            columns: ["plugin_id"]
+            isOneToOne: true
+            referencedRelation: "plugin_manifests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plugin_user_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          plugin_id: string
+          settings: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          plugin_id: string
+          settings?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          plugin_id?: string
+          settings?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plugin_user_settings_plugin_id_fkey"
+            columns: ["plugin_id"]
+            isOneToOne: false
+            referencedRelation: "plugin_manifests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_docs: {
         Row: {
           content: string
@@ -768,33 +883,53 @@ export type Database = {
           created_at: string | null
           dependencies: string[] | null
           description: string | null
+          icon: string | null
           id: string
           is_active: boolean | null
           name: string
+          plugin_id: string | null
           route: string | null
+          sort_order: number | null
+          ui_component: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           dependencies?: string[] | null
           description?: string | null
+          icon?: string | null
           id?: string
           is_active?: boolean | null
           name: string
+          plugin_id?: string | null
           route?: string | null
+          sort_order?: number | null
+          ui_component?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           dependencies?: string[] | null
           description?: string | null
+          icon?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
+          plugin_id?: string | null
           route?: string | null
+          sort_order?: number | null
+          ui_component?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "system_modules_plugin_id_fkey"
+            columns: ["plugin_id"]
+            isOneToOne: false
+            referencedRelation: "plugin_manifests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_lead_filters: {
         Row: {
@@ -952,6 +1087,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_enabled_plugins: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          version: string
+          description: string
+          entry_point: string
+          metadata: Json
+        }[]
+      }
       get_user_enabled_modules: {
         Args: { user_id?: string }
         Returns: {
@@ -979,6 +1125,10 @@ export type Database = {
       }
       is_feature_enabled: {
         Args: { flag_name: string; user_id?: string }
+        Returns: boolean
+      }
+      is_plugin_enabled: {
+        Args: { plugin_name: string }
         Returns: boolean
       }
       list_all_user_profiles: {
