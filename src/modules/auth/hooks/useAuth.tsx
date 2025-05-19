@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     ...roleCheck,
     loading: authState.isLoading, // Alias for backward compatibility
     canAccessModule: canAccessModuleSync,
-    canAccess: canAccessModuleSync, // Alias for backward compatibility
+    canAccess: canAccessModuleSync, // Alias for backward compatibility - IMPORTANT!
     canPerform: (action: string, resource: string) => false, // Stub implementation
     logout, // Add the logout function to the context
     refreshProfile: refreshProfileWrapper,

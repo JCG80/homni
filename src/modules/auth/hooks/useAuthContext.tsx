@@ -22,9 +22,9 @@ const AuthContext = createContext<AuthContextType>({
   isContentEditor: false,
   isAnonymous: true,
   hasRole: () => false,
-  canAccess: () => false,
-  canPerform: () => false,
+  canAccess: () => false, // Keep this for backward compatibility
   canAccessModule: () => false,
+  canPerform: () => false,
   refreshProfile: async () => {},
   logout: async () => {},
 });
