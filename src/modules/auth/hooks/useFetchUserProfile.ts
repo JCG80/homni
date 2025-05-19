@@ -2,98 +2,93 @@
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '../types/types';
-import { isUserRole } from '../utils/roles';
-import { toast } from '@/hooks/use-toast';
+import { parseUserProfile } from '../utils/parseUserProfile';
 
 /**
- * Hook that provides functions for fetching and refreshing user profiles
+ * Hook for fetching user profile data
  */
 export const useFetchUserProfile = () => {
   /**
-   * Fetch a user's profile from Supabase
+   * Fetch a user's profile by ID
    */
   const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
+      console.log(`Fetching profile for user: ${userId}`);
+      
+      // First, try to get the profile from user_profiles
       const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (profileError) {
         console.error("Error fetching profile:", profileError);
-        return null;
+        throw profileError;
       }
 
-      return parseProfileData(profileData);
-    } catch (error: any) {
-      console.error("Unexpected error fetching profile:", error);
-      return null;
+      if (!profileData) {
+        console.warn(`No profile found for user ID: ${userId}. Will attempt to create one.`);
+        
+        // Get user data to help create a profile
+        const { data: userData } = await supabase.auth.getUser();
+        if (!userData?.user) {
+          console.error("Could not get user data to create profile");
+          return null;
+        }
+        
+        // Create a new profile with basic data
+        const { data: newProfile, error: createError } = await supabase
+          .from('user_profiles')
+          .insert([{
+            id: userId,
+            user_id: userId,
+            email: userData.user.email,
+            metadata: { role: 'member' }, // Default role
+          }])
+          .select()
+          .single();
+          
+        if (createError) {
+          console.error("Error creating new profile:", createError);
+          throw createError;
+        }
+        
+        console.log("Created new profile for user:", newProfile);
+        return parseUserProfile(newProfile);
+      }
+      
+      // Check if user_id is missing and update it if necessary
+      if (!profileData.user_id) {
+        console.warn(`Profile ${userId} has null user_id. Updating...`);
+        
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({ user_id: userId })
+          .eq('id', userId);
+          
+        if (updateError) {
+          console.error("Error updating user_id in profile:", updateError);
+        } else {
+          console.log("Successfully updated user_id in profile");
+        }
+      }
+
+      const parsedProfile = parseUserProfile(profileData);
+      
+      // Log fetched profile for debugging
+      console.log("Fetched and parsed profile:", {
+        id: parsedProfile.id,
+        role: parsedProfile.role,
+        metadata: parsedProfile.metadata
+      });
+      
+      return parsedProfile;
+    } catch (error) {
+      console.error("Unexpected error in fetchProfile:", error);
+      throw error;
     }
   }, []);
 
-  /**
-   * Parse profile data from the database into a typed Profile object
-   */
-  const parseProfileData = (profileData: any): Profile | null => {
-    if (!profileData) return null;
-  
-    // Extract company_id from metadata if present
-    const companyId = profileData.company_id || 
-      (profileData.metadata && typeof profileData.metadata === 'object' ? 
-        profileData.metadata.company_id : undefined);
-    
-    // Validate that role is a valid UserRole
-    let role = profileData.role;
-    if (!isUserRole(role)) {
-      console.warn(`Invalid role '${role}' found in profile, defaulting to 'member'`);
-      role = 'member';
-    }
-    
-    return {
-      id: profileData.id,
-      full_name: profileData.full_name,
-      role: role,
-      company_id: companyId,
-      created_at: profileData.created_at,
-      metadata: profileData.metadata || {},
-      email: profileData.email,
-      phone: profileData.phone,
-      updated_at: profileData.updated_at
-    };
-  };
-
-  /**
-   * Function to refresh a user's profile
-   */
-  const refreshUserProfile = async (userId: string): Promise<Profile | null> => {
-    if (!userId) {
-      return null;
-    }
-    
-    try {
-      const profile = await fetchProfile(userId);
-      return profile;
-    } catch (error) {
-      console.error("Error refreshing profile:", error);
-      
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Failed to refresh profile";
-      
-      toast({
-        title: "Feil ved oppdatering av profil",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      
-      return null;
-    }
-  };
-
-  return {
-    fetchProfile,
-    refreshUserProfile,
-    parseProfileData,
-  };
+  return { fetchProfile };
 };

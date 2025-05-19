@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AuthUser, AuthState } from '../types/types';
 import { useFetchUserProfile } from './useFetchUserProfile';
 import { UserRole } from '../utils/roles/types';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Hook that manages the auth session state and listens for changes
@@ -28,19 +29,25 @@ export const useAuthSession = () => {
         console.log('Auth loading timeout exceeded, setting to not loading');
         setAuthState(prev => ({
           ...prev,
-          isLoading: false
+          isLoading: false,
+          error: new Error("Authentication initialization timed out")
         }));
+        toast({
+          title: "Authentication Warning",
+          description: "Authentication is taking longer than expected",
+          variant: "warning"
+        });
       }
-    }, 5000); // 5 second maximum loading time
+    }, 3000); // Reduced from 5 seconds to 3 seconds for faster feedback
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // Skip initial session event as we'll handle it separately
+      console.log(`Auth state change: ${event}`, session ? `User ID: ${session.user.id}` : 'No session');
+
       if (event === 'INITIAL_SESSION') {
+        // We'll handle this in the getSession call
         return;
       }
-
-      console.log(`Auth state change: ${event}`);
 
       if (session?.user) {
         const user: AuthUser = {
@@ -66,6 +73,9 @@ export const useAuthSession = () => {
               // Update user with role from profile if available
               if (profile?.role) {
                 user.role = profile.role;
+                console.log(`Role determined from profile: ${profile.role}`);
+              } else {
+                console.warn('No role found in profile, using default');
               }
               
               setAuthState(prev => ({
@@ -85,6 +95,12 @@ export const useAuthSession = () => {
                 isLoading: false,
                 error: error instanceof Error ? error : new Error("Failed to fetch profile")
               }));
+              
+              toast({
+                title: "Authentication Error",
+                description: "There was a problem loading your profile",
+                variant: "destructive"
+              });
             }
           }
         }, 0);
@@ -102,6 +118,8 @@ export const useAuthSession = () => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("getSession result:", session ? `User ID: ${session.user.id}` : 'No session');
+      
       if (session?.user && mounted) {
         const user: AuthUser = {
           id: session.user.id,
@@ -121,6 +139,9 @@ export const useAuthSession = () => {
               // Update user with role from profile if available
               if (profile?.role) {
                 user.role = profile.role;
+                console.log(`Role determined from profile: ${profile.role}`);
+              } else {
+                console.warn('No role found in profile, using default');
               }
               
               setAuthState({
@@ -140,6 +161,12 @@ export const useAuthSession = () => {
                 isLoading: false,
                 error: error instanceof Error ? error : new Error("Failed to fetch profile")
               }));
+              
+              toast({
+                title: "Profile Error",
+                description: "There was a problem loading your profile data",
+                variant: "destructive"
+              });
             }
           });
       } else if (mounted) {
@@ -163,12 +190,14 @@ export const useAuthSession = () => {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       
       try {
+        console.log(`Refreshing profile for user: ${authState.user.id}`);
         const profile = await fetchProfile(authState.user.id);
         
         // Update user with role from profile if available
         const updatedUser = { ...authState.user };
         if (profile?.role) {
           updatedUser.role = profile.role;
+          console.log(`Updated role from profile refresh: ${profile.role}`);
         }
         
         setAuthState(prev => ({
@@ -192,6 +221,12 @@ export const useAuthSession = () => {
           isLoading: false,
           error: error instanceof Error ? error : new Error(errorMessage),
         }));
+        
+        toast({
+          title: "Profile Refresh Error",
+          description: errorMessage,
+          variant: "destructive"
+        });
 
         throw error;
       }

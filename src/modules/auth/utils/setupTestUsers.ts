@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { UserRole } from './roles/types';
@@ -55,6 +56,23 @@ export const setupTestUsers = async (role: UserRole = 'member') => {
 
     if (data.user) {
       console.log(`Successfully signed in as ${role} (${email})`);
+      
+      // Ensure the user profile exists and has the correct role
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .upsert({
+          id: data.user.id,
+          user_id: data.user.id, // Ensure user_id is set to the correct ID
+          metadata: { role: role },
+          email: email
+        }, { onConflict: 'id' });
+        
+      if (profileError) {
+        console.warn("Could not update user profile:", profileError);
+      } else {
+        console.log(`Profile updated with correct role (${role})`);
+      }
+      
       toast({
         title: "Login Success",
         description: `Logged in as ${role} (${email})`,
