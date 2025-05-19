@@ -1,14 +1,14 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { TestUser } from '../types/types';
-import { UserRole } from '../utils/roles/types';
+import { QuickLoginUser, UserRole } from '../types/unified-types';
+import { isUserRole } from '../utils/roles';
 
 /**
  * Hook to fetch all available test users from the database
  */
 export const useAllUsers = () => {
-  const [users, setUsers] = useState<TestUser[]>([]);
+  const [users, setUsers] = useState<QuickLoginUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +21,7 @@ export const useAllUsers = () => {
 
       try {
         setLoading(true);
-        // Query user profiles directly - now that we have ensured they exist and have the correct metadata
+        // Query user profiles directly that have test.local emails
         const { data: profiles, error: profilesError } = await supabase
           .from('user_profiles')
           .select('id, full_name, email, metadata')
@@ -31,23 +31,29 @@ export const useAllUsers = () => {
           throw new Error(`Failed to fetch profiles: ${profilesError.message}`);
         }
 
-        // Convert profiles to TestUser format
-        const formattedUsers: TestUser[] = profiles.map(profile => {
-          // Extract role from metadata
+        // Convert profiles to QuickLoginUser format
+        const formattedUsers: QuickLoginUser[] = profiles.map(profile => {
+          // Extract role from metadata with fallback to 'member'
           let role: UserRole = 'member';
+
           if (profile.metadata && typeof profile.metadata === 'object') {
-            const metadataObj = profile.metadata as Record<string, any>;
-            if (metadataObj.role) {
-              role = metadataObj.role as UserRole;
+            // Try to get role directly from metadata.role
+            if (profile.metadata.role && isUserRole(profile.metadata.role)) {
+              role = profile.metadata.role;
+            }
+            // Fallback to account_type if available
+            else if (profile.metadata.account_type === 'company') {
+              role = 'company';
             }
           }
 
           return {
             id: profile.id,
-            name: profile.full_name || profile.email.split('@')[0],
+            name: profile.full_name || (profile.email ? profile.email.split('@')[0] : 'Unknown'),
             email: profile.email || '',
             role,
-            // No password needed for passwordless login
+            // Extract company_id if it exists in metadata
+            company_id: profile.metadata?.company_id,
           };
         });
 
@@ -56,8 +62,8 @@ export const useAllUsers = () => {
           'master_admin': 1,
           'admin': 2,
           'company': 3,
-          'member': 4,
-          'content_editor': 5
+          'content_editor': 4,
+          'member': 5
         };
 
         formattedUsers.sort((a, b) => {

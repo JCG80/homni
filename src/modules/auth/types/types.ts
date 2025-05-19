@@ -1,11 +1,14 @@
-
 /**
  * Core auth module types
  */
 
-// Import UserRole from the new location
-import { UserRole } from '../utils/roles/types';
+// Re-export all types from the unified types file
+export * from './unified-types';
 
+// Keep the legacy types for backward compatibility
+import { UserRole } from './unified-types';
+
+// Re-export UserRole directly for backward compatibility
 export type { UserRole };
 
 // Define ModuleAccess type explicitly

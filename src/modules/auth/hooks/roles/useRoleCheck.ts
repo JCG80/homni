@@ -1,137 +1,61 @@
-import { useState, useEffect } from 'react';
-import { UserRole } from '../../utils/roles/types';
-import { useAuthState } from '../useAuthState';
-import { supabase } from '@/integrations/supabase/client';
+
+import { useMemo } from 'react';
+import { UserRole } from '../../types/unified-types';
+import { isUserRole } from '../../utils/roles/guards';
+
+interface RoleCheckProps {
+  role?: UserRole | null;
+}
 
 /**
- * Hook that provides role checking functionality
- * 
- * @returns An object with methods to check user roles
+ * Hook that provides role checking utilities
  */
-export const useRoleCheck = () => {
-  const { user, profile, role: userRole } = useAuthState();
-  const [detectedRole, setDetectedRole] = useState<UserRole | undefined>(undefined);
-
-  // Determine the current role - use profile role first, then user role, default to anonymous
-  useEffect(() => {
-    // Log information about the role detection process
-    console.log("useRoleCheck - Starting role detection", { 
-      "profile role": profile?.role, 
-      "user role": user?.role,
-      "has user": !!user
-    });
+export const useRoleCheck = (props?: RoleCheckProps) => {
+  const roleFromProps = props?.role;
+  
+  return useMemo(() => {
+    // Get role from props or null
+    const role = roleFromProps || null;
     
-    let role: UserRole | undefined = undefined;
+    // Determine if role is anonymous
+    const isAnonymous = !role || role === 'anonymous';
     
-    // Check profile role first (most authoritative)
-    if (profile?.role) {
-      role = profile.role;
-    } 
-    // Then check user role
-    else if (user?.role) {
-      role = user.role;
-    } 
-    // For development testing - check emails for specific test users
-    else if (user?.email && import.meta.env.MODE === 'development') {
-      const email = user.email.toLowerCase();
-      if (email === 'admin@test.local') role = 'admin';
-      if (email === 'company@test.local') role = 'company';
-      if (email === 'master-admin@test.local') role = 'master_admin';
-      if (email === 'content@test.local') role = 'content_editor';
-    }
+    // Check if user is admin (admin or master_admin)
+    const isAdmin = role === 'admin' || role === 'master_admin';
     
-    // If still no role, default to member for authenticated users
-    if (!role && !!user) {
-      role = 'member';
-    }
+    // Check if user is master admin
+    const isMasterAdmin = role === 'master_admin';
     
-    // Default to anonymous for non-authenticated users
-    if (!role && !user) {
-      role = 'anonymous';
-    }
+    // Check if user is company
+    const isCompany = role === 'company';
     
-    console.log("useRoleCheck - Determined role:", role, "Profile:", profile?.role, "User role:", user?.role, "Has user:", !!user);
-    setDetectedRole(role);
-  }, [user, profile]);
-
-  /**
-   * Check if the user can access a specific module - synchronous version
-   * This uses cached module access information
-   * 
-   * @param moduleId - The name or ID of the module to check
-   * @returns True if the user can access the module
-   */
-  const canAccessModule = (moduleId: string): boolean => {
-    // Master admin can access everything
-    if (detectedRole === 'master_admin') {
-      return true;
-    }
-
-    if (!user) {
-      return false;
-    }
+    // Check if user is member
+    const isMember = role === 'member';
     
-    // Check if module access is in the profile metadata
-    const modulesAccess = profile?.metadata?.modules_access || [];
-    return modulesAccess.includes(moduleId);
-  };
-
-  return {
-    /**
-     * The user's current role
-     */
-    role: detectedRole,
+    // Check if user is content editor
+    const isContentEditor = role === 'content_editor';
     
-    /**
-     * Check if the user is authenticated
-     */
-    isAuthenticated: !!user,
+    // Helper function to check if user has a specific role
+    const hasRole = (roleToCheck: UserRole | UserRole[]): boolean => {
+      if (!role) return false;
+      
+      // If array of roles, check if user has any of them
+      if (Array.isArray(roleToCheck)) {
+        return roleToCheck.some(r => r === role);
+      }
+      
+      return roleToCheck === role;
+    };
     
-    /**
-     * Check if the user is not authenticated
-     */
-    isAnonymous: !user,
-    
-    /**
-     * Check if the user has the member role
-     */
-    isMember: detectedRole === 'member',
-    
-    /**
-     * Check if the user has the company role
-     */
-    isCompany: detectedRole === 'company',
-    
-    /**
-     * Check if the user has an admin role (admin or master_admin)
-     */
-    isAdmin: detectedRole === 'admin' || detectedRole === 'master_admin',
-    
-    /**
-     * Check if the user has the master_admin role
-     */
-    isMasterAdmin: detectedRole === 'master_admin',
-    
-    /**
-     * Check if the user has the content_editor role
-     */
-    isContentEditor: detectedRole === 'content_editor',
-    
-    /**
-     * Check if the user has at least one of the specified roles
-     * 
-     * @param roles - A single role or array of roles to check
-     * @returns True if the user has at least one of the specified roles
-     */
-    hasRole: (roles: UserRole | UserRole[]): boolean => {
-      if (!detectedRole) return false;
-      const rolesToCheck = Array.isArray(roles) ? roles : [roles];
-      return rolesToCheck.includes(detectedRole);
-    },
-
-    /**
-     * Check if the user can access a specific module
-     */
-    canAccessModule
-  };
+    return {
+      role,
+      isAnonymous,
+      isAdmin,
+      isMasterAdmin,
+      isCompany,
+      isMember,
+      isContentEditor,
+      hasRole,
+    };
+  }, [roleFromProps]);
 };

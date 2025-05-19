@@ -28,7 +28,7 @@ export const passwordlessDevLogin = async (user: TestUser): Promise<LoginResult>
     
     // In development mode, we'll use the supabase admin email sign-in without requiring a password
     // This works because we're in dev mode and we're using a custom Supabase function
-    const { data, error } = await supabase.auth.signInWithEmail({
+    const { data, error } = await supabase.auth.signInWithOtp({
       email: user.email,
     });
 

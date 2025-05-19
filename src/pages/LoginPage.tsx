@@ -3,12 +3,11 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginTabs } from '@/components/auth/LoginTabs';
-import { UserRole } from '@/modules/auth/utils/roles';
 import { toast } from '@/hooks/use-toast';
 import { useRoleNavigation } from '@/modules/auth/hooks/roles/useRoleNavigation';
 import { Globe, Lock, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { QuickLoginEnhanced } from '@/modules/auth/components/QuickLoginEnhanced';
+import { UnifiedQuickLogin } from '@/modules/auth/components/UnifiedQuickLogin';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -129,10 +128,10 @@ export const LoginPage = () => {
           
           {import.meta.env.MODE === 'development' && (
             <motion.div variants={itemVariants} className="border-t pt-4 mt-4">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground mb-2">Utviklerverktøy</p>
-                <QuickLoginEnhanced onSuccess={() => redirectToDashboard()} />
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs text-muted-foreground">Utviklerverktøy</p>
               </div>
+              <UnifiedQuickLogin redirectTo={returnUrl} />
             </motion.div>
           )}
         </motion.div>

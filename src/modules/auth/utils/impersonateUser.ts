@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { TestUser } from '../types/types';
+import { QuickLoginUser } from '../types/unified-types';
 import { toast } from '@/hooks/use-toast';
 import { smartDevLogin } from './passwordlessLogin';
 
@@ -13,7 +13,7 @@ export interface ImpersonationResult {
  * Impersonates a user by setting their session in Supabase Auth
  * This function is only for development purposes
  */
-export const impersonateUser = async (user: TestUser): Promise<ImpersonationResult> => {
+export const impersonateUser = async (user: QuickLoginUser): Promise<ImpersonationResult> => {
   if (import.meta.env.MODE !== 'development') {
     console.warn('impersonateUser should not be used in production');
     return { 
