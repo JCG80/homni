@@ -25,14 +25,15 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
       }
       
       try {
-        // Use the RPC function we created in the migration
-        const { data, error } = await supabase.rpc('is_feature_enabled', {
+        // Call the RPC function directly
+        const { data, error: rpcError } = await supabase.rpc('is_feature_enabled', {
           flag_name: flagName
         });
         
-        if (error) throw error;
+        if (rpcError) throw rpcError;
         
-        setIsEnabled(data || fallbackValue);
+        // data will be a boolean from the RPC function
+        setIsEnabled(data === true ? true : fallbackValue);
         setError(null);
       } catch (err) {
         console.error('Error checking feature flag:', err);
@@ -72,14 +73,15 @@ export const useFeatureFlags = () => {
       }
       
       try {
-        const { data, error } = await supabase
+        // Use a direct query instead, since RPC is causing TS issues
+        const { data, error: queryError } = await supabase
           .from('feature_flags')
           .select('*')
           .order('name');
         
-        if (error) throw error;
+        if (queryError) throw queryError;
         
-        setFlags(data || []);
+        setFlags(data as FeatureFlag[] || []);
         setError(null);
       } catch (err) {
         console.error('Error fetching feature flags:', err);

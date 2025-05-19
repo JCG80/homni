@@ -6,22 +6,93 @@ type TablesInsert = Database['public']['Tables'];
 type TablesRow = Database['public']['Tables'];
 
 // Feature flag types
-export type FeatureFlag = TablesRow['feature_flags']['Row'];
-export type FeatureFlagInsert = TablesInsert['feature_flags']['Insert'];
-export type FeatureFlagUpdate = TablesInsert['feature_flags']['Update'];
+export type FeatureFlag = {
+  id: string;
+  name: string;
+  description: string | null;
+  is_enabled: boolean;
+  percentage_rollout: number;
+  target_roles: string[] | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FeatureFlagInsert = {
+  name: string;
+  description?: string | null;
+  is_enabled?: boolean;
+  percentage_rollout?: number;
+  target_roles?: string[] | null;
+};
+
+export type FeatureFlagUpdate = {
+  name?: string;
+  description?: string | null;
+  is_enabled?: boolean;
+  percentage_rollout?: number;
+  target_roles?: string[] | null;
+};
 
 // Module types
-export type UserModule = TablesRow['user_modules']['Row'];
-export type UserModuleInsert = TablesInsert['user_modules']['Insert'];
-export type UserModuleUpdate = TablesInsert['user_modules']['Update'];
+export type UserModule = {
+  id: string;
+  user_id: string;
+  module_id: string;
+  is_enabled: boolean;
+  settings: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+};
 
-export type ServiceModule = TablesRow['service_modules']['Row'];
-export type ServiceModuleInsert = TablesInsert['service_modules']['Insert'];
-export type ServiceModuleUpdate = TablesInsert['service_modules']['Update'];
+export type UserModuleInsert = {
+  user_id: string;
+  module_id: string;
+  is_enabled?: boolean;
+  settings?: Record<string, any>;
+};
 
-export type ModuleDependency = TablesRow['module_dependencies']['Row'];
-export type ModuleDependencyInsert = TablesInsert['module_dependencies']['Insert'];
-export type ModuleDependencyUpdate = TablesInsert['module_dependencies']['Update'];
+export type UserModuleUpdate = {
+  is_enabled?: boolean;
+  settings?: Record<string, any>;
+};
+
+export type ServiceModule = {
+  id: string;
+  service_id: string;
+  module_id: string;
+  settings: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ServiceModuleInsert = {
+  service_id: string;
+  module_id: string;
+  settings?: Record<string, any>;
+};
+
+export type ServiceModuleUpdate = {
+  settings?: Record<string, any>;
+};
+
+export type ModuleDependency = {
+  id: string;
+  module_id: string;
+  dependency_id: string;
+  relationship_type: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ModuleDependencyInsert = {
+  module_id: string;
+  dependency_id: string;
+  relationship_type?: string;
+};
+
+export type ModuleDependencyUpdate = {
+  relationship_type?: string;
+};
 
 // Extended SystemModule type that includes the new fields
 export interface ExtendedSystemModule extends TablesRow['system_modules']['Row'] {

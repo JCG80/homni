@@ -22,38 +22,44 @@ export const useUserModules = () => {
       }
       
       try {
-        // Use the RPC function we created in the migration
-        const { data, error } = await supabase.rpc('get_user_enabled_modules');
+        // Call the RPC function to get enabled modules
+        const { data: enabledModules, error: rpcError } = await supabase.rpc('get_user_enabled_modules');
         
-        if (error) throw error;
+        if (rpcError) throw rpcError;
         
         // Fetch additional module data to get all fields
-        const moduleIds = data.map(m => m.id);
-        const { data: fullModules, error: modulesError } = await supabase
-          .from('system_modules')
-          .select('*')
-          .in('id', moduleIds);
+        if (enabledModules && enabledModules.length > 0) {
+          const moduleIds = enabledModules.map((m: any) => m.id);
           
-        if (modulesError) throw modulesError;
-        
-        // Fetch user-specific module settings
-        const { data: userModules, error: userModulesError } = await supabase
-          .from('user_modules')
-          .select('*')
-          .eq('user_id', user.id);
+          const { data: fullModules, error: modulesError } = await supabase
+            .from('system_modules')
+            .select('*')
+            .in('id', moduleIds);
+            
+          if (modulesError) throw modulesError;
           
-        if (userModulesError) throw userModulesError;
+          // Fetch user-specific module settings
+          const { data: userModules, error: userModulesError } = await supabase
+            .from('user_modules')
+            .select('*')
+            .eq('user_id', user.id);
+            
+          if (userModulesError) throw userModulesError;
+          
+          // Combine the data with type safety
+          const combinedModules = fullModules.map(module => {
+            const userModule = userModules?.find(um => um.module_id === module.id);
+            return {
+              ...module,
+              userSettings: userModule ? userModule as unknown as UserModule : undefined
+            };
+          });
+          
+          setModules(combinedModules as (ExtendedSystemModule & { userSettings?: UserModule })[]);
+        } else {
+          setModules([]);
+        }
         
-        // Combine the data
-        const combinedModules = fullModules.map(module => {
-          const userModule = userModules?.find(um => um.module_id === module.id);
-          return {
-            ...module,
-            userSettings: userModule || undefined
-          };
-        });
-        
-        setModules(combinedModules);
         setError(null);
       } catch (err) {
         console.error('Error fetching user modules:', err);
@@ -92,13 +98,15 @@ export const useModuleAccess = (moduleName: string) => {
       }
       
       try {
-        const { data, error } = await supabase.rpc('has_module_access', {
+        // Call the RPC function to check module access
+        const { data, error: rpcError } = await supabase.rpc('has_module_access', {
           module_name: moduleName
         });
         
-        if (error) throw error;
+        if (rpcError) throw rpcError;
         
-        setHasAccess(!!data);
+        // data will be a boolean from the RPC function
+        setHasAccess(data === true);
         setError(null);
       } catch (err) {
         console.error('Error checking module access:', err);
