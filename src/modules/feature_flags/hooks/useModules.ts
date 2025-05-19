@@ -22,41 +22,43 @@ export const useUserModules = () => {
       }
       
       try {
-        // Call the RPC function to get enabled modules
+        // Using explicit type assertion for RPC call
         const { data: enabledModules, error: rpcError } = await supabase
-          .rpc('get_user_enabled_modules');
+          .rpc('get_user_enabled_modules') as { 
+            data: { 
+              id: string; 
+              name: string; 
+              description: string | null; 
+              route: string | null; 
+              settings: Record<string, any> 
+            }[] | null, 
+            error: Error | null 
+          };
         
         if (rpcError) throw rpcError;
         
-        // Fetch additional module data to get all fields
+        // Transform the data into the expected format
         if (enabledModules && enabledModules.length > 0) {
-          const moduleIds = enabledModules.map((m: any) => m.id);
-          
-          const { data: fullModules, error: modulesError } = await supabase
-            .from('system_modules')
-            .select('*')
-            .in('id', moduleIds);
-            
-          if (modulesError) throw modulesError;
-          
-          // Fetch user-specific module settings
-          const { data: userModules, error: userModulesError } = await supabase
-            .from('user_modules')
-            .select('*')
-            .eq('user_id', user.id);
-            
-          if (userModulesError) throw userModulesError;
-          
-          // Combine the data with type safety
-          const combinedModules = fullModules.map(module => {
-            const userModule = userModules?.find((um: any) => um.module_id === module.id);
+          const combinedModules = enabledModules.map(module => {
             return {
-              ...module,
-              userSettings: userModule ? userModule as unknown as UserModule : undefined
-            };
+              id: module.id,
+              name: module.name,
+              description: module.description || null,
+              route: module.route || null,
+              is_active: true,
+              userSettings: {
+                id: '',
+                user_id: user.id,
+                module_id: module.id,
+                is_enabled: true,
+                settings: module.settings || {},
+                created_at: '',
+                updated_at: ''
+              }
+            } as ExtendedSystemModule & { userSettings?: UserModule };
           });
           
-          setModules(combinedModules as (ExtendedSystemModule & { userSettings?: UserModule })[]);
+          setModules(combinedModules);
         } else {
           setModules([]);
         }
@@ -99,11 +101,11 @@ export const useModuleAccess = (moduleName: string) => {
       }
       
       try {
-        // Call the RPC function to check module access
+        // Using explicit type assertion for RPC call
         const { data, error: rpcError } = await supabase
           .rpc('has_module_access', {
             module_name: moduleName
-          });
+          }) as { data: boolean | null, error: Error | null };
         
         if (rpcError) throw rpcError;
         

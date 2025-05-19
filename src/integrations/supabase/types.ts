@@ -948,6 +948,20 @@ export type Database = {
         Args: { user_id: string }
         Returns: undefined
       }
+      get_auth_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_user_enabled_modules: {
+        Args: { user_id?: string }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          route: string
+          settings: Json
+        }[]
+      }
       get_user_profile: {
         Args: { user_id: string }
         Returns: {
@@ -958,6 +972,14 @@ export type Database = {
           created_at: string
           updated_at: string
         }[]
+      }
+      has_module_access: {
+        Args: { module_name: string; user_id?: string }
+        Returns: boolean
+      }
+      is_feature_enabled: {
+        Args: { flag_name: string; user_id?: string }
+        Returns: boolean
       }
       list_all_user_profiles: {
         Args: Record<PropertyKey, never>

@@ -25,11 +25,11 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
       }
       
       try {
-        // Call the RPC function directly with proper typing
+        // Using explicit type assertion for RPC call
         const { data, error: rpcError } = await supabase
           .rpc('is_feature_enabled', {
             flag_name: flagName
-          });
+          }) as { data: boolean | null, error: Error | null };
         
         if (rpcError) throw rpcError;
         
