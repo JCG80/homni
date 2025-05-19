@@ -14,7 +14,8 @@ packageJson.scripts = {
   "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css}\"",
   "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css}\"",
   "test:e2e": "playwright test",
-  "deps:check": "npm ls"
+  "deps:check": "npm ls",
+  "deps:check:eslint": "npm ls @typescript-eslint/eslint-plugin @typescript-eslint/parser"
 };
 
 // Write the updated package.json back to disk

@@ -20,6 +20,8 @@ jobs:
         run: npm ci
       - name: Check for dependency conflicts
         run: npm ls
+      - name: Check specific ESLint dependencies
+        run: npm ls @typescript-eslint/eslint-plugin @typescript-eslint/parser
       - name: Run ESLint
         run: npm run lint
       - name: Check Prettier formatting
