@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { QuickLoginUser, UserRole } from '../types/unified-types';
-import { isUserRole } from '../utils/roles';
+import { isUserRole } from '../utils/roles/guards';
 
 /**
  * Hook to fetch all available test users from the database
@@ -38,11 +38,13 @@ export const useAllUsers = () => {
 
           if (profile.metadata && typeof profile.metadata === 'object') {
             // Try to get role directly from metadata.role
-            if (profile.metadata.role && isUserRole(profile.metadata.role)) {
-              role = profile.metadata.role;
+            const metadata = profile.metadata as Record<string, any>;
+            
+            if (metadata.role && isUserRole(metadata.role)) {
+              role = metadata.role;
             }
             // Fallback to account_type if available
-            else if (profile.metadata.account_type === 'company') {
+            else if (metadata.account_type === 'company') {
               role = 'company';
             }
           }
@@ -53,7 +55,9 @@ export const useAllUsers = () => {
             email: profile.email || '',
             role,
             // Extract company_id if it exists in metadata
-            company_id: profile.metadata?.company_id,
+            company_id: profile.metadata && typeof profile.metadata === 'object' 
+              ? (profile.metadata as Record<string, any>).company_id 
+              : undefined,
           };
         });
 

@@ -1,20 +1,16 @@
 
-import { useAuth } from './hooks/useAuth';
-import { useRoleGuard } from './hooks/useRoleGuard';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { canAccessPath } from './utils/roles/guards';
-import { roleNames, roleDescriptions } from './utils/roles/display';
+// Re-export the components
+export * from './components/AuthWrapper';
+export * from './components/Authenticated';
+export * from './components/LoginForm';
+export * from './components/ProtectedRoute';
+export * from './components/QuickLogin';
 
-export {
-  // Auth hooks
-  useAuth,
-  useRoleGuard,
-  
-  // Auth components
-  ProtectedRoute,
-  
-  // Auth utils
-  canAccessPath,
-  roleNames,
-  roleDescriptions,
-};
+// Re-export the types
+export * from './types/types';
+
+// Re-export the hooks
+export * from './hooks/useAuth';
+
+// Re-export the utility functions
+export { isUserRole, canAccessPath } from './utils/roles/guards';

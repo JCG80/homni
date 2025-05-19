@@ -8,7 +8,7 @@ import {
   PUBLIC_ROLES, 
   AUTHENTICATED_ROLES 
 } from './roles/types';
-import { isUserRole, canAccessModule } from './roles/guards';
+import { isUserRole, canAccessPath, canAccessModule } from './roles/guards';
 import { determineUserRole } from './roles/determination';
 
 export type { UserRole };
@@ -17,6 +17,7 @@ export {
   PUBLIC_ROLES, 
   AUTHENTICATED_ROLES,
   isUserRole,
+  canAccessPath,
   canAccessModule,
   determineUserRole
 };

@@ -1,15 +1,31 @@
 
 /**
- * Export all role-related functionality
+ * Unified exports for role-related functionality
  */
 
-// Export values (non-type exports)
-export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from './types';
-// Export type separately using 'export type'
+// Re-export types
 export type { UserRole } from './types';
 
-// Export functions from guards
-export { isUserRole, getAllowedPathsForRole, canAccessPath, hasRequiredRole, isAdminRole, isContentEditorRole, canAccessModule } from './guards';
+// Re-export constants
+export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from './types';
+
+// Re-export functions
+export { 
+  isUserRole, 
+  isValidRole,
+  canAccessModule,
+  canAccessPath,
+  hasRequiredRole,
+  isAdminRole,
+  isContentEditorRole,
+  getAllowedPathsForRole
+} from './guards';
+
+// Re-export determination functions
 export { determineUserRole } from './determination';
-export * from './display';
-export * from './permissions';
+
+// Re-export display functions
+export { getRoleDisplayName } from './display';
+
+// Re-export permissions functions
+export { getRolePermissions } from './permissions';

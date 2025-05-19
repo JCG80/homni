@@ -4,10 +4,10 @@
  */
 
 // Import from our unified types
-import { UserRole } from '../../types/unified-types';
+import type { UserRole } from '../../types/unified-types';
 
 // All possible roles in the system
-export { UserRole };
+export type { UserRole };
 
 // All roles (used for validation)
 export const ALL_ROLES: UserRole[] = [
