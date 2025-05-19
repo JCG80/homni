@@ -63,3 +63,43 @@ export interface TestUser {
   password: string;
   name: string;
 }
+
+// Extended Auth Context Type with both canAccess and canAccessModule for backwards compatibility
+export interface AuthContextType {
+  // User state
+  user: AuthUser | null;
+  profile: Profile | null;
+  
+  // Status flags
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  loading: boolean; // Alias for isLoading for backward compatibility
+  error: Error | null;
+  
+  // Role properties
+  role: string | null;
+  isAdmin: boolean;
+  isMasterAdmin: boolean;
+  isCompany: boolean;
+  isMember: boolean;
+  isContentEditor: boolean;
+  isAnonymous: boolean;
+  
+  // Role checking methods
+  hasRole: (role: string | string[]) => boolean;
+  
+  // Access control methods
+  canAccessModule: (moduleId: string) => boolean;
+  canAccess: (moduleId: string) => boolean; // Alias for canAccessModule for backward compatibility
+  canPerform: (action: string, resource: string) => boolean;
+  
+  // Profile management
+  refreshProfile: () => Promise<void>;
+  
+  // Authentication methods
+  logout: () => Promise<void>;
+  
+  // Development features
+  isDevMode?: boolean;
+  switchDevUser?: (profileId: string) => void;
+}
