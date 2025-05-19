@@ -1,15 +1,12 @@
 
 import React from 'react';
-import { UnifiedQuickLogin } from './UnifiedQuickLogin';
+import { UnifiedQuickLogin, UnifiedQuickLoginProps } from './UnifiedQuickLogin';
 
-export interface QuickLoginProps {
-  onSuccess?: () => void;
-  redirectTo?: string;
-}
+export type QuickLoginProps = UnifiedQuickLoginProps;
 
-export const QuickLogin: React.FC<QuickLoginProps> = ({ onSuccess, redirectTo }) => {
-  // Use our unified implementation
-  return <UnifiedQuickLogin onSuccess={onSuccess} redirectTo={redirectTo} />;
+export const QuickLogin: React.FC<QuickLoginProps> = (props) => {
+  // Use our unified implementation with all props passed through
+  return <UnifiedQuickLogin {...props} />;
 };
 
 // For backward compatibility

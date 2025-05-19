@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,9 +6,12 @@ import { UserRole } from '../utils/roles/types';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useNavigate } from 'react-router-dom';
 
-interface UnifiedQuickLoginProps {
+export interface UnifiedQuickLoginProps {
   redirectTo?: string;
+  onSuccess?: () => void;
+  showHeader?: boolean;
 }
 
 const roles: { role: UserRole; label: string; color: string }[] = [
@@ -21,9 +23,10 @@ const roles: { role: UserRole; label: string; color: string }[] = [
   { role: 'anonymous', label: 'Guest', color: 'text-gray-400' },
 ];
 
-export const UnifiedQuickLogin = ({ redirectTo }: UnifiedQuickLoginProps) => {
+export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: UnifiedQuickLoginProps) => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('grid');
+  const navigate = useNavigate();
   
   useEffect(() => {
     // Debug info
@@ -35,6 +38,15 @@ export const UnifiedQuickLogin = ({ redirectTo }: UnifiedQuickLoginProps) => {
       console.log(`Attempting quick login as ${role}`);
       setIsLoading(role);
       await setupTestUsers(role);
+      
+      // Handle success callback and redirection
+      if (onSuccess) {
+        onSuccess();
+      }
+      
+      if (redirectTo) {
+        navigate(redirectTo);
+      }
     } catch (error) {
       console.error('Failed to login with test user:', error);
       toast({
@@ -49,10 +61,12 @@ export const UnifiedQuickLogin = ({ redirectTo }: UnifiedQuickLoginProps) => {
 
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">Developer Quick Login</CardTitle>
-        <CardDescription>For testing purposes only</CardDescription>
-      </CardHeader>
+      {showHeader && (
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Developer Quick Login</CardTitle>
+          <CardDescription>For testing purposes only</CardDescription>
+        </CardHeader>
+      )}
       
       <CardContent className="pt-2">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
