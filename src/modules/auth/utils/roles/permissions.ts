@@ -61,3 +61,46 @@ export function getAccessibleModules(
     return []; // Return empty array as fallback
   }
 }
+
+/**
+ * Get permissions for a specific role
+ * @param role The user role
+ * @returns An object containing the permissions for the role
+ */
+export function getRolePermissions(role: UserRole | null): Record<string, boolean> {
+  if (!role) return { canView: false, canEdit: false, canDelete: false, canCreate: false };
+  
+  // Base permissions
+  const permissions: Record<string, boolean> = {
+    canView: true,
+    canEdit: false,
+    canDelete: false,
+    canCreate: false,
+  };
+  
+  // Add role-specific permissions
+  switch (role) {
+    case 'admin':
+    case 'master_admin':
+      permissions.canEdit = true;
+      permissions.canDelete = true;
+      permissions.canCreate = true;
+      break;
+    case 'content_editor':
+      permissions.canEdit = true;
+      permissions.canCreate = true;
+      break;
+    case 'company':
+      permissions.canEdit = true; // Companies can edit their own profiles
+      permissions.canCreate = true; // Companies can create leads
+      break;
+    case 'member':
+      permissions.canCreate = true; // Members can create leads
+      break;
+    default:
+      // Anonymous users only have view permissions
+      break;
+  }
+  
+  return permissions;
+}

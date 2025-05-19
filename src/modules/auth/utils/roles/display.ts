@@ -26,3 +26,13 @@ export const roleDescriptions: Partial<Record<UserRole, string>> = {
   master_admin: 'Hovedadministrator med full tilgang til alle funksjoner.',
   content_editor: 'Innholdsredaktør med tilgang til å redigere innhold.'
 };
+
+/**
+ * Get a human-readable display name for a user role
+ * @param role The user role
+ * @returns The display name or the role itself if no mapping exists
+ */
+export function getRoleDisplayName(role: UserRole | null): string {
+  if (!role) return 'Unknown';
+  return roleNames[role] || role;
+}
