@@ -1,0 +1,80 @@
+
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { TestUser } from '../utils/devLogin';
+import { UserRole } from '../utils/roles/types';
+
+export const useAllUsers = () => {
+  const [users, setUsers] = useState<TestUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (import.meta.env.MODE !== 'development') {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        // First, get user profiles which contain role information
+        const { data: profiles, error: profilesError } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, email, metadata, role');
+
+        if (profilesError) {
+          throw new Error(`Failed to fetch profiles: ${profilesError.message}`);
+        }
+
+        // Convert profiles to TestUser format
+        const formattedUsers: TestUser[] = profiles.map(profile => {
+          // Extract role from profile or metadata
+          let role: UserRole = 'member';
+          if (profile.role) {
+            role = profile.role as UserRole;
+          } else if (profile.metadata && typeof profile.metadata === 'object') {
+            if (profile.metadata.role) {
+              role = profile.metadata.role as UserRole;
+            }
+          }
+
+          return {
+            id: profile.id,
+            name: profile.full_name || '',
+            email: profile.email || '',
+            role,
+            // Default password for dev login - not actually used for authentication
+            password: 'Test1234!'  
+          };
+        });
+
+        // Sort users by role importance
+        const roleOrder: Record<string, number> = {
+          'master_admin': 1,
+          'admin': 2,
+          'company': 3,
+          'member': 4
+        };
+
+        formattedUsers.sort((a, b) => {
+          const roleA = roleOrder[a.role] || 99;
+          const roleB = roleOrder[b.role] || 99;
+          return roleA - roleB;
+        });
+
+        setUsers(formattedUsers);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error fetching users');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  return { users, loading, error };
+};

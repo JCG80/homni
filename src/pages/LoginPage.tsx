@@ -3,13 +3,12 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginTabs } from '@/components/auth/LoginTabs';
-import { TestUserManager } from '@/components/auth/TestUserManager';
 import { UserRole } from '@/modules/auth/utils/roles';
-import { devLogin } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
 import { useRoleNavigation } from '@/modules/auth/hooks/roles/useRoleNavigation';
 import { Globe, Lock, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { QuickLoginEnhanced } from '@/modules/auth/components/QuickLoginEnhanced';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -46,31 +45,6 @@ export const LoginPage = () => {
       }
     }
   }, [user, isLoading, isAuthenticated, role, navigate, returnUrl, redirectToDashboard]);
-
-  // Handle test user login
-  const handleDevLogin = async (role: UserRole) => {
-    try {
-      const result = await devLogin(role);
-      if (result.error) {
-        toast({
-          title: 'Innlogging feilet',
-          description: result.error.message,
-          variant: 'destructive',
-        });
-      } else {
-        console.log(`LoginPage - Dev login successful for role: ${role}`);
-        // Success notifications are already handled in devLogin
-        redirectToDashboard();
-      }
-    } catch (error) {
-      console.error("LoginPage - Dev login error:", error);
-      toast({
-        title: 'Innlogging feilet',
-        description: 'En uventet feil oppstod ved innlogging',
-        variant: 'destructive',
-      });
-    }
-  };
 
   // Animation variants
   const containerVariants = {
@@ -155,8 +129,10 @@ export const LoginPage = () => {
           
           {import.meta.env.MODE === 'development' && (
             <motion.div variants={itemVariants} className="border-t pt-4 mt-4">
-              <p className="text-xs text-muted-foreground mb-2 text-center">Utviklerverktøy</p>
-              <TestUserManager onLoginClick={handleDevLogin} />
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground mb-2">Utviklerverktøy</p>
+                <QuickLoginEnhanced onSuccess={() => redirectToDashboard()} />
+              </div>
             </motion.div>
           )}
         </motion.div>
