@@ -1,10 +1,9 @@
-
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useAuthState } from './useAuthState';
 import { useRoleCheck } from './roles/useRoleCheck';
 import { signOut } from '../api/auth-authentication';
 import { useDevAuth } from './useDevAuth';
-import { AuthContextType } from './useAuth';
+import { AuthContextType } from '../types/types';
 
 // Create context with default values
 const AuthContext = createContext<AuthContextType>({
@@ -74,8 +73,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     ...authState, // Provides user, profile, isLoading, error, etc.
     ...roleChecks, // Provides role, isAdmin, isMasterAdmin, hasRole, etc.
     loading: authState.isLoading, // Alias for backward compatibility
-    canAccess: canAccessModuleSync, // Rename for backward compatibility
     canAccessModule: canAccessModuleSync, 
+    canAccess: canAccessModuleSync, // Alias for backward compatibility
     canPerform: (action: string, resource: string) => false, // Stub implementation
     logout, // Add the logout function to the context value
     refreshProfile: refreshProfileWrapper, // Use the wrapper function
