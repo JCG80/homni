@@ -1,8 +1,10 @@
+
 /**
  * Export all auth hooks
  */
 export { useAuth } from './useAuth';
 export { useRoleCheck, useRoleNavigation, useRoleProtection } from './roles';
+export { AuthProvider } from './useAuth';
 
 // Legacy hooks (deprecated but exported for backward compatibility)
 export { useRoleHelpers } from './useRoleHelpers';
