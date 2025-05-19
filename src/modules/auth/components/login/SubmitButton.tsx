@@ -1,5 +1,6 @@
 
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -10,25 +11,35 @@ interface SubmitButtonProps {
 }
 
 export const SubmitButton = ({ isSubmitting, currentAttempt, maxRetries }: SubmitButtonProps) => {
+  const attemptsRemaining = maxRetries - currentAttempt;
+  const showRetryInfo = currentAttempt > 0 && attemptsRemaining > 0;
+  
   return (
-    <motion.div 
-      variants={{
-        hidden: { opacity: 0, y: 5 },
-        visible: { opacity: 1, y: 0 }
-      }}
-    >
-      <Button type="submit" className="w-full transition-all hover:shadow-md" disabled={isSubmitting}>
+    <div className="space-y-2">
+      <Button 
+        type="submit" 
+        className="w-full h-11 transition-all"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
-          <div className="flex items-center">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {currentAttempt > 0 
-              ? `Logger inn... (forsøk ${currentAttempt}/${maxRetries})` 
-              : 'Logger inn...'}
-          </div>
+          <span className="flex items-center space-x-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Logger inn...</span>
+          </span>
         ) : (
           'Logg inn'
         )}
       </Button>
-    </motion.div>
+      
+      {showRetryInfo && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-xs text-center text-muted-foreground"
+        >
+          Innloggingsforsøk {currentAttempt} av {maxRetries}
+        </motion.div>
+      )}
+    </div>
   );
 };

@@ -1,167 +1,101 @@
 
-import React, { useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuGroup,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { TestUser } from '../types/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { setupTestUsers } from '../utils/setupTestUsers';
+import { UserRole } from '../utils/roles/types';
+import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
-import { Key, Search, Users, ChevronRight } from 'lucide-react';
-import { useAllUsers } from '../hooks/useAllUsers';
-import { smartDevLogin } from '../utils/passwordlessLogin';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 
-export interface QuickLoginEnhancedProps {
-  onSuccess?: () => void;
+interface QuickLoginProps {
+  redirectTo?: string;
+  showHeader?: boolean;
 }
 
-export const QuickLoginEnhanced: React.FC<QuickLoginEnhancedProps> = ({ onSuccess }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const { 
-    users, 
-    loading, 
-    error: fetchError 
-  } = useAllUsers();
+const roles: { role: UserRole; label: string; color: string }[] = [
+  { role: 'master_admin', label: 'Master Admin', color: 'bg-purple-500 hover:bg-purple-600' },
+  { role: 'admin', label: 'Admin', color: 'bg-blue-500 hover:bg-blue-600' },
+  { role: 'content_editor', label: 'Content Editor', color: 'bg-green-500 hover:bg-green-600' },
+  { role: 'company', label: 'Company', color: 'bg-amber-500 hover:bg-amber-600' },
+  { role: 'member', label: 'Member', color: 'bg-slate-500 hover:bg-slate-600' },
+  { role: 'anonymous', label: 'Guest', color: 'bg-gray-400 hover:bg-gray-500' },
+];
+
+const staggerDelay = 0.05;
+
+export const QuickLoginEnhanced = ({ redirectTo, showHeader = true }: QuickLoginProps) => {
+  const [isLoading, setIsLoading] = React.useState<string | null>(null);
   
-  // Filter users based on search query
-  const filteredUsers = users.filter(user => {
-    const lowerQuery = searchQuery.toLowerCase();
-    return (
-      user.email?.toLowerCase().includes(lowerQuery) ||
-      user.name?.toLowerCase().includes(lowerQuery) ||
-      user.role?.toLowerCase().includes(lowerQuery)
-    );
-  });
-
-  // Group users by role for better organization
-  const usersByRole = filteredUsers.reduce((acc, user) => {
-    const role = user.role || 'unknown';
-    if (!acc[role]) {
-      acc[role] = [];
-    }
-    acc[role].push(user);
-    return acc;
-  }, {} as Record<string, typeof users>);
-
-  const handleLoginAs = async (user: TestUser) => {
+  const handleLogin = async (role: UserRole) => {
     try {
-      const result = await smartDevLogin(user);
-      if (result.success) {
-        if (onSuccess) onSuccess();
-      } else {
-        toast({
-          title: "Login failed",
-          description: result.error?.message || "Unknown error",
-          variant: "destructive",
-        });
-      }
-    } catch (err) {
-      console.error("Login error:", err);
+      setIsLoading(role);
+      await setupTestUsers(role);
+      // Note: setupTestUsers handles toast notifications internally
+    } catch (error) {
+      console.error('Failed to login with test user:', error);
       toast({
-        title: "Login error",
-        description: err instanceof Error ? err.message : "Unknown error occurred",
-        variant: "destructive",
+        title: 'Login Failed',
+        description: `Could not login as ${role}. Please try again.`,
+        variant: 'destructive',
       });
+    } finally {
+      setIsLoading(null);
     }
   };
 
-  // Only show in development mode
-  if (import.meta.env.MODE !== 'development') {
-    return null;
-  }
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs" data-test-id="quick-login-trigger">
-          <Key className="h-3.5 w-3.5" />
-          <span>Quick Login</span>
-        </Button>
-      </DropdownMenuTrigger>
+    <Card className="border-dashed border-2">
+      {showHeader && (
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Quick Login</CardTitle>
+          <CardDescription>Development testing only</CardDescription>
+        </CardHeader>
+      )}
       
-      <DropdownMenuContent className="w-72" align="end">
-        <DropdownMenuLabel className="flex items-center justify-between">
-          <span>Developer Quick Login</span>
-          <Badge variant="outline" className="text-xs">Dev Mode</Badge>
-        </DropdownMenuLabel>
-        
-        <div className="px-2 py-2">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search users..." 
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              data-test-id="quick-login-search"
-            />
-          </div>
-        </div>
-        
-        <DropdownMenuSeparator />
-        
-        {loading ? (
-          <div className="space-y-2 p-2">
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-          </div>
-        ) : fetchError ? (
-          <div className="p-3 text-center text-sm text-destructive">
-            Error loading users: {fetchError}
-          </div>
-        ) : Object.keys(usersByRole).length === 0 ? (
-          <div className="p-3 text-center text-sm text-muted-foreground">
-            No users found
-          </div>
-        ) : (
-          Object.entries(usersByRole).map(([role, roleUsers]) => (
-            <DropdownMenuGroup key={role}>
-              {Object.keys(usersByRole).length > 1 && (
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="capitalize">
-                    <Users className="mr-2 h-4 w-4" />
-                    {role.replace('_', ' ')} ({roleUsers.length})
-                    <ChevronRight className="ml-auto h-4 w-4" />
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    {roleUsers.map((user) => (
-                      <DropdownMenuItem 
-                        key={user.id}
-                        onClick={() => handleLoginAs(user)}
-                        data-test-id={`quick-login-user-${user.id}`}
-                      >
-                        {user.name || user.email}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-              )}
-              {Object.keys(usersByRole).length === 1 && roleUsers.map((user) => (
-                <DropdownMenuItem 
-                  key={user.id}
-                  onClick={() => handleLoginAs(user)}
-                  data-test-id={`quick-login-user-${user.id}`}
-                >
-                  {user.name || user.email}
-                  <Badge className="ml-2 text-xs" variant="outline">{role.replace('_', ' ')}</Badge>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-          ))
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      <CardContent className="pt-4">
+        <motion.div 
+          className="grid grid-cols-2 gap-2" 
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: staggerDelay
+              }
+            },
+            hidden: {}
+          }}
+        >
+          {roles.map(({ role, label, color }, index) => (
+            <motion.div 
+              key={role}
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+              }}
+            >
+              <Button
+                key={role}
+                size="sm"
+                variant="outline"
+                className={`w-full text-white ${color}`}
+                disabled={isLoading !== null}
+                onClick={() => handleLogin(role)}
+              >
+                {isLoading === role ? (
+                  <span className="flex items-center space-x-1">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>...</span>
+                  </span>
+                ) : label}
+              </Button>
+            </motion.div>
+          ))}
+        </motion.div>
+      </CardContent>
+    </Card>
   );
 };

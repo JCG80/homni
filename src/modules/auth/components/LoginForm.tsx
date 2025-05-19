@@ -1,6 +1,6 @@
 
 import { Form } from '@/components/ui/form';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { EmailField } from './login/EmailField';
 import { PasswordField } from './login/PasswordField';
 import { SubmitButton } from './login/SubmitButton';
@@ -10,6 +10,7 @@ import { DevInfo } from './login/DevInfo';
 import { useLoginForm } from './login/useLoginForm';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import { UserCircle, Building } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -45,14 +46,14 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.08
+        staggerChildren: 0.1
       }
     }
   };
   
   const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
   };
 
   return (
@@ -64,7 +65,31 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
         onSubmit={handleSubmit} 
         className="space-y-5"
       >
-        <FormError error={error || (lastError ? lastError.message : null)} />
+        <motion.div 
+          className="flex justify-center mb-6" 
+          variants={itemVariants}
+        >
+          <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
+            {userType === 'business' ? (
+              <Building className="h-8 w-8 text-primary" />
+            ) : (
+              <UserCircle className="h-8 w-8 text-primary" />
+            )}
+          </div>
+        </motion.div>
+        
+        <AnimatePresence>
+          {(error || lastError) && (
+            <motion.div 
+              variants={itemVariants}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <FormError error={error || (lastError ? lastError.message : null)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <motion.div variants={itemVariants}>
           <EmailField control={form.control} />
@@ -86,9 +111,11 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
           <RegisterLink userType={userType} />
         </motion.div>
         
-        <motion.div variants={itemVariants}>
-          <DevInfo />
-        </motion.div>
+        {import.meta.env.MODE === 'development' && (
+          <motion.div variants={itemVariants}>
+            <DevInfo />
+          </motion.div>
+        )}
       </motion.form>
     </Form>
   );
