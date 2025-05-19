@@ -20,5 +20,6 @@ export function parseCompanyProfile(item: any): CompanyProfile {
     industry: item.industry || '',
     subscription_plan: item.subscription_plan || 'free',
     modules_access: Array.isArray(item.modules_access) ? item.modules_access : [],
+    metadata: item.metadata || {},
   };
 }

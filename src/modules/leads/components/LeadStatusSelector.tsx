@@ -16,13 +16,13 @@ export const LeadStatusSelector: React.FC<LeadStatusSelectorProps> = ({
 }) => {
   const statusLabels: Record<LeadStatus, string> = {
     new: 'Ny',
+    in_progress: 'Under behandling',
+    won: 'Vunnet',
+    lost: 'Tapt',
+    archived: 'Arkivert',
     assigned: 'Tildelt',
     under_review: 'Under vurdering',
-    in_progress: 'Under behandling',
-    completed: 'Fullført',
-    archived: 'Arkivert',
-    won: 'Vunnet',
-    lost: 'Tapt'
+    completed: 'Fullført'
   };
 
   return (

@@ -81,5 +81,3 @@ export async function globalPause(paused: boolean, companyId?: string) {
     company_id: companyId || null 
   });
 }
-
-export type { LeadSettings };

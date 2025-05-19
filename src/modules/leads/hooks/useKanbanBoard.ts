@@ -19,7 +19,7 @@ export const useKanbanBoard = () => {
   
   // Fetch leads based on user role
   const { 
-    data: leads = [], 
+    data: fetchedLeads = [], 
     isLoading, 
     error,
     refetch
@@ -36,7 +36,24 @@ export const useKanbanBoard = () => {
           console.warn('No company ID or user ID available for leads query');
         }
         
-        return await fetchLeads(companyId, userId);
+        const leads = await fetchLeads(companyId, userId);
+        // Transform to ensure they match the Lead interface
+        return leads.map((lead: any): Lead => ({
+          id: lead.id,
+          title: lead.title || '',
+          description: lead.description || '',
+          status: lead.status as LeadStatus,
+          category: lead.category || '',
+          customer_name: lead.customer_name || '',
+          customer_email: lead.customer_email || '',
+          customer_phone: lead.customer_phone || '',
+          service_type: lead.service_type || '',
+          created_at: lead.created_at,
+          company_id: lead.company_id,
+          submitted_by: lead.submitted_by,
+          updated_at: lead.updated_at,
+          metadata: lead.metadata,
+        }));
       } catch (error) {
         console.error('Error fetching leads:', error);
         throw error;
@@ -71,9 +88,9 @@ export const useKanbanBoard = () => {
   
   // Update lead status mutation
   const { mutate } = useMutation({
-    mutationFn: ({ leadId, newStatus }: { leadId: string; newStatus: LeadStatus }) => {
+    mutationFn: async ({ leadId, newStatus }: { leadId: string; newStatus: LeadStatus }) => {
       setIsUpdating(true);
-      return updateLeadStatus(leadId, newStatus);
+      return await updateLeadStatus(leadId, newStatus);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
@@ -102,7 +119,10 @@ export const useKanbanBoard = () => {
       'in_progress': { id: 'in_progress', title: 'In Progress' },
       'won': { id: 'won', title: 'Won' },
       'lost': { id: 'lost', title: 'Lost' },
-      'archived': { id: 'archived', title: 'Archived' }
+      'archived': { id: 'archived', title: 'Archived' },
+      'assigned': { id: 'assigned', title: 'Assigned' },
+      'under_review': { id: 'under_review', title: 'Under Review' },
+      'completed': { id: 'completed', title: 'Completed' }
     };
     
     const columnsData: KanbanColumn[] = [];
@@ -113,15 +133,15 @@ export const useKanbanBoard = () => {
       columnsData.push({
         id: statusKey,
         title: statusMap[statusKey].title,
-        leads: leads.filter(lead => lead.status === statusKey)
+        leads: fetchedLeads.filter(lead => lead.status === statusKey)
       });
     });
     
     return columnsData;
-  }, [leads]);
+  }, [fetchedLeads]);
   
   // Handle updating lead status
-  const updateLeadStatus = (leadId: string, newStatus: LeadStatus) => {
+  const handleUpdateLeadStatus = (leadId: string, newStatus: LeadStatus) => {
     mutate({ leadId, newStatus });
   };
   
@@ -133,12 +153,12 @@ export const useKanbanBoard = () => {
   
   return {
     columns,
-    leads,
+    leads: fetchedLeads,
     isLoading,
     isUpdating,
     error,
     leadCounts: leadCountsData,
-    updateLeadStatus,
+    updateLeadStatus: handleUpdateLeadStatus,
     refreshLeads
   };
 };
