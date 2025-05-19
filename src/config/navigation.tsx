@@ -12,11 +12,12 @@ import {
   FilePlus,
 } from "lucide-react";
 import { UserRole } from "@/modules/auth/utils/roles/types";
+import { LucideIcon } from "lucide-react";
 
 export interface NavItem {
   title: string;
   href: string;
-  icon?: React.ComponentType;
+  icon?: LucideIcon; // Change to LucideIcon type
   children?: NavItem[];
   description?: string;
 }
