@@ -21,7 +21,7 @@ export const ProtectedRoute = ({
   allowAnyAuthenticated = false,
   module
 }: ProtectedRouteProps) => {
-  const { isLoading, isAuthenticated, role, canAccessModule } = useAuth();
+  const { isLoading, isAuthenticated, role, canAccessModule, hasRole } = useAuth();
   const location = useLocation();
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
   const [isCheckingPermission, setIsCheckingPermission] = useState(true);
@@ -52,7 +52,7 @@ export const ProtectedRoute = ({
       
       // If specific module access is required, check it
       if (module) {
-        const hasModuleAccess = await canAccessModule(module);
+        const hasModuleAccess = canAccessModule(module);
         console.log(`Checking module access for ${module}:`, hasModuleAccess);
         setIsAllowed(hasModuleAccess);
         setIsCheckingPermission(false);
@@ -61,7 +61,7 @@ export const ProtectedRoute = ({
       
       // If specific roles are required, check if the user has one of them
       if (allowedRoles.length > 0) {
-        const hasRequiredRole = allowedRoles.includes(role as UserRole);
+        const hasRequiredRole = allowedRoles.some(r => hasRole(r));
         console.log("Role check:", { userRole: role, allowedRoles, hasRequiredRole });
         setIsAllowed(hasRequiredRole);
         setIsCheckingPermission(false);
@@ -74,7 +74,7 @@ export const ProtectedRoute = ({
     };
     
     checkAccess();
-  }, [isLoading, isAuthenticated, role, allowedRoles, allowAnyAuthenticated, module, canAccessModule]);
+  }, [isLoading, isAuthenticated, role, allowedRoles, allowAnyAuthenticated, module, canAccessModule, hasRole]);
 
   // Add enhanced debug logging
   useEffect(() => {

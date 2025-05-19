@@ -1,37 +1,32 @@
 
-import './App.css'
-import { ErrorBoundary } from './components/ErrorBoundary'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AuthWrapper } from './modules/auth/components/AuthWrapper'
-import { Toaster } from './components/ui/toaster'
-import { AppRoutes } from './Routes'
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AppRoutes } from './Routes';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/toaster';
+import './App.css';
+import { AuthWrapper } from './modules/auth/components/AuthWrapper';
 
-// Create a client with retry logic
+// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 3, // Retry failed queries up to 3 times
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-    },
-    mutations: {
-      retry: 2, // Retry failed mutations up to 2 times
+      refetchOnWindowFocus: false,
+      retry: 1,
     },
   },
-})
+});
 
 function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthWrapper>
-          <div className="App">
-            <AppRoutes />
-            <Toaster />
-          </div>
-        </AuthWrapper>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthWrapper>
+        <Router>
+          <AppRoutes />
+          <Toaster />
+        </Router>
+      </AuthWrapper>
+    </QueryClientProvider>
   );
 }
 

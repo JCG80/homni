@@ -15,7 +15,7 @@ import { ServiceNavigation } from '@/components/navigation/ServiceNavigation';
 import { toast } from '@/hooks/use-toast';
 
 export const Sidebar = () => {
-  const { isAuthenticated, role, logout } = useAuth();
+  const { isAuthenticated, role, logout, hasRole } = useAuth();
   const navigate = useNavigate();
   
   // Enhanced logging for debugging

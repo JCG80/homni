@@ -8,11 +8,11 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
-  const { role } = useAuth();
+  const { role, profile } = useAuth();
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-2">{title || 'Dashboard'}</h1>
+      <h1 className="text-3xl font-bold mb-2">{title || `${profile?.full_name || 'User'}'s Dashboard`}</h1>
       <p className="text-muted-foreground mb-6">
         {role === 'member' ? 'Bruker Dashboard' : 
          role === 'company' ? 'Firmaportal' : 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -26,14 +27,23 @@ export function UserNav() {
     profile, 
     isDevMode, 
     switchDevUser, 
-    role 
+    role,
+    logout
   } = useAuth();
   const navigate = useNavigate();
   
   const handleLogout = async () => {
-    // This would be handled by your auth logout function
-    // Placeholder for now
-    navigate('/login');
+    if (logout) {
+      try {
+        await logout();
+        navigate('/login');
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+    } else {
+      // Fallback for backwards compatibility
+      navigate('/login');
+    }
   };
 
   // Function to get initials from name
@@ -65,6 +75,8 @@ export function UserNav() {
         return 'Company';
       case 'member':
         return 'User';
+      case 'content_editor':
+        return 'Content Editor';
       default:
         return role || 'Guest';
     }
@@ -101,7 +113,7 @@ export function UserNav() {
                     <p className="text-xs leading-none text-muted-foreground">
                       {user?.email}
                     </p>
-                    {isDevMode && role && (
+                    {role && (
                       <p className="text-xs font-semibold text-primary">
                         Role: {getRoleDisplay()}
                       </p>

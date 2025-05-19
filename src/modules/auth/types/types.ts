@@ -38,7 +38,7 @@ export interface AuthUser {
   id: string;
   email?: string;
   role: UserRole;
-  company_id?: string; // Added to fix company_id errors
+  company_id?: string; // Added company_id to fix issues
 }
 
 export interface AuthState {

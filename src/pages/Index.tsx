@@ -1,172 +1,18 @@
-
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Shield, Building, Coins, ArrowRight, FileText, Users, HelpCircle } from 'lucide-react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '@/modules/auth/hooks';
+import { LandingPage } from './LandingPage';
 
-const Index = () => {
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  
-  const handleServiceSelection = () => {
-    navigate('/select-services');
-  };
+const Index: React.FC = () => {
+  const { isAuthenticated, role } = useAuth();
 
-  const handleLoginOrDashboard = () => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    } else {
-      navigate('/login');
-    }
-  };
-  
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100">
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 pt-16 pb-20">
-        <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Sammenlign og håndter dine tjenester på ett sted
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Vi hjelper deg med å finne de beste tilbudene på forsikring, eiendomstjenester og finansieringsløsninger.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={handleServiceSelection}
-              size="lg"
-              className="px-8 py-6 text-lg"
-            >
-              Velg tjenester <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              onClick={handleLoginOrDashboard}
-              variant="outline"
-              size="lg"
-              className="px-8 py-6 text-lg"
-            >
-              {isAuthenticated ? 'Gå til dashboard' : 'Logg inn'} <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Services Section */}
-      <div className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Våre tjenester</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-md text-center">
-              <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Forsikring</h3>
-              <p className="text-gray-600 mb-4">
-                Få tilbud på ulike typer forsikringer for deg og familien din
-              </p>
-              <Button variant="outline" onClick={() => navigate('/forsikring')}>
-                Les mer
-              </Button>
-            </div>
-            
-            <div className="bg-white p-8 rounded-lg shadow-md text-center">
-              <Building className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Eiendom</h3>
-              <p className="text-gray-600 mb-4">
-                Få hjelp med boligkjøp, -salg og -finansiering
-              </p>
-              <Button variant="outline" onClick={() => navigate('/select-services')}>
-                Les mer
-              </Button>
-            </div>
-            
-            <div className="bg-white p-8 rounded-lg shadow-md text-center">
-              <Coins className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Finans</h3>
-              <p className="text-gray-600 mb-4">
-                Få rådgivning om lån, sparing og pensjon
-              </p>
-              <Button variant="outline" onClick={() => navigate('/select-services')}>
-                Les mer
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Additional Resources Section - updated to include FAQ */}
-      <div className="bg-gray-50 py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Ressurser</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-md text-center">
-              <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Prosjektplan</h3>
-              <p className="text-gray-600 mb-4">
-                Les vår prosjektplan og fremtidige planer for plattformen
-              </p>
-              <Button variant="outline" onClick={() => navigate('/docs/project-plan')}>
-                Se prosjektplan
-              </Button>
-            </div>
-            
-            <div className="bg-white p-8 rounded-lg shadow-md text-center">
-              <HelpCircle className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-3">FAQ</h3>
-              <p className="text-gray-600 mb-4">
-                Svar på ofte stilte spørsmål om våre tjenester
-              </p>
-              <Button variant="outline" onClick={() => navigate('/docs/faq')}>
-                Se FAQ
-              </Button>
-            </div>
-            
-            <div className="bg-white p-8 rounded-lg shadow-md text-center">
-              <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Våre partnere</h3>
-              <p className="text-gray-600 mb-4">
-                Se oversikt over våre samarbeidspartnere
-              </p>
-              <Button variant="outline" onClick={() => navigate('/companies')}>
-                Se partnere
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Call to Action */}
-      <div className="bg-primary text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Klar til å finne de beste tilbudene?</h2>
-          <p className="text-xl mb-8">
-            Start nå for å sammenligne og administrere tjenestene dine enkelt og effektivt.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              variant="secondary" 
-              size="lg" 
-              onClick={handleServiceSelection}
-              className="px-8 py-6 text-lg"
-            >
-              Utforsk tjenester <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            {!isAuthenticated && (
-              <Button 
-                variant="outline" 
-                size="lg" 
-                onClick={() => navigate('/register')}
-                className="px-8 py-6 text-lg border-white text-white hover:bg-white/10"
-              >
-                Registrer deg
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  // If authenticated, redirect to the appropriate dashboard
+  if (isAuthenticated && role) {
+    return <Navigate to={`/dashboard/${role}`} replace />;
+  }
+
+  // Otherwise, show the landing page
+  return <LandingPage />;
 };
 
 export default Index;
