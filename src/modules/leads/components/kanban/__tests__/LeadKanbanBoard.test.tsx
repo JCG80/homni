@@ -6,7 +6,7 @@ import { KanbanColumn } from '../../../hooks/useKanbanBoard';
 import { Lead } from '@/types/leads';
 
 // Mock react-beautiful-dnd
-jest.mock('react-beautiful-dnd', () => ({
+vi.mock('react-beautiful-dnd', () => ({
   DragDropContext: ({ children }: { children: React.ReactNode }) => <div data-testid="drag-drop-context">{children}</div>,
   Droppable: ({ children }: { children: (provided: any) => React.ReactNode }) => 
     <div data-testid="droppable">
@@ -44,7 +44,7 @@ describe('LeadKanbanBoard', () => {
     { id: 'lost', title: 'Tapt', leads: [] },
   ];
 
-  const mockHandleStatusChange = jest.fn();
+  const mockHandleStatusChange = vi.fn();
 
   it('renders the correct number of columns', () => {
     render(

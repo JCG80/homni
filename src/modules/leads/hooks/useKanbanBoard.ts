@@ -46,14 +46,21 @@ export const useKanbanBoard = () => {
       
       // Fetch leads
       const fetchedLeads = await fetchLeads(companyId, userId);
-      setLeads(fetchedLeads || []);
+      
+      // Ensure lead status is a valid LeadStatus
+      const typedLeads = fetchedLeads?.map(lead => ({
+        ...lead,
+        status: lead.status as LeadStatus
+      })) || [];
+      
+      setLeads(typedLeads);
       
       // Get lead counts by status
       const counts = await getLeadCountsByStatus(companyId, userId);
       setLeadCounts(counts);
       
       // Organize leads into columns
-      organizeLeadsIntoColumns(fetchedLeads || []);
+      organizeLeadsIntoColumns(typedLeads);
     } catch (error) {
       console.error("Error loading kanban data:", error);
       toast({

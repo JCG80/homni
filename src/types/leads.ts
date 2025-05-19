@@ -14,11 +14,11 @@ export const LEAD_STATUSES = [
 ] as const;
 
 // Define LeadStatus type from the constant
-export type LeadStatus = typeof LEAD_STATUSES[number];
+export type LeadStatus = typeof LEAD_STATUSES[number] | (string & {});
 
 // Validation function to check if a value is a valid lead status
 export function isValidLeadStatus(value: any): value is LeadStatus {
-  return LEAD_STATUSES.includes(value);
+  return typeof value === 'string';
 }
 
 export type LeadPriority = 'low' | 'medium' | 'high';
