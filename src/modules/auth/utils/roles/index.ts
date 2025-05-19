@@ -25,7 +25,8 @@ export {
 export { determineUserRole } from './determination';
 
 // Re-export display functions
-export { getRoleDisplayName } from './display';
+export { getRoleDisplayName, roleNames, roleDescriptions } from './display';
 
 // Re-export permissions functions
-export { getRolePermissions } from './permissions';
+export { getRolePermissions, getAllowedModulesForRole, getAccessibleModules } from './permissions';
+
