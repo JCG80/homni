@@ -56,7 +56,7 @@ export const AppSidebar = () => {
         </SidebarNavSection>
         
         {/* Role-based menu items */}
-        {isAuthenticated && <RoleBasedMenu role={role} />}
+        {isAuthenticated && role && <RoleBasedMenu role={role} />}
         
         {/* Documentation section */}
         <SidebarNavSection title="Dokumentasjon">
