@@ -2,6 +2,7 @@
 import React, { Suspense } from 'react';
 import { AppRouteComponents } from './routes';
 import DesignSystemPage from './pages/DesignSystemPage';
+import { AnimatePresence } from 'framer-motion';
 
 /**
  * Main application routes component with loading state
@@ -16,7 +17,9 @@ export const AppRoutes = () => {
         </div>
       </div>
     }>
-      <AppRouteComponents />
+      <AnimatePresence mode="wait">
+        <AppRouteComponents />
+      </AnimatePresence>
     </Suspense>
   );
 };
