@@ -17,7 +17,7 @@ import { RoleBasedMenu } from './RoleBasedMenu';
 import { toast } from '@/hooks/use-toast';
 
 // Use PropsWithChildren to properly type the children prop
-export const AppSidebar: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+export const AppSidebar = ({ children }: PropsWithChildren<{}>) => {
   const { isAuthenticated, role, logout } = useAuth();
   
   const handleLogout = async () => {

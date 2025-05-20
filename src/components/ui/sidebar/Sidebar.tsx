@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
@@ -14,7 +14,7 @@ import { SidebarNavItem } from './SidebarNavItem';
 import { ServiceNavigation } from '@/components/navigation/ServiceNavigation';
 import { toast } from '@/hooks/use-toast';
 
-export const Sidebar = () => {
+export const Sidebar: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const { isAuthenticated, role, logout, hasRole } = useAuth();
   const navigate = useNavigate();
   
@@ -64,84 +64,86 @@ export const Sidebar = () => {
   
   return (
     <div className="pb-12">
-      <SidebarContent>
-        {/* Main navigation */}
-        <SidebarNavSection title="Navigasjon">
-          <SidebarNavLink to="/" icon={Home} end>Hjem</SidebarNavLink>
-          {isAuthenticated && (
-            <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
-          )}
-        </SidebarNavSection>
-        
-        {/* Services navigation - using the standard component */}
-        <SidebarNavSection title="Tjenester">
-          <SidebarNavLink to="/select-services" icon={Database}>Velg tjenester</SidebarNavLink>
-          <SidebarNavLink to="/forsikring" icon={Shield}>Forsikring</SidebarNavLink>
-          <SidebarNavLink to="/strom" icon={Building}>Strøm</SidebarNavLink>
-          <div className="px-3 py-2">
-            <ServiceNavigation variant="vertical" />
-          </div>
-        </SidebarNavSection>
-
-        {/* Authenticated menu items */}
-        {isAuthenticated && (
-          <>
-            <SidebarNavSection title="Min konto">
-              <SidebarNavLink to="/profile" icon={Users}>
-                Min profil
-              </SidebarNavLink>
-              <SidebarNavLink to="/leads" icon={FileText}>
-                Forespørsler
-              </SidebarNavLink>
-              <SidebarNavLink to="/leads/kanban" icon={Kanban}>
-                Kanban-tavle
-              </SidebarNavLink>
-            </SidebarNavSection>
-            
-            {/* Admin section */}
-            {(role === 'admin' || role === 'master_admin') && (
-              <SidebarNavSection title="Administrasjon">
-                <SidebarNavLink to="/admin/leads" icon={FileText}>Leads</SidebarNavLink>
-                <SidebarNavLink to="/admin/system-modules" icon={Database}>Systemmoduler</SidebarNavLink>
-                
-                {role === 'master_admin' && (
-                  <>
-                    <SidebarNavLink to="/admin/roles" icon={Shield}>Rolleadministrasjon</SidebarNavLink>
-                    <SidebarNavLink to="/admin/members" icon={Users}>Medlemmer</SidebarNavLink>
-                    <SidebarNavLink to="/admin/companies" icon={Users}>Bedrifter</SidebarNavLink>
-                    <SidebarNavLink to="/admin/internal-access" icon={Shield}>Modultilgang</SidebarNavLink>
-                  </>
-                )}
-              </SidebarNavSection>
+      {children ? children : (
+        <SidebarContent>
+          {/* Main navigation */}
+          <SidebarNavSection title="Navigasjon">
+            <SidebarNavLink to="/" icon={Home} end>Hjem</SidebarNavLink>
+            {isAuthenticated && (
+              <SidebarNavLink to={dashboardRoute} icon={LayoutDashboard}>Dashboard</SidebarNavLink>
             )}
-
-            {/* Content editor section */}
-            {(role === 'content_editor' || role === 'admin' || role === 'master_admin') && (
-              <SidebarNavSection title="Innhold">
-                <SidebarNavLink to="/admin/content" icon={FileText}>Innholdsredigering</SidebarNavLink>
-              </SidebarNavSection>
-            )}
-            
-            {/* Logout button */}
+          </SidebarNavSection>
+          
+          {/* Services navigation - using the standard component */}
+          <SidebarNavSection title="Tjenester">
+            <SidebarNavLink to="/select-services" icon={Database}>Velg tjenester</SidebarNavLink>
+            <SidebarNavLink to="/forsikring" icon={Shield}>Forsikring</SidebarNavLink>
+            <SidebarNavLink to="/strom" icon={Building}>Strøm</SidebarNavLink>
             <div className="px-3 py-2">
-              <SidebarNavItem icon={LogOut} onClick={handleLogout}>
-                Logg ut
-              </SidebarNavItem>
+              <ServiceNavigation variant="vertical" />
             </div>
-          </>
-        )}
+          </SidebarNavSection>
 
-        {/* Documentation section */}
-        <SidebarNavSection title="Dokumentasjon">
-          <SidebarNavLink to="/docs/project-plan" icon={FileText}>Prosjektplan</SidebarNavLink>
-          <SidebarNavLink to="/docs/faq" icon={HelpCircle}>FAQ</SidebarNavLink>
-        </SidebarNavSection>
+          {/* Authenticated menu items */}
+          {isAuthenticated && (
+            <>
+              <SidebarNavSection title="Min konto">
+                <SidebarNavLink to="/profile" icon={Users}>
+                  Min profil
+                </SidebarNavLink>
+                <SidebarNavLink to="/leads" icon={FileText}>
+                  Forespørsler
+                </SidebarNavLink>
+                <SidebarNavLink to="/leads/kanban" icon={Kanban}>
+                  Kanban-tavle
+                </SidebarNavLink>
+              </SidebarNavSection>
+              
+              {/* Admin section */}
+              {(role === 'admin' || role === 'master_admin') && (
+                <SidebarNavSection title="Administrasjon">
+                  <SidebarNavLink to="/admin/leads" icon={FileText}>Leads</SidebarNavLink>
+                  <SidebarNavLink to="/admin/system-modules" icon={Database}>Systemmoduler</SidebarNavLink>
+                  
+                  {role === 'master_admin' && (
+                    <>
+                      <SidebarNavLink to="/admin/roles" icon={Shield}>Rolleadministrasjon</SidebarNavLink>
+                      <SidebarNavLink to="/admin/members" icon={Users}>Medlemmer</SidebarNavLink>
+                      <SidebarNavLink to="/admin/companies" icon={Users}>Bedrifter</SidebarNavLink>
+                      <SidebarNavLink to="/admin/internal-access" icon={Shield}>Modultilgang</SidebarNavLink>
+                    </>
+                  )}
+                </SidebarNavSection>
+              )}
 
-        {/* Companies section */}
-        <SidebarNavSection title="Partnere">
-          <SidebarNavLink to="/companies" icon={Building}>Våre partnere</SidebarNavLink>
-        </SidebarNavSection>
-      </SidebarContent>
+              {/* Content editor section */}
+              {(role === 'content_editor' || role === 'admin' || role === 'master_admin') && (
+                <SidebarNavSection title="Innhold">
+                  <SidebarNavLink to="/admin/content" icon={FileText}>Innholdsredigering</SidebarNavLink>
+                </SidebarNavSection>
+              )}
+              
+              {/* Logout button */}
+              <div className="px-3 py-2">
+                <SidebarNavItem icon={LogOut} onClick={handleLogout}>
+                  Logg ut
+                </SidebarNavItem>
+              </div>
+            </>
+          )}
+
+          {/* Documentation section */}
+          <SidebarNavSection title="Dokumentasjon">
+            <SidebarNavLink to="/docs/project-plan" icon={FileText}>Prosjektplan</SidebarNavLink>
+            <SidebarNavLink to="/docs/faq" icon={HelpCircle}>FAQ</SidebarNavLink>
+          </SidebarNavSection>
+
+          {/* Companies section */}
+          <SidebarNavSection title="Partnere">
+            <SidebarNavLink to="/companies" icon={Building}>Våre partnere</SidebarNavLink>
+          </SidebarNavSection>
+        </SidebarContent>
+      )}
     </div>
   );
 };
