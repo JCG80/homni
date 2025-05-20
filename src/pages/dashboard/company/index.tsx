@@ -5,6 +5,7 @@ import { LeadOverviewWidget } from '@/components/dashboard/company/LeadOverviewW
 import { AnalyticsSummaryWidget } from '@/components/dashboard/company/AnalyticsSummaryWidget';
 import { QuickActionsWidget } from '@/components/dashboard/company/QuickActionsWidget';
 import { TeamMembersWidget } from '@/components/dashboard/company/TeamMembersWidget';
+import { LeadKanbanWidget } from '@/modules/leads/components/kanban/LeadKanbanWidget';
 
 const CompanyDashboard: React.FC = () => {
   return (
@@ -14,6 +15,10 @@ const CompanyDashboard: React.FC = () => {
         <AnalyticsSummaryWidget />
         <QuickActionsWidget />
         <TeamMembersWidget />
+      </div>
+      
+      <div className="mt-6">
+        <LeadKanbanWidget title="My Leads" className="w-full" />
       </div>
     </RoleDashboard>
   );

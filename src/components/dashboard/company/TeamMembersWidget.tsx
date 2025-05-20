@@ -3,8 +3,15 @@ import React from 'react';
 import { Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { TeamMemberItem } from './TeamMemberItem';
 
 export const TeamMembersWidget: React.FC = () => {
+  const teamMembers = [
+    { initials: 'KL', name: 'Kari Larsen', role: 'Lead Manager' },
+    { initials: 'OB', name: 'Ole Berg', role: 'Sales Rep' },
+    { initials: 'SN', name: 'Sofia Nielsen', role: 'Sales Rep' }
+  ];
+
   return (
     <DashboardWidget
       title={
@@ -16,35 +23,14 @@ export const TeamMembersWidget: React.FC = () => {
     >
       <div className="space-y-4">
         <div className="space-y-3">
-          <div className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg">
-            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-primary font-medium">KL</span>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Kari Larsen</p>
-              <p className="text-xs text-muted-foreground">Lead Manager</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg">
-            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-primary font-medium">OB</span>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Ole Berg</p>
-              <p className="text-xs text-muted-foreground">Sales Rep</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg">
-            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-primary font-medium">SN</span>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Sofia Nielsen</p>
-              <p className="text-xs text-muted-foreground">Sales Rep</p>
-            </div>
-          </div>
+          {teamMembers.map((member) => (
+            <TeamMemberItem
+              key={member.name}
+              initials={member.initials}
+              name={member.name}
+              role={member.role}
+            />
+          ))}
         </div>
         
         <Button variant="outline" size="sm" className="w-full">
