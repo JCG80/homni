@@ -1,6 +1,5 @@
 
 import React, { Suspense } from 'react';
-import { Routes } from 'react-router-dom';
 import { AppRouteComponents } from './routes';
 
 /**
@@ -16,9 +15,7 @@ export const AppRoutes = () => {
         </div>
       </div>
     }>
-      <Routes>
-        <AppRouteComponents />
-      </Routes>
+      <AppRouteComponents />
     </Suspense>
   );
 };
