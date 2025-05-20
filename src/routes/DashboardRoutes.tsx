@@ -1,57 +1,36 @@
 
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { Dashboard } from '@/pages/Dashboard';
-import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
-import {
-  MemberDashboard,
-  CompanyDashboard,
-  AdminDashboard,
-  MasterAdminDashboard,
-  ContentEditorDashboard
-} from '@/pages/dashboard';
+import { RoleDashboard } from '../components/dashboard/RoleDashboard';
+import { Dashboard } from '../pages/Dashboard';
+import { UserRole } from '../modules/auth/utils/roles/types';
 
-/**
- * Dashboard routes for all user roles
- */
-export const DashboardRoutes = () => (
-  <>
-    {/* Main dashboard route - redirects to role-specific dashboard */}
-    <Route path="/dashboard" element={
-      <ProtectedRoute allowAnyAuthenticated>
-        <Dashboard />
-      </ProtectedRoute>
-    } />
-    
-    {/* Role-specific dashboard routes */}
-    <Route path="/dashboard/member" element={
-      <ProtectedRoute allowedRoles={['member']}>
-        <MemberDashboard />
-      </ProtectedRoute>
-    } />
-    
-    <Route path="/dashboard/company" element={
-      <ProtectedRoute allowedRoles={['company']}>
-        <CompanyDashboard />
-      </ProtectedRoute>
-    } />
-    
-    <Route path="/dashboard/admin" element={
-      <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
-        <AdminDashboard />
-      </ProtectedRoute>
-    } />
-    
-    <Route path="/dashboard/master_admin" element={
-      <ProtectedRoute allowedRoles={['master_admin']}>
-        <MasterAdminDashboard />
-      </ProtectedRoute>
-    } />
-    
-    <Route path="/dashboard/content_editor" element={
-      <ProtectedRoute allowedRoles={['content_editor', 'admin', 'master_admin']}>
-        <ContentEditorDashboard />
-      </ProtectedRoute>
-    } />
-  </>
-);
+export const DashboardRoutes = () => {
+  return (
+    <>
+      <Route path="/dashboard" element={
+        <RoleDashboard title="Dashboard">
+          <Dashboard />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/dashboard/member" element={
+        <RoleDashboard title="Medlem Dashboard" requiredRole="member">
+          <Dashboard />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/dashboard/company" element={
+        <RoleDashboard title="Bedrift Dashboard" requiredRole="company">
+          <Dashboard />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/dashboard/content-editor" element={
+        <RoleDashboard title="Content Editor" requiredRole="content_editor">
+          <Dashboard />
+        </RoleDashboard>
+      } />
+    </>
+  );
+};

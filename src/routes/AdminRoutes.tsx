@@ -1,76 +1,45 @@
+
 import React from 'react';
-import { Route, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
-import { AdminLeadsPage } from '@/modules/leads/pages/AdminLeadsPage';
-import { LeadSettingsPage } from '@/modules/leads/pages/LeadSettingsPage';
-import { FeatureFlagsAdminPage } from '@/modules/feature_flags/pages/FeatureFlagsAdminPage';
-import { SystemModulesPage } from '@/modules/system/pages/SystemModulesPage';
-import RoleManagementPage from '@/modules/admin/pages/RoleManagementPage';
-import { MembersManagementPage } from '@/modules/admin/pages/MembersManagementPage';
-import CompaniesManagementPage from '@/modules/admin/pages/CompaniesManagementPage';
-import InternalAccessPage from '@/modules/admin/pages/InternalAccessPage';
+import { Route } from 'react-router-dom';
+import { RoleDashboard } from '../components/dashboard/RoleDashboard';
+import { CompaniesManagementPage } from '../modules/admin/pages/CompaniesManagementPage';
+import { MembersManagementPage } from '../modules/admin/pages/MembersManagementPage';
+import { InternalAccessPage } from '../modules/admin/pages/InternalAccessPage';
+import { RoleManagementPage } from '../modules/admin/pages/RoleManagementPage';
+import { SystemModulesPage } from '../modules/system/pages/SystemModulesPage';
 
-/**
- * Admin-specific routes
- */
-export const AdminRoutes = () => (
-  <>
-    <Route path="/admin/leads" element={
-      <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
-        <AdminLeadsPage />
-      </ProtectedRoute>
-    } />
-    
-    <Route path="/admin/settings" element={
-      <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
-        <LeadSettingsPage />
-      </ProtectedRoute>
-    } />
-
-    <Route path="/admin/feature-flags" element={
-      <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
-        <FeatureFlagsAdminPage />
-      </ProtectedRoute>
-    } />
-    
-    {/* System Modules route */}
-    <Route path="/admin/system-modules" element={
-      <ProtectedRoute allowedRoles={['admin', 'master_admin']}>
-        <SystemModulesPage />
-      </ProtectedRoute>
-    } />
-    
-    {/* Role Management route - only accessible to master_admin */}
-    <Route path="/admin/roles" element={
-      <ProtectedRoute allowedRoles={['master_admin']}>
-        <RoleManagementPage />
-      </ProtectedRoute>
-    } />
-    
-    {/* MasterAdmin User Management routes */}
-    <Route path="/admin/members" element={
-      <ProtectedRoute allowedRoles={['master_admin']}>
-        <MembersManagementPage />
-      </ProtectedRoute>
-    } />
-    
-    <Route path="/admin/companies" element={
-      <ProtectedRoute allowedRoles={['master_admin']}>
-        <CompaniesManagementPage />
-      </ProtectedRoute>
-    } />
-    
-    <Route path="/admin/internal-access" element={
-      <ProtectedRoute allowedRoles={['master_admin']}>
-        <InternalAccessPage />
-      </ProtectedRoute>
-    } />
-    
-    {/* Content editor routes */}
-    <Route path="/admin/content/*" element={
-      <ProtectedRoute allowedRoles={['content_editor', 'admin', 'master_admin']}>
-        <Navigate to="/dashboard/content_editor" replace />
-      </ProtectedRoute>
-    } />
-  </>
-);
+export const AdminRoutes = () => {
+  return (
+    <>
+      <Route path="/admin/companies" element={
+        <RoleDashboard title="Bedrifter" requiredRole={['admin', 'master_admin']}>
+          <CompaniesManagementPage />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/admin/members" element={
+        <RoleDashboard title="Medlemmer" requiredRole={['admin', 'master_admin']}>
+          <MembersManagementPage />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/admin/roles" element={
+        <RoleDashboard title="Rolleadministrasjon" requiredRole="master_admin">
+          <RoleManagementPage />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/admin/system-modules" element={
+        <RoleDashboard title="Systemmoduler" requiredRole={['admin', 'master_admin']}>
+          <SystemModulesPage />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/admin/internal-access" element={
+        <RoleDashboard title="Modultilgang" requiredRole="master_admin">
+          <InternalAccessPage />
+        </RoleDashboard>
+      } />
+    </>
+  );
+};
