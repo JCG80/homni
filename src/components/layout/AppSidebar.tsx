@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { Sidebar, SidebarContent, SidebarNavSection, SidebarNavLink } from '@/components/ui/sidebar';
 import { 
@@ -16,11 +16,8 @@ import {
 import { RoleBasedMenu } from './RoleBasedMenu';
 import { toast } from '@/hooks/use-toast';
 
-interface AppSidebarProps {
-  children?: React.ReactNode;
-}
-
-export const AppSidebar: React.FC<AppSidebarProps> = ({ children }) => {
+// Use PropsWithChildren to properly type the children prop
+export const AppSidebar: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const { isAuthenticated, role, logout } = useAuth();
   
   const handleLogout = async () => {
