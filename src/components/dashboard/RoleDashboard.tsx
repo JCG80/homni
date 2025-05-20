@@ -2,9 +2,9 @@
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { DashboardLayout } from '@/components/dashboard';
-import { RoleBasedNavigation } from '@/components/navigation/RoleBasedNavigation';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 import { Navigate } from 'react-router-dom';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 interface RoleDashboardProps {
   children: React.ReactNode;
@@ -50,18 +50,10 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
   }
   
   return (
-    <DashboardLayout title={title}>
-      <div className="flex flex-col md:flex-row gap-6">
-        <aside className="w-full md:w-64 lg:w-72">
-          <div className="sticky top-20">
-            <RoleBasedNavigation variant="vertical" className="shadow-sm bg-card rounded-lg p-4" />
-          </div>
-        </aside>
-        
-        <main className="flex-1">
-          {children}
-        </main>
+    <PageLayout title={title} showSidebar={true}>
+      <div className="space-y-6">
+        {children}
       </div>
-    </DashboardLayout>
+    </PageLayout>
   );
 };
