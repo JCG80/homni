@@ -35,10 +35,10 @@ export const ExampleTags = ({ userType, onTagSelect, selectedService }: ExampleT
             variant="outline"
             size="sm"
             className={`
-              px-6 py-2.5 rounded-full border transition-colors duration-200
+              px-6 py-2 rounded-full border transition-all duration-200
               ${isSelected 
-                ? 'bg-primary text-primary-foreground border-primary' 
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-transparent'}
+                ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
+                : 'bg-gray-100/80 hover:bg-gray-200/80 text-gray-700 border-transparent hover:scale-105'}
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
             `}
             onClick={() => onTagSelect(example.id)}

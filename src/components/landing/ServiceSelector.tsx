@@ -44,15 +44,17 @@ export const ServiceSelector = ({
         value={selectedService} 
         onValueChange={onServiceSelect}
       >
-        <SelectTrigger className="w-full h-14 bg-white/95 text-gray-800 text-lg border border-gray-200 shadow-sm hover:shadow focus:border-primary">
+        <SelectTrigger 
+          className="w-full h-14 rounded-xl bg-white/95 text-gray-800 text-lg font-medium border border-gray-200/60 shadow-sm hover:shadow-md transition-all focus:border-primary/80 focus:ring-2 focus:ring-primary/20"
+        >
           <SelectValue placeholder="Hva trenger du hjelp med?" />
         </SelectTrigger>
-        <SelectContent className="bg-white border border-gray-200 shadow-md">
+        <SelectContent className="bg-white rounded-xl border-gray-200 shadow-lg max-h-80 overflow-auto">
           {services.map(service => (
             <SelectItem 
               key={service.id} 
               value={service.id}
-              className="hover:bg-gray-50 focus:bg-gray-50 py-2.5"
+              className="hover:bg-gray-50 focus:bg-gray-50 py-3 text-base"
             >
               {service.name}
             </SelectItem>
