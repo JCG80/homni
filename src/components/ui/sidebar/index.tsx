@@ -1,6 +1,7 @@
+// Export consolidated sidebar components
+export { LayoutSidebar } from '../../layout/LayoutSidebar';
 
-// Export all sidebar components from a central file
-export { Sidebar } from './Sidebar';
+// Keep simple sidebar UI components for use in the LayoutSidebar
 export { SidebarContent } from './SidebarContent';
 export { SidebarFooter } from './SidebarFooter';
 export { SidebarHeader } from './SidebarHeader';

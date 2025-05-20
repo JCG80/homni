@@ -3,7 +3,7 @@ import React, { ReactNode, useState } from 'react';
 import { BreadcrumbNav } from './BreadcrumbNav';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { AppSidebar } from './AppSidebar';
+import { LayoutSidebar } from './LayoutSidebar';
 import { 
   Sheet,
   SheetContent,
@@ -62,7 +62,7 @@ export const PageLayout = ({
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0">
-                <AppSidebar />
+                <LayoutSidebar />
               </SheetContent>
             </Sheet>
           </motion.div>
@@ -76,7 +76,7 @@ export const PageLayout = ({
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <AppSidebar />
+            <LayoutSidebar />
           </motion.div>
         )}
         
