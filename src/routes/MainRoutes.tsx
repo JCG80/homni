@@ -4,7 +4,7 @@ import { Route } from 'react-router-dom';
 import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../modules/auth/pages/LoginPage';
 import { RegisterPage } from '../modules/auth/pages/RegisterPage';
-import { NotFound } from '../pages/NotFound';
+import NotFound from '../pages/NotFound';
 import { UnauthorizedPage } from '../modules/auth/pages/UnauthorizedPage';
 import { OnboardingPage } from '../pages/OnboardingPage';
 
