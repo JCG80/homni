@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ExampleTagsProps {
   userType: 'private' | 'business';
@@ -26,21 +27,25 @@ export const ExampleTags = ({ userType, onTagSelect, selectedService }: ExampleT
   const examples = userType === 'private' ? privateExamples : businessExamples;
 
   return (
-    <div className="flex flex-wrap justify-center gap-3 max-w-lg mx-auto mt-4" role="group" aria-label="Service examples">
+    <div 
+      className="flex flex-wrap justify-center gap-3 max-w-lg mx-auto mt-4" 
+      role="group" 
+      aria-label="Service examples"
+    >
       {examples.map((example) => {
         const isSelected = selectedService === example.id;
         return (
           <Button
             key={example.id}
-            variant="outline"
+            variant={isSelected ? "default" : "soft"}
             size="sm"
-            className={`
-              px-6 py-2 rounded-full border transition-all duration-200
-              ${isSelected 
-                ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
-                : 'bg-gray-100/80 hover:bg-gray-200/80 text-gray-700 border-transparent hover:scale-105'}
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
-            `}
+            rounded="full"
+            className={cn(
+              "px-6 py-2 transition-all duration-200 hover:scale-105",
+              isSelected 
+                ? "shadow-sm" 
+                : "hover:-translate-y-0.5"
+            )}
             onClick={() => onTagSelect(example.id)}
             aria-pressed={isSelected}
             aria-label={`Select ${example.name} service`}

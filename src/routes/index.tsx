@@ -30,6 +30,7 @@ import { LeadSettingsPage } from '../modules/leads/pages/LeadSettingsPage';
 import { LeadReportsPage } from '../modules/leads/pages/LeadReportsPage';
 import { LeadTestPage } from '../modules/leads/pages/LeadTestPage';
 import { AdminLeadsPage } from '../modules/leads/pages/AdminLeadsPage';
+import { DesignSystemPage } from '../pages/DesignSystemPage';
 
 export const AppRouteComponents = () => {
   const { isAuthenticated, role } = useAuth();
@@ -45,6 +46,9 @@ export const AppRouteComponents = () => {
       <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="*" element={<NotFound />} />
+      
+      {/* Design System Page */}
+      <Route path="/design-system" element={<DesignSystemPage />} />
       
       {/* Module routes (services, features, etc.) */}
       <Route path="/select-services" element={<ServiceSelectionPage />} />

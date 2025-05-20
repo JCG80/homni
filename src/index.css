@@ -5,6 +5,7 @@
 
 @layer base {
   :root {
+    /* Base */
     --background: 40 30% 98%;
     --foreground: 30 10% 15%;
 
@@ -14,27 +15,70 @@
     --popover: 0 0% 100%;
     --popover-foreground: 30 10% 15%;
 
+    /* Primary - Warm Orange */
     --primary: 20 100% 60%;
     --primary-foreground: 0 0% 100%;
+    --primary-50: 20 100% 97%;
+    --primary-100: 20 100% 92%;
+    --primary-200: 20 100% 85%;
+    --primary-300: 20 100% 75%;
+    --primary-400: 20 100% 68%;
+    --primary-500: 20 100% 60%; /* Base primary */
+    --primary-600: 20 100% 52%;
+    --primary-700: 20 90% 45%;
+    --primary-800: 20 85% 35%;
+    --primary-900: 15 80% 25%;
 
-    --secondary: 40 40% 96.1%;
-    --secondary-foreground: 30 10% 15%;
+    /* Secondary - Deep Teal */
+    --secondary: 175 60% 95%;
+    --secondary-foreground: 175 65% 15%;
+    --secondary-50: 175 60% 97%;
+    --secondary-100: 175 60% 95%;
+    --secondary-200: 175 60% 85%;
+    --secondary-300: 175 50% 72%;
+    --secondary-400: 175 50% 58%;
+    --secondary-500: 175 65% 45%;
+    --secondary-600: 175 70% 35%;
+    --secondary-700: 175 80% 28%;
+    --secondary-800: 175 85% 20%;
+    --secondary-900: 175 90% 15%;
 
+    /* Neutral/Gray */
     --muted: 40 40% 96.1%;
     --muted-foreground: 30 6% 45%;
 
     --accent: 40 40% 96.1%;
     --accent-foreground: 30 10% 15%;
 
+    /* Feedback Colors */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
+    --destructive-50: 0 85% 97%;
+    --destructive-100: 0 85% 92%;
+    --destructive-200: 0 85% 85%;
+    --destructive-300: 0 84% 75%;
+    --destructive-400: 0 84% 67%;
+    --destructive-500: 0 84.2% 60.2%; /* Base destructive */
+    --destructive-600: 0 72% 51%;
+    --destructive-700: 0 74% 42%;
 
+    --success: 142 70.6% 45.3%;
+    --success-foreground: 144 80% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 98%;
+
+    --info: 208 93% 60%;
+    --info-foreground: 210 40% 98%;
+
+    /* UI Elements */
     --border: 30 10% 90%;
     --input: 30 10% 90%;
     --ring: 30 70% 60%;
 
     --radius: 0.75rem;
 
+    /* Sidebar Colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 30 5% 25%;
     --sidebar-primary: 20 100% 60%;
@@ -55,11 +99,33 @@
     --popover: 30 10% 12%;
     --popover-foreground: 40 6% 90%;
 
-    --primary: 20 100% 60%;
+    /* Primary - Warm Orange (Dark Mode) */
+    --primary: 20 90% 60%;
     --primary-foreground: 0 0% 98%;
+    --primary-50: 20 50% 20%;
+    --primary-100: 20 60% 25%;
+    --primary-200: 20 70% 30%;
+    --primary-300: 20 80% 40%;
+    --primary-400: 20 85% 50%;
+    --primary-500: 20 90% 60%; /* Base primary */
+    --primary-600: 20 95% 70%;
+    --primary-700: 20 95% 80%;
+    --primary-800: 20 95% 90%;
+    --primary-900: 20 95% 95%;
 
-    --secondary: 30 8% 20%;
-    --secondary-foreground: 40 6% 90%;
+    /* Secondary - Deep Teal (Dark Mode) */
+    --secondary: 175 8% 20%;
+    --secondary-foreground: 175 10% 90%;
+    --secondary-50: 175 15% 15%;
+    --secondary-100: 175 12% 20%;
+    --secondary-200: 175 10% 25%;
+    --secondary-300: 175 12% 35%;
+    --secondary-400: 175 15% 45%;
+    --secondary-500: 175 20% 55%;
+    --secondary-600: 175 30% 65%;
+    --secondary-700: 175 40% 75%;
+    --secondary-800: 175 50% 85%;
+    --secondary-900: 175 60% 95%;
 
     --muted: 30 8% 20%;
     --muted-foreground: 30 5% 65%;
@@ -67,8 +133,26 @@
     --accent: 30 8% 20%;
     --accent-foreground: 40 6% 90%;
 
+    /* Feedback Colors (Dark Mode) */
     --destructive: 0 70% 50%;
     --destructive-foreground: 40 6% 90%;
+    --destructive-50: 0 30% 25%;
+    --destructive-100: 0 40% 30%;
+    --destructive-200: 0 50% 35%;
+    --destructive-300: 0 60% 40%;
+    --destructive-400: 0 65% 45%;
+    --destructive-500: 0 70% 50%; /* Base destructive */
+    --destructive-600: 0 75% 60%;
+    --destructive-700: 0 80% 70%;
+
+    --success: 142 60% 40%;
+    --success-foreground: 140 40% 90%;
+
+    --warning: 35 90% 50%;
+    --warning-foreground: 40 30% 95%;
+
+    --info: 208 80% 50%;
+    --info-foreground: 210 40% 98%;
 
     --border: 30 8% 25%;
     --input: 30 8% 25%;
@@ -92,6 +176,31 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Typography System */
+  h1 {
+    @apply text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl xl:text-4xl font-bold tracking-tight;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl font-bold;
+  }
+  
+  h4 {
+    @apply text-lg md:text-xl font-semibold;
+  }
+  
+  h5 {
+    @apply text-base md:text-lg font-semibold;
+  }
+  
+  h6 {
+    @apply text-sm md:text-base font-semibold;
   }
 }
 
@@ -123,6 +232,19 @@
 /* Custom transitions */
 .hover-lift {
   @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+}
+
+/* Interactive Elements */
+.story-link {
+  @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+}
+
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.pulse {
+  @apply animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite];
 }
 
 /* Adding the new warm and soft UI styles */

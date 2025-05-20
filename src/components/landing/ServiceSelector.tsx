@@ -39,7 +39,7 @@ export const ServiceSelector = ({
   const services = userType === 'private' ? privateServices : businessServices;
 
   return (
-    <div>
+    <div className="relative">
       <Select 
         value={selectedService} 
         onValueChange={onServiceSelect}
@@ -49,12 +49,17 @@ export const ServiceSelector = ({
         >
           <SelectValue placeholder="Hva trenger du hjelp med?" />
         </SelectTrigger>
-        <SelectContent className="bg-white rounded-xl border-gray-200 shadow-lg max-h-80 overflow-auto">
+        <SelectContent 
+          className="bg-white rounded-xl border-gray-200 shadow-lg max-h-80 overflow-auto"
+          position="popper"
+          sideOffset={5}
+          align="center"
+        >
           {services.map(service => (
             <SelectItem 
               key={service.id} 
               value={service.id}
-              className="hover:bg-gray-50 focus:bg-gray-50 py-3 text-base"
+              className="hover:bg-primary-50 focus:bg-primary-50 py-3 text-base"
             >
               {service.name}
             </SelectItem>

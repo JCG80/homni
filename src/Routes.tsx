@@ -1,6 +1,7 @@
 
 import React, { Suspense } from 'react';
 import { AppRouteComponents } from './routes';
+import DesignSystemPage from './pages/DesignSystemPage';
 
 /**
  * Main application routes component with loading state
