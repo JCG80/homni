@@ -142,7 +142,7 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
           <Progress value={33} className="h-2 mt-2 bg-white/30" />
         </div>
 
-        {/* Example Tags */}
+        {/* Example Tags - Removed the "Eksempler:" text as requested */}
         <div className="mt-8">
           <ExampleTags 
             userType={activeTab as 'private' | 'business'} 
