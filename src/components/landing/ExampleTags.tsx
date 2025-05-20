@@ -26,24 +26,31 @@ export const ExampleTags = ({ userType, onTagSelect, selectedService }: ExampleT
   const examples = userType === 'private' ? privateExamples : businessExamples;
 
   return (
-    <div className="flex flex-wrap justify-center gap-2">
+    <div className="flex flex-wrap justify-center gap-2" role="group" aria-label="Service examples">
       <p className="w-full text-center text-sm text-muted-foreground mb-2">Eksempler:</p>
-      {examples.map((example) => (
-        <Button
-          key={example.id}
-          variant="outline"
-          size="sm"
-          className={`
-            bg-muted border-muted-foreground/20 hover:bg-muted/70 
-            focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
-            ${selectedService === example.id ? 'bg-primary text-primary-foreground border-primary' : ''}
-          `}
-          onClick={() => onTagSelect(example.id)}
-          aria-pressed={selectedService === example.id}
-        >
-          {example.name}
-        </Button>
-      ))}
+      <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
+        {examples.map((example) => {
+          const isSelected = selectedService === example.id;
+          return (
+            <Button
+              key={example.id}
+              variant="outline"
+              size="sm"
+              className={`
+                bg-muted hover:bg-muted/80 
+                focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+                transition-colors duration-200
+                ${isSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-muted-foreground/20'}
+              `}
+              onClick={() => onTagSelect(example.id)}
+              aria-pressed={isSelected}
+              aria-label={`Select ${example.name} service`}
+            >
+              {example.name}
+            </Button>
+          );
+        })}
+      </div>
     </div>
   );
 };
