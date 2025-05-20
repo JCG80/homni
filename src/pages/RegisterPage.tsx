@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -64,7 +64,7 @@ export const RegisterPage = () => {
                 Opprett en konto for å få tilgang til alle våre tjenester
               </p>
               
-              <RegisterForm redirectTo="/dashboard" userType="private" />
+              <RegisterForm redirectTo="/dashboard" userType="private" showTabs={false} />
             </TabsContent>
             
             <TabsContent value="business" className="mt-6">
@@ -73,7 +73,7 @@ export const RegisterPage = () => {
                 Opprett en bedriftskonto hos Homni
               </p>
               
-              <RegisterForm redirectTo="/dashboard" userType="business" />
+              <RegisterForm redirectTo="/dashboard" userType="business" showTabs={false} />
             </TabsContent>
           </Tabs>
         </div>
