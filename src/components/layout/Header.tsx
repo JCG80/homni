@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,9 +18,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface HeaderProps {
   activeTab: string;
   handleTabChange: (value: string) => void;
+  /** Allow passing through layout class names */
+  className?: string;
 }
 
-export const Header = ({ activeTab, handleTabChange }: HeaderProps) => {
+export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderProps) => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const isMobile = useIsMobile();
@@ -29,7 +32,7 @@ export const Header = ({ activeTab, handleTabChange }: HeaderProps) => {
   };
 
   return (
-    <header className="bg-white shadow-sm py-3 md:py-4 sticky top-0 z-50">
+    <header className={`bg-white shadow-sm py-3 md:py-4 sticky top-0 z-50 ${className}`}>
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="text-xl md:text-2xl font-bold text-primary flex items-center">
