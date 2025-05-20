@@ -1,7 +1,10 @@
-
 import React, { PropsWithChildren } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { Sidebar, SidebarContent, SidebarNavSection, SidebarNavLink } from '@/components/ui/sidebar';
+import { 
+  SidebarContent, 
+  SidebarNavSection, 
+  SidebarNavLink
+} from '@/components/ui/sidebar';
 import { 
   Home, 
   LayoutDashboard, 

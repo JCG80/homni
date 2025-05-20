@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,7 @@ import {
   SheetContent,
   SheetTrigger
 } from "@/components/ui/sheet";
-import { Sidebar } from '../ui/sidebar';
+import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeaderProps {
@@ -51,7 +50,7 @@ export const Header = ({ activeTab, handleTabChange }: HeaderProps) => {
             </SheetTrigger>
             <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0">
               <div className="py-4">
-                <Sidebar />
+                <LayoutSidebar />
               </div>
             </SheetContent>
           </Sheet>
