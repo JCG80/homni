@@ -16,7 +16,11 @@ import {
 import { RoleBasedMenu } from './RoleBasedMenu';
 import { toast } from '@/hooks/use-toast';
 
-export const AppSidebar = () => {
+interface AppSidebarProps {
+  children?: React.ReactNode;
+}
+
+export const AppSidebar: React.FC<AppSidebarProps> = ({ children }) => {
   const { isAuthenticated, role, logout } = useAuth();
   
   const handleLogout = async () => {
@@ -78,6 +82,9 @@ export const AppSidebar = () => {
             </SidebarNavLink>
           </SidebarNavSection>
         )}
+        
+        {/* Render any children passed to the component */}
+        {children}
       </SidebarContent>
     </Sidebar>
   );
