@@ -59,15 +59,15 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
   ];
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
+    <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 to-transparent">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         {/* Role Toggle */}
         <div className="flex justify-center mb-8">
           <ToggleGroup 
             type="single" 
             value={activeTab}
             onValueChange={handleRoleToggle}
-            className="bg-white/20 p-1 rounded-md"
+            className="bg-white/20 p-1 rounded-lg shadow-sm"
           >
             <ToggleGroupItem 
               value="private" 
@@ -92,21 +92,21 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
         </h1>
         
         {/* Hero Description */}
-        <p className="text-xl mb-8 text-center max-w-2xl mx-auto">
+        <p className="text-xl mb-8 text-center max-w-2xl mx-auto opacity-90">
           Sammenlign leverandører og spar penger. Det er gratis og uforpliktende.
         </p>
 
         {/* Quick service selection - Minimalist Icon Buttons */}
-        <div className="flex justify-center gap-4 mb-6">
+        <div className="flex justify-center gap-4 mb-8">
           {quickSelections.map(service => (
             <button
               key={service.id}
               onClick={() => setSelectedService(service.id)}
               className={`
-                flex flex-col items-center p-4 rounded-lg transition-all
+                flex flex-col items-center p-4 rounded-xl transition-all
                 ${selectedService === service.id 
-                  ? 'bg-primary text-white' 
-                  : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-md'}
+                  ? 'bg-primary text-white shadow-md' 
+                  : 'bg-white/90 text-gray-700 hover:bg-white hover:shadow-md hover:-translate-y-1'}
               `}
             >
               <div className="mb-2">
@@ -130,19 +130,19 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
             onClick={handleGetOffer}
             disabled={!selectedService}
             size="lg"
-            className="w-full py-6 text-lg flex items-center justify-center"
+            className="w-full py-6 text-lg flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all"
           >
-            Få tilbud <ArrowRight className="ml-2 h-5 w-5" />
+            Få tilbud <ArrowRight className="ml-1 h-5 w-5" />
           </Button>
         </div>
 
         {/* Step Indicator */}
-        <div className="mt-6 text-center text-sm text-white/80">
+        <div className="mt-6 text-center text-sm text-gray-700">
           <p>Steg 1 av 3 – Tar under 1 minutt</p>
           <Progress value={33} className="h-2 mt-2 bg-white/30" />
         </div>
 
-        {/* Example Tags - Removed the "Eksempler:" text as requested */}
+        {/* Example Tags */}
         <div className="mt-8">
           <ExampleTags 
             userType={activeTab as 'private' | 'business'} 
