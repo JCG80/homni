@@ -8,6 +8,11 @@ import NotFound from '../pages/NotFound';
 import { UnauthorizedPage } from '../modules/auth/pages/UnauthorizedPage';
 import { OnboardingPage } from '../pages/OnboardingPage';
 
+/**
+ * Main routes collection - not used directly in Routes component
+ * This file acts as a reference for available main routes and should be
+ * incorporated directly into AppRouteComponents
+ */
 export const MainRoutes = () => {
   return (
     <>
