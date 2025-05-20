@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
 import { AdminLeadsPage } from '@/modules/leads/pages/AdminLeadsPage';
 import { LeadSettingsPage } from '@/modules/leads/pages/LeadSettingsPage';
