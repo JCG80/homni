@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Building } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { Building } from 'lucide-react';
 
 export const PartnersSection = () => {
   return (
@@ -23,7 +23,7 @@ export const PartnersSection = () => {
           }
         >
           <Building size={16} />
-          <span>Våre partnere</span>
+          <span>Alle partnere</span>
         </NavLink>
       </div>
     </div>

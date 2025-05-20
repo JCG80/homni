@@ -21,6 +21,7 @@ interface PageLayoutProps {
   showBreadcrumbs?: boolean;
   showFooter?: boolean;
   showSidebar?: boolean;
+  hideHeaderOnScroll?: boolean;
 }
 
 export const PageLayout = ({ 
@@ -29,11 +30,25 @@ export const PageLayout = ({
   description,
   showBreadcrumbs = true,
   showFooter = true,
-  showSidebar = false
+  showSidebar = false,
+  hideHeaderOnScroll = false
 }: PageLayoutProps) => {
   const [activeTab, setActiveTab] = useState<string>('private');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Handle header visibility based on scroll (optional feature)
+  React.useEffect(() => {
+    if (!hideHeaderOnScroll) return;
+    
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hideHeaderOnScroll]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -41,7 +56,11 @@ export const PageLayout = ({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header activeTab={activeTab} handleTabChange={handleTabChange} />
+      <Header 
+        activeTab={activeTab} 
+        handleTabChange={handleTabChange} 
+        className={hideHeaderOnScroll ? (scrolled ? 'translate-y-[-100%]' : '') : ''}
+      />
       
       <div className="flex flex-grow">
         {/* Mobile Sidebar Trigger - Fixed position at bottom corner */}
@@ -71,7 +90,7 @@ export const PageLayout = ({
         {/* Desktop Sidebar - Show only when showSidebar is true */}
         {showSidebar && !isMobile && (
           <motion.div 
-            className="hidden md:block w-64 shrink-0 border-r h-[calc(100vh-64px)] sticky top-16 overflow-y-auto"
+            className="hidden md:block w-64 shrink-0 border-r h-[calc(100vh-64px)] sticky top-16 overflow-y-auto bg-background"
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
@@ -82,7 +101,7 @@ export const PageLayout = ({
         
         <main className="flex-grow">
           <motion.div 
-            className="container mx-auto px-4 py-4 md:py-8"
+            className={`container mx-auto px-4 py-4 md:py-8 ${showSidebar ? 'md:pl-8' : ''}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}

@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { FileText, HelpCircle } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { FileText, HelpCircle } from 'lucide-react';
 
 export const DocumentationSection = () => {
   return (
@@ -38,7 +38,7 @@ export const DocumentationSection = () => {
           }
         >
           <HelpCircle size={16} />
-          <span>FAQ</span>
+          <span>Ofte spurte spørsmål</span>
         </NavLink>
       </div>
     </div>

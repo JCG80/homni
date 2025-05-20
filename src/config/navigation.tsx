@@ -10,6 +10,16 @@ import {
   ShieldCheck,
   Activity,
   FilePlus,
+  User,
+  LayoutDashboard,
+  HelpCircle,
+  Zap,
+  Smartphone,
+  Shield,
+  Wifi,
+  Anchor,
+  Database,
+  Kanban,
 } from "lucide-react";
 import { UserRole } from "@/modules/auth/utils/roles/types";
 import { LucideIcon } from "lucide-react";
@@ -17,153 +27,267 @@ import { LucideIcon } from "lucide-react";
 export interface NavItem {
   title: string;
   href: string;
-  icon?: LucideIcon; // Change to LucideIcon type
+  icon?: LucideIcon;
   children?: NavItem[];
   description?: string;
+  isFeatureFlag?: boolean;
+  roles?: UserRole[];
 }
 
 // Shared navigation items that appear in multiple role dashboards
 const sharedNavItems: Record<string, NavItem> = {
   home: {
-    title: "Home",
-    href: "/dashboard",
+    title: "Hjem",
+    href: "/",
     icon: Home,
-    description: "Overview of your dashboard",
+    description: "Tilbake til forside",
+  },
+  dashboard: {
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    description: "Oversikt over dashboard",
+  },
+  profile: {
+    title: "Min profil",
+    href: "/profile",
+    icon: User,
+    description: "Se og rediger din profil",
   },
   settings: {
-    title: "Settings",
-    href: "/settings",
+    title: "Innstillinger",
+    href: "/account",
     icon: Settings,
-    description: "Manage your account settings",
+    description: "Administrer dine innstillinger",
+  },
+  leads: {
+    title: "Forespørsler",
+    href: "/leads",
+    icon: Activity,
+    description: "Håndter forespørsler",
+  },
+  leadsKanban: {
+    title: "Kanban-tavle",
+    href: "/leads/kanban",
+    icon: Kanban,
+    description: "Kanban visning av forespørsler",
   },
 };
+
+// Service navigation items
+const serviceNavItems: NavItem[] = [
+  {
+    title: "Strøm",
+    href: "/strom",
+    icon: Zap,
+    description: "Sammenlign strømavtaler",
+  },
+  {
+    title: "Mobil",
+    href: "/mobil",
+    icon: Smartphone,
+    description: "Finn den beste mobilavtalen",
+  },
+  {
+    title: "Forsikring",
+    href: "/forsikring",
+    icon: Shield,
+    description: "Sammenlign forsikringstilbud",
+  },
+  {
+    title: "Bredbånd",
+    href: "/bredband",
+    icon: Wifi,
+    description: "Finn den beste bredbåndsavtalen",
+  },
+  {
+    title: "Marina",
+    href: "/marina",
+    icon: Anchor,
+    description: "Administrer havneplass",
+  },
+];
+
+// Documentation navigation items
+const docNavItems: NavItem[] = [
+  {
+    title: "Prosjektplan",
+    href: "/docs/project-plan",
+    icon: FileText,
+    description: "Se prosjektplan",
+  },
+  {
+    title: "FAQ",
+    href: "/docs/faq",
+    icon: HelpCircle,
+    description: "Ofte stilte spørsmål",
+  },
+];
 
 // Role-specific navigation configurations
 export const navConfig: Record<UserRole, NavItem[]> = {
   member: [
-    sharedNavItems.home,
+    sharedNavItems.dashboard,
     {
-      title: "My Properties",
+      title: "Mine eiendommer",
       href: "/dashboard/properties",
       icon: Building,
-      description: "View and manage your properties",
+      description: "Se og administrer dine eiendommer",
     },
     {
-      title: "Documents",
+      title: "Mine dokumenter",
       href: "/dashboard/documents",
       icon: FileText,
-      description: "Access your property documents",
+      description: "Tilgang til dine dokumenter",
     },
+    sharedNavItems.leads,
+    sharedNavItems.profile,
     sharedNavItems.settings,
   ],
   
   company: [
-    sharedNavItems.home,
+    sharedNavItems.dashboard,
+    sharedNavItems.leads,
+    sharedNavItems.leadsKanban,
     {
-      title: "Leads",
-      href: "/dashboard/leads",
-      icon: Activity,
-      description: "Manage your customer leads",
-    },
-    {
-      title: "Lead Kanban",
-      href: "/dashboard/leads/kanban",
-      icon: Layers,
-      description: "Kanban view of your leads",
-    },
-    {
-      title: "Analytics",
+      title: "Analysere",
       href: "/dashboard/analytics",
       icon: BarChart,
-      description: "View your business analytics",
+      description: "Se bedriftsanalyser",
     },
     sharedNavItems.settings,
   ],
   
   content_editor: [
-    sharedNavItems.home,
+    sharedNavItems.dashboard,
     {
-      title: "Content",
+      title: "Innhold",
       href: "/dashboard/content",
       icon: FilePlus,
-      description: "Manage website content",
+      description: "Administrere nettstedinnhold",
     },
     {
-      title: "Media Library",
+      title: "Mediebibliotek",
       href: "/dashboard/media",
       icon: FileText,
-      description: "Manage media files",
+      description: "Administrere mediefiler",
     },
     sharedNavItems.settings,
   ],
   
   admin: [
-    sharedNavItems.home,
+    sharedNavItems.dashboard,
     {
-      title: "Companies",
-      href: "/dashboard/admin/companies",
+      title: "Bedrifter",
+      href: "/admin/companies",
       icon: Building,
-      description: "Manage company accounts",
+      description: "Administrer bedriftskontoer",
     },
     {
-      title: "Members",
-      href: "/dashboard/admin/members",
+      title: "Medlemmer",
+      href: "/admin/members",
       icon: Users,
-      description: "Manage member accounts",
+      description: "Administrer medlemskontoer",
     },
     {
-      title: "Settings",
-      href: "/dashboard/admin/settings",
+      title: "System moduler",
+      href: "/admin/system-modules",
+      icon: Database,
+      description: "Administrer systemmoduler",
+    },
+    {
+      title: "Forespørsler",
+      href: "/admin/leads",
+      icon: Activity,
+      description: "Administrer forespørsler",
+    },
+    {
+      title: "Innstillinger",
+      href: "/admin/settings",
       icon: Settings,
-      description: "System settings",
+      description: "Systeminnstillinger",
     },
   ],
   
   master_admin: [
-    sharedNavItems.home,
+    sharedNavItems.dashboard,
     {
-      title: "Companies",
-      href: "/dashboard/admin/companies",
+      title: "Bedrifter",
+      href: "/admin/companies",
       icon: Building,
-      description: "Manage company accounts",
+      description: "Administrer bedriftskontoer",
     },
     {
-      title: "Members",
-      href: "/dashboard/admin/members",
+      title: "Medlemmer",
+      href: "/admin/members",
       icon: Users,
-      description: "Manage member accounts",
+      description: "Administrer medlemskontoer",
     },
     {
       title: "System",
-      href: "/dashboard/admin/system",
-      icon: ShieldCheck,
-      description: "System administration",
+      href: "/admin/system-modules",
+      icon: Database,
+      description: "Systemadministrasjon",
     },
     {
-      title: "Settings",
-      href: "/dashboard/admin/settings",
+      title: "Forespørsler",
+      href: "/admin/leads",
+      icon: Activity,
+      description: "Administrer forespørsler",
+    },
+    {
+      title: "Roller",
+      href: "/admin/roles",
+      icon: ShieldCheck,
+      description: "Administrer brukerroller",
+    },
+    {
+      title: "Modultilgang",
+      href: "/admin/internal-access",
+      icon: ShieldCheck,
+      description: "Administrer modultilgang",
+    },
+    {
+      title: "Innstillinger",
+      href: "/admin/settings",
       icon: Settings,
-      description: "Master system settings",
+      description: "Master systeminnstillinger",
     },
   ],
   
   anonymous: [
     {
-      title: "Home",
+      title: "Hjem",
       href: "/",
       icon: Home,
-      description: "Return to home page",
+      description: "Tilbake til hjemmesiden",
     },
     {
-      title: "Login",
+      title: "Logg inn",
       href: "/login",
       icon: Users,
-      description: "Login to your account",
+      description: "Logg inn på konto",
     },
   ],
 };
 
+// Service navigation configuration
+export const serviceConfig: NavItem[] = serviceNavItems;
+
+// Documentation navigation configuration
+export const docConfig: NavItem[] = docNavItems;
+
 // Helper function to get navigation items based on user role
 export function getNavigation(role: UserRole = 'anonymous'): NavItem[] {
   return navConfig[role] || navConfig.anonymous;
+}
+
+// Helper function to get service navigation items
+export function getServiceNavigation(): NavItem[] {
+  return serviceConfig;
+}
+
+// Helper function to get documentation navigation items
+export function getDocNavigation(): NavItem[] {
+  return docConfig;
 }

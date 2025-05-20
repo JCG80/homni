@@ -13,6 +13,7 @@ import {
   AccountSection
 } from './sidebar';
 import { UserRole } from '@/modules/auth/utils/roles/types';
+import { motion } from 'framer-motion';
 
 export interface LayoutSidebarProps {
   children?: ReactNode;
@@ -22,18 +23,21 @@ export interface LayoutSidebarProps {
 
 export const LayoutSidebar: React.FC<LayoutSidebarProps> = ({
   children, 
-  className='', 
+  className = '', 
   style
 }) => {
   const { isAuthenticated, role, logout } = useAuth();
   
-  // Enhanced logging for debugging
   console.log("LayoutSidebar - Current auth state:", { isAuthenticated, role });
   
   const handleLogout = async () => {
     try {
       if (logout) {
         await logout();
+        toast({
+          title: "Utlogget",
+          description: "Du har blitt logget ut av systemet",
+        });
       } else {
         console.error('Logout function is not available');
         toast({
@@ -46,46 +50,93 @@ export const LayoutSidebar: React.FC<LayoutSidebarProps> = ({
       }
     } catch (error) {
       console.error('Error during logout:', error);
+      toast({
+        title: "Utloggingsfeil",
+        description: "En feil oppstod under utlogging.",
+        variant: "destructive"
+      });
     }
   };
   
+  // Animation variants
+  const sidebarVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
+  
   return (
-    <div className={`pb-12 ${className}`} style={style}>
-      <div className="space-y-4 py-4">
+    <motion.div 
+      className={`pb-12 h-full flex flex-col ${className}`} 
+      style={style}
+      variants={sidebarVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="space-y-4 py-4 flex-grow flex flex-col">
         {/* Main navigation */}
-        <NavigationSection />
+        <motion.div variants={sectionVariants}>
+          <NavigationSection />
+        </motion.div>
         
         {/* Role-based navigation */}
         {isAuthenticated && role && (
-          <RoleBasedSection role={role as UserRole} />
+          <motion.div variants={sectionVariants}>
+            <RoleBasedSection role={role as UserRole} />
+          </motion.div>
         )}
         
         {/* Services */}
-        <ServicesSection />
+        <motion.div variants={sectionVariants}>
+          <ServicesSection />
+        </motion.div>
         
         {/* Leads section for authenticated users */}
-        {isAuthenticated && <LeadsSection />}
+        {isAuthenticated && (
+          <motion.div variants={sectionVariants}>
+            <LeadsSection />
+          </motion.div>
+        )}
         
         {/* Admin section */}
         {isAuthenticated && (role === 'admin' || role === 'master_admin') && (
-          <AdminSection isMasterAdmin={role === 'master_admin'} />
+          <motion.div variants={sectionVariants}>
+            <AdminSection isMasterAdmin={role === 'master_admin'} />
+          </motion.div>
         )}
         
         {/* Documentation section */}
-        <DocumentationSection />
+        <motion.div variants={sectionVariants}>
+          <DocumentationSection />
+        </motion.div>
         
         {/* Partners section */}
-        <PartnersSection />
-        
-        {/* Logout for authenticated users */}
-        {isAuthenticated && (
-          <AccountSection onLogout={handleLogout} />
-        )}
+        <motion.div variants={sectionVariants}>
+          <PartnersSection />
+        </motion.div>
         
         {/* Render any children passed to the component */}
         {children}
+        
+        {/* Account section / Logout for authenticated users */}
+        {isAuthenticated && (
+          <motion.div variants={sectionVariants} className="mt-auto">
+            <AccountSection onLogout={handleLogout} />
+          </motion.div>
+        )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

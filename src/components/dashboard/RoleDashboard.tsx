@@ -1,32 +1,42 @@
 
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { DashboardLayout } from '@/components/dashboard';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 import { Navigate } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/PageLayout';
+import { Loader2 } from 'lucide-react';
 
 interface RoleDashboardProps {
   children: React.ReactNode;
   requiredRole?: UserRole | UserRole[];
   title?: string;
+  description?: string;
+  showBreadcrumbs?: boolean;
+  showSidebar?: boolean;
 }
 
 export const RoleDashboard: React.FC<RoleDashboardProps> = ({
   children,
   requiredRole,
-  title = 'Dashboard'
+  title = 'Dashboard',
+  description,
+  showBreadcrumbs = true,
+  showSidebar = true
 }) => {
   const { role, isAuthenticated, isLoading } = useAuth();
   
   // Check if user is loading
   if (isLoading) {
     return (
-      <DashboardLayout title="Loading...">
+      <PageLayout 
+        title="Laster..." 
+        showSidebar={showSidebar}
+        showBreadcrumbs={false}
+      >
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </DashboardLayout>
+      </PageLayout>
     );
   }
   
@@ -50,7 +60,12 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
   }
   
   return (
-    <PageLayout title={title} showSidebar={true}>
+    <PageLayout 
+      title={title} 
+      description={description}
+      showSidebar={showSidebar}
+      showBreadcrumbs={showBreadcrumbs}
+    >
       <div className="space-y-6">
         {children}
       </div>

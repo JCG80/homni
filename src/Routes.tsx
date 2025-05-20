@@ -1,7 +1,6 @@
 
 import React, { Suspense } from 'react';
 import { AppRouteComponents } from './routes';
-import DesignSystemPage from './pages/DesignSystemPage';
 import { AnimatePresence } from 'framer-motion';
 
 /**
