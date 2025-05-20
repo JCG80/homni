@@ -27,17 +27,19 @@ export const ExampleTags = ({ userType, onTagSelect, selectedService }: ExampleT
 
   return (
     <div className="flex flex-wrap justify-center gap-2">
-      <p className="w-full text-center text-sm mb-2">Eksempler:</p>
+      <p className="w-full text-center text-sm text-muted-foreground mb-2">Eksempler:</p>
       {examples.map((example) => (
         <Button
           key={example.id}
           variant="outline"
           size="sm"
           className={`
-            bg-white/20 border-white/30 hover:bg-white/30 text-white
-            ${selectedService === example.id ? 'bg-white/40 ring-2 ring-white/70' : ''}
+            bg-muted border-muted-foreground/20 hover:bg-muted/70 
+            focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+            ${selectedService === example.id ? 'bg-primary text-primary-foreground border-primary' : ''}
           `}
           onClick={() => onTagSelect(example.id)}
+          aria-pressed={selectedService === example.id}
         >
           {example.name}
         </Button>

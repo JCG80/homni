@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { LogOut } from 'lucide-react';
+import { LogOut, UserCircle, Settings } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 
@@ -32,12 +33,43 @@ export const AccountSection: React.FC<AccountSectionProps> = ({ onLogout }) => {
         Konto
       </h2>
       <div className="space-y-1">
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-x-2 rounded-md px-3 py-2 text-sm font-medium",
+              isActive
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+            )
+          }
+        >
+          <UserCircle size={16} />
+          <span>Min profil</span>
+        </NavLink>
+        
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-x-2 rounded-md px-3 py-2 text-sm font-medium",
+              isActive
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+            )
+          }
+        >
+          <Settings size={16} />
+          <span>Innstillinger</span>
+        </NavLink>
+        
         <button
           onClick={handleLogout}
           className={cn(
             "flex w-full items-center gap-x-2 rounded-md px-3 py-2 text-sm font-medium",
-            "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
           )}
+          aria-label="Log out"
         >
           <LogOut size={16} />
           <span>Logg ut</span>
