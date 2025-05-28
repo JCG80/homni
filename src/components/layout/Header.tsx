@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MainNavigation } from './MainNavigation';
 import { useAuth } from '@/modules/auth/hooks';
-import { UserNav } from './UserNav';
+import { ProfileHeader } from './ProfileHeader';
 import { Menu } from 'lucide-react';
 import { 
   Sheet,
@@ -61,20 +61,22 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
         
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">
-          <Tabs
-            defaultValue="private"
-            value={activeTab}
-            onValueChange={handleTabChange}
-            className="hidden sm:block"
-          >
-            <TabsList className="bg-transparent">
-              <TabsTrigger value="private" className="text-xs md:text-sm">Privatperson</TabsTrigger>
-              <TabsTrigger value="business" className="text-xs md:text-sm">Bedrift</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {!isAuthenticated && (
+            <Tabs
+              defaultValue="private"
+              value={activeTab}
+              onValueChange={handleTabChange}
+              className="hidden sm:block"
+            >
+              <TabsList className="bg-transparent">
+                <TabsTrigger value="private" className="text-xs md:text-sm">Privatperson</TabsTrigger>
+                <TabsTrigger value="business" className="text-xs md:text-sm">Bedrift</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
           
           {isAuthenticated ? (
-            <UserNav />
+            <ProfileHeader />
           ) : (
             <Button 
               variant="outline" 
