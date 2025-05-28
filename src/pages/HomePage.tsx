@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
@@ -43,10 +44,10 @@ export const HomePage = () => {
       
       <main>
         {/* Hero Section */}
-        <HeroSection />
+        <HeroSection activeTab={activeTab} handleTabChange={handleTabChange} />
         
         {/* Services Section */}
-        <ServicesSection />
+        <ServicesSection activeTab={activeTab} />
         
         {/* Quick Login Section */}
         <section className="py-16 bg-muted/30">
@@ -66,7 +67,7 @@ export const HomePage = () => {
         <InsuranceSection />
         
         {/* Call to Action */}
-        <CallToAction />
+        <CallToAction activeTab={activeTab} />
       </main>
       
       <Footer />
