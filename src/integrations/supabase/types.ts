@@ -755,7 +755,7 @@ export type Database = {
           lead_type: string | null
           metadata: Json | null
           status: Database["public"]["Enums"]["pipeline_stage"]
-          submitted_by: string
+          submitted_by: string | null
           title: string
           updated_at: string
         }
@@ -768,7 +768,7 @@ export type Database = {
           lead_type?: string | null
           metadata?: Json | null
           status?: Database["public"]["Enums"]["pipeline_stage"]
-          submitted_by: string
+          submitted_by?: string | null
           title: string
           updated_at?: string
         }
@@ -781,7 +781,7 @@ export type Database = {
           lead_type?: string | null
           metadata?: Json | null
           status?: Database["public"]["Enums"]["pipeline_stage"]
-          submitted_by?: string
+          submitted_by?: string | null
           title?: string
           updated_at?: string
         }

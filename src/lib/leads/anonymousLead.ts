@@ -16,9 +16,9 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
         title: leadData.title,
         description: leadData.description,
         category: leadData.category,
-        metadata: leadData.metadata,
+        metadata: leadData.metadata as any,
         lead_type: 'visitor',
-        // submitted_by will be null for anonymous users as per RLS policy
+        submitted_by: null as unknown as string
       })
       .select('id')
       .single();
