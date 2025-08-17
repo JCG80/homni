@@ -11,10 +11,10 @@ import { Calendar, User, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 
 const PIPELINE_STAGES = [
-  { id: '📥 new', title: 'Nye Leads', emoji: '📥', color: 'bg-blue-50 border-blue-200' },
-  { id: '🚀 in_progress', title: 'I Arbeid', emoji: '🚀', color: 'bg-yellow-50 border-yellow-200' },
-  { id: '🏆 won', title: 'Vunnet', emoji: '🏆', color: 'bg-green-50 border-green-200' },
-  { id: '❌ lost', title: 'Tapt', emoji: '❌', color: 'bg-red-50 border-red-200' }
+  { id: 'new', title: 'Nye Leads', emoji: '📥', color: 'bg-blue-50 border-blue-200' },
+  { id: 'in_progress', title: 'I Arbeid', emoji: '🚀', color: 'bg-yellow-50 border-yellow-200' },
+  { id: 'won', title: 'Vunnet', emoji: '🏆', color: 'bg-green-50 border-green-200' },
+  { id: 'lost', title: 'Tapt', emoji: '❌', color: 'bg-red-50 border-red-200' }
 ] as const;
 
 export const LeadPipeline: React.FC = () => {
@@ -228,7 +228,7 @@ export const LeadPipeline: React.FC = () => {
       {assignments?.length === 0 && (
         <Card>
           <CardContent className="text-center py-8">
-            <div className="text-4xl mb-4">📥</div>
+            <div className="text-4xl mb-4">{PIPELINE_STAGES.find(c => c.id === 'new')?.emoji || '📥'}</div>
             <h3 className="text-lg font-medium mb-2">No leads assigned yet</h3>
             <p className="text-muted-foreground">
               Once you subscribe to lead packages and leads are distributed, they will appear here.

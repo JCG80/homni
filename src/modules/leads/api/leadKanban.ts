@@ -50,21 +50,10 @@ export async function fetchLeadsForKanban(companyId?: string, userId?: string): 
 }
 
 export async function updateLeadStatus(leadId: string, status: LeadStatus): Promise<boolean> {
-  // Map to emoji status for database (temporary until schema migration)
-  const statusMap: Record<LeadStatus, string> = {
-    new: '📥 new',
-    qualified: '👀 qualified',
-    contacted: '💬 contacted',
-    negotiating: '📞 negotiating',
-    converted: '✅ converted',
-    lost: '❌ lost',
-    paused: '⏸️ paused',
-  };
-
   const { error } = await supabase
     .from('leads')
     .update({ 
-      status: statusMap[status] as any,
+      status: status,
       updated_at: new Date().toISOString() 
     })
     .eq('id', leadId);
@@ -113,7 +102,6 @@ export async function fetchLeadCounts(companyId?: string, userId?: string): Prom
         switch (normalizedStatus) {
           case 'new':
             counts.new++;
-            counts['📥 new']++;
             break;
           case 'qualified':
           case 'contacted':
@@ -126,7 +114,6 @@ export async function fetchLeadCounts(companyId?: string, userId?: string): Prom
             break;
           case 'lost':
             counts.lost++;
-            counts['❌ lost']++;
             break;
           default:
             break;

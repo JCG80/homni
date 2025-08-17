@@ -27,22 +27,11 @@ export const updateLeadStatus = async (leadId: string, newStatus: LeadStatus): P
     );
   }
 
-  // Map to emoji status for database (temporary until schema migration)
-  const statusMap: Record<LeadStatus, string> = {
-    new: '📥 new',
-    qualified: '👀 qualified',
-    contacted: '💬 contacted',
-    negotiating: '📞 negotiating',
-    converted: '✅ converted',
-    lost: '❌ lost',
-    paused: '⏸️ paused',
-  };
-
   // If transition is allowed, update the status
   const { data, error } = await supabase
     .from('leads')
     .update({ 
-      status: statusMap[newStatus] as any,
+      status: newStatus,
       updated_at: new Date().toISOString() 
     })
     .eq('id', leadId)
@@ -68,7 +57,7 @@ export const assignLeadToCompany = async (leadId: string, companyId: string): Pr
     .from('leads')
     .update({ 
       company_id: companyId, 
-      status: '👀 qualified' as any, // Use emoji status for database
+      status: 'qualified',
       updated_at: new Date().toISOString() 
     })
     .eq('id', leadId)

@@ -69,7 +69,7 @@ export interface LeadAssignment {
   completed_at?: string;
   expires_at?: string;
   accepted_at?: string;
-  pipeline_stage?: '📥 new' | '🚀 in_progress' | '🏆 won' | '❌ lost';
+  pipeline_stage?: 'new' | 'in_progress' | 'won' | 'lost';
   status?: string;
   buyer_notes?: string;
   rejection_reason?: string;
@@ -129,16 +129,16 @@ export interface AutoPurchaseResult {
 /**
  * Pipeline stage enum
  */
-export type PipelineStage = '📥 new' | '🚀 in_progress' | '🏆 won' | '❌ lost';
+export type PipelineStage = 'new' | 'in_progress' | 'won' | 'lost';
 
 /**
  * Available pipeline stages
  */
 export const PIPELINE_STAGES: PipelineStage[] = [
-  '📥 new',
-  '🚀 in_progress', 
-  '🏆 won',
-  '❌ lost'
+  'new',
+  'in_progress', 
+  'won',
+  'lost'
 ];
 
 /**

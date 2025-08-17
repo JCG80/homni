@@ -42,7 +42,7 @@ const columns = [
   { id: 'new', title: 'Nye ✨', color: 'bg-blue-50 border-blue-200' },
   { id: 'in_progress', title: 'I gang 🚀', color: 'bg-yellow-50 border-yellow-200' },
   { id: 'won', title: 'Vunnet 🏆', color: 'bg-green-50 border-green-200' },
-  { id: 'lost', title: 'Tapt ❌', color: 'bg-red-50 border-red-200' }
+  { id: 'lost', title: 'Tapt', color: 'bg-red-50 border-red-200' }
 ];
 
 export function LeadKanbanPage() {
