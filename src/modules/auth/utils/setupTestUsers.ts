@@ -10,12 +10,12 @@ import { UserRole } from './roles/types';
 export const setupTestUsers = async (role: UserRole = 'member') => {
   try {
     let email = '';
-    let password = 'Password123!';
+    let password = 'Test1234!';
 
     // Map role to email
     switch (role) {
       case 'master_admin':
-        email = 'master@test.local';
+        email = 'master-admin@test.local';
         break;
       case 'admin':
         email = 'admin@test.local';
@@ -27,13 +27,13 @@ export const setupTestUsers = async (role: UserRole = 'member') => {
         email = 'content@test.local';
         break;
       case 'member':
-        email = 'member@test.local';
+        email = 'user@test.local';
         break;
       case 'anonymous':
         email = 'anonymous@test.local';
         break;
       default:
-        email = 'member@test.local'; // Default to member
+        email = 'user@test.local'; // Default to member
     }
 
     console.log(`Logging in as ${role} using ${email}`);

@@ -7,6 +7,7 @@ import { TestUserWarning } from './TestUserWarning';
 import { TestUserButton } from './TestUserButton';
 import { TestInstructions } from './TestInstructions';
 import { useState } from 'react';
+import { ALL_ROLES } from '@/modules/auth/utils/roles/types';
 
 interface TestUserManagerProps {
   onLoginClick: (role: UserRole) => Promise<void>;
@@ -76,6 +77,17 @@ export const TestUserManager = ({ onLoginClick }: TestUserManagerProps) => {
 
       <div className="mt-4 text-xs text-center">
         <TestInstructions />
+      </div>
+
+      <div className="mt-4 text-xs">
+        <p className="text-center mb-2">Tilgjengelige brukergrupper</p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {ALL_ROLES.map((r) => (
+            <span key={r} className="px-2 py-1 rounded border text-muted-foreground">
+              {r}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

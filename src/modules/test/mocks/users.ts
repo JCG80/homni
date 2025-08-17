@@ -33,6 +33,11 @@ export const mockUsers: MockUser[] = [
     name: 'Test Master Admin'
   },
   { 
+    email: 'content@test.local', 
+    role: 'content_editor',
+    name: 'Test Content Editor'
+  },
+  { 
     email: 'provider@test.local', 
     role: 'company',  // Changed from 'provider' to 'company'
     name: 'Test Provider'

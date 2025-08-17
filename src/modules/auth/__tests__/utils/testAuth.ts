@@ -39,6 +39,12 @@ export const TEST_USERS: TestUser[] = [
     name: 'Test Master Admin'
   },
   { 
+    email: 'content@test.local', 
+    password: 'Test1234!', 
+    role: 'content_editor',
+    name: 'Test Content Editor'
+  },
+  { 
     email: 'provider@test.local', 
     password: 'Test1234!', 
     role: 'company',  // Changed from 'provider' to 'company'
