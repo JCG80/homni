@@ -32,9 +32,9 @@ export const useAuthSession = () => {
           isLoading: false,
           error: null // Don't show error for timeout, just stop loading
         }));
-        console.warn("Authentication initialization timed out after 2 seconds");
+        console.warn("Authentication initialization timed out after 1 seconds");
       }
-    }, 2000); // Reduced to 2 seconds for faster user experience
+    }, 1000); // Reduced to 1 second for faster user experience
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
