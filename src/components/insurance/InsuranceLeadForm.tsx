@@ -57,20 +57,19 @@ export const InsuranceLeadForm: React.FC<InsuranceLeadFormProps> = ({ onSuccess 
         category: formData.category,
         status: mapToEmojiStatus('new'), // Convert to emoji status
         submitted_by: user.id,
-        // Note: customer fields are not in the current database schema
-        // We'll store them in metadata for now
+        // Store customer fields in metadata to match database schema
         metadata: {
           customer_name: formData.customer_name,
           customer_email: formData.customer_email,
           customer_phone: formData.customer_phone,
           service_type: formData.service_type
-        },
+        } as any, // Cast to Json type
         lead_type: 'insurance'
       };
 
       const { error } = await supabase
         .from('leads')
-        .insert([leadData]);
+        .insert(leadData); // Pass single object, not array
 
       if (error) throw error;
 
