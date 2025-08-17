@@ -9,6 +9,7 @@ import { UnauthorizedPage } from '@/modules/auth/pages/UnauthorizedPage';
 import { OnboardingPage } from '@/pages/OnboardingPage';
 import { DesignSystemPage } from '@/pages/DesignSystemPage';
 import { ServiceSelectionPage } from '@/modules/services/pages/ServiceSelectionPage';
+import { PropertyPurchasePage } from '@/pages/PropertyPurchasePage';
 
 /**
  * Main public routes available to all users
@@ -28,5 +29,8 @@ export const mainRoutes = (
     
     {/* Service Selection */}
     <Route path="/select-services" element={<ServiceSelectionPage />} />
+    
+    {/* Property Services */}
+    <Route path="/boligkjop" element={<PropertyPurchasePage />} />
   </>
 );
