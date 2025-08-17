@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { setupTestUsers } from '../utils/setupTestUsers';
-import { UserRole } from '../utils/roles/types';
+import { UserRole, normalizeRole } from '@/types/auth';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,14 +19,19 @@ const roles: { role: UserRole; label: string; color: string }[] = [
   { role: 'admin', label: 'Admin', color: 'text-blue-500' },
   { role: 'content_editor', label: 'Editor', color: 'text-green-500' },
   { role: 'company', label: 'Company', color: 'text-amber-500' },
-  { role: 'member', label: 'Member', color: 'text-slate-500' },
-  { role: 'anonymous', label: 'Guest', color: 'text-gray-400' },
+  { role: 'user', label: 'User', color: 'text-slate-500' },
+  { role: 'guest', label: 'Guest', color: 'text-gray-400' },
 ];
 
 export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: UnifiedQuickLoginProps) => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('grid');
   const navigate = useNavigate();
+  
+  // Dev gate: return null in production
+  if (import.meta.env.PROD) {
+    return null;
+  }
   
   useEffect(() => {
     // Debug info
@@ -35,9 +40,10 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
   
   const handleLogin = async (role: UserRole) => {
     try {
-      console.log(`Attempting quick login as ${role}`);
+      const normalizedRole = normalizeRole(role);
+      console.log(`Attempting quick login as ${normalizedRole} (from ${role})`);
       setIsLoading(role);
-      await setupTestUsers(role);
+      await setupTestUsers(normalizedRole);
       
       // Handle success callback and redirection
       if (onSuccess) {

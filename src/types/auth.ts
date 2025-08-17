@@ -1,46 +1,43 @@
 /**
  * Authentication and user-related types
+ * Uses canonical roles from normalizeRole.ts
  */
 
-/**
- * Standard user roles in the application
- */
-export type UserRole = 
-  | 'anonymous'     // Not logged in
-  | 'member'        // Regular user (previously 'user')
-  | 'company'       // Company user
-  | 'content_editor' // Content editor
-  | 'admin'         // Admin user
-  | 'master_admin'; // Master admin
+// Import and re-export canonical types from normalizeRole
+import type { UserRole as CanonicalUserRole } from '@/modules/auth/normalizeRole';
+import { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleLevel } from '@/modules/auth/normalizeRole';
+
+export type UserRole = CanonicalUserRole;
+export { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleLevel };
 
 /**
- * All possible roles in the system
+ * All canonical roles in the system (no legacy values)
  */
 export const ALL_ROLES: UserRole[] = [
-  'anonymous',
-  'member',
+  'guest',
+  'user', 
   'company',
+  'content_editor',
   'admin',
-  'master_admin',
-  'content_editor'
+  'master_admin'
 ];
 
 /**
- * Public-facing roles
+ * Public-facing roles (canonical)
  */
 export const PUBLIC_ROLES: UserRole[] = [
-  'anonymous'
+  'guest'
 ];
 
 /**
- * Roles that require authentication
+ * Roles that require authentication (canonical)
  */
 export const AUTHENTICATED_ROLES: UserRole[] = [
-  'member',
+  'user',
   'company',
+  'content_editor',
   'admin',
-  'master_admin',
-  'content_editor'
+  'master_admin'
 ];
 
 /**

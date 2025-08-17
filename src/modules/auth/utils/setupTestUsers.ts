@@ -1,19 +1,20 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/hooks/use-toast';
-import { UserRole } from './roles/types';
+import { UserRole, normalizeRole } from '@/types/auth';
 
 /**
  * Sets up a test user by signing in with a predefined account
  * Used for development and testing purposes
  */
-export const setupTestUsers = async (role: UserRole = 'member') => {
+export const setupTestUsers = async (role: UserRole = 'user') => {
   try {
+    const normalizedRole = normalizeRole(role);
     let email = '';
     let password = 'Test1234!';
 
-    // Map role to email
-    switch (role) {
+    // Map canonical role to email
+    switch (normalizedRole) {
       case 'master_admin':
         email = 'master-admin@test.local';
         break;
@@ -26,17 +27,17 @@ export const setupTestUsers = async (role: UserRole = 'member') => {
       case 'content_editor':
         email = 'content@test.local';
         break;
-      case 'member':
+      case 'user':
         email = 'user@test.local';
         break;
-      case 'anonymous':
-        email = 'anonymous@test.local';
+      case 'guest':
+        email = 'guest@test.local';
         break;
       default:
-        email = 'user@test.local'; // Default to member
+        email = 'user@test.local'; // Default to user
     }
 
-    console.log(`Logging in as ${role} using ${email}`);
+    console.log(`Logging in as ${normalizedRole} (from ${role}) using ${email}`);
     
     // Sign in with the configured email and password
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -45,7 +46,7 @@ export const setupTestUsers = async (role: UserRole = 'member') => {
     });
 
     if (error) {
-      console.error(`Error signing in as ${role}:`, error);
+      console.error(`Error signing in as ${normalizedRole}:`, error);
       toast({
         title: "Login Failed",
         description: `Could not login as ${role}: ${error.message}`,

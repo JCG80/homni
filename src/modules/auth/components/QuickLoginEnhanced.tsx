@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { setupTestUsers } from '../utils/setupTestUsers';
-import { UserRole } from '../utils/roles/types';
+import { UserRole, normalizeRole } from '@/types/auth';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 
@@ -17,8 +17,8 @@ const roles: { role: UserRole; label: string; color: string }[] = [
   { role: 'admin', label: 'Admin', color: 'bg-blue-500 hover:bg-blue-600' },
   { role: 'content_editor', label: 'Content Editor', color: 'bg-green-500 hover:bg-green-600' },
   { role: 'company', label: 'Company', color: 'bg-amber-500 hover:bg-amber-600' },
-  { role: 'member', label: 'Member', color: 'bg-slate-500 hover:bg-slate-600' },
-  { role: 'anonymous', label: 'Guest', color: 'bg-gray-400 hover:bg-gray-500' },
+  { role: 'user', label: 'User', color: 'bg-slate-500 hover:bg-slate-600' },
+  { role: 'guest', label: 'Guest', color: 'bg-gray-400 hover:bg-gray-500' },
 ];
 
 const staggerDelay = 0.05;
@@ -29,7 +29,8 @@ export const QuickLoginEnhanced = ({ redirectTo, showHeader = true }: QuickLogin
   const handleLogin = async (role: UserRole) => {
     try {
       setIsLoading(role);
-      await setupTestUsers(role);
+      const normalizedRole = normalizeRole(role);
+      await setupTestUsers(normalizedRole);
       // Note: setupTestUsers handles toast notifications internally
     } catch (error) {
       console.error('Failed to login with test user:', error);
