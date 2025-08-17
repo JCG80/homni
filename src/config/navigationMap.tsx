@@ -75,8 +75,8 @@ export const screenInventory: ScreenInfo[] = [
   
   // Dashboard routes
   {
-    path: '/dashboard/member',
-    name: 'Member Dashboard',
+    path: '/dashboard/user',
+    name: 'User Dashboard',
     layoutSlots: ['Header', 'Sidebar', 'MainContent', 'Footer'],
     keyComponents: ['DashboardStats', 'LeadSummary', 'DocumentList'],
     primaryActions: ['View Stats', 'Access Documents', 'View Leads'],
@@ -158,7 +158,7 @@ export const userFlows = {
     title: 'Member User Flow',
     steps: [
       { step: 1, path: '/login', action: 'Login with member credentials' },
-      { step: 2, path: '/dashboard/member', action: 'View dashboard' },
+      { step: 2, path: '/dashboard/user', action: 'View dashboard' },
       { step: 3, path: '/leads', action: 'Check leads/requests' },
       { step: 4, path: '/dashboard/documents', action: 'Access documents' },
       { step: 5, path: '/profile', action: 'Manage profile settings' },

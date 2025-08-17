@@ -14,7 +14,7 @@ export const memberRoutes = (
   <>
     {/* Member Dashboard */}
     <Route 
-      path="/dashboard/member" 
+      path="/dashboard/user" 
       element={
         <RoleDashboard title="Bruker Dashboard" requiredRole="user">
           <Dashboard />

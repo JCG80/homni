@@ -30,7 +30,7 @@ export const AppRouteComponents = () => {
         </RoleDashboard>
       } />
       
-      <Route path="/dashboard/member" element={
+      <Route path="/dashboard/user" element={
         <RoleDashboard title="Bruker Dashboard" requiredRole="user">
           <Dashboard />
         </RoleDashboard>

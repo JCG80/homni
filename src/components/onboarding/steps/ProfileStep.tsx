@@ -96,7 +96,7 @@ export const ProfileStep = ({
 
       <Tabs value={userType} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid grid-cols-2 mb-6">
-          <TabsTrigger value="member" className="gap-2">
+          <TabsTrigger value="user" className="gap-2">
             <User className="h-4 w-4" /> Individual
           </TabsTrigger>
           <TabsTrigger value="company" className="gap-2">
@@ -104,7 +104,7 @@ export const ProfileStep = ({
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="member">
+        <TabsContent value="user">
           <Form {...memberForm}>
             <form onSubmit={memberForm.handleSubmit(onMemberSubmit)} className="space-y-4">
               <FormField
