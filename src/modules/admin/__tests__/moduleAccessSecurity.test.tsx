@@ -13,6 +13,13 @@ import { ModuleAccessManager } from '../components/ModuleAccessManager';
 import { InternalAccessPage } from '../pages/InternalAccessPage';
 import { fetchAvailableModules, fetchUserModuleAccess } from '../api/moduleAccess';
 
+// Mock module access API
+vi.mock('../api/moduleAccess', () => ({
+  fetchAvailableModules: vi.fn(),
+  fetchUserModuleAccess: vi.fn(),
+  updateUserModuleAccess: vi.fn(),
+}));
+
 // Mock the auth hook
 const mockAuth = {
   user: null,
