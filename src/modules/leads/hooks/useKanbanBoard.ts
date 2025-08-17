@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Lead, LeadStatus, PipelineStage, normalizeStatus, statusToPipeline, PIPELINE_EMOJI, LeadCounts } from '@/types/leads';
 import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
@@ -10,9 +9,18 @@ interface UseKanbanBoardProps {
 }
 
 export interface KanbanColumn {
-  id: PipelineStage;
+  id: string;
   title: string;
-  leads: Lead[];
+  status: LeadStatus;
+  count: number;
+  leads: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    category: string;
+    status: LeadStatus;
+    created_at: string;
+  }>;
 }
 
 export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) => {
@@ -27,11 +35,11 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
     lost: 0
   });
 
-  const columnDefinitions: Array<{ id: PipelineStage; title: string }> = [
-    { id: 'new', title: PIPELINE_EMOJI.new },
-    { id: 'in_progress', title: PIPELINE_EMOJI.in_progress },
-    { id: 'won', title: PIPELINE_EMOJI.won },
-    { id: 'lost', title: PIPELINE_EMOJI.lost },
+  const columnDefinitions: Array<{ id: PipelineStage; title: string; status: LeadStatus }> = [
+    { id: 'new', title: PIPELINE_EMOJI.new, status: 'new' },
+    { id: 'in_progress', title: PIPELINE_EMOJI.in_progress, status: 'qualified' },
+    { id: 'won', title: PIPELINE_EMOJI.won, status: 'converted' },
+    { id: 'lost', title: PIPELINE_EMOJI.lost, status: 'lost' },
   ];
 
   const fetchBoardData = useCallback(async () => {
@@ -134,11 +142,23 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
     return leads.filter(lead => lead.pipeline_stage === columnId);
   };
 
-  const columns: KanbanColumn[] = columnDefinitions.map(col => ({
-    id: col.id,
-    title: col.title,
-    leads: getLeadsForColumn(col.id)
-  }));
+  const columns: KanbanColumn[] = columnDefinitions.map(col => {
+    const columnLeads = getLeadsForColumn(col.id);
+    return {
+      id: col.id,
+      title: col.title,
+      status: col.status,
+      count: columnLeads.length,
+      leads: columnLeads.map(lead => ({
+        id: lead.id,
+        title: lead.title,
+        description: lead.description,
+        category: lead.category,
+        status: lead.status,
+        created_at: lead.created_at
+      }))
+    };
+  });
 
   const refreshLeads = () => {
     fetchBoardData();

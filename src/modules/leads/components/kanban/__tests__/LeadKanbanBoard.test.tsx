@@ -4,30 +4,43 @@ import { render, screen } from '@testing-library/react';
 import { LeadKanbanBoard } from '../LeadKanbanBoard';
 import { createTestLead } from '../../../tests/utils';
 
-// Mock the hooks
-vi.mock('../../../hooks/useKanbanBoard', () => ({
-  useKanbanBoard: () => ({
+describe('LeadKanbanBoard', () => {
+  const mockProps = {
     columns: [
       {
         id: 'new',
         title: 'Nye ✨',
-        leads: [createTestLead({ id: 'test-1', status: 'new', title: 'Test Lead 1' })]
+        status: 'new' as const,
+        count: 1,
+        leads: [
+          {
+            id: 'test-1',
+            title: 'Test Lead 1',
+            description: 'Test description',
+            category: 'testing',
+            status: 'new' as const,
+            created_at: new Date().toISOString()
+          }
+        ]
       }
     ],
+    onLeadStatusChange: vi.fn(),
     isLoading: false,
-    updateLeadStatus: vi.fn(),
-    refreshLeads: vi.fn()
-  })
-}));
+    isUpdating: false
+  };
 
-describe('LeadKanbanBoard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should render kanban board with columns', () => {
-    render(<LeadKanbanBoard />);
+    render(<LeadKanbanBoard {...mockProps} />);
     expect(screen.getByText('Nye ✨')).toBeInTheDocument();
     expect(screen.getByText('Test Lead 1')).toBeInTheDocument();
+  });
+
+  it('should show loading state', () => {
+    render(<LeadKanbanBoard {...mockProps} isLoading={true} />);
+    expect(screen.getByText('Loading leads...')).toBeInTheDocument();
   });
 });
