@@ -5,20 +5,20 @@ import { UserRole } from '../utils/roles/types';
 
 describe('Anonymous Role Access', () => {
   test('should allow anonymous users to access public modules', () => {
-    expect(canAccessModule('anonymous' as UserRole, 'home')).toBe(true);
-    expect(canAccessModule('anonymous' as UserRole, 'leads/submit')).toBe(true);
-    expect(canAccessModule('anonymous' as UserRole, 'info')).toBe(true);
+    expect(canAccessModule('guest' as UserRole, 'home')).toBe(true);
+    expect(canAccessModule('guest' as UserRole, 'leads/submit')).toBe(true);
+    expect(canAccessModule('guest' as UserRole, 'info')).toBe(true);
   });
 
   test('should not allow anonymous users to access protected modules', () => {
-    expect(canAccessModule('anonymous' as UserRole, 'dashboard')).toBe(false);
-    expect(canAccessModule('anonymous' as UserRole, 'admin')).toBe(false);
-    expect(canAccessModule('anonymous' as UserRole, 'content')).toBe(false);
+    expect(canAccessModule('guest' as UserRole, 'dashboard')).toBe(false);
+    expect(canAccessModule('guest' as UserRole, 'admin')).toBe(false);
+    expect(canAccessModule('guest' as UserRole, 'content')).toBe(false);
   });
 
   test('should allow member role to access user-specific modules', () => {
-    expect(canAccessModule('member', 'dashboard')).toBe(true);
-    expect(canAccessModule('member', 'leads')).toBe(true);
+    expect(canAccessModule('user', 'dashboard')).toBe(true);
+    expect(canAccessModule('user', 'leads')).toBe(true);
   });
 
   test('should preserve existing role functionality', () => {

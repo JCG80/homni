@@ -43,7 +43,7 @@ describe('Admin Role Access', () => {
       isAuthenticated: false,
       user: null,
       profile: null,
-      role: 'anonymous'
+      role: 'guest'
     });
 
     const { getByTestId } = render(
@@ -83,9 +83,9 @@ describe('Admin Role Access', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      user: { id: '123', role: 'member' },
-      profile: { id: '123', role: 'member' },
-      role: 'member',
+      user: { id: '123', role: 'user' },
+      profile: { id: '123', role: 'user' },
+      role: 'user',
       hasRole: vi.fn().mockReturnValue(false)
     });
 

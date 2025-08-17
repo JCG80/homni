@@ -11,7 +11,7 @@ vi.mock('@/modules/auth/hooks', () => ({
 const mockAuth = {
   isAuthenticated: false,
   isLoading: false,
-  role: 'anonymous',
+  role: 'guest',
 };
 
 const renderWithRouter = (ui: React.ReactNode) =>
@@ -28,7 +28,7 @@ describe('Admin route security via RoleDashboard', () => {
 
   it('denies access to non-authenticated users', () => {
     mockAuth.isAuthenticated = false;
-    mockAuth.role = 'anonymous';
+    mockAuth.role = 'guest';
 
     renderWithRouter(
       <Route path="/" element={
@@ -44,7 +44,7 @@ describe('Admin route security via RoleDashboard', () => {
 
   it('denies access to member role for admin-only content', () => {
     mockAuth.isAuthenticated = true;
-    mockAuth.role = 'member';
+    mockAuth.role = 'user';
 
     renderWithRouter(
       <Route path="/" element={

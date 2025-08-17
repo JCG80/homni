@@ -26,8 +26,8 @@ export function canAccessModule(userRole: UserRole | string | null, moduleId: st
     return true; // Anyone can access public modules
   }
   
-  // If no role (anonymous), can only access public modules
-  if (!userRole || userRole === 'anonymous') {
+  // If no role (guest), can only access public modules
+  if (!userRole || userRole === 'guest') {
     return false;
   }
   
@@ -38,7 +38,7 @@ export function canAccessModule(userRole: UserRole | string | null, moduleId: st
   
   // Role-specific module access
   switch (userRole) {
-    case 'member':
+    case 'user':
       return ['dashboard', 'profile', 'leads'].includes(moduleId);
     case 'company':
       return ['dashboard', 'profile', 'leads', 'settings'].includes(moduleId);

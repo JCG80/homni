@@ -69,7 +69,7 @@ export const RoleSwitcher = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="member">Bruker</SelectItem>
+            <SelectItem value="user">Bruker</SelectItem>
             <SelectItem value="company">Bedrift</SelectItem>
             {isMasterAdmin && (
               <>

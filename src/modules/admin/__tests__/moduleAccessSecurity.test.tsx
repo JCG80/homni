@@ -23,7 +23,7 @@ vi.mock('../api/moduleAccess', () => ({
 // Mock the auth hook
 const mockAuth = {
   user: null,
-  role: 'anonymous',
+  role: 'guest',
   isAuthenticated: false,
   isAdmin: false,
   isMasterAdmin: false,
@@ -79,7 +79,7 @@ describe('Phase 3B1: Module Access UI Testing', () => {
   describe('ModuleAccessManager Security', () => {
     it('should not render for unauthorized users', () => {
       mockAuth.isAuthenticated = false;
-      mockAuth.role = 'anonymous';
+      mockAuth.role = 'guest';
       
       renderWithProviders(
         <ModuleAccessManager userId="test-user" onUpdate={() => {}} />
@@ -91,7 +91,7 @@ describe('Phase 3B1: Module Access UI Testing', () => {
 
     it('should restrict access to admin/master_admin only', () => {
       mockAuth.isAuthenticated = true;
-      mockAuth.role = 'member';
+      mockAuth.role = 'user';
       mockAuth.isAdmin = false;
       mockAuth.isMasterAdmin = false;
       
@@ -182,8 +182,8 @@ describe('Phase 3B2: Database Security Validation', () => {
 
 describe('Phase 3B3: Role-based Module Protection', () => {
   const testCases = [
-    { role: 'anonymous', shouldAccess: false },
-    { role: 'member', shouldAccess: false },
+    { role: 'guest', shouldAccess: false },
+    { role: 'user', shouldAccess: false },
     { role: 'company', shouldAccess: false },
     { role: 'content_editor', shouldAccess: false },
     { role: 'admin', shouldAccess: true },
@@ -195,7 +195,7 @@ describe('Phase 3B3: Role-based Module Protection', () => {
       mockAuth.role = role as any;
       mockAuth.isAdmin = role === 'admin' || role === 'master_admin';
       mockAuth.isMasterAdmin = role === 'master_admin';
-      mockAuth.isAuthenticated = role !== 'anonymous';
+      mockAuth.isAuthenticated = role !== 'guest';
       
       const canAccess = mockAuth.canAccessModule ? mockAuth.canAccessModule() : false;
       

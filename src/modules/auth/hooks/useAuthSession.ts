@@ -49,7 +49,7 @@ export const useAuthSession = () => {
         const user: AuthUser = {
           id: session.user.id,
           email: session.user.email || undefined,
-          role: 'member' as UserRole // Default role until profile is loaded
+          role: 'user' as UserRole // Default role until profile is loaded
         };
 
         if (mounted) {
@@ -120,7 +120,7 @@ export const useAuthSession = () => {
         const user: AuthUser = {
           id: session.user.id,
           email: session.user.email || undefined,
-          role: 'member' as UserRole // Default role until profile is loaded
+          role: 'user' as UserRole // Default role until profile is loaded
         };
 
         setAuthState(prev => ({

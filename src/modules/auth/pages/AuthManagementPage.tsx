@@ -147,9 +147,9 @@ export const AuthManagementPage = () => {
                     <TableCell className="font-medium">{user.full_name || 'N/A'}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
-                        {user.role || 'member'}
-                      </Badge>
+                    <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
+                      {user.role || 'user'}
+                    </Badge>
                     </TableCell>
                     <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
@@ -163,14 +163,13 @@ export const AuthManagementPage = () => {
                             <SelectValue placeholder="Select role" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="member">Member</SelectItem>
+                            <SelectItem value="user">User</SelectItem>
                             <SelectItem value="company">Company</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
                             {isMasterAdmin && (
                               <SelectItem value="master_admin">Master Admin</SelectItem>
                             )}
-                            <SelectItem value="provider">Provider</SelectItem>
-                            <SelectItem value="editor">Editor</SelectItem>
+                            <SelectItem value="content_editor">Content Editor</SelectItem>
                           </SelectContent>
                         </Select>
                         

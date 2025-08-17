@@ -24,20 +24,20 @@ vi.mock('react-router-dom', async () => {
 
 describe('Member Role Access', () => {
   test('should allow member role to access member-specific modules', () => {
-    expect(canAccessModule('member', 'dashboard')).toBe(true);
-    expect(canAccessModule('member', 'leads')).toBe(true);
-    expect(canAccessModule('member', 'leads/my')).toBe(true);
-    expect(canAccessModule('member', 'properties')).toBe(true);
-    expect(canAccessModule('member', 'maintenance')).toBe(true);
-    expect(canAccessModule('member', 'profile')).toBe(true);
-    expect(canAccessModule('member', 'my-account')).toBe(true);
+    expect(canAccessModule('user', 'dashboard')).toBe(true);
+    expect(canAccessModule('user', 'leads')).toBe(true);
+    expect(canAccessModule('user', 'leads/my')).toBe(true);
+    expect(canAccessModule('user', 'properties')).toBe(true);
+    expect(canAccessModule('user', 'maintenance')).toBe(true);
+    expect(canAccessModule('user', 'profile')).toBe(true);
+    expect(canAccessModule('user', 'my-account')).toBe(true);
   });
 
   test('should not allow member role to access admin or company modules', () => {
-    expect(canAccessModule('member', 'admin')).toBe(false);
-    expect(canAccessModule('member', 'company/profile')).toBe(false);
-    expect(canAccessModule('member', 'content')).toBe(false);
-    expect(canAccessModule('member', 'settings')).toBe(false);
+    expect(canAccessModule('user', 'admin')).toBe(false);
+    expect(canAccessModule('user', 'company/profile')).toBe(false);
+    expect(canAccessModule('user', 'content')).toBe(false);
+    expect(canAccessModule('user', 'settings')).toBe(false);
   });
 
   test('should redirect anonymous users from member-specific routes', () => {
@@ -46,7 +46,7 @@ describe('Member Role Access', () => {
       isAuthenticated: false,
       user: null,
       profile: null,
-      role: 'anonymous'
+      role: 'guest'
     });
 
     const { getByTestId } = render(
@@ -64,9 +64,9 @@ describe('Member Role Access', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      user: { id: '123', role: 'member' },
-      profile: { id: '123', role: 'member' },
-      role: 'member'
+      user: { id: '123', role: 'user' },
+      profile: { id: '123', role: 'user' },
+      role: 'user'
     });
 
     const { getByText } = render(

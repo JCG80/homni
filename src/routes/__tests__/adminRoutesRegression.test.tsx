@@ -7,7 +7,7 @@ import { adminRoutes } from '@/routes/adminRoutes';
 // Central mockable auth state
 const mockAuth: any = {
   user: { id: 'u1' },
-  role: 'member',
+  role: 'user',
   isAuthenticated: true,
 };
 
@@ -50,13 +50,13 @@ describe('Security Regression - Admin route access by role', () => {
     vi.clearAllMocks();
     mockAuth.user = { id: 'u1' };
     mockAuth.isAuthenticated = true;
-    mockAuth.role = 'member';
+    mockAuth.role = 'user';
   });
 
   it('denies all admin routes for anonymous users (redirect to login handled elsewhere)', () => {
     mockAuth.isAuthenticated = false;
     mockAuth.user = null;
-    mockAuth.role = 'anonymous';
+    mockAuth.role = 'guest';
 
     for (const r of routesMatrix) {
       render(
@@ -69,11 +69,11 @@ describe('Security Regression - Admin route access by role', () => {
   });
 
   it('enforces role-based access across all admin routes', () => {
-    const rolesToTest = ['anonymous', 'member', 'company', 'content_editor', 'admin', 'master_admin'];
+    const rolesToTest = ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'];
 
     for (const role of rolesToTest) {
-      mockAuth.isAuthenticated = role !== 'anonymous';
-      mockAuth.user = role === 'anonymous' ? null : { id: 'u1' };
+      mockAuth.isAuthenticated = role !== 'guest';
+      mockAuth.user = role === 'guest' ? null : { id: 'u1' };
       mockAuth.role = role;
 
       for (const r of routesMatrix) {
