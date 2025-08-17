@@ -501,6 +501,7 @@ export type Database = {
           expires_at: string | null
           id: string
           lead_id: string
+          pipeline_stage: Database["public"]["Enums"]["pipeline_stage"] | null
           rejection_reason: string | null
           status: string | null
           updated_at: string | null
@@ -515,6 +516,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           lead_id: string
+          pipeline_stage?: Database["public"]["Enums"]["pipeline_stage"] | null
           rejection_reason?: string | null
           status?: string | null
           updated_at?: string | null
@@ -529,6 +531,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           lead_id?: string
+          pipeline_stage?: Database["public"]["Enums"]["pipeline_stage"] | null
           rejection_reason?: string | null
           status?: string | null
           updated_at?: string | null
@@ -1450,6 +1453,14 @@ export type Database = {
       delete_user_profile: {
         Args: { profile_user_id: string }
         Returns: undefined
+      }
+      distribute_new_lead: {
+        Args: { lead_id_param: string }
+        Returns: {
+          assignment_id: string
+          buyer_id: string
+          cost: number
+        }[]
       }
       get_auth_user_role: {
         Args: Record<PropertyKey, never>

@@ -10,6 +10,7 @@ import { adminRoutes } from './adminRoutes';
 import { leadRoutes } from './leadRoutes';
 import { docsRoutes } from './docsRoutes';
 import { serviceRoutes } from './serviceRoutes';
+import { marketplaceRoutes } from './marketplaceRoutes';
 
 /**
  * Main application routes component that combines all route definitions
@@ -61,6 +62,9 @@ export const AppRouteComponents = () => {
       
       {/* Lead management routes */}
       {leadRoutes}
+      
+      {/* Marketplace routes */}
+      {marketplaceRoutes}
       
       {/* Admin routes (require authentication + admin/master_admin role) */}
       {adminRoutes}
