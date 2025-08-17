@@ -1,9 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
-import { LeadCounts } from '@/types/leads';
-import { LeadStatus, normalizeStatus } from "@/types/leads";
-import { Lead } from '@/types/leads';
+import { LeadCounts, Lead, LeadStatus, normalizeStatus, statusToPipeline } from '@/types/leads';
 
-export async function fetchLeadsForKanban(companyId?: string, userId?: string): Promise<any[]> {
+export async function fetchLeadsForKanban(companyId?: string, userId?: string): Promise<Lead[]> {
   let query = supabase
     .from('leads')
     .select('*')
@@ -22,7 +20,33 @@ export async function fetchLeadsForKanban(companyId?: string, userId?: string): 
     throw error;
   }
 
-  return data || [];
+  return (data || []).map((row: any) => {
+    // Safely extract metadata
+    const metadata = typeof row.metadata === 'object' && row.metadata !== null 
+      ? row.metadata as Record<string, unknown>
+      : {};
+
+    // Transform the raw data to match Lead interface
+    const normalizedStatus = normalizeStatus(row.status);
+    return {
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      category: row.category,
+      lead_type: row.lead_type || '',
+      status: normalizedStatus,
+      pipeline_stage: statusToPipeline(normalizedStatus),
+      customer_name: metadata.customer_name as string || null,
+      customer_email: metadata.customer_email as string || null,
+      customer_phone: metadata.customer_phone as string || null,
+      service_type: metadata.service_type as string || null,
+      submitted_by: row.submitted_by,
+      company_id: row.company_id,
+      created_at: row.created_at,
+      updated_at: row.updated_at || row.created_at,
+      metadata
+    } satisfies Lead;
+  });
 }
 
 export async function updateLeadStatus(leadId: string, status: LeadStatus): Promise<boolean> {

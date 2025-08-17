@@ -1,26 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Lead, LeadStatus, PipelineStage, normalizeStatus, statusToPipeline, PIPELINE_EMOJI, LeadCounts } from '@/types/leads';
 import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
+import { KanbanColumn } from '../components/kanban/types';
 import { toast } from '@/hooks/use-toast';
 
 interface UseKanbanBoardProps {
   companyId?: string;
   userId?: string;
-}
-
-export interface KanbanColumn {
-  id: string;
-  title: string;
-  status: LeadStatus;
-  count: number;
-  leads: Array<{
-    id: string;
-    title: string;
-    description?: string;
-    category: string;
-    status: LeadStatus;
-    created_at: string;
-  }>;
 }
 
 export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) => {
@@ -47,32 +33,7 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
     setError(null);
     try {
       const fetchedLeads = await fetchLeads(companyId, userId);
-      if (fetchedLeads) {
-        // Transform DB data to Lead interface
-        const transformedLeads: Lead[] = fetchedLeads.map(dbLead => {
-          const normalizedStatus = normalizeStatus(dbLead.status);
-          return {
-            id: dbLead.id,
-            title: dbLead.title,
-            description: dbLead.description,
-            category: dbLead.category,
-            lead_type: dbLead.lead_type || '',
-            status: normalizedStatus,
-            pipeline_stage: statusToPipeline(normalizedStatus),
-            customer_name: (dbLead.metadata as any)?.customer_name || '',
-            customer_email: (dbLead.metadata as any)?.customer_email || '',
-            customer_phone: (dbLead.metadata as any)?.customer_phone || '',
-            service_type: (dbLead.metadata as any)?.service_type || dbLead.lead_type || '',
-            company_id: dbLead.company_id || null,
-            submitted_by: dbLead.submitted_by,
-            created_at: dbLead.created_at,
-            updated_at: dbLead.updated_at || dbLead.created_at,
-            metadata: dbLead.metadata as Record<string, unknown> || null,
-          };
-        });
-        
-        setLeads(transformedLeads);
-      }
+      setLeads(fetchedLeads);
 
       // Fetch lead counts
       const counts = await getLeadCountsByStatus(companyId, userId);

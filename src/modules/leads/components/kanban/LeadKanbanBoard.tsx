@@ -3,29 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader } from 'lucide-react';
-import { LeadStatus } from '@/types/leads';
-
-export interface KanbanColumn {
-  id: string;
-  title: string;
-  status: LeadStatus;
-  count: number;
-  leads: Array<{
-    id: string;
-    title: string;
-    description?: string;
-    category: string;
-    status: LeadStatus;
-    created_at: string;
-  }>;
-}
-
-interface LeadKanbanBoardProps {
-  columns: KanbanColumn[];
-  onLeadStatusChange: (leadId: string, newStatus: LeadStatus) => Promise<void>;
-  isLoading: boolean;
-  isUpdating: boolean;
-}
+import { KanbanColumn, LeadKanbanBoardProps } from './types';
 
 export const LeadKanbanBoard: React.FC<LeadKanbanBoardProps> = ({
   columns,
