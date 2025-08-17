@@ -9,9 +9,9 @@ import { UserRole } from './types';
  */
 export function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
-    case 'anonymous':
+    case 'guest':
       return ['home', 'leads/submit', 'info', 'login', 'register'];
-    case 'member':
+    case 'user':
       return ['dashboard', 'leads', 'leads/my', 'profile', 'properties', 'maintenance', 'my-account'];
     case 'company':
       return ['dashboard', 'leads', 'company', 'company/profile', 'settings', 'reports'];
@@ -40,10 +40,10 @@ export function canAccessModule(role: UserRole, module: string): boolean {
 export function getAccessibleModules(
   role: UserRole | null,
   moduleAccessMap: Record<string, UserRole[]> = {
-    'leads': ['member', 'company', 'admin', 'master_admin'],
+    'leads': ['user', 'company', 'admin', 'master_admin'],
     'admin': ['admin', 'master_admin'],
     'company': ['company', 'admin', 'master_admin'],
-    'geo': ['member', 'company', 'admin', 'master_admin'],
+    'geo': ['user', 'company', 'admin', 'master_admin'],
     'content': ['content_editor', 'admin', 'master_admin'],
     'settings': ['company', 'admin', 'master_admin']
   }
@@ -96,8 +96,8 @@ export function getRolePermissions(role: UserRole | null): Record<string, boolea
       permissions.canEdit = true; // Companies can edit their own profiles
       permissions.canCreate = true; // Companies can create leads
       break;
-    case 'member':
-      permissions.canCreate = true; // Members can create leads
+    case 'user':
+      permissions.canCreate = true; // Users can create leads
       break;
     default:
       // Anonymous users only have view permissions

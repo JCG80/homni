@@ -21,7 +21,7 @@ import {
   Database,
   Kanban,
 } from "lucide-react";
-import { UserRole } from "@/modules/auth/utils/roles/types";
+import { UserRole } from "@/modules/auth/types/unified-types";
 import { LucideIcon } from "lucide-react";
 
 export interface NavItem {
@@ -126,7 +126,7 @@ const docNavItems: NavItem[] = [
 
 // Role-specific navigation configurations
 export const navConfig: Record<UserRole, NavItem[]> = {
-  member: [
+  user: [
     sharedNavItems.dashboard,
     {
       title: "Mine eiendommer",
@@ -255,7 +255,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
     },
   ],
   
-  anonymous: [
+  guest: [
     {
       title: "Hjem",
       href: "/",
@@ -278,8 +278,8 @@ export const serviceConfig: NavItem[] = serviceNavItems;
 export const docConfig: NavItem[] = docNavItems;
 
 // Helper function to get navigation items based on user role
-export function getNavigation(role: UserRole = 'anonymous'): NavItem[] {
-  return navConfig[role] || navConfig.anonymous;
+export function getNavigation(role: UserRole = 'guest'): NavItem[] {
+  return navConfig[role] || navConfig.guest;
 }
 
 // Helper function to get service navigation items

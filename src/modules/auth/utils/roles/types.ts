@@ -11,8 +11,8 @@ export type { UserRole };
 
 // All roles (used for validation)
 export const ALL_ROLES: UserRole[] = [
-  'anonymous',
-  'member',
+  'guest',
+  'user',
   'company',
   'admin',
   'master_admin',
@@ -21,12 +21,12 @@ export const ALL_ROLES: UserRole[] = [
 
 // Public-facing roles
 export const PUBLIC_ROLES: UserRole[] = [
-  'anonymous'
+  'guest'
 ];
 
 // Roles that require authentication
 export const AUTHENTICATED_ROLES: UserRole[] = [
-  'member',
+  'user',
   'company',
   'admin',
   'master_admin',

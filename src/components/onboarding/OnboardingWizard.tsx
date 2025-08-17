@@ -10,11 +10,11 @@ import { useAuth } from '@/modules/auth/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 
-export type UserType = 'member' | 'company';
+export type UserType = 'user' | 'company';
 
 export const OnboardingWizard = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [userType, setUserType] = useState<UserType>('member');
+  const [userType, setUserType] = useState<UserType>('user');
   const [formData, setFormData] = useState({
     email: '',
     password: '',

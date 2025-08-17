@@ -16,4 +16,4 @@ export * from './hooks/useAuth';
 export { isUserRole, canAccessPath, canAccessModule } from './utils/roles/guards';
 export { getRoleDisplayName } from './utils/roles/display';
 export { getRolePermissions } from './utils/roles/permissions';
-export { normalizeRole, isLegacyRole } from './utils/legacy-compatibility';
+export { normalizeRole, isLegacyRole } from './normalizeRole';

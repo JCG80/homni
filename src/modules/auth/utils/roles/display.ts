@@ -6,8 +6,8 @@
 import { UserRole } from './types';
 
 export const roleNames: Partial<Record<UserRole, string>> = {
-  anonymous: 'Anonym',
-  member: 'Bruker',
+  guest: 'Anonym',
+  user: 'Bruker',
   company: 'Bedrift',
   admin: 'Administrator',
   master_admin: 'Hovedadministrator',
@@ -19,8 +19,8 @@ export const roleNames: Partial<Record<UserRole, string>> = {
  * Used for displaying role descriptions in the UI
  */
 export const roleDescriptions: Partial<Record<UserRole, string>> = {
-  anonymous: 'Ikke innlogget bruker med begrenset tilgang.',
-  member: 'Medlemsbruker med utvidet tilgang.',
+  guest: 'Ikke innlogget bruker med begrenset tilgang.',
+  user: 'Medlemsbruker med utvidet tilgang.',
   company: 'Bedriftsbruker med tilgang til bedriftsverktøy.',
   admin: 'Administrator med tilgang til administrasjonsverktøy.',
   master_admin: 'Hovedadministrator med full tilgang til alle funksjoner.',

@@ -9,7 +9,7 @@ import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 
 const MemberDashboard: React.FC = () => {
   return (
-    <RoleDashboard requiredRole="member" title="Member Dashboard">
+    <RoleDashboard requiredRole="user" title="User Dashboard">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="col-span-1 md:col-span-2 lg:col-span-2">
           <CardHeader>

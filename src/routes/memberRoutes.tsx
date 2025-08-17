@@ -16,7 +16,7 @@ export const memberRoutes = (
     <Route 
       path="/dashboard/member" 
       element={
-        <RoleDashboard title="Medlem Dashboard" requiredRole="member">
+        <RoleDashboard title="Bruker Dashboard" requiredRole="user">
           <Dashboard />
         </RoleDashboard>
       } 

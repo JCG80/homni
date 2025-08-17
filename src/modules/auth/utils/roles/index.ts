@@ -31,4 +31,4 @@ export { getRoleDisplayName, roleNames, roleDescriptions } from './display';
 export { getRolePermissions, getAllowedModulesForRole, getAccessibleModules } from './permissions';
 
 // Re-export legacy compatibility functions
-export { normalizeRole, isLegacyRole, getRoleDisplayName as getLegacyRoleDisplayName } from '../legacy-compatibility';
+export { normalizeRole, isLegacyRole, getRoleDisplayName as getLegacyRoleDisplayName } from '../../normalizeRole';

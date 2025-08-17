@@ -25,13 +25,13 @@ export const AppRouteComponents = () => {
       
       {/* Dashboard routes (role-based) */}
       <Route path="/dashboard" element={
-        <RoleDashboard title="Dashboard" requiredRole={["member", "company", "admin", "master_admin", "content_editor"]}>
+        <RoleDashboard title="Dashboard" requiredRole={["user", "company", "admin", "master_admin", "content_editor"]}>
           <Dashboard />
         </RoleDashboard>
       } />
       
       <Route path="/dashboard/member" element={
-        <RoleDashboard title="Medlem Dashboard" requiredRole="member">
+        <RoleDashboard title="Bruker Dashboard" requiredRole="user">
           <Dashboard />
         </RoleDashboard>
       } />

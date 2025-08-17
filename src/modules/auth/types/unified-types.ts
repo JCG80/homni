@@ -7,8 +7,8 @@
  * Standard user roles in the application
  */
 export type UserRole = 
-  | 'anonymous'     // Not logged in
-  | 'member'        // Regular user
+  | 'guest'         // Not logged in (canonical for anonymous)
+  | 'user'          // Regular user (canonical for member) 
   | 'company'       // Company user
   | 'content_editor' // Content editor
   | 'admin'         // Admin user
@@ -30,7 +30,7 @@ export interface UserProfile {
   metadata: {
     role?: UserRole;
     company_id?: string;
-    account_type?: 'member' | 'company';
+    account_type?: 'user' | 'company';
     internal_admin?: boolean;
     [key: string]: any;
   };
