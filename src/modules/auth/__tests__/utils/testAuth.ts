@@ -17,7 +17,7 @@ export const TEST_USERS: TestUser[] = [
   { 
     email: 'user@test.local', 
     password: 'Test1234!', 
-    role: 'member',
+    role: 'user',
     name: 'Test Member'
   },
   { 

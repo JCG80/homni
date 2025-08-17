@@ -32,7 +32,7 @@ export const getNavConfig = (role: UserRole): NavConfig => {
       title: 'Dashboard',
       url: '/dashboard',
       icon: Home,
-      roles: ['member', 'company', 'content_editor', 'admin', 'master_admin']
+      roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
     }
   ];
 
@@ -41,19 +41,19 @@ export const getNavConfig = (role: UserRole): NavConfig => {
       title: 'Leads',
       url: '/leads',
       icon: Users,
-      roles: ['member', 'company', 'admin', 'master_admin'],
+      roles: ['user', 'company', 'admin', 'master_admin'],
       children: [
         {
           title: 'Lead List',
           url: '/leads',
           icon: Users,
-          roles: ['member', 'company', 'admin', 'master_admin']
+          roles: ['user', 'company', 'admin', 'master_admin']
         },
         {
           title: 'Kanban Board',
           url: '/leads/kanban',
           icon: Kanban,
-          roles: ['member', 'company', 'admin', 'master_admin']
+          roles: ['user', 'company', 'admin', 'master_admin']
         }
       ]
     }
@@ -137,13 +137,13 @@ export const getNavConfig = (role: UserRole): NavConfig => {
       title: 'Profile',
       url: '/profile',
       icon: User,
-      roles: ['member', 'company', 'content_editor', 'admin', 'master_admin']
+      roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
     },
     {
       title: 'Settings',
       url: '/settings',
       icon: Settings,
-      roles: ['member', 'company', 'content_editor', 'admin', 'master_admin']
+      roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
     }
   ];
 

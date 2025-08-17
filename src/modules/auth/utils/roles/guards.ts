@@ -103,7 +103,7 @@ export function getAllowedPathsForRole(role: UserRole | null): string[] {
       return [...commonPaths, '/company'];
     case 'content_editor':
       return [...commonPaths, '/content'];
-    case 'member':
+    case 'user':
       return [...commonPaths];
     default:
       return ['/login', '/register'];

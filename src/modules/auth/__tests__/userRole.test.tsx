@@ -51,7 +51,7 @@ describe('Member Role Access', () => {
 
     const { getByTestId } = render(
       <MemoryRouter>
-        <ProtectedRoute allowedRoles={['member']}>
+        <ProtectedRoute allowedRoles={['user']}>
           <div>Member Content</div>
         </ProtectedRoute>
       </MemoryRouter>
@@ -71,7 +71,7 @@ describe('Member Role Access', () => {
 
     const { getByText } = render(
       <MemoryRouter>
-        <ProtectedRoute allowedRoles={['member']}>
+        <ProtectedRoute allowedRoles={['user']}>
           <div>Member Content</div>
         </ProtectedRoute>
       </MemoryRouter>

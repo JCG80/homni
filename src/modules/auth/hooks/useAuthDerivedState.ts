@@ -30,7 +30,7 @@ export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthB
   
   // If still no role, default to member for authenticated users
   if (!role && isAuthenticated) {
-    role = 'member';
+    role = 'user';
   }
   
   console.log("useAuthDerivedState - Determined role:", role, "From profile:", profile?.role, "From user:", user?.role);
@@ -73,7 +73,7 @@ export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthB
   }, [hasRole, account_type]);
 
   const isMember = useCallback(() => {
-    return hasRole('member') || account_type === 'member';
+    return hasRole('user') || account_type === 'user';
   }, [hasRole, account_type]);
 
   return {

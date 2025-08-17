@@ -28,7 +28,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['Header', 'MainContent', 'Footer'],
     keyComponents: ['ServiceSelector', 'ExampleTags', 'ServiceSelection'],
     primaryActions: ['Select Service', 'Browse Categories', 'Login'],
-    roles: ['anonymous', 'member', 'company', 'content_editor', 'admin', 'master_admin'],
+    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
   },
   {
     path: '/login',
@@ -36,7 +36,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['MainContent', 'Footer'],
     keyComponents: ['LoginForm', 'LoginTabs', 'QuickLogin'],
     primaryActions: ['Login', 'Switch Tab', 'Sign Up'],
-    roles: ['anonymous'],
+    roles: ['guest'],
   },
   {
     path: '/register',
@@ -44,7 +44,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['MainContent', 'Footer'],
     keyComponents: ['RegisterForm', 'RegisterTabs'],
     primaryActions: ['Register', 'Switch Tab'],
-    roles: ['anonymous'],
+    roles: ['guest'],
   },
   
   // Lead routes
@@ -54,7 +54,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['Header', 'Sidebar', 'MainContent', 'Footer'],
     keyComponents: ['LeadList', 'LeadFilter', 'LeadStatusBadge'],
     primaryActions: ['Filter Leads', 'View Lead Details', 'Change Lead Status'],
-    roles: ['member', 'company', 'admin', 'master_admin'],
+    roles: ['user', 'company', 'admin', 'master_admin'],
   },
   {
     path: '/leads/kanban',
@@ -70,7 +70,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['Header', 'Sidebar', 'MainContent', 'Footer'],
     keyComponents: ['LeadDetails', 'LeadStatusSelector', 'LeadHistory'],
     primaryActions: ['Update Status', 'Add Note', 'View History'],
-    roles: ['member', 'company', 'admin', 'master_admin'],
+    roles: ['user', 'company', 'admin', 'master_admin'],
   },
   
   // Dashboard routes
@@ -80,7 +80,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['Header', 'Sidebar', 'MainContent', 'Footer'],
     keyComponents: ['DashboardStats', 'LeadSummary', 'DocumentList'],
     primaryActions: ['View Stats', 'Access Documents', 'View Leads'],
-    roles: ['member'],
+    roles: ['user'],
   },
   {
     path: '/dashboard/company',

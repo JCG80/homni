@@ -42,7 +42,7 @@ export const DevProfileSwitcher: React.FC<DevProfileSwitcherProps> = ({
         return 'bg-orange-500 text-white';
       case 'company':
         return 'bg-blue-600 text-white';
-      case 'member':
+      case 'user':
         return 'bg-green-600 text-white';
       default:
         return 'bg-gray-600 text-white';

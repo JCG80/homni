@@ -34,7 +34,7 @@ export const useAllUsers = () => {
         // Convert profiles to QuickLoginUser format
         const formattedUsers: QuickLoginUser[] = profiles.map(profile => {
           // Extract role from metadata with fallback to 'member'
-          let role: UserRole = 'member';
+          let role: UserRole = 'user';
 
           if (profile.metadata && typeof profile.metadata === 'object') {
             // Try to get role directly from metadata.role
@@ -67,7 +67,7 @@ export const useAllUsers = () => {
           'admin': 2,
           'company': 3,
           'content_editor': 4,
-          'member': 5
+          'user': 5
         };
 
         formattedUsers.sort((a, b) => {

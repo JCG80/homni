@@ -49,8 +49,8 @@ export const useFetchUserProfile = () => {
           user_id: userId,
           email: userData?.user?.email || null,
           full_name: null,
-          role: 'member', // Default role
-          metadata: { role: 'member' },
+          role: 'user', // Default role
+          metadata: { role: 'user' },
           preferences: {},
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
