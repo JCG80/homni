@@ -1,22 +1,40 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { HeroSection } from '@/components/sections/HeroSection';
+import { VisitorWizard } from '@/components/landing/VisitorWizard';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 import { InsuranceSection } from '@/components/sections/InsuranceSection';
-import { CallToAction } from '@/components/sections/CallToAction';
-import { QuickLoginUnified } from '@/components/auth/QuickLoginUnified';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export const HomePage = () => {
   const [activeTab, setActiveTab] = useState<string>('private');
+  const [wizardEnabled, setWizardEnabled] = useState<boolean>(false);
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
 
-  // If authenticated, redirect to appropriate dashboard
+  // Check if visitor wizard is enabled and redirect authenticated users
   useEffect(() => {
+    const checkFeatureFlag = async () => {
+      try {
+        const { data } = await supabase
+          .from('feature_flags')
+          .select('is_enabled')
+          .eq('name', 'visitor_wizard_enabled')
+          .single();
+        
+        setWizardEnabled(data?.is_enabled || false);
+      } catch (error) {
+        console.warn('Failed to check visitor wizard feature flag:', error);
+        setWizardEnabled(false);
+      }
+    };
+
+    checkFeatureFlag();
+
     if (isAuthenticated && role) {
       navigate(`/dashboard/${role}`, { replace: true });
     }
@@ -38,39 +56,82 @@ export const HomePage = () => {
     );
   }
 
+  const getRoleText = () => activeTab === 'business' ? 'bedrift' : 'privatperson';
+  const metaDescription = `Sammenlign og spar på ${getRoleText()}-tjenester. Få tilbud fra flere leverandører på 3 enkle steg.`;
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header activeTab={activeTab} handleTabChange={handleTabChange} />
-      
-      <main>
-        {/* Hero Section */}
-        <HeroSection activeTab={activeTab} handleTabChange={handleTabChange} />
+    <>
+      <Helmet>
+        <title>Homni - Sammenlign og spar på {getRoleText()}-tjenester</title>
+        <meta name="description" content={metaDescription} />
+        <meta property="og:title" content={`Homni - Sammenlign og spar på ${getRoleText()}-tjenester`} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Homni - Sammenlign og spar på ${getRoleText()}-tjenester`} />
+        <meta name="twitter:description" content={metaDescription} />
         
-        {/* Services Section */}
-        <ServicesSection activeTab={activeTab} />
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Homni - Sammenlign tjenester",
+            "description": metaDescription,
+            "url": window.location.href,
+            "provider": {
+              "@type": "Organization",
+              "name": "Homni",
+              "description": "Norges ledende sammenligningsside for hjemme- og bedriftstjenester"
+            },
+            "mainEntity": {
+              "@type": "Service",
+              "name": `${getRoleText().charAt(0).toUpperCase() + getRoleText().slice(1)}tjenester`,
+              "provider": {
+                "@type": "Organization",
+                "name": "Homni"
+              }
+            }
+          })}
+        </script>
+      </Helmet>
+
+      <div className="min-h-screen bg-background">
+        <Header activeTab={activeTab} handleTabChange={handleTabChange} />
         
-        {/* Quick Login Section */}
-        <section className="py-16 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-bold mb-4">Kom i gang i dag</h2>
-              <p className="text-lg text-muted-foreground mb-12">
-                Velg hvordan du vil bruke Homni og få tilgang til alle våre tjenester
-              </p>
-              
-              <QuickLoginUnified showHeader={false} defaultTab={activeTab as 'private' | 'business'} />
-            </div>
-          </div>
-        </section>
+        <main>
+          {wizardEnabled ? (
+            /* Visitor-First Wizard */
+            <section className="py-16 bg-gradient-to-b from-background to-muted/30">
+              <div className="container mx-auto px-4">
+                <VisitorWizard />
+              </div>
+            </section>
+          ) : (
+            /* Fallback to existing sections */
+            <>
+              <section className="py-16 bg-muted/30">
+                <div className="container mx-auto px-4">
+                  <div className="max-w-4xl mx-auto text-center">
+                    <h1 className="text-4xl font-bold mb-4">
+                      Sammenlign og spar på {getRoleText()}-tjenester
+                    </h1>
+                    <p className="text-xl text-muted-foreground mb-8">
+                      Få tilbud fra flere leverandører og velg det beste for deg
+                    </p>
+                  </div>
+                </div>
+              </section>
+              <ServicesSection activeTab={activeTab} />
+            </>
+          )}
+          
+          {/* Insurance Section */}
+          <InsuranceSection />
+        </main>
         
-        {/* Insurance Section */}
-        <InsuranceSection />
-        
-        {/* Call to Action */}
-        <CallToAction activeTab={activeTab} />
-      </main>
-      
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 };
