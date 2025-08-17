@@ -22,3 +22,36 @@
 
 ## Pipeline-stadier (DnD)
 - **Nye ✨** → **I gang 🚀** → **Vunnet 🏆** → **Tapt ❌** (enkel, inspirerende terminologi)
+
+## RLS Policy Matrix
+
+### Tabellnivå (alle tabeller har RLS enabled)
+```sql
+-- Default: DENY ALL
+-- Eksplisitt ALLOW per use case
+```
+
+### Policies per rolle
+**anonymous:**
+- `leads`: INSERT only (create new leads)
+- Andre tabeller: DENY
+
+**user/company (basic):**
+- `leads`: SELECT own records (user_id = auth.uid())
+- `user_profiles`: CRUD own profile
+- `company_profiles`: CRUD own profile (hvis company)
+
+**company + buyer capability:**
+- `buyer_accounts`: CRUD own account
+- `buyer_package_subscriptions`: CRUD own subscriptions
+- `lead_assignments`: CRUD own assignments
+- `buyer_spend_ledger`: SELECT own transactions
+
+**admin:**
+- Alle tabeller: FULL CRUD
+- Funksjoner: kan kalle distribution/override
+
+**master_admin:**
+- Alt admin har +
+- `feature_flags`: CRUD
+- System-funksjoner og secrets

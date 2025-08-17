@@ -1,11 +1,16 @@
 
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+
+env:
+  VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+  VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
 jobs:
   validate-migrations:
@@ -168,8 +173,36 @@ jobs:
         if: always()
         run: supabase stop
 
+  repo-health:
+    runs-on: ubuntu-latest
+    needs: [lint, type-check]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Repository health check
+        run: npm run repo:health
+      
+      - name: Check for duplicates
+        run: npm run check:duplicates
+      
+      - name: Validate RLS policies
+        run: npm run guard:rls
+      
+      - name: Validate database functions
+        run: npm run guard:functions
+      
+      - name: Validate migrations
+        run: npm run guard:migrations
+
   build:
-    needs: [lint, test]
+    needs: [repo-health, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

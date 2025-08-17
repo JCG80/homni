@@ -1,7 +1,27 @@
-# Lead Management and Distribution System
+# Homni Platform - Lead Marketplace & Home Services
 
 ## Overview
-This application provides a comprehensive system for managing and distributing leads to companies. It includes functionality for admins to manage leads, companies to receive and process leads, and users to submit new leads.
+Homni is a modular platform combining lead generation (Bytt.no style), property documentation (Boligmappa.no style), and DIY property sales (Propr.no style). Built with automated lead distribution, role-based access, and marketplace automation.
+
+## Non-Negotiables 🚨
+
+### Repository-Wide Development
+- **ALWAYS** use `repo-wide-sweep.md` methodology
+- **NEVER** edit single files in isolation
+- **MANDATORY**: `npm run repo:health` green before any PR
+- **ZERO** duplicate components, types, or functions
+
+### Database Security
+- **ALL** tables have RLS enabled (default DENY)
+- **ALL** functions use `SECURITY DEFINER + SET search_path = 'public'`
+- **ALL** migrations have corresponding rollback scripts
+
+### CI/CD Gates
+- TypeScript: zero errors
+- ESLint: zero warnings  
+- Test coverage: ≥90% unit, ≥80% integration
+- Build: zero console errors
+- Security: npm audit clean
 
 ## Key Features
 
