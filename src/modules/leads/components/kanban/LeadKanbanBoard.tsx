@@ -1,64 +1,82 @@
 
 import React from 'react';
-import { useKanbanBoard } from '../../hooks/useKanbanBoard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Loader } from 'lucide-react';
 import { LeadStatus } from '@/types/leads';
 
-export const LeadKanbanBoard: React.FC = () => {
-  const { columns, isLoading, updateLeadStatus } = useKanbanBoard();
+export interface KanbanColumn {
+  id: string;
+  title: string;
+  status: LeadStatus;
+  count: number;
+  leads: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    category: string;
+    status: LeadStatus;
+    created_at: string;
+  }>;
+}
 
+interface LeadKanbanBoardProps {
+  columns: KanbanColumn[];
+  onLeadStatusChange: (leadId: string, newStatus: LeadStatus) => Promise<void>;
+  isLoading: boolean;
+  isUpdating: boolean;
+}
+
+export const LeadKanbanBoard: React.FC<LeadKanbanBoardProps> = ({
+  columns,
+  onLeadStatusChange,
+  isLoading,
+  isUpdating
+}) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Laster kanban-tavle...</p>
-        </div>
+        <Loader className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading leads...</span>
       </div>
     );
   }
 
-  const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
-    await updateLeadStatus(leadId, newStatus);
-  };
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {columns.map((column) => (
         <Card key={column.id} className="h-fit">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">
-              {column.title}
-              <Badge variant="secondary" className="ml-2">
-                {column.leads.length}
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm">{column.title}</h3>
+              <Badge variant="secondary" className="text-xs">
+                {column.count}
               </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {column.leads.map((lead) => (
-              <Card key={lead.id} className="p-3 cursor-pointer hover:shadow-md transition-shadow">
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm">{lead.title}</h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {lead.description || 'Ingen beskrivelse'}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <Badge variant="outline" className="text-xs">
+            </div>
+            
+            <div className="space-y-2">
+              {column.leads.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">
+                  No leads
+                </p>
+              ) : (
+                column.leads.map((lead) => (
+                  <Card key={lead.id} className="p-2 hover:shadow-sm transition-shadow cursor-pointer">
+                    <div className="text-xs font-medium mb-1 truncate">
+                      {lead.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground mb-1">
                       {lead.category}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(lead.created_at).toLocaleDateString('no-NO')}
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            ))}
-            {column.leads.length === 0 && (
-              <p className="text-center text-muted-foreground text-sm py-8">
-                Ingen leads
-              </p>
-            )}
+                    </div>
+                    {lead.description && (
+                      <div className="text-xs text-muted-foreground truncate">
+                        {lead.description}
+                      </div>
+                    )}
+                  </Card>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
       ))}

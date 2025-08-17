@@ -40,8 +40,9 @@ export const LeadKanbanWidget: React.FC<LeadKanbanWidgetProps> = ({
               size="sm" 
               className="h-8 w-8 p-0" 
               onClick={handleRefresh}
+              disabled={isUpdating}
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className={`h-4 w-4 ${isUpdating ? 'animate-spin' : ''}`} />
               <span className="sr-only">Refresh</span>
             </Button>
           </div>

@@ -23,6 +23,11 @@ export async function fetchLeadStatus(leadId: string) {
       };
     }
 
+    // Safely extract metadata
+    const metadata = typeof data.metadata === 'object' && data.metadata !== null 
+      ? data.metadata as Record<string, unknown>
+      : {};
+
     // Transform the raw data to match Lead interface
     const normalizedStatus = normalizeStatus(data.status);
     const transformedLead: Lead = {
@@ -33,15 +38,15 @@ export async function fetchLeadStatus(leadId: string) {
       lead_type: data.lead_type || '',
       status: normalizedStatus,
       pipeline_stage: statusToPipeline(normalizedStatus),
-      customer_name: data.customer_name,
-      customer_email: data.customer_email,
-      customer_phone: data.customer_phone,
-      service_type: data.service_type,
+      customer_name: metadata.customer_name as string || null,
+      customer_email: metadata.customer_email as string || null,
+      customer_phone: metadata.customer_phone as string || null,
+      service_type: metadata.service_type as string || null,
       submitted_by: data.submitted_by,
       company_id: data.company_id,
       created_at: data.created_at,
       updated_at: data.updated_at || data.created_at,
-      metadata: data.metadata
+      metadata
     };
     
     return {
