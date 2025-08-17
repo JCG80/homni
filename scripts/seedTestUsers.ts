@@ -1,193 +1,177 @@
 #!/usr/bin/env ts-node
 
+/**
+ * Script to seed test users for development and testing
+ * Creates users with different roles for comprehensive testing
+ */
+
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = "https://kkazhcihooovsuwravhs.supabase.co";
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!SUPABASE_SERVICE_KEY) {
-  console.error('❌ SUPABASE_SERVICE_KEY environment variable is required');
+if (!SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('❌ SUPABASE_SERVICE_ROLE_KEY environment variable is required');
   process.exit(1);
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  auth: { persistSession: false }
+});
 
 interface TestUser {
-  id: string;
   email: string;
+  password: string;
   role: string;
-  full_name: string;
+  display_name: string;
   company_name?: string;
 }
 
-const testUsers: TestUser[] = [
+const TEST_USERS: TestUser[] = [
   {
-    id: '00000000-0000-0000-0000-000000000001',
-    email: 'anonymous@test.no',
-    role: 'anonymous',
-    full_name: 'Anonymous User'
+    email: 'guest@homni.test',
+    password: 'TestPass123!',
+    role: 'guest',
+    display_name: 'Guest User'
   },
   {
-    id: '00000000-0000-0000-0000-000000000002',
-    email: 'user@test.no',
+    email: 'user@homni.test', 
+    password: 'TestPass123!',
     role: 'user',
-    full_name: 'Regular User'
+    display_name: 'Regular User'
   },
   {
-    id: '00000000-0000-0000-0000-000000000003',
-    email: 'company@test.no',
+    email: 'company@homni.test',
+    password: 'TestPass123!',
     role: 'company',
-    full_name: 'Company User',
-    company_name: 'Test Company AS'
+    display_name: 'Company Representative',
+    company_name: 'Test Insurance Company'
   },
   {
-    id: '00000000-0000-0000-0000-000000000004',
-    email: 'editor@test.no',
+    email: 'editor@homni.test',
+    password: 'TestPass123!',
     role: 'content_editor',
-    full_name: 'Content Editor'
+    display_name: 'Content Editor'
   },
   {
-    id: '00000000-0000-0000-0000-000000000005',
-    email: 'admin@test.no',
+    email: 'admin@homni.test',
+    password: 'TestPass123!', 
     role: 'admin',
-    full_name: 'System Admin'
+    display_name: 'System Administrator'
   },
   {
-    id: '00000000-0000-0000-0000-000000000006',
-    email: 'master@test.no',
+    email: 'master@homni.test',
+    password: 'TestPass123!',
     role: 'master_admin',
-    full_name: 'Master Admin'
+    display_name: 'Master Administrator'
   }
 ];
 
 async function seedTestUsers(): Promise<void> {
   console.log('🌱 Seeding test users...\n');
-
-  for (const user of testUsers) {
+  
+  let created = 0;
+  let skipped = 0;
+  let errors = 0;
+  
+  for (const testUser of TEST_USERS) {
     try {
+      console.log(`Creating user: ${testUser.email} (${testUser.role})`);
+      
+      // Create auth user
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: testUser.email,
+        password: testUser.password,
+        email_confirm: true,
+        user_metadata: {
+          role: testUser.role,
+          display_name: testUser.display_name
+        }
+      });
+      
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          console.log(`  ⚠️  User already exists, skipping...`);
+          skipped++;
+          continue;
+        } else {
+          throw authError;
+        }
+      }
+      
+      const userId = authData.user.id;
+      
       // Create user profile
       const { error: profileError } = await supabase
         .from('user_profiles')
         .upsert({
-          id: user.id,
-          user_id: user.id,
-          full_name: user.full_name,
-          email: user.email,
-          role: user.role,
-          account_type: user.role === 'company' ? 'business' : 'personal',
-          metadata: {},
-          notification_preferences: {},
-          ui_preferences: {},
-          feature_overrides: {}
+          id: userId,
+          user_id: userId,
+          display_name: testUser.display_name,
+          role: testUser.role,
+          email: testUser.email,
+          account_type: testUser.role === 'company' ? 'business' : 'personal'
         });
-
+      
       if (profileError) {
-        console.error(`❌ Failed to create profile for ${user.email}:`, profileError);
+        console.error(`  ❌ Failed to create profile: ${profileError.message}`);
+        errors++;
         continue;
       }
-
-      // Create user role
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .upsert({
-          user_id: user.id,
-          role: user.role
-        });
-
-      if (roleError) {
-        console.error(`❌ Failed to create role for ${user.email}:`, roleError);
-        continue;
-      }
-
-      // Create company profile if company user
-      if (user.company_name) {
+      
+      // Create company profile if needed
+      if (testUser.company_name) {
         const { error: companyError } = await supabase
           .from('company_profiles')
           .upsert({
-            user_id: user.id,
-            name: user.company_name,
-            email: user.email,
-            contact_name: user.full_name,
-            status: 'active',
-            subscription_plan: 'pro',
-            modules_access: ['leads', 'marketplace'],
-            metadata: {}
+            user_id: userId,
+            name: testUser.company_name,
+            contact_name: testUser.display_name,
+            email: testUser.email,
+            industry: 'insurance',
+            subscription_plan: 'premium'
           });
-
+        
         if (companyError) {
-          console.error(`❌ Failed to create company for ${user.email}:`, companyError);
-        } else {
-          console.log(`✅ Created company: ${user.company_name}`);
+          console.error(`  ❌ Failed to create company: ${companyError.message}`);
+          errors++;
+          continue;
         }
       }
-
-      console.log(`✅ Created user: ${user.email} (${user.role})`);
+      
+      // Add user role
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .upsert({
+          user_id: userId,
+          role: testUser.role
+        });
+      
+      if (roleError) {
+        console.error(`  ❌ Failed to add role: ${roleError.message}`);
+        errors++;
+        continue;
+      }
+      
+      console.log(`  ✅ Created successfully`);
+      created++;
+      
     } catch (error) {
-      console.error(`❌ Error creating user ${user.email}:`, error);
+      console.error(`  ❌ Failed to create ${testUser.email}:`, error);
+      errors++;
     }
   }
-
-  // Seed test lead packages
-  console.log('\n🌱 Seeding test lead packages...\n');
-
-  const testPackages = [
-    {
-      id: '20000000-0000-0000-0000-000000000001',
-      name: 'Basic Package',
-      description: 'Basic lead package for testing',
-      price_per_lead: 25.00,
-      monthly_price: 299.00,
-      lead_cap_per_day: 5,
-      lead_cap_per_month: 100,
-      priority_level: 1,
-      is_active: true
-    },
-    {
-      id: '20000000-0000-0000-0000-000000000002',
-      name: 'Premium Package',
-      description: 'Premium lead package for testing',
-      price_per_lead: 20.00,
-      monthly_price: 599.00,
-      lead_cap_per_day: 15,
-      lead_cap_per_month: 300,
-      priority_level: 2,
-      is_active: true
-    }
-  ];
-
-  for (const pkg of testPackages) {
-    const { error } = await supabase
-      .from('lead_packages')
-      .upsert(pkg, { onConflict: 'id' });
-
-    if (error) {
-      console.error(`❌ Failed to create package ${pkg.name}:`, error);
-    } else {
-      console.log(`✅ Created package: ${pkg.name}`);
-    }
-  }
-
-  // Create sample buyer account for company user
-  const { error: buyerError } = await supabase
-    .from('buyer_accounts')
-    .upsert({
-      id: '30000000-0000-0000-0000-000000000001',
-      company_name: 'Test Company AS',
-      contact_email: 'company@test.no',
-      current_budget: 1000.00,
-      daily_budget: 100.00,
-      monthly_budget: 2000.00,
-      preferred_categories: ['insurance', 'home'],
-      geographical_scope: ['oslo', 'akershus']
-    }, { onConflict: 'id' });
-
-  if (buyerError) {
-    console.error('❌ Failed to create buyer account:', buyerError);
+  
+  console.log(`\n📊 Summary:`);
+  console.log(`  ✅ Created: ${created}`);
+  console.log(`  ⚠️  Skipped: ${skipped}`);
+  console.log(`  ❌ Errors: ${errors}`);
+  
+  if (errors > 0) {
+    console.log(`\n⚠️  Some users failed to create. Check the logs above.`);
   } else {
-    console.log('✅ Created buyer account for Test Company AS');
+    console.log(`\n🎉 All test users created successfully!`);
   }
-
-  console.log('\n🎉 Test users and packages seeded successfully!');
 }
 
 if (require.main === module) {

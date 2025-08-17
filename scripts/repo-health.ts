@@ -41,38 +41,38 @@ async function runHealthChecks(): Promise<void> {
     {
       name: 'Format',
       description: 'Prettier format check',
-      command: 'npm run format:check',
-      check: async () => runCommand('npm run format:check')
+      command: 'prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"',
+      check: async () => runCommand('prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"')
     },
     {
       name: 'Tests',
       description: 'Unit tests',
-      command: 'npm run test',
-      check: async () => runCommand('npm run test')
+      command: 'vitest run',
+      check: async () => runCommand('vitest run')
     },
     {
       name: 'Duplicates',
       description: 'Check for duplicate files/exports',
-      command: 'npm run check:duplicates',
-      check: async () => runCommand('npm run check:duplicates')
+      command: 'ts-node scripts/checkDuplicates.ts',
+      check: async () => runCommand('ts-node scripts/checkDuplicates.ts')
     },
     {
       name: 'RLS',
       description: 'Row Level Security check',
-      command: 'npm run guard:rls',
-      check: async () => runCommand('npm run guard:rls')
+      command: 'ts-node scripts/guardRls.ts',
+      check: async () => runCommand('ts-node scripts/guardRls.ts')
     },
     {
       name: 'Functions',
       description: 'Database functions security',
-      command: 'npm run guard:functions',
-      check: async () => runCommand('npm run guard:functions')
+      command: 'ts-node scripts/guardFunctions.ts',
+      check: async () => runCommand('ts-node scripts/guardFunctions.ts')
     },
     {
       name: 'Migrations',
       description: 'Migration rollback check',
-      command: 'npm run guard:migrations',
-      check: async () => runCommand('npm run guard:migrations')
+      command: 'ts-node scripts/guardMigrations.ts',
+      check: async () => runCommand('ts-node scripts/guardMigrations.ts')
     }
   ];
 
