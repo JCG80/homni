@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Key, Mail } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 
 interface CompanyActionsProps {
   email?: string;

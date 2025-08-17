@@ -10,7 +10,7 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 packageJson.scripts = {
   ...packageJson.scripts,
   "test": "vitest",
-  "test:watch": "vitest --watch",
+  "test:watch": "vitest --watch", 
   "test:coverage": "vitest run --coverage",
   "typecheck": "tsc --noEmit",
   "repo:health": "ts-node scripts/repo-health.ts",
@@ -25,8 +25,7 @@ packageJson.scripts = {
   "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
   "e2e": "playwright test",
   "e2e:ui": "playwright test --ui",
-  "deps:check": "npm ls",
-  "deps:check:eslint": "npm ls @typescript-eslint/eslint-plugin @typescript-eslint/parser",
+  "update:supabase-imports": "node scripts/updateSupabaseImports.js",
   "types:generate": "supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts"
 };
 

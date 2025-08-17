@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 
 export type AdminAction = 

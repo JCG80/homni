@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/hooks/use-toast';
 
 interface User {

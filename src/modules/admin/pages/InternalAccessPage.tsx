@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Loader, Settings } from 'lucide-react';
 import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
 import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ModuleAccessManager } from '../components/ModuleAccessManager';
 import { Badge } from '@/components/ui/badge';

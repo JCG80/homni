@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { logAdminAction } from '../utils/adminLogger';
 import { Json } from '@/integrations/supabase/types';
 import { Module } from '../types/types';

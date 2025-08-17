@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { TEST_USERS } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { setupTestUsers } from '@/modules/auth/utils/setupTestUsers';
 
 // Check if test users exist in the database
