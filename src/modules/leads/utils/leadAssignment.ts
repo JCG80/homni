@@ -2,7 +2,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
 import { withRetry } from '@/utils/apiRetry';
-import { mapToEmojiStatus } from '@/types/leads';
+// Removed emoji mapping - DB now enforces slug statuses only
+// import { mapToEmojiStatus } from '@/types/leads';
 
 /**
  * Assign a lead to a provider using the specified strategy
@@ -28,12 +29,12 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
       return false;
     }
     
-    // Update lead with the selected provider and ensure valid status
+    // Update lead with the selected provider and ensure slug status (DB now enforces slugs)
     const { error: updateError } = await supabase
       .from('leads')
       .update({
         company_id: providerId,
-        status: mapToEmojiStatus('assigned') as any,
+        status: 'qualified', // use slug (previously mapped from "assigned" -> "qualified")
         updated_at: new Date().toISOString()
       })
       .eq('id', lead.id);
@@ -43,15 +44,15 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
       return false;
     }
     
-    // Log the assignment in lead_history
+    // Log the assignment in lead_history with slug statuses
     const { error: historyError } = await supabase
       .from('lead_history')
       .insert({
         lead_id: lead.id,
         assigned_to: providerId,
         method: 'auto',
-        previous_status: mapToEmojiStatus('new'),
-        new_status: mapToEmojiStatus('assigned')
+        previous_status: 'new',
+        new_status: 'qualified'
       });
       
     if (historyError) {
