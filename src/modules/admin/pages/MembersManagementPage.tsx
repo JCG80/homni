@@ -5,8 +5,8 @@ import { Loader, User } from 'lucide-react';
 import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
 import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { MemberDetailView } from '../components/MemberDetailView';
-import { MembersTable } from '../components/members/MembersTable';
+import { UserDetailView } from '../components/MemberDetailView';
+import { UsersTable } from '../components/members/MembersTable';
 import { MembersEmptyState } from '../components/members/MembersEmptyState';
 import { 
   fetchMembers, 
@@ -15,7 +15,7 @@ import {
   formatDate 
 } from '../services/memberService';
 
-interface Member {
+interface User {
   id: string;
   full_name: string;
   email: string;
@@ -32,7 +32,7 @@ export function MembersManagementPage() {
     redirectTo: '/unauthorized'
   });
 
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [selectedMember, setSelectedMember] = useState<User | null>(null);
   
   // Fetch members data
   const { data: members = [], isLoading, error, refetch } = useQuery({
@@ -56,22 +56,22 @@ export function MembersManagementPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Brukeradministrasjon - Medlemmer</h1>
+      <h1 className="text-3xl font-bold mb-6">Brukeradministrasjon - Brukere</h1>
       <AdminNavigation />
       
       {isLoading ? (
         <div className="flex justify-center my-12">
           <Loader className="h-8 w-8 animate-spin" />
-          <span className="ml-2">Laster medlemmer...</span>
+          <span className="ml-2">Laster brukere...</span>
         </div>
       ) : error ? (
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md my-6">
-          <p>Feil ved lasting av medlemmer. Prøv igjen senere.</p>
+          <p>Feil ved lasting av brukere. Prøv igjen senere.</p>
         </div>
       ) : (
         <>
           {members.length > 0 ? (
-            <MembersTable
+            <UsersTable
               members={members}
               onSelectMember={setSelectedMember}
               handleResetPassword={resetPassword}
@@ -87,10 +87,10 @@ export function MembersManagementPage() {
       <Dialog open={!!selectedMember} onOpenChange={(open) => !open && setSelectedMember(null)}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Medlemdetaljer</DialogTitle>
+            <DialogTitle>Brukerdetaljer</DialogTitle>
           </DialogHeader>
           {selectedMember && (
-            <MemberDetailView 
+            <UserDetailView 
               member={selectedMember} 
               onClose={() => setSelectedMember(null)}
               onUpdate={refetch}

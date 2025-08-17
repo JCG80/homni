@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Key, Mail } from 'lucide-react';
 import { StatusBadge } from './StatusBadge';
 
-interface Member {
+interface User {
   id: string;
   full_name: string;
   email: string;
@@ -22,21 +22,21 @@ interface Member {
   last_active: string;
 }
 
-interface MembersTableProps {
-  members: Member[];
-  onSelectMember: (member: Member) => void;
+interface UsersTableProps {
+  members: User[];
+  onSelectMember: (member: User) => void;
   handleResetPassword: (email: string) => Promise<void>;
   handleSendUsername: (email: string) => Promise<void>;
   formatDate: (dateString: string) => string;
 }
 
-export function MembersTable({
+export function UsersTable({
   members,
   onSelectMember,
   handleResetPassword,
   handleSendUsername,
   formatDate
-}: MembersTableProps) {
+}: UsersTableProps) {
   return (
     <div className="rounded-md border shadow-sm overflow-hidden mt-6">
       <Table>

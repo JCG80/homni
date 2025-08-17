@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusBadge } from './members/StatusBadge';
 import { formatDate } from '../services/memberService';
 
-interface Member {
+interface User {
   id: string;
   full_name: string;
   email: string;
@@ -15,13 +15,13 @@ interface Member {
   last_active: string;
 }
 
-interface MemberDetailViewProps {
-  member: Member;
+interface UserDetailViewProps {
+  member: User;
   onClose: () => void;
   onUpdate: () => void;
 }
 
-export function MemberDetailView({ member, onClose, onUpdate }: MemberDetailViewProps) {
+export function UserDetailView({ member, onClose, onUpdate }: UserDetailViewProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   
   const handleUpdate = async () => {
@@ -91,4 +91,4 @@ export function MemberDetailView({ member, onClose, onUpdate }: MemberDetailView
   );
 }
 
-export default MemberDetailView;
+export default UserDetailView;
