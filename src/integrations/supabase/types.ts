@@ -44,6 +44,159 @@ export type Database = {
         }
         Relationships: []
       }
+      buyer_accounts: {
+        Row: {
+          auto_recharge: boolean | null
+          billing_address: Json | null
+          company_name: string
+          contact_email: string
+          contact_phone: string | null
+          created_at: string | null
+          current_budget: number | null
+          daily_budget: number | null
+          geographical_scope: string[] | null
+          id: string
+          monthly_budget: number | null
+          pause_when_budget_exceeded: boolean | null
+          preferred_categories: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_recharge?: boolean | null
+          billing_address?: Json | null
+          company_name: string
+          contact_email: string
+          contact_phone?: string | null
+          created_at?: string | null
+          current_budget?: number | null
+          daily_budget?: number | null
+          geographical_scope?: string[] | null
+          id?: string
+          monthly_budget?: number | null
+          pause_when_budget_exceeded?: boolean | null
+          preferred_categories?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_recharge?: boolean | null
+          billing_address?: Json | null
+          company_name?: string
+          contact_email?: string
+          contact_phone?: string | null
+          created_at?: string | null
+          current_budget?: number | null
+          daily_budget?: number | null
+          geographical_scope?: string[] | null
+          id?: string
+          monthly_budget?: number | null
+          pause_when_budget_exceeded?: boolean | null
+          preferred_categories?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      buyer_package_subscriptions: {
+        Row: {
+          auto_renew: boolean | null
+          buyer_id: string
+          created_at: string | null
+          end_date: string | null
+          id: string
+          package_id: string
+          start_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_renew?: boolean | null
+          buyer_id: string
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          package_id: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_renew?: boolean | null
+          buyer_id?: string
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          package_id?: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_package_subscriptions_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "buyer_package_subscriptions_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "lead_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      buyer_spend_ledger: {
+        Row: {
+          amount: number
+          assignment_id: string | null
+          balance_after: number
+          buyer_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          assignment_id?: string | null
+          balance_after: number
+          buyer_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          assignment_id?: string | null
+          balance_after?: number
+          buyer_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_spend_ledger_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "lead_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "buyer_spend_ledger_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_insurance_types: {
         Row: {
           company_id: string
@@ -337,6 +490,66 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_assignments: {
+        Row: {
+          accepted_at: string | null
+          assigned_at: string | null
+          buyer_id: string
+          buyer_notes: string | null
+          cost: number
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          lead_id: string
+          rejection_reason: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          assigned_at?: string | null
+          buyer_id: string
+          buyer_notes?: string | null
+          cost: number
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lead_id: string
+          rejection_reason?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          assigned_at?: string | null
+          buyer_id?: string
+          buyer_notes?: string | null
+          cost?: number
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lead_id?: string
+          rejection_reason?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_assignments_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_assignments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_history: {
         Row: {
           assigned_to: string | null
@@ -377,6 +590,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      lead_packages: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          lead_cap_per_day: number | null
+          lead_cap_per_month: number | null
+          monthly_price: number | null
+          name: string
+          price_per_lead: number
+          priority_level: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          lead_cap_per_day?: number | null
+          lead_cap_per_month?: number | null
+          monthly_price?: number | null
+          name: string
+          price_per_lead: number
+          priority_level?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          lead_cap_per_day?: number | null
+          lead_cap_per_month?: number | null
+          monthly_price?: number | null
+          name?: string
+          price_per_lead?: number
+          priority_level?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       lead_settings: {
         Row: {
@@ -440,7 +698,7 @@ export type Database = {
           id: string
           lead_type: string | null
           metadata: Json | null
-          status: string
+          status: Database["public"]["Enums"]["pipeline_stage"]
           submitted_by: string
           title: string
           updated_at: string
@@ -453,7 +711,7 @@ export type Database = {
           id?: string
           lead_type?: string | null
           metadata?: Json | null
-          status?: string
+          status?: Database["public"]["Enums"]["pipeline_stage"]
           submitted_by: string
           title: string
           updated_at?: string
@@ -466,7 +724,7 @@ export type Database = {
           id?: string
           lead_type?: string | null
           metadata?: Json | null
-          status?: string
+          status?: Database["public"]["Enums"]["pipeline_stage"]
           submitted_by?: string
           title?: string
           updated_at?: string
@@ -1280,6 +1538,14 @@ export type Database = {
         | "content_editor"
         | "admin"
         | "master_admin"
+      pipeline_stage:
+        | "📥 new"
+        | "👀 qualified"
+        | "💬 contacted"
+        | "📞 negotiating"
+        | "✅ converted"
+        | "❌ lost"
+        | "⏸️ paused"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1413,6 +1679,15 @@ export const Constants = {
         "content_editor",
         "admin",
         "master_admin",
+      ],
+      pipeline_stage: [
+        "📥 new",
+        "👀 qualified",
+        "💬 contacted",
+        "📞 negotiating",
+        "✅ converted",
+        "❌ lost",
+        "⏸️ paused",
       ],
     },
   },

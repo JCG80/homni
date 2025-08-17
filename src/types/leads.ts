@@ -1,23 +1,52 @@
 
-// Define the lead status type based on existing statuses in the database
-export type LeadStatus = 'new' | 'in_progress' | 'won' | 'lost' | 'archived' | 'assigned' | 'under_review' | 'completed';
+// Define the lead status type supporting both legacy and emoji statuses for transition
+export type LeadStatus = '📥 new' | '👀 qualified' | '💬 contacted' | '📞 negotiating' | '✅ converted' | '❌ lost' | '⏸️ paused' | 'new' | 'in_progress' | 'won' | 'lost' | 'assigned' | 'under_review' | 'completed' | 'archived';
 
 // Export an array of all possible lead statuses for validation and UI purposes
 export const LEAD_STATUSES: LeadStatus[] = [
+  '📥 new',
+  '👀 qualified',
+  '💬 contacted',
+  '📞 negotiating',
+  '✅ converted',
+  '❌ lost',
+  '⏸️ paused',
   'new',
-  'in_progress',
-  'won', 
+  'in_progress', 
+  'won',
   'lost',
-  'archived',
   'assigned',
   'under_review',
-  'completed'
+  'completed',
+  'archived'
 ];
 
 // Runtime type guard for lead status validation
 export function isValidLeadStatus(status: any): status is LeadStatus {
   if (typeof status !== 'string') return false;
   return LEAD_STATUSES.includes(status as LeadStatus);
+}
+
+// Legacy status mapping for backward compatibility
+export const LEGACY_STATUS_MAP: Record<string, LeadStatus> = {
+  'new': '📥 new',
+  'qualified': '👀 qualified', 
+  'contacted': '💬 contacted',
+  'negotiating': '📞 negotiating',
+  'converted': '✅ converted',
+  'won': '✅ converted',
+  'lost': '❌ lost',
+  'paused': '⏸️ paused',
+  'in_progress': '💬 contacted',
+  'assigned': '👀 qualified',
+  'under_review': '👀 qualified',
+  'completed': '✅ converted',
+  'archived': '❌ lost'
+};
+
+// Map legacy status to new emoji status
+export function mapToEmojiStatus(status: string): LeadStatus {
+  return LEGACY_STATUS_MAP[status] || '📥 new';
 }
 
 // Define lead priority as a union type
@@ -75,8 +104,15 @@ export interface LeadFilter {
   submitted_by?: string;
 }
 
-// Lead counts by status type
+// Lead counts by status type (supporting both legacy and emoji)
 export interface LeadCounts {
+  '📥 new': number;
+  '👀 qualified': number;
+  '💬 contacted': number;
+  '📞 negotiating': number;
+  '✅ converted': number;
+  '❌ lost': number;
+  '⏸️ paused': number;
   new: number;
   in_progress: number;
   won: number;

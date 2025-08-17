@@ -132,41 +132,59 @@ async function seedTestUsers(): Promise<void> {
 
   const testPackages = [
     {
-      name: 'Basic Leads',
-      description: 'Basic lead package for small companies',
-      price_cents: 5000, // 50 NOK
-      rules: {
-        categories: ['insurance', 'home'],
-        regions: ['oslo', 'akershus'],
-        max_age_hours: 24
-      },
-      active: true,
-      priority: 100
+      id: '20000000-0000-0000-0000-000000000001',
+      name: 'Basic Package',
+      description: 'Basic lead package for testing',
+      price_per_lead: 25.00,
+      monthly_price: 299.00,
+      lead_cap_per_day: 5,
+      lead_cap_per_month: 100,
+      priority_level: 1,
+      is_active: true
     },
     {
-      name: 'Premium Leads',
-      description: 'Premium lead package with higher priority',
-      price_cents: 10000, // 100 NOK
-      rules: {
-        categories: ['insurance', 'home', 'finance'],
-        regions: ['all'],
-        max_age_hours: 12
-      },
-      active: true,
-      priority: 50
+      id: '20000000-0000-0000-0000-000000000002',
+      name: 'Premium Package',
+      description: 'Premium lead package for testing',
+      price_per_lead: 20.00,
+      monthly_price: 599.00,
+      lead_cap_per_day: 15,
+      lead_cap_per_month: 300,
+      priority_level: 2,
+      is_active: true
     }
   ];
 
   for (const pkg of testPackages) {
     const { error } = await supabase
       .from('lead_packages')
-      .upsert(pkg);
+      .upsert(pkg, { onConflict: 'id' });
 
     if (error) {
       console.error(`❌ Failed to create package ${pkg.name}:`, error);
     } else {
       console.log(`✅ Created package: ${pkg.name}`);
     }
+  }
+
+  // Create sample buyer account for company user
+  const { error: buyerError } = await supabase
+    .from('buyer_accounts')
+    .upsert({
+      id: '30000000-0000-0000-0000-000000000001',
+      company_name: 'Test Company AS',
+      contact_email: 'company@test.no',
+      current_budget: 1000.00,
+      daily_budget: 100.00,
+      monthly_budget: 2000.00,
+      preferred_categories: ['insurance', 'home'],
+      geographical_scope: ['oslo', 'akershus']
+    }, { onConflict: 'id' });
+
+  if (buyerError) {
+    console.error('❌ Failed to create buyer account:', buyerError);
+  } else {
+    console.log('✅ Created buyer account for Test Company AS');
   }
 
   console.log('\n🎉 Test users and packages seeded successfully!');
