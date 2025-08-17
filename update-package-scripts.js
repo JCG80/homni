@@ -9,12 +9,22 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 // Add or update scripts
 packageJson.scripts = {
   ...packageJson.scripts,
+  "test": "vitest run",
+  "test:watch": "vitest",
+  "test:coverage": "vitest run --coverage",
+  "typecheck": "tsc --noEmit",
+  "repo:health": "ts-node scripts/repo-health.ts",
   "seed:users": "ts-node scripts/seedTestUsers.ts",
+  "check:duplicates": "ts-node scripts/checkDuplicates.ts",
+  "guard:rls": "ts-node scripts/checkRls.ts",
+  "guard:functions": "ts-node scripts/checkFunctions.ts", 
+  "guard:migrations": "ts-node scripts/checkMigrations.ts",
   "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
   "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
   "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css}\"",
   "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css}\"",
-  "test:e2e": "playwright test",
+  "e2e": "playwright test",
+  "e2e:ui": "playwright test --ui",
   "deps:check": "npm ls",
   "deps:check:eslint": "npm ls @typescript-eslint/eslint-plugin @typescript-eslint/parser"
 };
