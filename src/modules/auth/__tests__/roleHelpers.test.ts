@@ -7,8 +7,8 @@ import { UserRole } from '../utils/roles/types';
 describe('Role Helper Functions', () => {
   describe('getRoleDisplayName', () => {
     test('returns correct display name for each role', () => {
-      expect(getRoleDisplayName('anonymous' as UserRole)).toBe('Anonym');
-      expect(getRoleDisplayName('member' as UserRole)).toBe('Bruker');
+      expect(getRoleDisplayName('guest' as UserRole)).toBe('Anonym');
+      expect(getRoleDisplayName('user' as UserRole)).toBe('Bruker');
       expect(getRoleDisplayName('company' as UserRole)).toBe('Bedrift');
       expect(getRoleDisplayName('admin' as UserRole)).toBe('Administrator');
       expect(getRoleDisplayName('master_admin' as UserRole)).toBe('Hovedadministrator');
@@ -55,8 +55,8 @@ describe('Role Helper Functions', () => {
       expect(permissions.canDelete).toBe(false);
     });
 
-    test('returns correct permissions for member role', () => {
-      const permissions = getRolePermissions('member' as UserRole);
+    test('returns correct permissions for user role', () => {
+      const permissions = getRolePermissions('user' as UserRole);
       
       expect(permissions.canView).toBe(true);
       expect(permissions.canEdit).toBe(false);
@@ -64,8 +64,8 @@ describe('Role Helper Functions', () => {
       expect(permissions.canCreate).toBe(true);
     });
 
-    test('returns restricted permissions for anonymous role', () => {
-      const permissions = getRolePermissions('anonymous' as UserRole);
+    test('returns restricted permissions for guest role', () => {
+      const permissions = getRolePermissions('guest' as UserRole);
       
       expect(permissions.canView).toBe(true);
       expect(permissions.canEdit).toBe(false);
@@ -85,8 +85,8 @@ describe('Role Helper Functions', () => {
 
   describe('getAllowedModulesForRole', () => {
     test('returns correct modules for each role', () => {
-      expect(getAllowedModulesForRole('anonymous' as UserRole)).toContain('login');
-      expect(getAllowedModulesForRole('member' as UserRole)).toContain('dashboard');
+      expect(getAllowedModulesForRole('guest' as UserRole)).toContain('login');
+      expect(getAllowedModulesForRole('user' as UserRole)).toContain('dashboard');
       expect(getAllowedModulesForRole('company' as UserRole)).toContain('company');
       expect(getAllowedModulesForRole('admin' as UserRole)).toContain('admin');
       expect(getAllowedModulesForRole('content_editor' as UserRole)).toContain('content');

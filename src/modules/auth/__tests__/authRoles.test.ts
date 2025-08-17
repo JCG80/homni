@@ -7,12 +7,12 @@ describe('Auth role determination', () => {
     // Mock user data with role in metadata
     const mockUserData = {
       user: {
-        user_metadata: { role: 'member' },
+        user_metadata: { role: 'user' },
         email: 'user@test.local'
       }
     };
     
-    expect(determineUserRole(mockUserData)).toBe('member');
+    expect(determineUserRole(mockUserData)).toBe('user');
   });
 
   test('should correctly identify company role from metadata', () => {
@@ -56,7 +56,7 @@ describe('Auth role determination', () => {
       }
     };
     
-    expect(determineUserRole(mockUserData)).toBe('member');
+    expect(determineUserRole(mockUserData)).toBe('user');
   });
 
   test('should recognize development test users by email', () => {
@@ -72,7 +72,7 @@ describe('Auth role determination', () => {
     
     expect(determineUserRole(adminUserData)).toBe('master_admin');
     expect(determineUserRole(companyUserData)).toBe('company');
-    expect(determineUserRole(regularUserData)).toBe('member');
+    expect(determineUserRole(regularUserData)).toBe('user');
     
     // Restore the original mode
     import.meta.env.MODE = originalMode;

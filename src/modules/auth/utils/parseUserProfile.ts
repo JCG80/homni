@@ -17,16 +17,10 @@ export const parseUserProfile = (profileData: any): Profile | null => {
     role = profileData.metadata.role;
   }
 
-  // Handle legacy 'user' role mapping
-  if (role === 'user') {
-    console.log('[parseUserProfile] Converting legacy "user" role to "member"');
-    role = 'member';
-  }
-
   // Validate role
   if (!isUserRole(role)) {
-    console.warn(`[parseUserProfile] Invalid role '${role}' found, defaulting to 'member'`);
-    role = 'member';
+    console.warn(`[parseUserProfile] Invalid role '${role}' found, defaulting to 'user'`);
+    role = 'user';
   }
 
   // Extract company_id - prefer direct column (newly added), fallback to metadata

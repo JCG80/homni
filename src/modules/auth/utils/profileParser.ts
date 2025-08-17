@@ -16,8 +16,8 @@ export const parseProfileData = (profileData: any): Profile | null => {
   // Validate that role is a valid UserRole
   let role = profileData.role;
   if (!isUserRole(role)) {
-    console.warn(`Invalid role '${role}' found in profile, defaulting to 'member'`);
-    role = 'member';
+    console.warn(`Invalid role '${role}' found in profile, defaulting to 'user'`);
+    role = 'user';
   }
   
   return {
