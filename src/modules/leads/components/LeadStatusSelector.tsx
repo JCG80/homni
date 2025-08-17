@@ -2,6 +2,7 @@
 import React from 'react';
 import { LeadStatus, LEAD_STATUSES } from '@/types/leads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getStatusLabel } from '../utils/lead-utils';
 
 interface LeadStatusSelectorProps {
   currentStatus: LeadStatus;
@@ -14,17 +15,6 @@ export const LeadStatusSelector: React.FC<LeadStatusSelectorProps> = ({
   onStatusChange,
   disabled = false
 }) => {
-  const statusLabels: Record<LeadStatus, string> = {
-    new: 'Ny',
-    in_progress: 'Under behandling',
-    won: 'Vunnet',
-    lost: 'Tapt',
-    archived: 'Arkivert',
-    assigned: 'Tildelt',
-    under_review: 'Under vurdering',
-    completed: 'Fullført'
-  };
-
   return (
     <Select 
       defaultValue={currentStatus} 
@@ -37,7 +27,7 @@ export const LeadStatusSelector: React.FC<LeadStatusSelectorProps> = ({
       <SelectContent>
         {LEAD_STATUSES.map(status => (
           <SelectItem key={status} value={status}>
-            {statusLabels[status] || status}
+            {getStatusLabel(status) || status}
           </SelectItem>
         ))}
       </SelectContent>

@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { LeadStatus, mapToEmojiStatus } from "@/types/leads";
 
 /**
  * Manually assigns a lead to a specific company
@@ -29,13 +30,14 @@ export const assignLeadToCompany = async (
     }
     
     const previousStatus = lead.status;
+    const assignedStatus = mapToEmojiStatus('assigned');
     
     // Update the lead with the new company_id and status
     const { error: updateError } = await supabase
       .from('leads')
       .update({
         company_id: companyId,
-        status: 'assigned',
+        status: assignedStatus as any,
         updated_at: new Date().toISOString()
       })
       .eq('id', leadId);
@@ -58,7 +60,7 @@ export const assignLeadToCompany = async (
         assigned_to: companyId,
         method: 'manual',
         previous_status: previousStatus,
-        new_status: 'assigned',
+        new_status: assignedStatus,
         created_by: assignedBy
       });
     
@@ -94,7 +96,7 @@ export const assignLeadToCompany = async (
  */
 export const updateLeadStatus = async (
   leadId: string,
-  newStatus: string,
+  newStatus: LeadStatus,
   updatedBy?: string
 ): Promise<boolean> => {
   try {
@@ -111,12 +113,13 @@ export const updateLeadStatus = async (
     }
     
     const previousStatus = lead.status;
+    const dbStatus = mapToEmojiStatus(newStatus as string);
     
     // Update the lead status
     const { error: updateError } = await supabase
       .from('leads')
       .update({
-        status: newStatus,
+        status: dbStatus as any,
         updated_at: new Date().toISOString()
       })
       .eq('id', leadId);
@@ -139,7 +142,7 @@ export const updateLeadStatus = async (
         assigned_to: lead.company_id,
         method: 'status_update',
         previous_status: previousStatus,
-        new_status: newStatus,
+        new_status: dbStatus,
         created_by: updatedBy
       });
     

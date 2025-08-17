@@ -1,22 +1,23 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES } from '@/types/leads';
+import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES, mapToEmojiStatus } from '@/types/leads';
 
 // Create a new lead
 export const createLead = async (leadData: LeadFormValues, userId: string): Promise<Lead> => {
+  const dbStatus = mapToEmojiStatus((leadData.status as string) || 'new');
   const { data, error } = await supabase
     .from('leads')
     .insert({
       title: leadData.title,
       description: leadData.description,
       category: leadData.category,
-      status: leadData.status || 'new',
+      status: dbStatus,
       customer_name: leadData.customer_name || '',
       customer_email: leadData.customer_email || '',
       customer_phone: leadData.customer_phone || '',
       service_type: leadData.service_type || '',
       submitted_by: userId,
-    })
+    } as any)
     .select()
     .single();
 
@@ -28,9 +29,8 @@ export const createLead = async (leadData: LeadFormValues, userId: string): Prom
  * Insert a new lead into Supabase with improved field handling and status validation
  */
 export async function insertLead(lead: Partial<Lead>) {
-  // Validate the status if provided
-  const leadStatus = (lead.status || 'new') as LeadStatus;
-  
+  // Validate the status if provided (against app-level statuses)
+  const desiredStatus = (lead.status || 'new') as LeadStatus;
   if (lead.status && !LEAD_STATUSES.includes(lead.status as LeadStatus)) {
     throw new Error(`Invalid status: ${lead.status}. Must be one of: ${LEAD_STATUSES.join(', ')}`);
   }
@@ -48,6 +48,9 @@ export async function insertLead(lead: Partial<Lead>) {
     throw new Error('Unauthorized: You can only submit leads under your own user ID');
   }
 
+  // Map to DB emoji status
+  const dbStatus = mapToEmojiStatus(desiredStatus);
+
   const { data, error } = await supabase
     .from('leads')
     .insert([
@@ -55,7 +58,7 @@ export async function insertLead(lead: Partial<Lead>) {
         title: lead.title || 'Untitled Lead',
         description: lead.description || '',
         category: lead.category || 'general',
-        status: leadStatus,
+        status: dbStatus,
         customer_name: lead.customer_name || '',
         customer_email: lead.customer_email || '',
         customer_phone: lead.customer_phone || '',
@@ -67,7 +70,7 @@ export async function insertLead(lead: Partial<Lead>) {
         ...(lead.content && { content: lead.content }),
         ...(lead.lead_type && { lead_type: lead.lead_type }),
         ...(lead.metadata && { metadata: lead.metadata }),
-      }
+      } as any
     ])
     .select()
     .single();

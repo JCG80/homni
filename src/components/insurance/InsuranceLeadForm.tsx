@@ -25,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { mapToEmojiStatus } from '@/types/leads';
 
 const insuranceTypes = [
   { value: 'home', label: 'Bolig' },
@@ -87,7 +88,7 @@ export function InsuranceLeadForm() {
           title: `Forsikringsforespørsel: ${values.insurance_type}`,
           description: values.description,
           category: values.insurance_type,
-          status: 'new',
+          status: mapToEmojiStatus('new'),
           submitted_by: userId,
           lead_type: 'insurance',
           metadata: {

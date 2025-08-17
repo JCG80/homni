@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Lead, LeadStatus } from '@/types/leads';
 import { isStatusTransitionAllowed } from '../utils/lead-utils';
+import { mapToEmojiStatus } from '@/types/leads';
 
 /**
  * Update lead status with transition validation
@@ -25,11 +26,13 @@ export const updateLeadStatus = async (leadId: string, newStatus: LeadStatus): P
     );
   }
 
+  const dbStatus = mapToEmojiStatus(newStatus as string);
+
   // If transition is allowed, update the status
   const { data, error } = await supabase
     .from('leads')
     .update({ 
-      status: newStatus, 
+      status: dbStatus as any, 
       updated_at: new Date().toISOString() 
     })
     .eq('id', leadId)
@@ -42,11 +45,12 @@ export const updateLeadStatus = async (leadId: string, newStatus: LeadStatus): P
 
 // Assign lead to company
 export const assignLeadToCompany = async (leadId: string, companyId: string): Promise<Lead> => {
+  const assignedStatus = mapToEmojiStatus('assigned');
   const { data, error } = await supabase
     .from('leads')
     .update({ 
       company_id: companyId, 
-      status: 'assigned', 
+      status: assignedStatus as any, 
       updated_at: new Date().toISOString() 
     })
     .eq('id', leadId)

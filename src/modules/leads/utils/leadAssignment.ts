@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
 import { withRetry } from '@/utils/apiRetry';
+import { mapToEmojiStatus } from '@/types/leads';
 
 /**
  * Assign a lead to a provider using the specified strategy
@@ -32,7 +33,7 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
       .from('leads')
       .update({
         company_id: providerId,
-        status: 'assigned',
+        status: mapToEmojiStatus('assigned') as any,
         updated_at: new Date().toISOString()
       })
       .eq('id', lead.id);
@@ -49,8 +50,8 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
         lead_id: lead.id,
         assigned_to: providerId,
         method: 'auto',
-        previous_status: 'new',
-        new_status: 'assigned'
+        previous_status: mapToEmojiStatus('new'),
+        new_status: mapToEmojiStatus('assigned')
       });
       
     if (historyError) {

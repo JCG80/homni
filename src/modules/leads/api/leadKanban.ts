@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { LeadStatus } from "@/types/leads";
 import { toast } from "@/hooks/use-toast";
+import { mapToEmojiStatus } from "@/types/leads";
 
 /**
  * Fetch leads for the current user's company
@@ -49,7 +50,7 @@ export const updateLeadStatus = async (leadId: string, newStatus: LeadStatus) =>
     const { data, error } = await supabase
       .from('leads')
       .update({ 
-        status: newStatus, 
+        status: mapToEmojiStatus(newStatus as string) as any, 
         updated_at: new Date().toISOString() 
       })
       .eq('id', leadId)
@@ -107,12 +108,26 @@ export const getLeadCountsByStatus = async (companyId?: string, userId?: string)
     if (error) throw error;
     
     if (data) {
-      // Count leads by status
-      data.forEach(lead => {
-        if (lead.status === 'new') counts.new++;
-        else if (lead.status === 'in_progress') counts.in_progress++;
-        else if (lead.status === 'won') counts.won++;
-        else if (lead.status === 'lost') counts.lost++;
+      // Count leads by emoji status and map to legacy buckets
+      data.forEach((lead) => {
+        switch (lead.status) {
+          case '📥 new':
+            counts.new++;
+            break;
+          case '💬 contacted':
+          case '📞 negotiating':
+          case '👀 qualified':
+            counts.in_progress++;
+            break;
+          case '✅ converted':
+            counts.won++;
+            break;
+          case '❌ lost':
+            counts.lost++;
+            break;
+          default:
+            break;
+        }
       });
     }
     

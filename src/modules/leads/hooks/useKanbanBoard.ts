@@ -1,164 +1,110 @@
-
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Lead } from '@/types/leads';
+import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus } from '../api/leadKanban';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from '@/modules/auth/hooks';
-import { fetchLeads, updateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
-import { LeadStatus, Lead, LeadCounts } from '@/types/leads';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { LeadStatus } from '@/types/leads';
 
-export interface KanbanColumn {
-  id: LeadStatus;
-  title: string;
-  leads: Lead[];
+interface UseKanbanBoardProps {
+  companyId?: string;
+  userId?: string;
 }
 
-export const useKanbanBoard = () => {
-  const { user, isAuthenticated, profile, role, isCompany, isMember } = useAuth();
-  const [isUpdating, setIsUpdating] = useState(false);
-  const queryClient = useQueryClient();
-  
-  // Fetch leads based on user role
-  const { 
-    data: fetchedLeads = [], 
-    isLoading, 
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['leads', user?.id, user?.company_id, role],
-    queryFn: async () => {
-      try {
-        // For company users, filter by company_id
-        // For member users, filter by user_id
-        const companyId = isCompany ? user?.company_id : undefined;
-        const userId = isMember ? user?.id : undefined;
-        
-        if (!companyId && !userId && isAuthenticated) {
-          console.warn('No company ID or user ID available for leads query');
-        }
-        
-        const leads = await fetchLeads(companyId, userId);
-        // Transform to ensure they match the Lead interface
-        return leads.map((lead: any): Lead => ({
-          id: lead.id,
-          title: lead.title || '',
-          description: lead.description || '',
-          status: lead.status as LeadStatus,
-          category: lead.category || '',
-          customer_name: lead.customer_name || '',
-          customer_email: lead.customer_email || '',
-          customer_phone: lead.customer_phone || '',
-          service_type: lead.service_type || '',
-          created_at: lead.created_at,
-          company_id: lead.company_id,
-          submitted_by: lead.submitted_by,
-          updated_at: lead.updated_at,
-          metadata: lead.metadata,
-        }));
-      } catch (error) {
-        console.error('Error fetching leads:', error);
-        throw error;
+export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps) => {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const columns: Partial<Record<LeadStatus, { id: LeadStatus; title: string }>> = {
+    new: { id: 'new', title: 'New' },
+    in_progress: { id: 'in_progress', title: 'In Progress' },
+    won: { id: 'won', title: 'Won' },
+    lost: { id: 'lost', title: 'Lost' },
+    archived: { id: 'archived', title: 'Archived' },
+    assigned: { id: 'assigned', title: 'Assigned' },
+    under_review: { id: 'under_review', title: 'Under Review' },
+    completed: { id: 'completed', title: 'Completed' },
+  };
+
+  const columnTitles = Object.values(columns).map(col => ({
+    id: col.id,
+    title: col.title,
+  }));
+
+  const fetchBoardData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const fetchedLeads = await fetchLeads(companyId, userId);
+      if (fetchedLeads) {
+        setLeads(fetchedLeads);
       }
-    },
-    enabled: isAuthenticated && (!!user?.company_id || !!user?.id)
-  });
-  
-  // Fetch lead counts
-  const { 
-    data: leadCountsData = { new: 0, in_progress: 0, won: 0, lost: 0 },
-    refetch: refetchCounts
-  } = useQuery({
-    queryKey: ['lead-counts', user?.id, user?.company_id, role],
-    queryFn: async () => {
-      try {
-        const companyId = isCompany ? user?.company_id : undefined;
-        const userId = isMember ? user?.id : undefined;
-        
-        if (!companyId && !userId && isAuthenticated) {
-          return { new: 0, in_progress: 0, won: 0, lost: 0 } as LeadCounts;
-        }
-        
-        return await getLeadCountsByStatus(companyId, userId);
-      } catch (error) {
-        console.error('Error fetching lead counts:', error);
-        return { new: 0, in_progress: 0, won: 0, lost: 0 } as LeadCounts;
-      }
-    },
-    enabled: isAuthenticated && (!!user?.company_id || !!user?.id)
-  });
-  
-  // Update lead status mutation
-  const { mutate } = useMutation({
-    mutationFn: async ({ leadId, newStatus }: { leadId: string; newStatus: LeadStatus }) => {
-      setIsUpdating(true);
-      return await updateLeadStatus(leadId, newStatus);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
-      queryClient.invalidateQueries({ queryKey: ['lead-counts'] });
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch leads');
       toast({
-        title: "Status updated",
-        description: "Lead status has been updated successfully",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Update failed",
-        description: error.message || "Failed to update lead status",
+        title: "Feil ved henting av leads",
+        description: err.message,
         variant: "destructive"
       });
-    },
-    onSettled: () => {
-      setIsUpdating(false);
+    } finally {
+      setIsLoading(false);
     }
-  });
-  
-  // Create columns with leads organized by status
-  const columns = useMemo(() => {
-    const statusMap: Record<LeadStatus, { id: LeadStatus, title: string }> = {
-      'new': { id: 'new', title: 'New' },
-      'in_progress': { id: 'in_progress', title: 'In Progress' },
-      'won': { id: 'won', title: 'Won' },
-      'lost': { id: 'lost', title: 'Lost' },
-      'archived': { id: 'archived', title: 'Archived' },
-      'assigned': { id: 'assigned', title: 'Assigned' },
-      'under_review': { id: 'under_review', title: 'Under Review' },
-      'completed': { id: 'completed', title: 'Completed' }
-    };
-    
-    const columnsData: KanbanColumn[] = [];
-    
-    // Create columns in specific order (excluding archived)
-    ['new', 'in_progress', 'won', 'lost'].forEach(status => {
-      const statusKey = status as LeadStatus;
-      columnsData.push({
-        id: statusKey,
-        title: statusMap[statusKey].title,
-        leads: fetchedLeads.filter(lead => lead.status === statusKey)
+  }, [companyId, userId]);
+
+  useEffect(() => {
+    fetchBoardData();
+  }, [fetchBoardData]);
+
+  const updateLeadStatus = async (leadId: string, newStatus: LeadStatus) => {
+    try {
+      // Optimistically update the UI
+      setLeads(prevLeads =>
+        prevLeads.map(lead =>
+          lead.id === leadId ? { ...lead, status: newStatus } : lead
+        )
+      );
+
+      // Call the API to update the status
+      await apiUpdateLeadStatus(leadId, newStatus);
+      
+      toast({
+        title: "Status oppdatert",
+        description: "Lead status har blitt oppdatert.",
       });
-    });
-    
-    return columnsData;
-  }, [fetchedLeads]);
-  
-  // Handle updating lead status
-  const handleUpdateLeadStatus = (leadId: string, newStatus: LeadStatus) => {
-    mutate({ leadId, newStatus });
+    } catch (err: any) {
+      // If there's an error, revert the optimistic update
+      setLeads(prevLeads => {
+        return prevLeads.map(lead => {
+          // Find the lead that we tried to update
+          if (lead.id === leadId) {
+            // Revert the status to the original status
+            const originalLead = leads.find(original => original.id === leadId);
+            return originalLead ? { ...lead, status: originalLead.status } : lead;
+          }
+          return lead;
+        });
+      });
+      
+      setError(err.message || 'Failed to update lead status');
+      
+      toast({
+        title: "Feil ved oppdatering av status",
+        description: err.message,
+        variant: "destructive"
+      });
+    }
   };
-  
-  // Refresh all data
-  const refreshLeads = () => {
-    refetch();
-    refetchCounts();
+
+  const getLeadsForColumn = (columnId: LeadStatus) => {
+    return leads.filter(lead => lead.status === columnId);
   };
-  
+
   return {
-    columns,
-    leads: fetchedLeads,
+    leads,
     isLoading,
-    isUpdating,
     error,
-    leadCounts: leadCountsData,
-    updateLeadStatus: handleUpdateLeadStatus,
-    refreshLeads
+    columnTitles,
+    getLeadsForColumn,
+    updateLeadStatus,
+    fetchBoardData
   };
 };
