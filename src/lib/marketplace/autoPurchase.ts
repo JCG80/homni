@@ -46,9 +46,9 @@ export async function checkAutoPurchaseEligibility(
       return { eligible: false, reason: 'No active subscription found' };
     }
 
-  if (!(subscription as any).auto_buy) {
-    return { eligible: false, reason: 'Auto-buy is disabled' };
-  }
+    if (!(subscription as any).auto_buy) {
+      return { eligible: false, reason: 'Auto-buy is disabled' };
+    }
 
     const buyerAccount = subscription.buyer_accounts;
     if (!buyerAccount) {
@@ -65,21 +65,21 @@ export async function checkAutoPurchaseEligibility(
       return { eligible: false, reason: 'Insufficient budget' };
     }
 
-  // Check daily spending cap
-  if ((subscription as any).daily_cap_cents) {
-    const dailySpent = await getDailySpending(buyerId);
-    if (dailySpent + (cost * 100) > (subscription as any).daily_cap_cents) {
-      return { eligible: false, reason: 'Daily spending cap exceeded' };
+    // Check daily spending cap
+    if ((subscription as any).daily_cap_cents) {
+      const dailySpent = await getDailySpending(buyerId);
+      if (dailySpent + (cost * 100) > (subscription as any).daily_cap_cents) {
+        return { eligible: false, reason: 'Daily spending cap exceeded' };
+      }
     }
-  }
 
-  // Check monthly spending cap
-  if ((subscription as any).monthly_cap_cents) {
-    const monthlySpent = await getMonthlySpending(buyerId);
-    if (monthlySpent + (cost * 100) > (subscription as any).monthly_cap_cents) {
-      return { eligible: false, reason: 'Monthly spending cap exceeded' };
+    // Check monthly spending cap
+    if ((subscription as any).monthly_cap_cents) {
+      const monthlySpent = await getMonthlySpending(buyerId);
+      if (monthlySpent + (cost * 100) > (subscription as any).monthly_cap_cents) {
+        return { eligible: false, reason: 'Monthly spending cap exceeded' };
+      }
     }
-  }
 
     // Check account-level daily budget
     if (buyerAccount.daily_budget) {
@@ -122,7 +122,7 @@ export async function executeAutoPurchase(options: AutoPurchaseOptions): Promise
       };
     }
 
-    // Create assignment directly since execute_auto_purchase function isn't available yet
+    // Create assignment with slug pipeline stage
     const { data: assignment, error } = await supabase
       .from('lead_assignments')
       .insert({
@@ -130,7 +130,7 @@ export async function executeAutoPurchase(options: AutoPurchaseOptions): Promise
         buyer_id: buyerId,
         cost: cost,
         assigned_at: new Date().toISOString(),
-        pipeline_stage: '📥 new'
+        pipeline_stage: 'new'
       })
       .select()
       .single();
