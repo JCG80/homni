@@ -5,7 +5,7 @@
  * Ensures all user-facing tables have proper RLS policies
  */
 
-import { supabase } from '../src/integrations/supabase/client';
+import { supabase } from '../src/lib/supabaseClient';
 
 interface RLSCheck {
   table: string;

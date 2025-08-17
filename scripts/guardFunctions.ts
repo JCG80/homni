@@ -5,7 +5,7 @@
  * Ensures SECURITY DEFINER and proper search_path settings
  */
 
-import { supabase } from '../src/integrations/supabase/client';
+import { supabase } from '../src/lib/supabaseClient';
 
 interface FunctionCheck {
   name: string;
