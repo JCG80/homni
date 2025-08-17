@@ -42,10 +42,6 @@ export const memberRoutes = (
       } 
     />
     
-    {/* Default dashboard redirect */}
-    <Route 
-      path="/dashboard" 
-      element={<Navigate to="/dashboard/member" replace />} 
-    />
+    {/* Remove dashboard redirect - handled by DashboardRoutes */}
   </>
 );

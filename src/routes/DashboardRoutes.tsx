@@ -5,11 +5,16 @@ import { RoleDashboard } from '../components/dashboard/RoleDashboard';
 import { Dashboard } from '../pages/Dashboard';
 import { UserRole } from '../modules/auth/utils/roles/types';
 
+/**
+ * Dashboard routes with proper role-based access control
+ */
+
 export const DashboardRoutes = () => {
   return (
     <>
+      {/* General dashboard - requires authentication, no specific role */}
       <Route path="/dashboard" element={
-        <RoleDashboard title="Dashboard">
+        <RoleDashboard title="Dashboard" requiredRole={["member", "company", "admin", "master_admin", "content_editor"]}>
           <Dashboard />
         </RoleDashboard>
       } />

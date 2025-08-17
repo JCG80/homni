@@ -7,6 +7,7 @@ import { MembersManagementPage } from '@/modules/admin/pages/MembersManagementPa
 import { InternalAccessPage } from '@/modules/admin/pages/InternalAccessPage';
 import { RoleManagementPage } from '@/modules/admin/pages/RoleManagementPage';
 import { SystemModulesPage } from '@/modules/system/pages/SystemModulesPage';
+import { AdminLeadsPage } from '@/modules/leads/pages/AdminLeadsPage';
 
 /**
  * Admin routes for authenticated admin users
@@ -40,6 +41,12 @@ export const adminRoutes = (
     <Route path="/admin/internal-access" element={
       <RoleDashboard title="Modultilgang" requiredRole="master_admin">
         <InternalAccessPage />
+      </RoleDashboard>
+    } />
+    
+    <Route path="/admin/leads" element={
+      <RoleDashboard title="Admin Forespørsler" requiredRole={['admin', 'master_admin']}>
+        <AdminLeadsPage />
       </RoleDashboard>
     } />
   </>

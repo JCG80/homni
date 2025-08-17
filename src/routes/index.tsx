@@ -8,6 +8,7 @@ import { adminRoutes } from './adminRoutes';
 import { leadRoutes } from './leadRoutes';
 import { docsRoutes } from './docsRoutes';
 import { serviceRoutes } from './serviceRoutes';
+import { DashboardRoutes } from './DashboardRoutes';
 
 /**
  * Main application routes component that combines all route definitions
@@ -19,6 +20,9 @@ export const AppRouteComponents = () => {
     <Routes>
       {/* Public routes */}
       {mainRoutes}
+      
+      {/* Dashboard routes (role-based) */}
+      <DashboardRoutes />
       
       {/* Service routes */}
       {serviceRoutes}
