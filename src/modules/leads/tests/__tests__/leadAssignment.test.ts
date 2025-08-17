@@ -35,9 +35,15 @@ describe('Lead Assignment', () => {
       // Arrange
       const mockLead = {
         id: 'lead-123',
-        status: 'new',
+        status: '📥 new',
         category: 'plumbing',
-        title: 'Test Lead'
+        title: 'Test Lead',
+        description: 'Test lead description',
+        customer_name: 'Test Customer',
+        customer_email: 'test@example.com',
+        customer_phone: '123-456-7890',
+        service_type: 'Test Service',
+        created_at: new Date().toISOString()
       } as Lead;
 
       const strategy = 'round_robin' as DistributionStrategy;
@@ -81,7 +87,7 @@ describe('Lead Assignment', () => {
       // Arrange
       const mockLead = {
         id: 'lead-123',
-        status: 'new',
+        status: '📥 new',
         category: 'plumbing',
         title: 'Test Lead'
       } as Lead;
@@ -113,7 +119,7 @@ describe('Lead Assignment', () => {
       // Arrange
       const mockLead = {
         id: 'lead-123',
-        status: 'new',
+        status: '📥 new',
         category: 'plumbing',
         title: 'Test Lead'
       } as Lead;
@@ -138,7 +144,7 @@ describe('Lead Assignment', () => {
       // Arrange
       const mockLead = {
         id: 'lead-123',
-        status: 'new',
+        status: '📥 new',
         category: 'plumbing',
         title: 'Test Lead'
       } as Lead;

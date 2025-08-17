@@ -126,7 +126,7 @@ export const LeadRow: React.FC<LeadRowProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {(isAdmin || isCompany) && lead.status === 'new' && (
+              {(isAdmin || isCompany) && lead.status === '📥 new' && (
                 <DropdownMenuItem 
                   onClick={() => console.log('Assign lead', lead.id)}
                 >

@@ -1,139 +1,101 @@
-
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
+import { LeadCounts } from '@/types/leads';
 import { LeadStatus } from "@/types/leads";
-import { toast } from "@/hooks/use-toast";
+import { Lead } from '@/types/leads';
 import { mapToEmojiStatus } from "@/types/leads";
 
-/**
- * Fetch leads for the current user's company
- * Filters leads based on company_id or user_id
- */
-export const fetchLeads = async (companyId?: string, userId?: string) => {
-  if (!companyId && !userId) {
-    throw new Error("Either companyId or userId must be provided");
-  }
-
+export async function fetchLeadsForKanban(companyId?: string, userId?: string): Promise<Lead[]> {
   let query = supabase
     .from('leads')
-    .select('*');
-  
-  // Filter by company ID if provided
+    .select('*')
+    .order('created_at', { ascending: false });
+
   if (companyId) {
     query = query.eq('company_id', companyId);
-  }
-  
-  // Filter by user ID if provided and no company ID
-  if (!companyId && userId) {
+  } else if (userId) {
     query = query.eq('submitted_by', userId);
   }
-  
+
   const { data, error } = await query;
-  
+
   if (error) {
-    console.error("Error fetching leads:", error);
-    toast({
-      title: "Feil ved henting av leads",
-      description: error.message,
-      variant: "destructive"
-    });
+    console.error('Error fetching leads for kanban:', error);
     throw error;
   }
-  
-  return data;
-};
 
-/**
- * Update lead status with optimistic update support
- */
-export const updateLeadStatus = async (leadId: string, newStatus: LeadStatus) => {
-  try {
-    const { data, error } = await supabase
-      .from('leads')
-      .update({ 
-        status: mapToEmojiStatus(newStatus as string) as any, 
-        updated_at: new Date().toISOString() 
-      })
-      .eq('id', leadId)
-      .select()
-      .single();
-      
-    if (error) {
-      throw error;
-    }
-    
-    return data;
-  } catch (error: any) {
-    console.error("Error updating lead status:", error);
-    toast({
-      title: "Feil ved oppdatering av status",
-      description: error.message,
-      variant: "destructive"
-    });
+  return data || [];
+}
+
+export async function updateLeadStatus(leadId: string, status: LeadStatus): Promise<boolean> {
+  const { error } = await supabase
+    .from('leads')
+    .update({ status: mapToEmojiStatus(status) })
+    .eq('id', leadId);
+
+  if (error) {
+    console.error('Error updating lead status:', error);
     throw error;
   }
-};
 
-/**
- * Get lead counts by status for statistics
- */
-export const getLeadCountsByStatus = async (companyId?: string, userId?: string) => {
-  if (!companyId && !userId) {
-    throw new Error("Either companyId or userId must be provided");
-  }
+  return true;
+}
 
-  // Initialize counts object
-  const counts = {
+export async function fetchLeadCounts(companyId?: string, userId?: string): Promise<LeadCounts> {
+  const counts: LeadCounts = {
+    '📥 new': 0,
+    '👀 qualified': 0,
+    '💬 contacted': 0,
+    '📞 negotiating': 0,
+    '✅ converted': 0,
+    '❌ lost': 0,
+    '⏸️ paused': 0,
     new: 0,
     in_progress: 0,
     won: 0,
     lost: 0
   };
-  
+
   try {
-    // Query for leads with the specified filters
     let query = supabase
       .from('leads')
       .select('status');
-      
+
     if (companyId) {
       query = query.eq('company_id', companyId);
-    }
-    
-    if (!companyId && userId) {
+    } else if (userId) {
       query = query.eq('submitted_by', userId);
     }
-    
+
     const { data, error } = await query;
     
     if (error) throw error;
     
     if (data) {
-      // Count leads by emoji status and map to legacy buckets
       data.forEach((lead) => {
         switch (lead.status) {
           case '📥 new':
             counts.new++;
+            counts['📥 new']++;
             break;
-          case '💬 contacted':
-          case '📞 negotiating':
-          case '👀 qualified':
+          case '🚀 in_progress':
             counts.in_progress++;
             break;
-          case '✅ converted':
+          case '🏆 won':
             counts.won++;
             break;
           case '❌ lost':
             counts.lost++;
+            counts['❌ lost']++;
             break;
           default:
             break;
         }
       });
     }
-    
+
     return counts;
-  } catch (error: any) {
-    console.error("Error counting leads by status:", error);
-    return counts; // Return default counts on error
+  } catch (error) {
+    console.error('Error fetching lead counts:', error);
+    throw error;
   }
-};
+}

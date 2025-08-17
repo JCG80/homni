@@ -35,7 +35,7 @@ describe('LeadKanbanBoard', () => {
     title: 'Test Lead',
     description: 'This is a test lead',
     category: 'Insurance',
-    status: 'new',
+    status: '📥 new',
     created_at: new Date().toISOString(),
     submitted_by: 'user-123',
     customer_name: 'John Doe',
@@ -45,10 +45,10 @@ describe('LeadKanbanBoard', () => {
   };
 
   const mockColumns: KanbanColumn[] = [
-    { id: 'new', title: 'Nye', leads: [mockLead] },
-    { id: 'in_progress', title: 'Pågående', leads: [] },
-    { id: 'won', title: 'Vunnet', leads: [] },
-    { id: 'lost', title: 'Tapt', leads: [] },
+    { id: '📥 new', title: 'Nye', leads: [mockLead] },
+    { id: '🚀 in_progress', title: 'I gang', leads: [] },
+    { id: '🏆 won', title: 'Vunnet', leads: [] },
+    { id: '❌ lost', title: 'Tapt', leads: [] },
   ];
 
   const mockHandleStatusChange = vi.fn();

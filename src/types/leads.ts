@@ -1,25 +1,41 @@
 
-// Define the lead status type supporting both legacy and emoji statuses for transition
-export type LeadStatus = '📥 new' | '👀 qualified' | '💬 contacted' | '📞 negotiating' | '✅ converted' | '❌ lost' | '⏸️ paused' | 'new' | 'in_progress' | 'won' | 'lost' | 'assigned' | 'under_review' | 'completed' | 'archived';
+/**
+ * Lead management and related types
+ */
 
-// Export an array of all possible lead statuses for validation and UI purposes
+/**
+ * Lead status enum matching database pipeline_stage
+ * Unified to match marketplace implementation
+ */
+export type LeadStatus = 
+  | '📥 new'
+  | '🚀 in_progress' 
+  | '🏆 won'
+  | '❌ lost';
+
+/**
+ * Available lead statuses
+ */
 export const LEAD_STATUSES: LeadStatus[] = [
   '📥 new',
-  '👀 qualified',
-  '💬 contacted',
-  '📞 negotiating',
-  '✅ converted',
-  '❌ lost',
-  '⏸️ paused',
-  'new',
-  'in_progress', 
-  'won',
-  'lost',
-  'assigned',
-  'under_review',
-  'completed',
-  'archived'
+  '🚀 in_progress',
+  '🏆 won', 
+  '❌ lost'
 ];
+
+/**
+ * Lead categories
+ */
+export const LEAD_CATEGORIES = [
+  'energy',
+  'insurance',
+  'telecom',
+  'fleet',
+  'facility',
+  'general'
+] as const;
+
+export type LeadCategory = typeof LEAD_CATEGORIES[number];
 
 // Runtime type guard for lead status validation
 export function isValidLeadStatus(status: any): status is LeadStatus {
@@ -27,26 +43,45 @@ export function isValidLeadStatus(status: any): status is LeadStatus {
   return LEAD_STATUSES.includes(status as LeadStatus);
 }
 
-// Legacy status mapping for backward compatibility
+/**
+ * Legacy status mapping for backward compatibility
+ */
 export const LEGACY_STATUS_MAP: Record<string, LeadStatus> = {
   'new': '📥 new',
-  'qualified': '👀 qualified', 
-  'contacted': '💬 contacted',
-  'negotiating': '📞 negotiating',
-  'converted': '✅ converted',
-  'won': '✅ converted',
+  'qualified': '📥 new', 
+  'contacted': '🚀 in_progress',
+  'negotiating': '🚀 in_progress',
+  'converted': '🏆 won',
+  'won': '🏆 won',
   'lost': '❌ lost',
-  'paused': '⏸️ paused',
-  'in_progress': '💬 contacted',
-  'assigned': '👀 qualified',
-  'under_review': '👀 qualified',
-  'completed': '✅ converted',
+  'paused': '📥 new',
+  'in_progress': '🚀 in_progress',
+  'assigned': '📥 new',
+  'under_review': '🚀 in_progress',
+  'completed': '🏆 won',
   'archived': '❌ lost'
 };
 
-// Map legacy status to new emoji status
+/**
+ * Utility function to map status to emoji
+ */
 export function mapToEmojiStatus(status: string): LeadStatus {
-  return LEGACY_STATUS_MAP[status] || '📥 new';
+  switch (status) {
+    case 'new':
+    case '📥 new':
+      return '📥 new';
+    case 'in_progress':
+    case '🚀 in_progress':
+      return '🚀 in_progress';
+    case 'won':
+    case '🏆 won':
+      return '🏆 won';
+    case 'lost':
+    case '❌ lost':
+      return '❌ lost';
+    default:
+      return '📥 new';
+  }
 }
 
 // Define lead priority as a union type
