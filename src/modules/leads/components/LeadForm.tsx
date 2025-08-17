@@ -1,124 +1,152 @@
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useCreateLead } from '../hooks/useLeads';
-import { LeadFormValues } from '../types/types';
-import { LEAD_CATEGORIES } from '../constants/lead-constants';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from '@/hooks/use-toast';
-
-const formSchema = z.object({
-  title: z.string().min(3, { message: 'Tittel må være minst 3 tegn' }).max(100),
-  description: z.string().min(10, { message: 'Beskrivelse må være minst 10 tegn' }),
-  category: z.string().min(1, { message: 'Vennligst velg en kategori' }),
-});
+import { useToast } from '@/hooks/use-toast';
+import { insertLead } from '../api/lead-create';
+import { LEAD_CATEGORIES } from '../constants/lead-constants';
+import { LeadFormValues } from '@/types/leads';
 
 interface LeadFormProps {
   onSuccess?: () => void;
 }
 
-export const LeadForm = ({ onSuccess }: LeadFormProps) => {
-  const { createLead, isLoading } = useCreateLead();
-  
-  const form = useForm<LeadFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      category: '',
-    },
+export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<LeadFormValues>({
+    title: '',
+    description: '',
+    category: 'bolig',
+    customer_name: '',
+    customer_email: '',
+    customer_phone: '',
+    service_type: ''
   });
 
-  const onSubmit = (values: LeadFormValues) => {
-    createLead(values, {
-      onSuccess: () => {
-        form.reset();
-        toast({
-          title: 'Lead opprettet!',
-          description: 'Din forespørsel er sendt og vil bli behandlet snart.',
-        });
-        if (onSuccess) onSuccess();
-      },
-      onError: (error) => {
-        toast({
-          title: 'Feil',
-          description: 'Kunne ikke opprette lead. Vennligst prøv igjen.',
-          variant: 'destructive',
-        });
-      },
-    });
+  const handleInputChange = (field: keyof LeadFormValues, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      await insertLead(formData);
+
+      toast({
+        title: "Forespørsel sendt",
+        description: "Vi vil kontakte deg så snart som mulig.",
+      });
+
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        category: 'bolig',
+        customer_name: '',
+        customer_email: '',
+        customer_phone: '',
+        service_type: ''
+      });
+
+      onSuccess?.();
+    } catch (error: any) {
+      toast({
+        title: "Feil ved innsending",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tittel</FormLabel>
-              <FormControl>
-                <Input placeholder="Skriv en kort tittel" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="title">Tittel *</Label>
+        <Input
+          id="title"
+          value={formData.title}
+          onChange={(e) => handleInputChange('title', e.target.value)}
+          required
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Kategori</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Velg kategori" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {LEAD_CATEGORIES.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="customer_name">Navn *</Label>
+        <Input
+          id="customer_name"
+          value={formData.customer_name || ''}
+          onChange={(e) => handleInputChange('customer_name', e.target.value)}
+          required
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Beskrivelse</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Beskriv ditt prosjekt eller behov i detalj"
-                  className="min-h-[120px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="customer_email">E-post *</Label>
+        <Input
+          id="customer_email"
+          type="email"
+          value={formData.customer_email || ''}
+          onChange={(e) => handleInputChange('customer_email', e.target.value)}
+          required
         />
+      </div>
 
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Sender...' : 'Send forespørsel'}
-        </Button>
-      </form>
-    </Form>
+      <div>
+        <Label htmlFor="customer_phone">Telefon</Label>
+        <Input
+          id="customer_phone"
+          value={formData.customer_phone || ''}
+          onChange={(e) => handleInputChange('customer_phone', e.target.value)}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="category">Kategori</Label>
+        <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {LEAD_CATEGORIES.map(category => (
+              <SelectItem key={category} value={category}>
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="service_type">Type tjeneste</Label>
+        <Input
+          id="service_type"
+          value={formData.service_type || ''}
+          onChange={(e) => handleInputChange('service_type', e.target.value)}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="description">Beskrivelse *</Label>
+        <Textarea
+          id="description"
+          value={formData.description}
+          onChange={(e) => handleInputChange('description', e.target.value)}
+          required
+          rows={4}
+        />
+      </div>
+
+      <Button type="submit" disabled={isSubmitting} className="w-full">
+        {isSubmitting ? 'Sender...' : 'Send forespørsel'}
+      </Button>
+    </form>
   );
 };
