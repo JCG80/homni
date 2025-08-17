@@ -1,0 +1,7 @@
+[install]
+# Avoid running package install scripts (e.g., node-sass postinstall) to prevent build failures
+ignoreScripts = true
+# Allow dev deps in this environment
+production = false
+# Do not enforce frozen lockfile to allow resolving based on package.json
+frozenLockfile = false
