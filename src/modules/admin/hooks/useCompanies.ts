@@ -9,7 +9,7 @@ export function useCompanies() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_profiles')
-        .select('*, accounts:user_id(*)')
+        .select('*')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
