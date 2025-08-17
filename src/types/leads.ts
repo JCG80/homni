@@ -3,24 +3,26 @@
  * Lead management and related types
  */
 
-/**
- * Lead status enum matching database pipeline_stage
- * Unified to match marketplace implementation
- */
-export type LeadStatus = 
-  | '📥 new'
-  | '🚀 in_progress' 
-  | '🏆 won'
-  | '❌ lost';
+// Define the lead status type supporting both legacy and emoji statuses for transition
+export type LeadStatus = '📥 new' | '👀 qualified' | '💬 contacted' | '📞 negotiating' | '✅ converted' | '❌ lost' | '⏸️ paused' | 'new' | 'in_progress' | 'won' | 'lost' | 'assigned' | 'under_review' | 'completed' | 'archived';
 
-/**
- * Available lead statuses
- */
+// Export an array of all possible lead statuses for validation and UI purposes
 export const LEAD_STATUSES: LeadStatus[] = [
   '📥 new',
-  '🚀 in_progress',
-  '🏆 won', 
-  '❌ lost'
+  '👀 qualified',
+  '💬 contacted',
+  '📞 negotiating',
+  '✅ converted',
+  '❌ lost',
+  '⏸️ paused',
+  'new',
+  'in_progress', 
+  'won',
+  'lost',
+  'assigned',
+  'under_review',
+  'completed',
+  'archived'
 ];
 
 /**
@@ -48,40 +50,22 @@ export function isValidLeadStatus(status: any): status is LeadStatus {
  */
 export const LEGACY_STATUS_MAP: Record<string, LeadStatus> = {
   'new': '📥 new',
-  'qualified': '📥 new', 
-  'contacted': '🚀 in_progress',
-  'negotiating': '🚀 in_progress',
-  'converted': '🏆 won',
-  'won': '🏆 won',
+  'qualified': '👀 qualified', 
+  'contacted': '💬 contacted',
+  'negotiating': '📞 negotiating',
+  'converted': '✅ converted',
+  'won': '✅ converted',
   'lost': '❌ lost',
-  'paused': '📥 new',
-  'in_progress': '🚀 in_progress',
-  'assigned': '📥 new',
-  'under_review': '🚀 in_progress',
-  'completed': '🏆 won',
+  'paused': '⏸️ paused',
+  'in_progress': '💬 contacted',
+  'assigned': '👀 qualified',
+  'under_review': '👀 qualified',
+  'completed': '✅ converted',
   'archived': '❌ lost'
 };
 
-/**
- * Utility function to map status to emoji
- */
 export function mapToEmojiStatus(status: string): LeadStatus {
-  switch (status) {
-    case 'new':
-    case '📥 new':
-      return '📥 new';
-    case 'in_progress':
-    case '🚀 in_progress':
-      return '🚀 in_progress';
-    case 'won':
-    case '🏆 won':
-      return '🏆 won';
-    case 'lost':
-    case '❌ lost':
-      return '❌ lost';
-    default:
-      return '📥 new';
-  }
+  return LEGACY_STATUS_MAP[status] || '📥 new';
 }
 
 // Define lead priority as a union type
@@ -91,15 +75,15 @@ export type LeadPriority = 'low' | 'medium' | 'high' | 'urgent' | null;
 export interface Lead {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   category: string;
   status: LeadStatus;
   priority?: LeadPriority;
   content?: any;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
-  service_type: string;
+  customer_name?: string;
+  customer_email?: string;
+  customer_phone?: string;
+  service_type?: string;
   zipCode?: string;
   company_id?: string;
   submitted_by?: string;

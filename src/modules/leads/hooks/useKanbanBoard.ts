@@ -28,10 +28,11 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
   });
 
   const columnDefinitions: Array<{ id: LeadStatus; title: string }> = [
-    { id: '📥 new', title: 'Nye' },
-    { id: '🚀 in_progress', title: 'I gang' },
-    { id: '🏆 won', title: 'Vunnet' },
-    { id: '❌ lost', title: 'Tapt' },
+    { id: '📥 new', title: 'New' },
+    { id: '💬 contacted', title: 'Contacted' },
+    { id: '📞 negotiating', title: 'Negotiating' },
+    { id: '✅ converted', title: 'Won' },
+    { id: '❌ lost', title: 'Lost' },
   ];
 
   const fetchBoardData = useCallback(async () => {

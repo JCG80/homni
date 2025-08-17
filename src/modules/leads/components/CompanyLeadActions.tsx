@@ -48,17 +48,25 @@ export const CompanyLeadActions: React.FC<CompanyLeadActionsProps> = ({
       <div className="flex gap-2">
         <Button 
           size="sm" 
-          onClick={() => handleStatusUpdate('🚀 in_progress')}
-          disabled={lead.status === '🚀 in_progress'}
+          onClick={() => handleStatusUpdate('contacted')}
+          disabled={lead.status === '💬 contacted'}
         >
-          Mark as In Progress
+          Mark as Contacted
         </Button>
         
         <Button 
           size="sm" 
-          onClick={() => handleStatusUpdate('🏆 won')}
+          onClick={() => handleStatusUpdate('negotiating')}
+          disabled={lead.status === '📞 negotiating'}
+        >
+          Start Negotiation
+        </Button>
+        
+        <Button 
+          size="sm" 
+          onClick={() => handleStatusUpdate('converted')}
           variant="default"
-          disabled={lead.status === '🏆 won'}
+          disabled={lead.status === '✅ converted'}
         >
           Mark as Won
         </Button>

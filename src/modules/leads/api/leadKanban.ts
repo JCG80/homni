@@ -4,7 +4,7 @@ import { LeadStatus } from "@/types/leads";
 import { Lead } from '@/types/leads';
 import { mapToEmojiStatus } from "@/types/leads";
 
-export async function fetchLeadsForKanban(companyId?: string, userId?: string): Promise<Lead[]> {
+export async function fetchLeadsForKanban(companyId?: string, userId?: string): Promise<any[]> {
   let query = supabase
     .from('leads')
     .select('*')
@@ -29,7 +29,7 @@ export async function fetchLeadsForKanban(companyId?: string, userId?: string): 
 export async function updateLeadStatus(leadId: string, status: LeadStatus): Promise<boolean> {
   const { error } = await supabase
     .from('leads')
-    .update({ status: mapToEmojiStatus(status) })
+    .update({ status: mapToEmojiStatus(status) as any })
     .eq('id', leadId);
 
   if (error) {
@@ -77,10 +77,12 @@ export async function fetchLeadCounts(companyId?: string, userId?: string): Prom
             counts.new++;
             counts['📥 new']++;
             break;
-          case '🚀 in_progress':
+          case '💬 contacted':
+          case '📞 negotiating':
+          case '👀 qualified':
             counts.in_progress++;
             break;
-          case '🏆 won':
+          case '✅ converted':
             counts.won++;
             break;
           case '❌ lost':
@@ -99,3 +101,7 @@ export async function fetchLeadCounts(companyId?: string, userId?: string): Prom
     throw error;
   }
 }
+
+// Backward-compatible exports
+export const fetchLeads = fetchLeadsForKanban;
+export const getLeadCountsByStatus = fetchLeadCounts;
