@@ -57,14 +57,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
   
-  // Implement synchronous canAccessModule
+  // Implement synchronous canAccessModule using database lookup
   const canAccessModuleSync = (moduleId: string): boolean => {
-    // If user is master admin or has internal admin role, allow access to everything
-    if (roleChecks.isMasterAdmin || (authState.profile?.metadata?.internal_admin === true)) {
+    // If user is master admin, allow access to everything
+    if (roleChecks.isMasterAdmin) {
       return true;
     }
     
-    // Check if module access is in the profile metadata
+    // Check internal admin from module_access table via profile metadata  
+    if (authState.profile?.metadata?.internal_admin === true) {
+      return true;
+    }
+    
+    // Check module access from database via profile metadata
     const modulesAccess = authState.profile?.metadata?.modules_access || [];
     return modulesAccess.includes(moduleId);
   };
