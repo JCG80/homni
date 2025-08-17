@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/modules/auth/hooks';
 import { ExtendedSystemModule, UserModule } from '../types/types';
 

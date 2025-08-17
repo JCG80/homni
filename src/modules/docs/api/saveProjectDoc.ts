@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { ProjectDoc, ProjectDocFormValues } from '../types/docs-types';
 import { parseProjectDoc } from '../utils/parseProjectDoc';
 

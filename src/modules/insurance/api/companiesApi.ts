@@ -1,5 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { InsuranceCompany, InsuranceCompanyWithTypes } from "../types/insurance-types";
 import { handleInsuranceApiError } from "./baseApi";
 

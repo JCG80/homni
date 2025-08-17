@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { UserLeadFilter, CreateUserFilterRequest } from '../../types/user-filters';
 import { unsetExistingDefaults, handleApiError } from '../utils/filter-utils';
 

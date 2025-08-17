@@ -1,5 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { ApiError } from "@/utils/apiHelpers";
 import { 
   DetachedBuilding,
