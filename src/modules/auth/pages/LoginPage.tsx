@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { LoginTabs } from '@/components/auth/LoginTabs';
@@ -17,6 +17,12 @@ export const LoginPage = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [user, isLoading, navigate]);
+  // Fallback: show form after 2s even if auth is still loading
+  const [forceShowForm, setForceShowForm] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setForceShowForm(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
 
   // Handle test user login
   const handleDevLogin = async (role: UserRole) => {
@@ -32,7 +38,7 @@ export const LoginPage = () => {
   };
 
   // Show loading state while checking authentication, but with timeout
-  if (isLoading) {
+  if (isLoading && !forceShowForm) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
