@@ -35,7 +35,8 @@ export const HeroSection = ({ activeTab, handleTabChange }: HeroSectionProps) =>
       } else if (selectedService === 'forsikring' || selectedService === 'bedriftsforsikring') {
         navigate('/insurance/quote');
       } else {
-        console.log(`Starting registration for ${selectedService} (${activeTab})`);
+        // Handle other services - navigate to appropriate page or show form
+        navigate('/register');
       }
     }
   };

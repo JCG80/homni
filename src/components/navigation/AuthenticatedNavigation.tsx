@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Users, LayoutGrid } from 'lucide-react';
 import { 
@@ -19,25 +19,16 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
   isAuthenticated,
   role 
 }) => {
-  // Enhanced debugging
-  useEffect(() => {
-    console.log("AuthenticatedNavigation - Rendering with:", { isAuthenticated, role });
-  }, [isAuthenticated, role]);
-  
   if (!isAuthenticated) {
-    console.log("AuthenticatedNavigation - Not rendering: User not authenticated");
     return null;
   }
 
   // Ensure we have a consistent dashboard route based on role
   const getDashboardRoute = () => {
     if (!role) {
-      console.log("AuthenticatedNavigation - No role, using default dashboard route");
       return "/dashboard";
     }
-    const route = `/dashboard/${role}`;
-    console.log(`AuthenticatedNavigation - Using role-specific dashboard route: ${route}`);
-    return route;
+    return `/dashboard/${role}`;
   };
   
   const dashboardRoute = getDashboardRoute();

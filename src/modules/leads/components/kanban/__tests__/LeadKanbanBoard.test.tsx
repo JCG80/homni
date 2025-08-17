@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { screen } from '@testing-library/dom';
+import { render, screen } from '@testing-library/react';
 import { LeadKanbanBoard } from '../LeadKanbanBoard';
 import { KanbanColumn } from '../../../hooks/useKanbanBoard';
 import { Lead } from '@/types/leads';

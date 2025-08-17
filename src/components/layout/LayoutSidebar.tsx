@@ -28,8 +28,6 @@ export const LayoutSidebar: React.FC<LayoutSidebarProps> = ({
 }) => {
   const { isAuthenticated, role, logout } = useAuth();
   
-  console.log("LayoutSidebar - Current auth state:", { isAuthenticated, role });
-  
   const handleLogout = async () => {
     try {
       if (logout) {
@@ -39,7 +37,6 @@ export const LayoutSidebar: React.FC<LayoutSidebarProps> = ({
           description: "Du har blitt logget ut av systemet",
         });
       } else {
-        console.error('Logout function is not available');
         toast({
           title: "Utloggingsfeil",
           description: "Kunne ikke logge ut på normal måte. Prøver alternativ metode.",
@@ -49,7 +46,6 @@ export const LayoutSidebar: React.FC<LayoutSidebarProps> = ({
         window.location.href = '/login';
       }
     } catch (error) {
-      console.error('Error during logout:', error);
       toast({
         title: "Utloggingsfeil",
         description: "En feil oppstod under utlogging.",
