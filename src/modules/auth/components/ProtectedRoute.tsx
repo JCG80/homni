@@ -59,7 +59,16 @@ export const ProtectedRoute = ({
       // Wait for auth to initialize
       if (isLoading) return;
       
-      // If not authenticated and this is a protected route, redirect to login
+      // PRIORITY: Check module access first (handles public modules for anonymous users)
+      if (module) {
+        const hasModuleAccess = canAccessModule(module);
+        console.log(`Checking module access for ${module} with role ${role}:`, hasModuleAccess);
+        setIsAllowed(hasModuleAccess);
+        setIsCheckingPermission(false);
+        return;
+      }
+      
+      // If not authenticated and no module specified, redirect to login
       if (!isAuthenticated) {
         console.log("User not authenticated, redirecting to login");
         setIsAllowed(false);
@@ -71,15 +80,6 @@ export const ProtectedRoute = ({
       if (allowAnyAuthenticated) {
         console.log("Any authenticated user allowed, granting access");
         setIsAllowed(true);
-        setIsCheckingPermission(false);
-        return;
-      }
-      
-      // If specific module access is required, check it
-      if (module) {
-        const hasModuleAccess = canAccessModule(module);
-        console.log(`Checking module access for ${module}:`, hasModuleAccess);
-        setIsAllowed(hasModuleAccess);
         setIsCheckingPermission(false);
         return;
       }

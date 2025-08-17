@@ -20,16 +20,33 @@ export function isValidRole(role: string): boolean {
  * Check if the user has access to a specific module
  */
 export function canAccessModule(userRole: UserRole | string | null, moduleId: string): boolean {
-  // Basic implementation - can be enhanced with actual module access logic
-  // For now, admin and master_admin can access all modules
-  if (!userRole) return false;
+  // Public modules that don't require authentication
+  const publicModules = ['home', 'info', 'leads/submit', 'about', 'contact'];
+  if (publicModules.includes(moduleId)) {
+    return true; // Anyone can access public modules
+  }
   
+  // If no role (anonymous), can only access public modules
+  if (!userRole || userRole === 'anonymous') {
+    return false;
+  }
+  
+  // Admin and master_admin can access all modules
   if (userRole === 'admin' || userRole === 'master_admin') {
     return true;
   }
   
-  // Add module-specific access checks here
-  return false;
+  // Role-specific module access
+  switch (userRole) {
+    case 'member':
+      return ['dashboard', 'profile', 'leads'].includes(moduleId);
+    case 'company':
+      return ['dashboard', 'profile', 'leads', 'settings'].includes(moduleId);
+    case 'content_editor':
+      return ['dashboard', 'profile', 'content'].includes(moduleId);
+    default:
+      return false;
+  }
 }
 
 /**

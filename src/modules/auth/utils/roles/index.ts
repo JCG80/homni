@@ -29,3 +29,6 @@ export { getRoleDisplayName, roleNames, roleDescriptions } from './display';
 
 // Re-export permissions functions
 export { getRolePermissions, getAllowedModulesForRole, getAccessibleModules } from './permissions';
+
+// Re-export legacy compatibility functions
+export { normalizeRole, isLegacyRole, getRoleDisplayName as getLegacyRoleDisplayName } from '../legacy-compatibility';

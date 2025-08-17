@@ -62,7 +62,9 @@ describe('Company Role Access', () => {
       isAuthenticated: true,
       user: { id: '123', role: 'company' },
       profile: { id: '123', role: 'company' },
-      role: 'company'
+      role: 'company',
+      canAccessModule: vi.fn(),
+      hasRole: vi.fn().mockReturnValue(true)
     });
 
     const { getByText } = render(
@@ -76,13 +78,14 @@ describe('Company Role Access', () => {
     expect(getByText('Company Content')).toBeInTheDocument();
   });
 
-  test('should prevent user role from accessing company-only routes', () => {
+  test('should prevent member role from accessing company-only routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
-      user: { id: '123', role: 'user' },
-      profile: { id: '123', role: 'user' },
-      role: 'user'
+      user: { id: '123', role: 'member' },
+      profile: { id: '123', role: 'member' },
+      role: 'member',
+      hasRole: vi.fn().mockReturnValue(false)
     });
 
     const { getByTestId } = render(
