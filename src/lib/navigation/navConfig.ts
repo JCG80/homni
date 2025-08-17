@@ -108,7 +108,7 @@ export const getNavConfig = (role: UserRole): NavConfig => {
       title: 'Marketplace',
       url: '/marketplace',
       icon: ShoppingCart,
-      roles: ['admin', 'master_admin'],
+      roles: ['company', 'admin', 'master_admin'],
       children: [
         {
           title: 'Lead Packages',
@@ -121,6 +121,12 @@ export const getNavConfig = (role: UserRole): NavConfig => {
           url: '/marketplace/buyers',
           icon: Users,
           roles: ['admin', 'master_admin']
+        },
+        {
+          title: 'Lead Pipeline',
+          url: '/marketplace/pipeline',
+          icon: Kanban,
+          roles: ['company']
         }
       ]
     }
