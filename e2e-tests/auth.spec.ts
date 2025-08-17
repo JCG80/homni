@@ -20,4 +20,20 @@ test.describe('Authentication flow', () => {
   });
 
   // More authentication tests would be added here
+
+  test('unauthenticated user is redirected to /login for all admin routes', async ({ page }) => {
+    const adminPaths = [
+      '/admin/companies',
+      '/admin/members',
+      '/admin/roles',
+      '/admin/system-modules',
+      '/admin/internal-access',
+      '/admin/leads',
+    ];
+
+    for (const path of adminPaths) {
+      await page.goto(path);
+      await expect(page).toHaveURL(/.*login/);
+    }
+  });
 });
