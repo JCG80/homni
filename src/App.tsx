@@ -4,6 +4,7 @@ import { AppRoutes } from './Routes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import './App.css';
+import { AuthProvider } from '@/modules/auth/hooks/useAuth';
 import { AuthWrapper } from './modules/auth/components/AuthWrapper';
 import { I18nProvider } from './lib/i18n/I18nProvider';
 
@@ -21,10 +22,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <AuthWrapper>
-          <AppRoutes />
-          <Toaster />
-        </AuthWrapper>
+        <AuthProvider>
+          <AuthWrapper>
+            <AppRoutes />
+            <Toaster />
+          </AuthWrapper>
+        </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
   );
