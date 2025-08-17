@@ -15,7 +15,11 @@ let allPassed = true;
 const checks = [
   { name: 'TypeScript', cmd: 'npx tsc --noEmit' },
   { name: 'ESLint', cmd: 'npm run lint' },
-  { name: 'Build', cmd: 'npm run build' }
+  { name: 'Build', cmd: 'npm run build' },
+  { name: 'Duplicates', cmd: 'ts-node scripts/checkDuplicates.ts' },
+  { name: 'RLS', cmd: 'ts-node scripts/checkRls.ts' },
+  { name: 'Functions', cmd: 'ts-node scripts/checkFunctions.ts' },
+  { name: 'Migrations', cmd: 'ts-node scripts/checkMigrations.ts' }
 ];
 
 checks.forEach(({ name, cmd }) => {

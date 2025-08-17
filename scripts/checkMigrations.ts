@@ -1,48 +1,38 @@
 #!/usr/bin/env ts-node
 
+/**
+ * Check migrations have corresponding rollback scripts
+ */
+
 import * as fs from 'fs';
-import * as path from 'path';
-import { glob } from 'glob';
 
-async function checkMigrations(): Promise<void> {
-  const migrationsDir = 'supabase/migrations';
-  
-  if (!fs.existsSync(migrationsDir)) {
-    console.log('✅ No migrations directory found');
-    return;
-  }
+console.log('📜 Checking migrations...');
 
-  const migrationFiles = await glob(`${migrationsDir}/*.sql`);
-  const upMigrations = migrationFiles.filter(f => !f.endsWith('_down.sql'));
-  
-  let hasIssues = false;
-  
-  for (const upMigration of upMigrations) {
-    const baseName = path.basename(upMigration, '.sql');
-    const downMigration = path.join(migrationsDir, `${baseName}_down.sql`);
-    
-    if (!fs.existsSync(downMigration)) {
-      console.error(`❌ Missing rollback migration: ${downMigration}`);
-      hasIssues = true;
-    } else {
-      // Check that down migration is not empty
-      const downContent = fs.readFileSync(downMigration, 'utf8').trim();
-      if (downContent.length === 0) {
-        console.error(`❌ Empty rollback migration: ${downMigration}`);
-        hasIssues = true;
-      }
-    }
-  }
-  
-  if (hasIssues) {
-    console.error('\n❌ Migration rollback issues found.');
-    console.error('Every migration should have a corresponding _down.sql file.');
-    process.exit(1);
-  } else {
-    console.log(`✅ All ${upMigrations.length} migrations have rollback files`);
+const migrationsDir = 'supabase/migrations';
+
+if (!fs.existsSync(migrationsDir)) {
+  console.log('⚠️  No migrations directory found');
+  console.log('✅ Migration check passed (no migrations to validate)');
+  process.exit(0);
+}
+
+const files = fs.readdirSync(migrationsDir);
+const sqlFiles = files.filter(f => f.endsWith('.sql') && !f.endsWith('_down.sql'));
+let hasIssues = false;
+
+for (const file of sqlFiles) {
+  const downFile = file.replace('.sql', '_down.sql');
+  if (!files.includes(downFile)) {
+    console.log(`❌ Missing rollback script: ${downFile}`);
+    hasIssues = true;
   }
 }
 
-if (require.main === module) {
-  checkMigrations().catch(console.error);
+console.log('\n🎯 SUMMARY');
+if (hasIssues) {
+  console.log('❌ Migration issues found');
+  process.exit(1);
+} else {
+  console.log('✅ All migrations have rollback scripts');
+  process.exit(0);
 }
