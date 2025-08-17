@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { mapToEmojiStatus } from '@/types/leads';
+import type { Database } from '@/integrations/supabase/types';
 
 interface InsuranceLeadFormProps {
   onSuccess?: () => void;
@@ -50,26 +51,27 @@ export const InsuranceLeadForm: React.FC<InsuranceLeadFormProps> = ({ onSuccess 
         throw new Error('You must be logged in to submit a lead');
       }
 
-      // Map the data to match the database schema
-      const leadData = {
+      // Use Supabase generated types to ensure correct payload typing
+      type LeadInsert = Database['public']['Tables']['leads']['Insert'];
+
+      const leadData: LeadInsert = {
         title: formData.title,
         description: formData.description,
         category: formData.category,
-        status: mapToEmojiStatus('new'), // Convert to emoji status
+        status: mapToEmojiStatus('new') as LeadInsert['status'],
         submitted_by: user.id,
-        // Store customer fields in metadata to match database schema
         metadata: {
           customer_name: formData.customer_name,
           customer_email: formData.customer_email,
           customer_phone: formData.customer_phone,
           service_type: formData.service_type
-        } as any, // Cast to Json type
+        } as LeadInsert['metadata'],
         lead_type: 'insurance'
       };
 
       const { error } = await supabase
         .from('leads')
-        .insert(leadData); // Pass single object, not array
+        .insert(leadData);
 
       if (error) throw error;
 
