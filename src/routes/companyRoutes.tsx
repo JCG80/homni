@@ -20,10 +20,14 @@ export const companyRoutes = (
       } 
     />
     
-    {/* Companies List */}
+    {/* Companies List - Admin Only */}
     <Route 
       path="/companies" 
-      element={<CompanyListPage />} 
+      element={
+        <RoleDashboard title="Bedriftsliste" requiredRole={["admin", "master_admin"]}>
+          <CompanyListPage />
+        </RoleDashboard>
+      } 
     />
   </>
 );
