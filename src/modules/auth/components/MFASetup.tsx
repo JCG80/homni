@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { setupMFA, verifyMFA } from '../api';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 
 export const MFASetup = () => {
   const [step, setStep] = useState<'initial' | 'setup' | 'verify' | 'success'>('initial');

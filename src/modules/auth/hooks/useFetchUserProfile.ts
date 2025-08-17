@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { Profile } from '../types/types';
 import { parseUserProfile } from '../utils/parseUserProfile';
 

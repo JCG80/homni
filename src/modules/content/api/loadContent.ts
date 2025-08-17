@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { Content } from '../types/content-types';
 import { parseContent } from '../utils/parseContent';
 

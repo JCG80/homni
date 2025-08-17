@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { CompanyProfile } from '@/types/leads';
 import { parseCompanyProfile } from '../utils/parseCompanyProfile';
 

@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { TestUser } from '../types/types';
 import { toast } from '@/hooks/use-toast';
 
