@@ -97,33 +97,42 @@ export type Database = {
       }
       buyer_package_subscriptions: {
         Row: {
+          auto_buy: boolean | null
           auto_renew: boolean | null
           buyer_id: string
           created_at: string | null
+          daily_cap_cents: number | null
           end_date: string | null
           id: string
+          monthly_cap_cents: number | null
           package_id: string
           start_date: string | null
           status: string | null
           updated_at: string | null
         }
         Insert: {
+          auto_buy?: boolean | null
           auto_renew?: boolean | null
           buyer_id: string
           created_at?: string | null
+          daily_cap_cents?: number | null
           end_date?: string | null
           id?: string
+          monthly_cap_cents?: number | null
           package_id: string
           start_date?: string | null
           status?: string | null
           updated_at?: string | null
         }
         Update: {
+          auto_buy?: boolean | null
           auto_renew?: boolean | null
           buyer_id?: string
           created_at?: string | null
+          daily_cap_cents?: number | null
           end_date?: string | null
           id?: string
+          monthly_cap_cents?: number | null
           package_id?: string
           start_date?: string | null
           status?: string | null
@@ -490,12 +499,52 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_assignment_history: {
+        Row: {
+          assignment_id: string
+          changed_at: string | null
+          changed_by: string | null
+          id: string
+          new_stage: string | null
+          notes: string | null
+          previous_stage: string | null
+        }
+        Insert: {
+          assignment_id: string
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          new_stage?: string | null
+          notes?: string | null
+          previous_stage?: string | null
+        }
+        Update: {
+          assignment_id?: string
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          new_stage?: string | null
+          notes?: string | null
+          previous_stage?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_assignment_history_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "lead_assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_assignments: {
         Row: {
           accepted_at: string | null
           assigned_at: string | null
+          auto_purchased_at: string | null
           buyer_id: string
           buyer_notes: string | null
+          completed_at: string | null
           cost: number
           created_at: string | null
           expires_at: string | null
@@ -509,8 +558,10 @@ export type Database = {
         Insert: {
           accepted_at?: string | null
           assigned_at?: string | null
+          auto_purchased_at?: string | null
           buyer_id: string
           buyer_notes?: string | null
+          completed_at?: string | null
           cost: number
           created_at?: string | null
           expires_at?: string | null
@@ -524,8 +575,10 @@ export type Database = {
         Update: {
           accepted_at?: string | null
           assigned_at?: string | null
+          auto_purchased_at?: string | null
           buyer_id?: string
           buyer_notes?: string | null
+          completed_at?: string | null
           cost?: number
           created_at?: string | null
           expires_at?: string | null
@@ -1456,6 +1509,19 @@ export type Database = {
       }
       distribute_new_lead: {
         Args: { lead_id_param: string }
+        Returns: {
+          assignment_id: string
+          buyer_id: string
+          cost: number
+        }[]
+      }
+      execute_auto_purchase: {
+        Args: {
+          p_buyer_id: string
+          p_cost: number
+          p_lead_id: string
+          p_package_id: string
+        }
         Returns: {
           assignment_id: string
           buyer_id: string

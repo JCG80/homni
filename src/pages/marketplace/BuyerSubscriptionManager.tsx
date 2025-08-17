@@ -350,7 +350,7 @@ export const BuyerSubscriptionManager: React.FC = () => {
                     <Badge variant={subscription.status === 'active' ? "default" : "secondary"}>
                       {subscription.status || 'active'}
                     </Badge>
-                    {subscription.auto_buy && (
+                    {(subscription as any).auto_buy && (
                       <Badge variant="outline">Auto-Buy</Badge>
                     )}
                   </CardTitle>
@@ -399,15 +399,15 @@ export const BuyerSubscriptionManager: React.FC = () => {
                 </div>
                 <div>
                   <span className="font-medium">Daily Cap:</span>
-                  <p>{subscription.daily_cap_cents ? `NOK ${(subscription.daily_cap_cents / 100).toFixed(2)}` : 'Unlimited'}</p>
+                  <p>{(subscription as any).daily_cap_cents ? `NOK ${((subscription as any).daily_cap_cents / 100).toFixed(2)}` : 'Unlimited'}</p>
                 </div>
                 <div>
                   <span className="font-medium">Monthly Cap:</span>
-                  <p>{subscription.monthly_cap_cents ? `NOK ${(subscription.monthly_cap_cents / 100).toFixed(2)}` : 'Unlimited'}</p>
+                  <p>{(subscription as any).monthly_cap_cents ? `NOK ${((subscription as any).monthly_cap_cents / 100).toFixed(2)}` : 'Unlimited'}</p>
                 </div>
                 <div>
                   <span className="font-medium">Auto-Purchase:</span>
-                  <p>{subscription.auto_buy ? 'Enabled' : 'Disabled'}</p>
+                  <p>{(subscription as any).auto_buy ? 'Enabled' : 'Disabled'}</p>
                 </div>
               </div>
             </CardContent>
