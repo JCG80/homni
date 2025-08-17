@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { RoleDashboard } from '../components/dashboard/RoleDashboard';
+import { Dashboard } from '../pages/Dashboard';
 import { mainRoutes } from './mainRoutes';
 import { memberRoutes } from './memberRoutes';
 import { companyRoutes } from './companyRoutes';
@@ -8,7 +10,6 @@ import { adminRoutes } from './adminRoutes';
 import { leadRoutes } from './leadRoutes';
 import { docsRoutes } from './docsRoutes';
 import { serviceRoutes } from './serviceRoutes';
-import { dashboardRoutes } from './DashboardRoutes';
 
 /**
  * Main application routes component that combines all route definitions
@@ -22,7 +23,29 @@ export const AppRouteComponents = () => {
       {mainRoutes}
       
       {/* Dashboard routes (role-based) */}
-      {dashboardRoutes}
+      <Route path="/dashboard" element={
+        <RoleDashboard title="Dashboard" requiredRole={["member", "company", "admin", "master_admin", "content_editor"]}>
+          <Dashboard />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/dashboard/member" element={
+        <RoleDashboard title="Medlem Dashboard" requiredRole="member">
+          <Dashboard />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/dashboard/company" element={
+        <RoleDashboard title="Bedrift Dashboard" requiredRole="company">
+          <Dashboard />
+        </RoleDashboard>
+      } />
+      
+      <Route path="/dashboard/content-editor" element={
+        <RoleDashboard title="Content Editor" requiredRole="content_editor">
+          <Dashboard />
+        </RoleDashboard>
+      } />
       
       {/* Service routes */}
       {serviceRoutes}
