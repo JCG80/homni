@@ -4,7 +4,7 @@
  */
 
 // Define the lead status type supporting both legacy and emoji statuses for transition
-export type LeadStatus = '📥 new' | '👀 qualified' | '💬 contacted' | '📞 negotiating' | '✅ converted' | '❌ lost' | '⏸️ paused' | 'new' | 'in_progress' | 'won' | 'lost' | 'assigned' | 'under_review' | 'completed' | 'archived';
+export type LeadStatus = '📥 new' | '👀 qualified' | '💬 contacted' | '📞 negotiating' | '✅ converted' | '❌ lost' | '⏸️ paused' | 'new' | 'in_progress' | 'won' | 'lost' | 'assigned' | 'under_review' | 'completed' | 'archived' | '🚀 in_progress' | '🏆 won';
 
 // Export an array of all possible lead statuses for validation and UI purposes
 export const LEAD_STATUSES: LeadStatus[] = [
@@ -22,7 +22,9 @@ export const LEAD_STATUSES: LeadStatus[] = [
   'assigned',
   'under_review',
   'completed',
-  'archived'
+  'archived',
+  '🚀 in_progress',
+  '🏆 won'
 ];
 
 /**
@@ -57,10 +59,10 @@ export const LEGACY_STATUS_MAP: Record<string, LeadStatus> = {
   'won': '✅ converted',
   'lost': '❌ lost',
   'paused': '⏸️ paused',
-  'in_progress': '💬 contacted',
+  'in_progress': '🚀 in_progress',
   'assigned': '👀 qualified',
   'under_review': '👀 qualified',
-  'completed': '✅ converted',
+  'completed': '🏆 won',
   'archived': '❌ lost'
 };
 

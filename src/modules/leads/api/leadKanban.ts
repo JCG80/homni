@@ -72,16 +72,19 @@ export async function fetchLeadCounts(companyId?: string, userId?: string): Prom
     
     if (data) {
       data.forEach((lead) => {
-        switch (lead.status) {
+        const status = lead.status as string;
+        switch (status) {
           case '📥 new':
             counts.new++;
             counts['📥 new']++;
             break;
+          case '🚀 in_progress':
           case '💬 contacted':
           case '📞 negotiating':
           case '👀 qualified':
             counts.in_progress++;
             break;
+          case '🏆 won':
           case '✅ converted':
             counts.won++;
             break;
