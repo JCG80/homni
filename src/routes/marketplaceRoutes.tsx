@@ -20,7 +20,7 @@ export const marketplaceRoutes = (
     
     {/* Package Management - admin only */}
     <Route 
-      path="/marketplace/packages" 
+      path="/marketplace/package-management" 
       element={
         <RoleDashboard title="Package Management" requiredRole={["admin", "master_admin"]}>
           <PackageManagement />
