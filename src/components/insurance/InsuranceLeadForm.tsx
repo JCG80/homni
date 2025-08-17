@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
-import { mapToEmojiStatus } from '@/types/leads';
+// Remove unused import
 import type { Database } from '@/integrations/supabase/types';
 
 interface InsuranceLeadFormProps {
@@ -58,7 +58,7 @@ export const InsuranceLeadForm: React.FC<InsuranceLeadFormProps> = ({ onSuccess 
         title: formData.title,
         description: formData.description,
         category: formData.category,
-        status: mapToEmojiStatus('new') as LeadInsert['status'],
+        status: 'new' as LeadInsert['status'],
         submitted_by: user.id,
         metadata: {
           customer_name: formData.customer_name,

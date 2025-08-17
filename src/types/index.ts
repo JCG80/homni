@@ -11,5 +11,5 @@ export * from './common';
 
 // Legacy compatibility exports
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
-export type { Lead, LeadFormValues, LeadStatus, CompanyProfile } from './leads';
+export type { Lead, LeadFormValues, LeadStatus, PipelineStage, CompanyProfile } from './leads';
 export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';

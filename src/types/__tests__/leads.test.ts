@@ -1,6 +1,6 @@
 
 import { describe, test, expect } from 'vitest';
-import { isValidLeadStatus, LEAD_STATUSES, mapDbToLeadSettings } from '../leads';
+import { isValidLeadStatus, LEAD_STATUSES, mapDbToLeadSettings, normalizeStatus, statusToPipeline } from '../leads';
 
 describe('Lead Types', () => {
   describe('LeadStatus validation', () => {
@@ -16,6 +16,40 @@ describe('Lead Types', () => {
       expect(isValidLeadStatus('')).toBe(false);
       expect(isValidLeadStatus(null)).toBe(false);
       expect(isValidLeadStatus(undefined)).toBe(false);
+      expect(isValidLeadStatus('📥 new')).toBe(false); // emoji statuses should be invalid now
+    });
+  });
+
+  describe('normalizeStatus', () => {
+    test('should normalize legacy emoji statuses to clean slugs', () => {
+      expect(normalizeStatus('📥 new')).toBe('new');
+      expect(normalizeStatus('👀 qualified')).toBe('qualified');
+      expect(normalizeStatus('✅ converted')).toBe('converted');
+      expect(normalizeStatus('🏆 won')).toBe('converted');
+      expect(normalizeStatus('❌ lost')).toBe('lost');
+    });
+
+    test('should handle already normalized statuses', () => {
+      expect(normalizeStatus('new')).toBe('new');
+      expect(normalizeStatus('qualified')).toBe('qualified');
+      expect(normalizeStatus('converted')).toBe('converted');
+    });
+
+    test('should default to "new" for invalid statuses', () => {
+      expect(normalizeStatus('invalid')).toBe('new');
+      expect(normalizeStatus('')).toBe('new');
+    });
+  });
+
+  describe('statusToPipeline', () => {
+    test('should map statuses to correct pipeline stages', () => {
+      expect(statusToPipeline('new')).toBe('new');
+      expect(statusToPipeline('converted')).toBe('won');
+      expect(statusToPipeline('lost')).toBe('lost');
+      expect(statusToPipeline('qualified')).toBe('in_progress');
+      expect(statusToPipeline('contacted')).toBe('in_progress');
+      expect(statusToPipeline('negotiating')).toBe('in_progress');
+      expect(statusToPipeline('paused')).toBe('in_progress');
     });
   });
 

@@ -1,28 +1,29 @@
 
-import { Lead, isValidLeadStatus, LeadPriority } from '@/types/leads';
+import { Lead, isValidLeadStatus, LeadPriority, normalizeStatus, statusToPipeline } from '@/types/leads';
 
 /**
  * Parse and validate raw lead data into a properly typed Lead object
  * Ensures type safety and validation of status values
  */
 export function parseLead(item: any): Lead {
+  const normalizedStatus = normalizeStatus(item.status || 'new');
+  
   return {
     id: item.id || '',
     title: item.title || '',
-    description: item.description || '',
-    status: isValidLeadStatus(item.status) ? item.status : 'new',
+    description: item.description || null,
     category: item.category || '',
-    zipCode: item.zipCode || item.zip_code || null,
-    customer_name: item.customer_name || '',
-    customer_email: item.customer_email || '',
-    customer_phone: item.customer_phone || '',
-    service_type: item.service_type || '',
-    submitted_by: item.submitted_by || '',
+    lead_type: item.lead_type || '',
+    status: normalizedStatus,
+    pipeline_stage: statusToPipeline(normalizedStatus),
+    customer_name: item.customer_name || null,
+    customer_email: item.customer_email || null,
+    customer_phone: item.customer_phone || null,
+    service_type: item.service_type || null,
+    submitted_by: item.submitted_by || null,
     company_id: item.company_id || null,
     created_at: item.created_at || new Date().toISOString(),
-    updated_at: item.updated_at || null,
-    priority: item.priority as LeadPriority || null,
-    content: item.content || null,
-    metadata: item.metadata || {},
+    updated_at: item.updated_at || new Date().toISOString(),
+    metadata: item.metadata || null,
   };
 }

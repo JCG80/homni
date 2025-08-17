@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { Lead, LeadStatus, LeadCounts } from '@/types/leads';
+import { Lead, LeadStatus, PipelineStage, normalizeStatus, statusToPipeline, PIPELINE_EMOJI, LeadCounts } from '@/types/leads';
 import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
 import { toast } from '@/hooks/use-toast';
 
@@ -10,7 +10,7 @@ interface UseKanbanBoardProps {
 }
 
 export interface KanbanColumn {
-  id: LeadStatus;
+  id: PipelineStage;
   title: string;
   leads: Lead[];
 }
@@ -27,11 +27,11 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
     lost: 0
   });
 
-  const columnDefinitions: Array<{ id: LeadStatus; title: string }> = [
-    { id: '📥 new', title: 'Nye' },
-    { id: '🚀 in_progress', title: 'I gang' },
-    { id: '🏆 won', title: 'Vunnet' },
-    { id: '❌ lost', title: 'Tapt' },
+  const columnDefinitions: Array<{ id: PipelineStage; title: string }> = [
+    { id: 'new', title: PIPELINE_EMOJI.new },
+    { id: 'in_progress', title: PIPELINE_EMOJI.in_progress },
+    { id: 'won', title: PIPELINE_EMOJI.won },
+    { id: 'lost', title: PIPELINE_EMOJI.lost },
   ];
 
   const fetchBoardData = useCallback(async () => {
@@ -41,24 +41,27 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
       const fetchedLeads = await fetchLeads(companyId, userId);
       if (fetchedLeads) {
         // Transform DB data to Lead interface
-        const transformedLeads: Lead[] = fetchedLeads.map(dbLead => ({
-          id: dbLead.id,
-          title: dbLead.title,
-          description: dbLead.description,
-          category: dbLead.category,
-          status: dbLead.status as LeadStatus,
-          customer_name: (dbLead.metadata as any)?.customer_name || '',
-          customer_email: (dbLead.metadata as any)?.customer_email || '',
-          customer_phone: (dbLead.metadata as any)?.customer_phone || '',
-          service_type: (dbLead.metadata as any)?.service_type || dbLead.lead_type || '',
-          zipCode: (dbLead.metadata as any)?.zipCode,
-          company_id: dbLead.company_id || undefined,
-          submitted_by: dbLead.submitted_by,
-          created_at: dbLead.created_at,
-          updated_at: dbLead.updated_at,
-          metadata: dbLead.metadata as Record<string, any>,
-          lead_type: dbLead.lead_type || undefined
-        }));
+        const transformedLeads: Lead[] = fetchedLeads.map(dbLead => {
+          const normalizedStatus = normalizeStatus(dbLead.status);
+          return {
+            id: dbLead.id,
+            title: dbLead.title,
+            description: dbLead.description,
+            category: dbLead.category,
+            lead_type: dbLead.lead_type || '',
+            status: normalizedStatus,
+            pipeline_stage: statusToPipeline(normalizedStatus),
+            customer_name: (dbLead.metadata as any)?.customer_name || '',
+            customer_email: (dbLead.metadata as any)?.customer_email || '',
+            customer_phone: (dbLead.metadata as any)?.customer_phone || '',
+            service_type: (dbLead.metadata as any)?.service_type || dbLead.lead_type || '',
+            company_id: dbLead.company_id || null,
+            submitted_by: dbLead.submitted_by,
+            created_at: dbLead.created_at,
+            updated_at: dbLead.updated_at || dbLead.created_at,
+            metadata: dbLead.metadata as Record<string, unknown> || null,
+          };
+        });
         
         setLeads(transformedLeads);
       }
@@ -127,8 +130,8 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
     }
   };
 
-  const getLeadsForColumn = (columnId: LeadStatus) => {
-    return leads.filter(lead => lead.status === columnId);
+  const getLeadsForColumn = (columnId: PipelineStage) => {
+    return leads.filter(lead => lead.pipeline_stage === columnId);
   };
 
   const columns: KanbanColumn[] = columnDefinitions.map(col => ({

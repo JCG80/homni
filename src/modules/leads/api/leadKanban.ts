@@ -1,8 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { LeadCounts } from '@/types/leads';
-import { LeadStatus } from "@/types/leads";
+import { LeadStatus, normalizeStatus } from "@/types/leads";
 import { Lead } from '@/types/leads';
-import { mapToEmojiStatus } from "@/types/leads";
 
 export async function fetchLeadsForKanban(companyId?: string, userId?: string): Promise<any[]> {
   let query = supabase
@@ -27,9 +26,23 @@ export async function fetchLeadsForKanban(companyId?: string, userId?: string): 
 }
 
 export async function updateLeadStatus(leadId: string, status: LeadStatus): Promise<boolean> {
+  // Map to emoji status for database (temporary until schema migration)
+  const statusMap: Record<LeadStatus, string> = {
+    new: '📥 new',
+    qualified: '👀 qualified',
+    contacted: '💬 contacted',
+    negotiating: '📞 negotiating',
+    converted: '✅ converted',
+    lost: '❌ lost',
+    paused: '⏸️ paused',
+  };
+
   const { error } = await supabase
     .from('leads')
-    .update({ status: mapToEmojiStatus(status) as any })
+    .update({ 
+      status: statusMap[status] as any,
+      updated_at: new Date().toISOString() 
+    })
     .eq('id', leadId);
 
   if (error) {
@@ -72,23 +85,22 @@ export async function fetchLeadCounts(companyId?: string, userId?: string): Prom
     
     if (data) {
       data.forEach((lead) => {
-        const status = lead.status as string;
-        switch (status) {
-          case '📥 new':
+        const normalizedStatus = normalizeStatus(lead.status as string);
+        switch (normalizedStatus) {
+          case 'new':
             counts.new++;
             counts['📥 new']++;
             break;
-          case '🚀 in_progress':
-          case '💬 contacted':
-          case '📞 negotiating':
-          case '👀 qualified':
+          case 'qualified':
+          case 'contacted':
+          case 'negotiating':
+          case 'paused':
             counts.in_progress++;
             break;
-          case '🏆 won':
-          case '✅ converted':
+          case 'converted':
             counts.won++;
             break;
-          case '❌ lost':
+          case 'lost':
             counts.lost++;
             counts['❌ lost']++;
             break;

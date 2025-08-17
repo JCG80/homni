@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Lead, LeadStatus, mapToEmojiStatus } from '@/types/leads';
+import { Lead, LeadStatus, STATUS_EMOJI } from '@/types/leads';
 import { updateLeadStatus } from '../api/lead-update';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,15 +17,13 @@ export const CompanyLeadActions: React.FC<CompanyLeadActionsProps> = ({
 }) => {
   const { toast } = useToast();
 
-  const handleStatusUpdate = async (newStatus: string) => {
+  const handleStatusUpdate = async (newStatus: LeadStatus) => {
     try {
-      // Convert string to LeadStatus and then to emoji status
-      const emojiStatus = mapToEmojiStatus(newStatus);
-      await updateLeadStatus(lead.id, emojiStatus as LeadStatus);
+      await updateLeadStatus(lead.id, newStatus);
       
       toast({
         title: "Status oppdatert",
-        description: `Lead status endret til ${newStatus}`,
+        description: `Lead status endret til ${STATUS_EMOJI[newStatus]}`,
       });
       
       onLeadUpdate();
@@ -42,32 +40,32 @@ export const CompanyLeadActions: React.FC<CompanyLeadActionsProps> = ({
     <div className="space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-2">Lead Actions</h3>
-        <Badge variant="outline">{lead.status}</Badge>
+        <Badge variant="outline">{STATUS_EMOJI[lead.status]}</Badge>
       </div>
       
       <div className="flex gap-2">
         <Button 
           size="sm" 
-          onClick={() => handleStatusUpdate('🚀 in_progress')}
-          disabled={lead.status === '🚀 in_progress'}
+          onClick={() => handleStatusUpdate('qualified')}
+          disabled={lead.status === 'qualified'}
         >
-          Mark as In Progress
+          Mark as Qualified
         </Button>
         
         <Button 
           size="sm" 
-          onClick={() => handleStatusUpdate('🏆 won')}
+          onClick={() => handleStatusUpdate('converted')}
           variant="default"
-          disabled={lead.status === '🏆 won'}
+          disabled={lead.status === 'converted'}
         >
           Mark as Won
         </Button>
         
         <Button 
           size="sm" 
-          onClick={() => handleStatusUpdate('❌ lost')}
+          onClick={() => handleStatusUpdate('lost')}
           variant="destructive"
-          disabled={lead.status === '❌ lost'}
+          disabled={lead.status === 'lost'}
         >
           Mark as Lost
         </Button>

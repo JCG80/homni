@@ -1,31 +1,77 @@
-
 /**
  * Lead management and related types
  */
 
-// Define the lead status type supporting both legacy and emoji statuses for transition
-export type LeadStatus = '📥 new' | '👀 qualified' | '💬 contacted' | '📞 negotiating' | '✅ converted' | '❌ lost' | '⏸️ paused' | 'new' | 'in_progress' | 'won' | 'lost' | 'assigned' | 'under_review' | 'completed' | 'archived' | '🚀 in_progress' | '🏆 won';
+export type LeadStatus =
+  | 'new'
+  | 'qualified'
+  | 'contacted'
+  | 'negotiating'
+  | 'converted'
+  | 'lost'
+  | 'paused';
 
-// Export an array of all possible lead statuses for validation and UI purposes
-export const LEAD_STATUSES: LeadStatus[] = [
-  '📥 new',
-  '👀 qualified',
-  '💬 contacted',
-  '📞 negotiating',
-  '✅ converted',
-  '❌ lost',
-  '⏸️ paused',
-  'new',
-  'in_progress', 
-  'won',
-  'lost',
-  'assigned',
-  'under_review',
-  'completed',
-  'archived',
-  '🚀 in_progress',
-  '🏆 won'
-];
+export type PipelineStage = 'new' | 'in_progress' | 'won' | 'lost';
+
+export interface Lead {
+  id: string;
+  title: string;
+  description?: string | null;
+  category: string;
+  lead_type: string;
+  submitted_by: string | null;          // ← nullable pga anonyme leads
+  company_id?: string | null;
+  status: LeadStatus;                   // ← slugs
+  pipeline_stage: PipelineStage;        // ← slugs
+  customer_name?: string | null;
+  customer_email?: string | null;
+  customer_phone?: string | null;
+  service_type?: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Kun for visning (UI)
+export const STATUS_EMOJI: Record<LeadStatus, string> = {
+  new: '📥 new',
+  qualified: '👀 qualified',
+  contacted: '💬 contacted',
+  negotiating: '📞 negotiating',
+  converted: '✅ converted',
+  lost: '❌ lost',
+  paused: '⏸️ paused',
+};
+
+export const PIPELINE_EMOJI: Record<PipelineStage, string> = {
+  new: 'Nye ✨',
+  in_progress: 'I gang 🚀',
+  won: 'Vunnet 🏆',
+  lost: 'Tapt ❌',
+};
+
+// Tåler legacy/emoji-verdier:
+const statusMap: Record<string, LeadStatus> = {
+  new: 'new', '📥 new': 'new',
+  qualified: 'qualified', '👀 qualified': 'qualified',
+  contacted: 'contacted', '💬 contacted': 'contacted',
+  negotiating: 'negotiating', '📞 negotiating': 'negotiating',
+  converted: 'converted', '✅ converted': 'converted', '🏆 won': 'converted',
+  lost: 'lost', '❌ lost': 'lost',
+  paused: 'paused', '⏸️ paused': 'paused',
+  '🚀 in_progress': 'qualified', // legacy fallback
+};
+
+export function normalizeStatus(s: string): LeadStatus {
+  return statusMap[s] ?? 'new';
+}
+
+export function statusToPipeline(s: LeadStatus): PipelineStage {
+  if (s === 'converted') return 'won';
+  if (s === 'lost') return 'lost';
+  if (s === 'new') return 'new';
+  return 'in_progress'; // qualified/contacted/negotiating/paused
+}
 
 /**
  * Lead categories
@@ -41,59 +87,25 @@ export const LEAD_CATEGORIES = [
 
 export type LeadCategory = typeof LEAD_CATEGORIES[number];
 
+// Export an array of all possible lead statuses for validation and UI purposes
+export const LEAD_STATUSES: LeadStatus[] = [
+  'new',
+  'qualified',
+  'contacted',
+  'negotiating',
+  'converted',
+  'lost',
+  'paused'
+];
+
 // Runtime type guard for lead status validation
 export function isValidLeadStatus(status: any): status is LeadStatus {
   if (typeof status !== 'string') return false;
   return LEAD_STATUSES.includes(status as LeadStatus);
 }
 
-/**
- * Legacy status mapping for backward compatibility
- */
-export const LEGACY_STATUS_MAP: Record<string, LeadStatus> = {
-  'new': '📥 new',
-  'qualified': '👀 qualified', 
-  'contacted': '💬 contacted',
-  'negotiating': '📞 negotiating',
-  'converted': '✅ converted',
-  'won': '✅ converted',
-  'lost': '❌ lost',
-  'paused': '⏸️ paused',
-  'in_progress': '🚀 in_progress',
-  'assigned': '👀 qualified',
-  'under_review': '👀 qualified',
-  'completed': '🏆 won',
-  'archived': '❌ lost'
-};
-
-export function mapToEmojiStatus(status: string): LeadStatus {
-  return LEGACY_STATUS_MAP[status] || '📥 new';
-}
-
 // Define lead priority as a union type
 export type LeadPriority = 'low' | 'medium' | 'high' | 'urgent' | null;
-
-// Main Lead interface matching the database schema
-export interface Lead {
-  id: string;
-  title: string;
-  description?: string;
-  category: string;
-  status: LeadStatus;
-  priority?: LeadPriority;
-  content?: any;
-  customer_name?: string;
-  customer_email?: string;
-  customer_phone?: string;
-  service_type?: string;
-  zipCode?: string;
-  company_id?: string;
-  submitted_by?: string;
-  created_at: string;
-  updated_at?: string;
-  metadata?: Record<string, any>;
-  lead_type?: string;
-}
 
 // Form values for creating/editing leads
 export interface LeadFormValues {
