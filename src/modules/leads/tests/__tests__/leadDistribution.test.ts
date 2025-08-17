@@ -6,7 +6,7 @@ import { fetchLeadSettings } from '../../api/leadSettings';
 import { applyLeadFilters } from '../../utils/leadFiltering';
 import { assignLeadToProvider } from '../../utils/leadAssignment';
 import { withRetry } from '@/utils/apiRetry';
-import { createTestLead } from '../utils';
+import { makeLead } from '../factories';
 
 // Mock dependencies
 vi.mock('../../api/leadSettings', () => ({
@@ -107,7 +107,7 @@ describe('Lead Distribution System', () => {
     it('should return false when lead fails filtering', async () => {
       (applyLeadFilters as any).mockReturnValue(false);
       
-      const testLead = createTestLead({ submitted_by: 'user-123' });
+      const testLead = makeLead({ submitted_by: 'user-123' });
       const testSettings = { filters: { categories: ['plumbing'] } };
       
       const result = await processSingleLead(testLead, testSettings, 'category_match');
@@ -121,7 +121,7 @@ describe('Lead Distribution System', () => {
       (applyLeadFilters as any).mockReturnValue(true);
       (assignLeadToProvider as any).mockResolvedValue(true);
       
-      const testLead = createTestLead({ 
+      const testLead = makeLead({ 
         submitted_by: 'user-123',
         category: 'plumbing'
       });

@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { assignLeadToProvider } from '../../utils/leadAssignment';
 import { supabase } from '@/integrations/supabase/client';
 import { DistributionStrategy } from '../../strategies/strategyFactory';
-import { createTestLead } from '../utils';
+import { makeLead } from '../factories';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({
@@ -33,7 +33,7 @@ describe('Lead Assignment', () => {
   describe('assignLeadToProvider', () => {
     it('should successfully assign a lead to a provider', async () => {
       // Arrange
-      const mockLead = createTestLead({
+      const mockLead = makeLead({
         id: 'lead-123',
         status: 'new',
         category: 'plumbing',
@@ -79,7 +79,7 @@ describe('Lead Assignment', () => {
 
     it('should return false when no matching provider is found', async () => {
       // Arrange
-      const mockLead = createTestLead({
+      const mockLead = makeLead({
         id: 'lead-123',
         status: 'new',
         category: 'plumbing',
@@ -111,7 +111,7 @@ describe('Lead Assignment', () => {
 
     it('should handle errors during provider matching', async () => {
       // Arrange
-      const mockLead = createTestLead({
+      const mockLead = makeLead({
         id: 'lead-123',
         status: 'new',
         category: 'plumbing',
@@ -136,7 +136,7 @@ describe('Lead Assignment', () => {
 
     it('should handle errors during lead update', async () => {
       // Arrange
-      const mockLead = createTestLead({
+      const mockLead = makeLead({
         id: 'lead-123',
         status: 'new',
         category: 'plumbing',

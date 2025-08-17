@@ -2,11 +2,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { applyLeadFilters } from '../../utils/leadFiltering';
 import { LeadSettings } from '@/types/leads';
-import { createTestLead } from '../utils';
+import { makeLead } from '../factories';
 
 describe('Lead Filtering', () => {
   it('should accept leads when no settings provided', () => {
-    const testLead = createTestLead({ submitted_by: 'user-123' });
+    const testLead = makeLead({ submitted_by: 'user-123' });
     
     const result = applyLeadFilters(testLead, null);
     
@@ -14,7 +14,7 @@ describe('Lead Filtering', () => {
   });
   
   it('should accept leads when no filters provided', () => {
-    const testLead = createTestLead({ submitted_by: 'user-123' });
+    const testLead = makeLead({ submitted_by: 'user-123' });
     const settings = { filters: null } as unknown as LeadSettings;
     
     const result = applyLeadFilters(testLead, settings);
@@ -23,7 +23,7 @@ describe('Lead Filtering', () => {
   });
   
   it('should reject leads with invalid status', () => {
-    const testLead = createTestLead({ 
+    const testLead = makeLead({ 
       submitted_by: 'user-123',
       status: 'invalid_status' as any
     });
@@ -35,7 +35,7 @@ describe('Lead Filtering', () => {
   });
   
   it('should filter by categories correctly', () => {
-    const testLead = createTestLead({ 
+    const testLead = makeLead({ 
       submitted_by: 'user-123',
       category: 'plumbing' 
     });
@@ -56,7 +56,7 @@ describe('Lead Filtering', () => {
   
   it('should filter by lead types correctly', () => {
     const testLead = {
-      ...createTestLead({ submitted_by: 'user-123' }),
+      ...makeLead({ submitted_by: 'user-123' }),
       lead_type: 'premium' 
     };
     
@@ -76,7 +76,7 @@ describe('Lead Filtering', () => {
   
   it('should filter by zip codes correctly', () => {
     const testLead = {
-      ...createTestLead({ submitted_by: 'user-123' }),
+      ...makeLead({ submitted_by: 'user-123' }),
       metadata: { postal_code: '12345' }
     };
     
@@ -96,17 +96,17 @@ describe('Lead Filtering', () => {
   
   it('should handle different postal code field names in metadata', () => {
     const testLeadWithZipCode = {
-      ...createTestLead({ submitted_by: 'user-123' }),
+      ...makeLead({ submitted_by: 'user-123' }),
       metadata: { zip_code: '12345' }
     };
     
     const testLeadWithZipCodeCamelCase = {
-      ...createTestLead({ submitted_by: 'user-123' }),
+      ...makeLead({ submitted_by: 'user-123' }),
       metadata: { zipCode: '12345' }
     };
     
     const testLeadWithPostcode = {
-      ...createTestLead({ submitted_by: 'user-123' }),
+      ...makeLead({ submitted_by: 'user-123' }),
       metadata: { postcode: '12345' }
     };
     

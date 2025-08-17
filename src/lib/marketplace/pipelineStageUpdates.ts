@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 
-export type PipelineStage = '📥 new' | '🚀 in_progress' | '🏆 won' | '❌ lost';
+export type PipelineStage = 'new' | 'in_progress' | 'won' | 'lost';
 
 export interface StageUpdateOptions {
   assignmentId: string;
@@ -19,10 +19,10 @@ export interface StageUpdateResult {
  * Valid stage transitions to prevent invalid moves
  */
 const VALID_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
-  '📥 new': ['🚀 in_progress', '❌ lost'],
-  '🚀 in_progress': ['🏆 won', '❌ lost'],
-  '🏆 won': [], // Final stage - no transitions allowed
-  '❌ lost': ['🚀 in_progress'] // Can be reopened
+  'new': ['in_progress', 'lost'],
+  'in_progress': ['won', 'lost'],
+  'won': [], // Final stage - no transitions allowed
+  'lost': ['in_progress'] // Can be reopened
 };
 
 /**
@@ -72,12 +72,12 @@ export async function updatePipelineStage(options: StageUpdateOptions): Promise<
       updateData.buyer_notes = buyerNotes;
     }
 
-    if (rejectionReason && newStage === '❌ lost') {
+    if (rejectionReason && newStage === 'lost') {
       updateData.rejection_reason = rejectionReason;
     }
 
     // Set completion timestamp for final stages
-    if (newStage === '🏆 won' || newStage === '❌ lost') {
+    if (newStage === 'won' || newStage === 'lost') {
       updateData.completed_at = new Date().toISOString();
     } else {
       updateData.completed_at = null;
@@ -166,10 +166,10 @@ export async function getPipelineStats(buyerId: string, dateRange?: { from: Date
     if (error) throw error;
 
     const stats = {
-      '📥 new': { count: 0, value: 0 },
-      '🚀 in_progress': { count: 0, value: 0 },
-      '🏆 won': { count: 0, value: 0 },
-      '❌ lost': { count: 0, value: 0 }
+      'new': { count: 0, value: 0 },
+      'in_progress': { count: 0, value: 0 },
+      'won': { count: 0, value: 0 },
+      'lost': { count: 0, value: 0 }
     };
 
     data?.forEach(assignment => {
@@ -184,8 +184,8 @@ export async function getPipelineStats(buyerId: string, dateRange?: { from: Date
       totalAssignments: data?.length || 0,
       totalValue: data?.reduce((sum, a) => sum + (a.cost || 0), 0) || 0,
       stageBreakdown: stats,
-      conversionRate: stats['🏆 won'].count > 0 ? 
-        (stats['🏆 won'].count / (stats['🏆 won'].count + stats['❌ lost'].count)) * 100 : 0
+      conversionRate: stats['won'].count > 0 ? 
+        (stats['won'].count / (stats['won'].count + stats['lost'].count)) * 100 : 0
     };
   } catch (error: any) {
     console.error('Failed to get pipeline stats:', error);
