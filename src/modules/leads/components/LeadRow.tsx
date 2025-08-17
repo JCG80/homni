@@ -39,14 +39,14 @@ export const LeadRow: React.FC<LeadRowProps> = ({
       case 'new':
         variant = "default";
         break;
-      case 'in_progress':
+      case 'qualified':
+      case 'contacted':
+      case 'negotiating':
+      case 'paused':
         variant = "secondary";
         break;
-      case 'completed':
-        variant = "outline";
-        break;
-      case 'won':
-        variant = "default"; // Could use a custom green variant
+      case 'converted':
+        variant = "outline"; // Could use a custom green variant
         break;
       case 'lost':
         variant = "destructive";
@@ -62,12 +62,12 @@ export const LeadRow: React.FC<LeadRowProps> = ({
   const formatStatus = (status: string): string => {
     const statusMap: Record<string, string> = {
       'new': 'Ny',
-      'assigned': 'Tildelt',
-      'in_progress': 'Under behandling',
-      'completed': 'Fullført',
-      'archived': 'Arkivert',
-      'won': 'Vunnet',
-      'lost': 'Tapt'
+      'qualified': 'Kvalifisert',
+      'contacted': 'Kontaktet',
+      'negotiating': 'Forhandler',
+      'converted': 'Konvertert',
+      'lost': 'Tapt',
+      'paused': 'Pauset'
     };
     
     return statusMap[status] || status;
@@ -126,7 +126,7 @@ export const LeadRow: React.FC<LeadRowProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {(isAdmin || isCompany) && lead.status === '📥 new' && (
+              {(isAdmin || isCompany) && lead.status === 'new' && (
                 <DropdownMenuItem 
                   onClick={() => console.log('Assign lead', lead.id)}
                 >

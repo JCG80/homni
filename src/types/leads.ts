@@ -1,3 +1,4 @@
+
 /**
  * Lead management and related types
  */
@@ -49,6 +50,21 @@ export const PIPELINE_EMOJI: Record<PipelineStage, string> = {
   won: 'Vunnet 🏆',
   lost: 'Tapt ❌',
 };
+
+// Map clean statuses to emoji statuses for database compatibility
+export function mapToEmojiStatus(status: LeadStatus | string): string {
+  const emojiMap: Record<string, string> = {
+    new: '📥 new',
+    qualified: '👀 qualified',
+    contacted: '💬 contacted',
+    negotiating: '📞 negotiating',
+    converted: '✅ converted',
+    lost: '❌ lost',
+    paused: '⏸️ paused',
+    assigned: '👀 qualified', // Map assigned to qualified for DB
+  };
+  return emojiMap[status] || '📥 new';
+}
 
 // Tåler legacy/emoji-verdier:
 const statusMap: Record<string, LeadStatus> = {

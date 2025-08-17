@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { assignLeadToProvider } from '../../utils/leadAssignment';
 import { supabase } from '@/integrations/supabase/client';
 import { DistributionStrategy } from '../../strategies/strategyFactory';
-import { Lead } from '@/types/leads';
+import { createTestLead } from '../utils';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({
@@ -33,18 +33,12 @@ describe('Lead Assignment', () => {
   describe('assignLeadToProvider', () => {
     it('should successfully assign a lead to a provider', async () => {
       // Arrange
-      const mockLead = {
+      const mockLead = createTestLead({
         id: 'lead-123',
-        status: '📥 new',
+        status: 'new',
         category: 'plumbing',
-        title: 'Test Lead',
-        description: 'Test lead description',
-        customer_name: 'Test Customer',
-        customer_email: 'test@example.com',
-        customer_phone: '123-456-7890',
-        service_type: 'Test Service',
-        created_at: new Date().toISOString()
-      } as Lead;
+        title: 'Test Lead'
+      });
 
       const strategy = 'round_robin' as DistributionStrategy;
       const mockProviderResponse = {
@@ -85,12 +79,12 @@ describe('Lead Assignment', () => {
 
     it('should return false when no matching provider is found', async () => {
       // Arrange
-      const mockLead = {
+      const mockLead = createTestLead({
         id: 'lead-123',
-        status: '📥 new',
+        status: 'new',
         category: 'plumbing',
         title: 'Test Lead'
-      } as Lead;
+      });
 
       const strategy = 'round_robin' as DistributionStrategy;
       const mockProviderResponse = {
@@ -117,12 +111,12 @@ describe('Lead Assignment', () => {
 
     it('should handle errors during provider matching', async () => {
       // Arrange
-      const mockLead = {
+      const mockLead = createTestLead({
         id: 'lead-123',
-        status: '📥 new',
+        status: 'new',
         category: 'plumbing',
         title: 'Test Lead'
-      } as Lead;
+      });
 
       const strategy = 'round_robin' as DistributionStrategy;
       const mockError = new Error('Database error');
@@ -142,12 +136,12 @@ describe('Lead Assignment', () => {
 
     it('should handle errors during lead update', async () => {
       // Arrange
-      const mockLead = {
+      const mockLead = createTestLead({
         id: 'lead-123',
-        status: '📥 new',
+        status: 'new',
         category: 'plumbing',
         title: 'Test Lead'
-      } as Lead;
+      });
 
       const strategy = 'round_robin' as DistributionStrategy;
       const mockError = new Error('Update error');
