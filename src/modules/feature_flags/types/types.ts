@@ -11,7 +11,7 @@ export type FeatureFlag = {
   name: string;
   description: string | null;
   is_enabled: boolean;
-  percentage_rollout: number;
+  rollout_percentage: number; // Updated to match database schema 
   target_roles: string[] | null;
   created_at: string;
   updated_at: string;
@@ -21,7 +21,7 @@ export type FeatureFlagInsert = {
   name: string;
   description?: string | null;
   is_enabled?: boolean;
-  percentage_rollout?: number;
+  rollout_percentage?: number; // Updated to match database schema
   target_roles?: string[] | null;
 };
 
@@ -29,7 +29,7 @@ export type FeatureFlagUpdate = {
   name?: string;
   description?: string | null;
   is_enabled?: boolean;
-  percentage_rollout?: number;
+  rollout_percentage?: number; // Updated to match database schema
   target_roles?: string[] | null;
 };
 

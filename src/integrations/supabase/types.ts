@@ -1145,7 +1145,7 @@ export type Database = {
     }
     Functions: {
       delete_user_profile: {
-        Args: { user_id: string }
+        Args: { profile_user_id: string }
         Returns: undefined
       }
       get_auth_user_role: {
@@ -1178,7 +1178,7 @@ export type Database = {
         }[]
       }
       get_user_profile: {
-        Args: { user_id: string }
+        Args: { profile_user_id: string }
         Returns: {
           created_at: string
           email: string
@@ -1213,10 +1213,10 @@ export type Database = {
       }
       update_user_profile: {
         Args: {
-          email: string
-          full_name: string
-          phone: string
-          user_id: string
+          profile_email: string
+          profile_full_name: string
+          profile_phone: string
+          profile_user_id: string
         }
         Returns: undefined
       }

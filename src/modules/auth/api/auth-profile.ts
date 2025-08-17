@@ -40,9 +40,15 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
  */
 export const createProfile = async (profile: Partial<Profile> & { id: string }): Promise<Profile | null> => {
   try {
+    // Ensure user_id is set to id if not provided (required by new schema)
+    const profileData = {
+      ...profile,
+      user_id: profile.user_id || profile.id
+    };
+    
     const { data, error } = await supabase
       .from('user_profiles')
-      .insert([profile])
+      .insert(profileData)
       .select()
       .single();
     
@@ -95,38 +101,25 @@ export const updateProfile = async (profileData: Partial<Profile> & { id: string
  */
 export const updateUserRole = async (userId: string, role: UserRole): Promise<boolean> => {
   try {
-    // First, fetch the current user profile to get the existing metadata
-    const { data: profileData, error: fetchError } = await supabase
+    // Get current metadata to preserve other fields
+    const { data: currentProfile } = await supabase
       .from('user_profiles')
       .select('metadata')
       .eq('id', userId)
       .single();
-    
-    if (fetchError) {
-      console.error("Error fetching user profile metadata:", fetchError);
-      showErrorToast(
-        "Oppdateringsfeil",
-        "Kunne ikke hente brukerinformasjon for rolleendring."
-      );
-      return false;
-    }
-    
-    // Get current metadata or initialize as empty object if it doesn't exist
-    // Ensure it's treated as an object type by using type assertion and checking for null/undefined
-    const currentMetadata = profileData?.metadata && typeof profileData.metadata === 'object' 
-      ? profileData.metadata 
+
+    const currentMetadata = (currentProfile?.metadata && typeof currentProfile.metadata === 'object') 
+      ? currentProfile.metadata as Record<string, any>
       : {};
-    
-    // Update the role in the metadata field, preserving other metadata
-    const updatedMetadata = { 
-      ...currentMetadata, 
-      role: role 
-    };
-    
-    // Now update the profile with the new metadata
+    const updatedMetadata = { ...currentMetadata, role };
+
+    // Update both the direct role column and metadata for backward compatibility
     const { error } = await supabase
       .from('user_profiles')
-      .update({ metadata: updatedMetadata })
+      .update({ 
+        role: role,
+        metadata: updatedMetadata
+      })
       .eq('id', userId);
     
     if (error) {

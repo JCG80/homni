@@ -9,47 +9,32 @@ import { isUserRole } from './roles/guards';
 export const parseUserProfile = (profileData: any): Profile | null => {
   if (!profileData) return null;
 
-  // Log the raw profile data for debugging
-  console.log("Parsing profile data:", profileData);
+  console.log('[parseUserProfile] Raw profile data:', profileData);
 
-  // Extract role from metadata if present
+  // Extract role - prefer direct 'role' column (newly added), fallback to metadata.role
   let role = profileData.role;
-  
-  // If role not directly on profile, try to get it from metadata
-  if (!role && profileData.metadata) {
-    // Handle both string and object metadata
-    if (typeof profileData.metadata === 'string') {
-      try {
-        const parsedMetadata = JSON.parse(profileData.metadata);
-        role = parsedMetadata.role;
-      } catch (e) {
-        console.warn("Failed to parse metadata string:", e);
-      }
-    } else if (typeof profileData.metadata === 'object') {
-      role = profileData.metadata.role;
-    }
+  if (!role && profileData.metadata && typeof profileData.metadata === 'object') {
+    role = profileData.metadata.role;
   }
-  
-  // Extract company_id from metadata if present
+
+  // Handle legacy 'user' role mapping
+  if (role === 'user') {
+    console.log('[parseUserProfile] Converting legacy "user" role to "member"');
+    role = 'member';
+  }
+
+  // Validate role
+  if (!isUserRole(role)) {
+    console.warn(`[parseUserProfile] Invalid role '${role}' found, defaulting to 'member'`);
+    role = 'member';
+  }
+
+  // Extract company_id - prefer direct column (newly added), fallback to metadata
   const companyId = profileData.company_id || 
     (profileData.metadata && typeof profileData.metadata === 'object' ? 
       profileData.metadata.company_id : undefined);
-  
-  // Validate that role is a valid UserRole
-  if (role === 'user') {
-    console.warn(`Deprecated role 'user' found in profile ${profileData.id}, changing to 'member'`);
-    role = 'member';
-  } else if (role === 'business' || role === 'provider') {
-    console.warn(`Deprecated role '${role}' found in profile ${profileData.id}, changing to 'company'`);
-    role = 'company';
-  } else if (!isUserRole(role)) {
-    console.warn(`Invalid role '${role}' found in profile ${profileData.id}, defaulting to 'member'`);
-    role = 'member';
-  }
-  
-  console.log(`Profile ${profileData.id} parsed with role: ${role}`);
-  
-  return {
+
+  const parsed = {
     id: profileData.id,
     full_name: profileData.full_name,
     role: role,
@@ -60,4 +45,7 @@ export const parseUserProfile = (profileData: any): Profile | null => {
     phone: profileData.phone,
     updated_at: profileData.updated_at
   };
+
+  console.log('[parseUserProfile] Parsed profile:', parsed);
+  return parsed;
 };
