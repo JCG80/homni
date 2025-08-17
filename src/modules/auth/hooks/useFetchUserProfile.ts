@@ -15,12 +15,22 @@ export const useFetchUserProfile = () => {
     try {
       console.log(`Fetching profile for user: ${userId}`);
       
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000);
+      });
+      
       // First, try to get the profile from user_profiles
-      const { data: profileData, error: profileError } = await supabase
+      const profilePromise = supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
+        
+      const { data: profileData, error: profileError } = await Promise.race([
+        profilePromise,
+        timeoutPromise
+      ]) as any;
 
       if (profileError) {
         console.error("Error fetching profile:", profileError);
@@ -28,34 +38,28 @@ export const useFetchUserProfile = () => {
       }
 
       if (!profileData) {
-        console.warn(`No profile found for user ID: ${userId}. Will attempt to create one.`);
+        console.warn(`No profile found for user ID: ${userId}. Returning basic profile.`);
         
-        // Get user data to help create a profile
+        // Instead of trying to create a profile, return a basic one
+        // This prevents hanging when user doesn't exist in user_profiles yet
         const { data: userData } = await supabase.auth.getUser();
-        if (!userData?.user) {
-          console.error("Could not get user data to create profile");
-          return null;
-        }
         
-        // Create a new profile with basic data
-        const { data: newProfile, error: createError } = await supabase
-          .from('user_profiles')
-          .insert([{
-            id: userId,
-            user_id: userId,
-            email: userData.user.email,
-            metadata: { role: 'member' }, // Default role
-          }])
-          .select()
-          .single();
-          
-        if (createError) {
-          console.error("Error creating new profile:", createError);
-          throw createError;
-        }
-        
-        console.log("Created new profile for user:", newProfile);
-        return parseUserProfile(newProfile);
+        return {
+          id: userId,
+          user_id: userId,
+          email: userData?.user?.email || null,
+          full_name: null,
+          role: 'member', // Default role
+          metadata: { role: 'member' },
+          preferences: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          phone: null,
+          address: null,
+          region: null,
+          profile_picture_url: null,
+          display_name: null
+        };
       }
       
       // Check if user_id is missing and update it if necessary

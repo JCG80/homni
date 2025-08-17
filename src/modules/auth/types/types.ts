@@ -23,6 +23,7 @@ export interface ModuleAccess {
 
 export interface Profile {
   id: string;
+  user_id?: string;
   full_name?: string;
   role: UserRole;
   company_id?: string;
@@ -35,6 +36,7 @@ export interface Profile {
   profile_picture_url?: string;
   preferences?: Record<string, any>;
   updated_at?: string;
+  display_name?: string;
 }
 
 export interface AuthUser {

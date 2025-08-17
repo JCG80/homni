@@ -31,13 +31,16 @@ export const LoginPage = () => {
     // Success notifications are already handled in devLogin
   };
 
-  // Show loading state while checking authentication
+  // Show loading state while checking authentication, but with timeout
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Laster inn...</p>
+          <p className="text-lg mt-4">Verifiserer...</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Hvis dette tar for lang tid, prøv å refresh siden
+          </p>
         </div>
       </div>
     );

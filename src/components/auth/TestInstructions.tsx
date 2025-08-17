@@ -6,15 +6,16 @@ export const TestInstructions = () => {
     <details className="text-xs cursor-pointer text-muted-foreground">
       <summary>Dev setup instructions</summary>
       <div className="mt-2 p-3 bg-muted rounded-md text-left">
-        <p className="font-medium">To create test users:</p>
+        <p className="font-medium">For å opprette testbrukere:</p>
         <ol className="list-decimal pl-4 mt-1 space-y-1">
-          <li>Use the "Setup Test Users" button above</li>
-          <li>Or run <code>window.setupTestUsers()</code> in browser console</li>
+          <li>Bruk "Setup Test Users" knappen ovenfor</li>
+          <li>Eller kjør <code>window.setupTestUsers()</code> i browser console</li>
         </ol>
-        <p className="mt-2 font-medium">If login fails after setup:</p>
+        <p className="mt-2 font-medium">Hvis innlogging feiler etter oppsett:</p>
         <ul className="list-disc pl-4 mt-1 space-y-1">
-          <li>Check if "Confirm Email" is disabled in Supabase Auth settings</li>
-          <li>Verify Site URL and Redirect URLs in Supabase Auth settings</li>
+          <li>Sjekk at "Confirm Email" er deaktivert i Supabase Auth settings</li>
+          <li>Verifiser Site URL og Redirect URLs i Supabase Auth settings</li>
+          <li>Hvis siden henger på "Verifiserer...", refresh siden</li>
         </ul>
       </div>
     </details>
