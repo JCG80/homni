@@ -4,6 +4,7 @@ import { useAuthState } from './useAuthState';
 import { useRoleCheck } from './roles/useRoleCheck';
 import { signOut } from '../api/auth-authentication';
 import { useDevAuth } from './useDevAuth';
+import { useModuleAccessQuery } from './useModuleAccessQuery';
 import { AuthContextType } from '../types/types';
 
 // Create context with default values
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const authState = useAuthState();
   const roleChecks = useRoleCheck();
   const devAuth = useDevAuth();
+  const moduleAccessQuery = useModuleAccessQuery();
   
   // Add the logout function implementation
   const logout = async () => {
@@ -54,23 +56,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const refreshProfileWrapper = async (): Promise<void> => {
     if (authState.refreshProfile) {
       await authState.refreshProfile();
+      // Refetch module access after profile refresh
+      moduleAccessQuery.refetch();
     }
   };
   
-  // Implement synchronous canAccessModule using database lookup
+  // Implement synchronous canAccessModule using database data
   const canAccessModuleSync = (moduleId: string): boolean => {
     // If user is master admin, allow access to everything
     if (roleChecks.isMasterAdmin) {
       return true;
     }
     
-    // Check internal admin from module_access table via profile metadata  
-    if (authState.profile?.metadata?.internal_admin === true) {
+    // Check internal admin from database query
+    if (moduleAccessQuery.data?.isInternalAdmin === true) {
       return true;
     }
     
-    // Check module access from database via profile metadata
-    const modulesAccess = authState.profile?.metadata?.modules_access || [];
+    // Check module access from database query
+    const modulesAccess = moduleAccessQuery.data?.moduleAccess || [];
     return modulesAccess.includes(moduleId);
   };
   
@@ -78,7 +82,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextType = {
     ...authState, // Provides user, profile, isLoading, error, etc.
     ...roleChecks, // Provides role, isAdmin, isMasterAdmin, hasRole, etc.
-    loading: authState.isLoading, // Alias for backward compatibility
+    loading: authState.isLoading || moduleAccessQuery.isLoading, // Include module access loading
     canAccessModule: canAccessModuleSync, 
     canAccess: canAccessModuleSync, // Alias for backward compatibility
     canPerform: (action: string, resource: string) => false, // Stub implementation
