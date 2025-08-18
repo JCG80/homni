@@ -18,7 +18,7 @@ const roles: { role: UserRole; label: string; color: string }[] = [
   { role: 'content_editor', label: 'Content Editor', color: 'bg-green-500 hover:bg-green-600' },
   { role: 'company', label: 'Company', color: 'bg-amber-500 hover:bg-amber-600' },
   { role: 'user', label: 'User', color: 'bg-slate-500 hover:bg-slate-600' },
-  { role: 'guest', label: 'Guest', color: 'bg-gray-400 hover:bg-gray-500' },
+  { role: 'anonymous', label: 'Anonymous', color: 'bg-gray-400 hover:bg-gray-500' },
 ];
 
 const staggerDelay = 0.05;

@@ -14,7 +14,7 @@ export { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleL
  * All canonical roles in the system (no legacy values)
  */
 export const ALL_ROLES: UserRole[] = [
-  'guest',
+  'anonymous',
   'user', 
   'company',
   'content_editor',
@@ -26,7 +26,7 @@ export const ALL_ROLES: UserRole[] = [
  * Public-facing roles (canonical)
  */
 export const PUBLIC_ROLES: UserRole[] = [
-  'guest'
+  'anonymous'
 ];
 
 /**

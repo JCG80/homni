@@ -3,12 +3,12 @@
  * Maps legacy roles to canonical values with fallback to 'guest'
  */
 
-export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
+export type UserRole = 'anonymous' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
 
 const LEGACY_ROLE_MAP: Record<string, UserRole> = {
   // Anonymous/Guest mapping
-  'anonymous': 'guest',
-  'anon': 'guest',
+  'guest': 'anonymous',
+  'anon': 'anonymous',
   
   // User mapping  
   'member': 'user',
@@ -43,7 +43,7 @@ const LEGACY_ROLE_MAP: Record<string, UserRole> = {
  */
 export function normalizeRole(role: string | null | undefined): UserRole {
   if (!role || typeof role !== 'string') {
-    return 'guest';
+    return 'anonymous';
   }
   
   const cleanRole = role.toLowerCase().trim();
@@ -59,16 +59,16 @@ export function normalizeRole(role: string | null | undefined): UserRole {
     return normalized;
   }
   
-  // Fallback to guest for unknown roles
-  console.warn(`Unknown role '${role}' normalized to 'guest'`);
-  return 'guest';
+  // Fallback to anonymous for unknown roles
+  console.warn(`Unknown role '${role}' normalized to 'anonymous'`);
+  return 'anonymous';
 }
 
 /**
  * Checks if a role is already canonical (no mapping needed)
  */
 function isCanonicalRole(role: string): boolean {
-  const canonicalRoles: UserRole[] = ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'];
+  const canonicalRoles: UserRole[] = ['anonymous', 'user', 'company', 'content_editor', 'admin', 'master_admin'];
   return canonicalRoles.includes(role as UserRole);
 }
 
@@ -89,7 +89,7 @@ export function isLegacyRole(role: string | null | undefined): boolean {
  */
 export function getRoleDisplayName(role: UserRole): string {
   const displayNames: Record<UserRole, string> = {
-    'guest': 'Guest',
+    'anonymous': 'Anonymous',
     'user': 'User',
     'company': 'Company',
     'content_editor': 'Content Editor',
@@ -97,7 +97,7 @@ export function getRoleDisplayName(role: UserRole): string {
     'master_admin': 'Master Administrator'
   };
   
-  return displayNames[role] || 'Guest';
+  return displayNames[role] || 'Anonymous';
 }
 
 /**
@@ -105,7 +105,7 @@ export function getRoleDisplayName(role: UserRole): string {
  */
 export function getRoleLevel(role: UserRole): number {
   const levels: Record<UserRole, number> = {
-    'guest': 0,
+    'anonymous': 0,
     'user': 1,
     'company': 2,
     'content_editor': 3,

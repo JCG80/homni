@@ -1,75 +1,110 @@
-
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/hooks/use-toast';
-import { UserRole, normalizeRole } from '@/types/auth';
+import { UserRole } from '../types/unified-types';
 
 /**
  * Sets up a test user by signing in with a predefined account
+ * If the account doesn't exist, it creates it automatically
  * Used for development and testing purposes
  */
-export const setupTestUsers = async (role: UserRole = 'user') => {
+export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> => {
   try {
-    const normalizedRole = normalizeRole(role);
-    let email = '';
-    let password = 'Test1234!';
+    // Map role to email
+    const getEmailForRole = (role: UserRole): string => {
+      switch (role) {
+        case 'master_admin': return 'master-admin@test.local';
+        case 'admin': return 'admin@test.local';
+        case 'company': return 'company@test.local';
+        case 'content_editor': return 'content@test.local';
+        case 'user': return 'user@test.local';
+        case 'anonymous': return 'anonymous@test.local';
+        default: return 'user@test.local';
+      }
+    };
 
-    // Map canonical role to email
-    switch (normalizedRole) {
-      case 'master_admin':
-        email = 'master-admin@test.local';
-        break;
-      case 'admin':
-        email = 'admin@test.local';
-        break;
-      case 'company':
-        email = 'company@test.local';
-        break;
-      case 'content_editor':
-        email = 'content@test.local';
-        break;
-      case 'user':
-        email = 'user@test.local';
-        break;
-      case 'guest':
-        email = 'guest@test.local';
-        break;
-      default:
-        email = 'user@test.local'; // Default to user
-    }
+    const email = getEmailForRole(role);
+    const password = 'Test1234!';
 
-    console.log(`Logging in as ${normalizedRole} (from ${role}) using ${email}`);
+    console.log(`Attempting quick login as ${role} using ${email}`);
     
-    // Sign in with the configured email and password
-    const { data, error } = await supabase.auth.signInWithPassword({
+    // First, sign out any existing user
+    await supabase.auth.signOut();
+
+    // Try to sign in with existing credentials
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
-    if (error) {
-      console.error(`Error signing in as ${normalizedRole}:`, error);
-      toast({
-        title: "Login Failed",
-        description: `Could not login as ${role}: ${error.message}`,
-        variant: "destructive"
+    let userData = signInData;
+
+    // If sign in fails, try to create the account
+    if (signInError) {
+      console.log(`Sign in failed for ${email}, attempting to create account:`, signInError.message);
+      
+      // Try to sign up
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            role: role
+          }
+        }
       });
-      return false;
+
+      if (signUpError) {
+        console.error(`Failed to create account for ${email}:`, signUpError);
+        toast({
+          title: "Account Creation Failed",
+          description: `Could not create account for ${role}: ${signUpError.message}`,
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      // If sign up succeeded, try signing in again
+      if (signUpData.user) {
+        console.log(`Account created for ${email}, now signing in...`);
+        
+        const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (retryError) {
+          console.error(`Failed to sign in after account creation:`, retryError);
+          toast({
+            title: "Login Failed",
+            description: `Account created but login failed: ${retryError.message}`,
+            variant: "destructive"
+          });
+          return false;
+        }
+
+        userData = retrySignIn;
+      }
     }
 
-    if (data.user) {
+    if (userData?.user) {
       console.log(`Successfully signed in as ${role} (${email})`);
       
       // Ensure the user profile exists and has the correct role
       const { error: profileError } = await supabase
         .from('user_profiles')
         .upsert({
-          id: data.user.id,
-          user_id: data.user.id, // Ensure user_id is set to the correct ID
+          id: userData.user.id,
+          user_id: userData.user.id,
+          role: role,
           metadata: { role: role },
-          email: email
+          email: email,
+          full_name: `Test ${role.charAt(0).toUpperCase() + role.slice(1)}`
         }, { onConflict: 'id' });
         
       if (profileError) {
         console.warn("Could not update user profile:", profileError);
+        // Don't fail completely if profile update fails
       } else {
         console.log(`Profile updated with correct role (${role})`);
       }
@@ -79,11 +114,6 @@ export const setupTestUsers = async (role: UserRole = 'user') => {
         description: `Logged in as ${role} (${email})`,
         variant: "default"
       });
-      
-      // Force page reload to ensure auth state is updated everywhere
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
       
       return true;
     }

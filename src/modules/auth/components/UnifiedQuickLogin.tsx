@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { setupTestUsers } from '../utils/setupTestUsers';
-import { UserRole, normalizeRole } from '@/types/auth';
+import { UserRole } from '../types/unified-types';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,7 +20,7 @@ const roles: { role: UserRole; label: string; color: string }[] = [
   { role: 'content_editor', label: 'Editor', color: 'text-green-500' },
   { role: 'company', label: 'Company', color: 'text-amber-500' },
   { role: 'user', label: 'User', color: 'text-slate-500' },
-  { role: 'guest', label: 'Guest', color: 'text-gray-400' },
+  { role: 'anonymous', label: 'Anonymous', color: 'text-gray-400' },
 ];
 
 export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: UnifiedQuickLoginProps) => {
@@ -38,20 +38,45 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
     console.log('UnifiedQuickLogin mounted with redirectTo:', redirectTo);
   }, [redirectTo]);
   
+  const getRoleBasedRedirect = (role: UserRole): string => {
+    switch (role) {
+      case 'master_admin':
+      case 'admin':
+        return '/admin';
+      case 'company':
+        return '/dashboard/company';
+      case 'content_editor':
+        return '/dashboard/content-editor';
+      case 'user':
+        return '/dashboard/user';
+      case 'anonymous':
+        return '/';
+      default:
+        return '/dashboard';
+    }
+  };
+  
   const handleLogin = async (role: UserRole) => {
     try {
-      const normalizedRole = normalizeRole(role);
-      console.log(`Attempting quick login as ${normalizedRole} (from ${role})`);
+      console.log(`Attempting quick login as ${role}`);
       setIsLoading(role);
-      await setupTestUsers(normalizedRole);
       
-      // Handle success callback and redirection
-      if (onSuccess) {
-        onSuccess();
-      }
+      const success = await setupTestUsers(role);
       
-      if (redirectTo) {
-        navigate(redirectTo);
+      if (success) {
+        // Handle success callback
+        if (onSuccess) {
+          onSuccess();
+        }
+        
+        // Navigate to role-specific dashboard or provided redirectTo
+        const targetUrl = redirectTo || getRoleBasedRedirect(role);
+        console.log(`Login successful, navigating to: ${targetUrl}`);
+        
+        // Small delay to ensure auth state is updated
+        setTimeout(() => {
+          navigate(targetUrl);
+        }, 500);
       }
     } catch (error) {
       console.error('Failed to login with test user:', error);
