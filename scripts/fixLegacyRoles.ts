@@ -57,7 +57,9 @@ const EXEMPT_PATTERNS = [
   /normalizeRole/,
   /LEGACY_ROLE_MAP/,
   /fixLegacyRoles/,
-  /guardLegacyRoles/
+  /guardLegacyRoles/,
+  /\.sql\b/,              // SQL files content
+  /\.md\b/                // Markdown files content  
 ];
 
 async function fixLegacyRoles() {

@@ -12,7 +12,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
   try {
     // Primary implementation - from user data
     if (!userData) {
-      return 'anonymous' as UserRole;
+      return 'guest' as UserRole;
     }
 
     // Extract role from user metadata
@@ -30,7 +30,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
       if (email === 'company@test.local' || email === 'provider@test.local') return 'company' as UserRole;
       if (email === 'user@test.local' || email === 'member@test.local') return 'user' as UserRole;
       if (email === 'content@test.local') return 'content_editor' as UserRole;
-      if (email === 'anonymous@test.local') return 'anonymous' as UserRole;
+      if (email === 'guest@test.local' || email === 'anonymous@test.local') return 'guest' as UserRole;
     }
     
     // Validate if the role is a valid UserRole

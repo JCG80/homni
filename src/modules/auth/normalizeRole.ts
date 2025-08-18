@@ -6,11 +6,9 @@
 export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
 
 const LEGACY_ROLE_MAP: Record<string, UserRole> = {
-  // Anonymous/Guest mapping
+  // Legacy mappings
   'anonymous': 'guest',
   'anon': 'guest',
-  
-  // User mapping  
   'member': 'user',
   'regular': 'user',
   'basic': 'user',
@@ -33,17 +31,24 @@ const LEGACY_ROLE_MAP: Record<string, UserRole> = {
   // Master admin mapping
   'super_admin': 'master_admin',
   'root': 'master_admin',
-  'system_admin': 'master_admin'
+  'system_admin': 'master_admin',
+  
+  // Idempotent mappings (canonical roles map to themselves)
+  'guest': 'guest',
+  'user': 'user',
+  'company': 'company',
+  'content_editor': 'content_editor',
+  'master_admin': 'master_admin'
 };
 
 /**
  * Normalizes any role string to canonical UserRole
  * @param role - Raw role string from various sources
- * @returns Canonical UserRole with fallback to 'anonymous'
+ * @returns Canonical UserRole with fallback to 'guest'
  */
 export function normalizeRole(role: string | null | undefined): UserRole {
   if (!role || typeof role !== 'string') {
-  return 'guest';
+    return 'guest';
   }
   
   const cleanRole = role.toLowerCase().trim();
@@ -59,8 +64,8 @@ export function normalizeRole(role: string | null | undefined): UserRole {
     return normalized;
   }
   
-  // Fallback to anonymous for unknown roles
-  console.warn(`Unknown role '${role}' normalized to 'anonymous'`);
+  // Fallback to guest for unknown roles
+  console.warn(`Unknown role '${role}' normalized to 'guest'`);
   return 'guest';
 }
 
@@ -97,7 +102,7 @@ export function getRoleDisplayName(role: UserRole): string {
     'master_admin': 'Master Administrator'
   };
   
-  return displayNames[role] || 'Anonymous';
+  return displayNames[role] || 'Guest';
 }
 
 /**

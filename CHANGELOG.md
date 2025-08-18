@@ -10,11 +10,10 @@
 - UI layer: proper emoji/label mapping separated from business logic
 - Removed duplicate navigation config and consolidated imports
 - Created comprehensive documentation for standardization process
-- Standardized user roles across the application to: 'anonymous', 'user', 'company', 'admin', 'master_admin'
-- Updated all role-related utilities to use the new standardized roles
-- Removed deprecated roles: 'provider', 'editor', 'member', 'guest'
-- Changed 'guest' references to 'anonymous' and 'member' references to 'user'
-- Updated Authenticated component to use `user?.role ?? 'anonymous'`
+- Standardized user roles across the application to: 'guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'
+- Updated all role-related utilities to use the new canonical roles
+- Changed 'anonymous' references to 'guest' and 'member' references to 'user'
+- Updated Authenticated component to use `user?.role ?? 'guest'`
 - Updated ProtectedRoute component to handle new role system
 - Translated user-facing messages to Norwegian for consistency
 - Maintained English variable names and comments in backend code

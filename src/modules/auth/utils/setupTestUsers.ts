@@ -4,7 +4,7 @@ import { UserRole } from '../types/unified-types';
 import { normalizeRole } from '../normalizeRole';
 
 const DEV_USERS: Record<UserRole, { email: string; password: string; name: string }> = {
-  'guest': { email: 'anon@test.local', password: 'Test1234!', name: 'Guest User' },
+  'guest': { email: 'guest@test.local', password: 'Test1234!', name: 'Guest User' },
   'user': { email: 'user@test.local', password: 'Test1234!', name: 'Test User' },
   'company': { email: 'company@test.local', password: 'Test1234!', name: 'Test Company' },
   'content_editor': { email: 'content@test.local', password: 'Test1234!', name: 'Content Editor' },

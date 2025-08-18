@@ -100,7 +100,7 @@
 
 ### Standard User Roles
 
-1. **Anonymous** (`anonymous`)
+1. **Guest** (`guest`)
    - Unauthenticated visitors
    - Access to: home, login, register, public pages, lead submission
    - Redirected to login when attempting to access protected content
