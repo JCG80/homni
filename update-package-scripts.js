@@ -14,7 +14,7 @@ packageJson.scripts = {
   "test:coverage": "vitest run --coverage",
   "test:unit": "vitest run",
   "typecheck": "tsc --noEmit",
-  "repo:health": "npm run typecheck && npm run build && npm run test:unit && npm run check:duplicates && npm run guard:required && npm run guard:rls && npm run guard:functions && npm run guard:migrations",
+  "repo:health": "node scripts/repo-health.js",
   "seed:users": "ts-node scripts/seedTestUsers.ts",
   "check:duplicates": "ts-node scripts/checkDuplicates.ts",
   "guard:required": "ts-node --transpile-only scripts/guardRequiredFiles.ts",

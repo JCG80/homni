@@ -69,7 +69,7 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
   };
 
   return (
-    <Card>
+    <Card data-test-id="quick-login-card">
       {showHeader && (
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Developer Quick Login</CardTitle>
@@ -113,6 +113,7 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
                     className="w-full"
                     disabled={isLoading !== null}
                     onClick={() => handleLogin(role)}
+                    data-test-id={`quick-login-user-${role}`}
                   >
                     {isLoading === role ? (
                       <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -156,6 +157,7 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
                     className="w-full justify-start text-left"
                     disabled={isLoading !== null}
                     onClick={() => handleLogin(role)}
+                    data-test-id={`quick-login-user-${role}`}
                   >
                     {isLoading === role ? (
                       <svg className="animate-spin mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
