@@ -1593,6 +1593,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_user_role_level: {
+        Args: { _user_id: string }
+        Returns: number
+      }
       has_module_access: {
         Args: { module_name: string; user_id?: string }
         Returns: boolean
@@ -1602,6 +1606,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      has_role_level: {
+        Args: { _min_level: number; _user_id: string }
         Returns: boolean
       }
       is_feature_enabled: {

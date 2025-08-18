@@ -1,10 +1,9 @@
-
 /**
  * Unified auth module types that match the database schema
  */
 
 /**
- * Standard user roles in the application
+ * Standard user roles in the application - now matches database app_role enum
  */
 export type UserRole = 
   | 'guest'         // Not logged in (replaces anonymous)
@@ -19,6 +18,7 @@ export type UserRole =
  */
 export interface UserProfile {
   id: string;
+  user_id: string;
   full_name?: string;
   email?: string;
   phone?: string;
@@ -27,6 +27,10 @@ export interface UserProfile {
   profile_picture_url?: string;
   created_at: string;
   updated_at?: string;
+  deleted_at?: string;
+  role?: string; // Legacy field, use user_roles table instead
+  account_type?: string; // Legacy field
+  company_id?: string;
   metadata: {
     role?: UserRole;
     company_id?: string;
@@ -35,6 +39,39 @@ export interface UserProfile {
     [key: string]: any;
   };
   preferences?: Record<string, any>;
+  notification_preferences?: Record<string, any>;
+  ui_preferences?: Record<string, any>;
+  feature_overrides?: Record<string, any>;
+}
+
+/**
+ * Company profile interface that matches the enhanced database schema
+ */
+export interface CompanyProfile {
+  id: string;
+  user_id?: string;
+  name: string;
+  contact_name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  region?: string;
+  contact_email?: string;
+  website?: string;
+  description?: string;
+  logo_url?: string;
+  industry?: string;
+  subscription_plan?: string;
+  modules_access?: string[];
+  status?: string;
+  tags?: string[];
+  created_at: string;
+  updated_at?: string;
+  deleted_at?: string;
+  metadata?: Record<string, any>;
+  notification_preferences?: Record<string, any>;
+  ui_preferences?: Record<string, any>;
+  feature_overrides?: Record<string, any>;
 }
 
 /**
@@ -43,6 +80,46 @@ export interface UserProfile {
 export interface AuthUser {
   id: string;
   email?: string;
+}
+
+/**
+ * Module metadata for plugin-driven architecture
+ */
+export interface ModuleMetadata {
+  id: string;
+  name: string;
+  description?: string;
+  version: string;
+  dependencies: string[];
+  feature_flags: Record<string, any>;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Feature flags for role-based feature rollout
+ */
+export interface FeatureFlag {
+  id: string;
+  name: string;
+  description?: string;
+  is_enabled: boolean;
+  rollout_percentage?: number;
+  target_roles?: UserRole[];
+  conditions?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * User role assignment (separate table for proper role management)
+ */
+export interface UserRoleAssignment {
+  id: string;
+  user_id: string;
+  role: UserRole;
+  created_at: string;
 }
 
 /**
@@ -63,6 +140,7 @@ export interface QuickLoginUser {
 export interface AuthState {
   user: AuthUser | null;
   profile: UserProfile | null;
+  userRoles: UserRoleAssignment[];
   isLoading: boolean;
   error: Error | null;
   isAuthenticated: boolean;
@@ -87,6 +165,7 @@ export interface AuthContextType extends AuthState {
   
   // Role checking methods
   hasRole: (role: UserRole | UserRole[]) => boolean;
+  hasRoleLevel: (minLevel: number) => boolean;
   
   // Access control methods
   canAccessModule: (moduleId: string) => boolean;
