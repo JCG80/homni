@@ -68,13 +68,6 @@ export async function updateLeadStatus(leadId: string, status: LeadStatus): Prom
 
 export async function fetchLeadCounts(companyId?: string, userId?: string): Promise<LeadCounts> {
   const counts: LeadCounts = {
-    '📥 new': 0,
-    '👀 qualified': 0,
-    '💬 contacted': 0,
-    '📞 negotiating': 0,
-    '✅ converted': 0,
-    '❌ lost': 0,
-    '⏸️ paused': 0,
     new: 0,
     in_progress: 0,
     won: 0,

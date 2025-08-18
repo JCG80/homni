@@ -153,15 +153,8 @@ export interface LeadFilter {
   submitted_by?: string;
 }
 
-// Lead counts by status type (supporting both legacy and emoji)
+// Lead counts by status type  
 export interface LeadCounts {
-  '📥 new': number;
-  '👀 qualified': number;
-  '💬 contacted': number;
-  '📞 negotiating': number;
-  '✅ converted': number;
-  '❌ lost': number;
-  '⏸️ paused': number;
   new: number;
   in_progress: number;
   won: number;
