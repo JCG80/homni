@@ -1515,6 +1515,31 @@ export type Database = {
           cost: number
         }[]
       }
+      ensure_user_profile: {
+        Args: { p_company_id?: string; p_role?: string; p_user_id: string }
+        Returns: {
+          account_type: string | null
+          address: string | null
+          company_id: string | null
+          created_at: string | null
+          deleted_at: string | null
+          display_name: string | null
+          email: string | null
+          feature_overrides: Json
+          full_name: string | null
+          id: string
+          metadata: Json
+          notification_preferences: Json
+          phone: string | null
+          preferences: Json | null
+          profile_picture_url: string | null
+          region: string | null
+          role: string | null
+          ui_preferences: Json
+          updated_at: string
+          user_id: string
+        }
+      }
       execute_auto_purchase: {
         Args: {
           p_buyer_id: string

@@ -1,130 +1,171 @@
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/hooks/use-toast';
 import { UserRole } from '../types/unified-types';
+import { normalizeRole } from '../normalizeRole';
+
+const DEV_USERS: Record<UserRole, { email: string; password: string; name: string }> = {
+  'anonymous': { email: 'anon@test.local', password: 'Test1234!', name: 'Anonymous User' },
+  'user': { email: 'user@test.local', password: 'Test1234!', name: 'Test User' },
+  'company': { email: 'company@test.local', password: 'Test1234!', name: 'Test Company' },
+  'content_editor': { email: 'content@test.local', password: 'Test1234!', name: 'Content Editor' },
+  'admin': { email: 'admin@test.local', password: 'Test1234!', name: 'Test Admin' },
+  'master_admin': { email: 'master-admin@test.local', password: 'Test1234!', name: 'Master Admin' }
+};
 
 /**
- * Sets up a test user by signing in with a predefined account
- * If the account doesn't exist, it creates it automatically
- * Used for development and testing purposes
+ * Set up test users for development/testing purposes - REPO-WIDE SOLUTION
+ * Uses RPC ensure_user_profile for atomic profile creation (Ultimate Master 2.0)
  */
 export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> => {
   try {
-    // Map role to email
-    const getEmailForRole = (role: UserRole): string => {
-      switch (role) {
-        case 'master_admin': return 'master-admin@test.local';
-        case 'admin': return 'admin@test.local';
-        case 'company': return 'company@test.local';
-        case 'content_editor': return 'content@test.local';
-        case 'user': return 'user@test.local';
-        case 'anonymous': return 'anonymous@test.local';
-        default: return 'user@test.local';
-      }
-    };
-
-    const email = getEmailForRole(role);
-    const password = 'Test1234!';
-
-    console.log(`Attempting quick login as ${role} using ${email}`);
+    console.log(`[setupTestUsers] Setting up test user with role: ${role}`);
     
-    // First, sign out any existing user
+    // Normalize the role to ensure we have a canonical value
+    const normalizedRole = normalizeRole(role);
+    console.log(`[setupTestUsers] Normalized role: ${normalizedRole}`);
+    
+    const devUser = DEV_USERS[normalizedRole];
+    if (!devUser) {
+      console.error(`[setupTestUsers] No dev user configuration found for role: ${normalizedRole}`);
+      toast({
+        title: 'Configuration Error',
+        description: `No test user configured for role: ${normalizedRole}`,
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    console.log(`[setupTestUsers] Attempting to sign in as: ${devUser.email}`);
+
+    // Sign out any existing user first
     await supabase.auth.signOut();
 
-    // Try to sign in with existing credentials
+    // Attempt to sign in
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password
+      email: devUser.email,
+      password: devUser.password,
     });
 
-    let userData = signInData;
-
-    // If sign in fails, try to create the account
-    if (signInError) {
-      console.log(`Sign in failed for ${email}, attempting to create account:`, signInError.message);
+    if (signInError && signInError.message.includes('Invalid login credentials')) {
+      console.log(`[setupTestUsers] User doesn't exist, creating account for: ${devUser.email}`);
       
-      // Try to sign up
+      // Create the user account
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
+        email: devUser.email,
+        password: devUser.password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
-            role: role
-          }
-        }
+            full_name: devUser.name,
+            role: normalizedRole,
+          },
+        },
       });
 
       if (signUpError) {
-        console.error(`Failed to create account for ${email}:`, signUpError);
+        console.error('[setupTestUsers] Sign up error:', signUpError);
         toast({
-          title: "Account Creation Failed",
-          description: `Could not create account for ${role}: ${signUpError.message}`,
-          variant: "destructive"
+          title: 'Account Creation Failed',
+          description: signUpError.message,
+          variant: 'destructive',
         });
         return false;
       }
 
-      // If sign up succeeded, try signing in again
-      if (signUpData.user) {
-        console.log(`Account created for ${email}, now signing in...`);
-        
-        const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (retryError) {
-          console.error(`Failed to sign in after account creation:`, retryError);
-          toast({
-            title: "Login Failed",
-            description: `Account created but login failed: ${retryError.message}`,
-            variant: "destructive"
-          });
-          return false;
-        }
-
-        userData = retrySignIn;
-      }
+      console.log('[setupTestUsers] Account created successfully');
+      
+      // Short delay to let auth propagate
+      await new Promise(resolve => setTimeout(resolve, 100));
+    } else if (signInError) {
+      console.error('[setupTestUsers] Sign in error:', signInError);
+      toast({
+        title: 'Sign In Failed',
+        description: signInError.message,
+        variant: 'destructive',
+      });
+      return false;
     }
 
-    if (userData?.user) {
-      console.log(`Successfully signed in as ${role} (${email})`);
-      
-      // Ensure the user profile exists and has the correct role
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .upsert({
-          id: userData.user.id,
-          user_id: userData.user.id,
-          role: role,
-          metadata: { role: role },
-          email: email,
-          full_name: `Test ${role.charAt(0).toUpperCase() + role.slice(1)}`
-        }, { onConflict: 'id' });
-        
-      if (profileError) {
-        console.warn("Could not update user profile:", profileError);
-        // Don't fail completely if profile update fails
-      } else {
-        console.log(`Profile updated with correct role (${role})`);
+    // Get the current user - retry if needed
+    let user = null;
+    let retries = 3;
+    while (retries > 0 && !user) {
+      const { data: { user: currentUser }, error: getUserError } = await supabase.auth.getUser();
+      if (getUserError) {
+        console.error('[setupTestUsers] Failed to get user:', getUserError);
+        retries--;
+        await new Promise(resolve => setTimeout(resolve, 200));
+        continue;
       }
+      user = currentUser;
+      break;
+    }
+
+    if (!user) {
+      console.error('[setupTestUsers] Failed to get authenticated user after retries');
+      return false;
+    }
+
+    console.log(`[setupTestUsers] Successfully authenticated user: ${user.id}`);
+
+    // Use the SECURITY DEFINER RPC function for atomic profile upsert
+    try {
+      console.log(`[setupTestUsers] Calling ensure_user_profile RPC with role: ${normalizedRole}`);
       
+      const { data: profileData, error: rpcError } = await supabase.rpc('ensure_user_profile', {
+        p_user_id: user.id,
+        p_role: normalizedRole,
+        p_company_id: null
+      });
+
+      if (rpcError) {
+        console.error('[setupTestUsers] RPC ensure_user_profile failed:', rpcError);
+        // Fallback to manual profile update
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .upsert({
+            id: user.id,
+            user_id: user.id,
+            full_name: devUser.name,
+            email: devUser.email,
+            role: normalizedRole,
+            updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'id'
+          });
+
+        if (profileError) {
+          console.warn('[setupTestUsers] Fallback profile upsert also failed:', profileError);
+        }
+      } else {
+        console.log('[setupTestUsers] Profile ensured via RPC:', profileData);
+      }
+
+      // Short delay for profile to propagate
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       toast({
-        title: "Login Success",
-        description: `Logged in as ${role} (${email})`,
-        variant: "default"
+        title: 'Login Successful',
+        description: `Logged in as ${normalizedRole}: ${devUser.name}`,
       });
       
       return true;
+    } catch (profileError) {
+      console.error('[setupTestUsers] Profile setup error:', profileError);
+      // Continue anyway - the user is authenticated
+      toast({
+        title: 'Partial Success',
+        description: 'Logged in but profile setup had issues',
+        variant: 'destructive',
+      });
+      return true;
     }
-    
-    return false;
   } catch (error) {
-    console.error('Unexpected error in setupTestUsers:', error);
+    console.error('[setupTestUsers] Unexpected error:', error);
     toast({
-      title: "Setup Failed",
-      description: `Unexpected error setting up test user: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      variant: "destructive"
+      title: 'Unexpected Error',
+      description: 'An unexpected error occurred during test user setup',
+      variant: 'destructive',
     });
     return false;
   }

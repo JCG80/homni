@@ -39,7 +39,7 @@ const LEGACY_ROLE_MAP: Record<string, UserRole> = {
 /**
  * Normalizes any role string to canonical UserRole
  * @param role - Raw role string from various sources
- * @returns Canonical UserRole with fallback to 'guest'
+ * @returns Canonical UserRole with fallback to 'anonymous'
  */
 export function normalizeRole(role: string | null | undefined): UserRole {
   if (!role || typeof role !== 'string') {

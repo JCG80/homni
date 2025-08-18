@@ -1,28 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { LoginTabs } from '@/components/auth/LoginTabs';
 import { TestUserManager } from '@/components/auth/TestUserManager';
 import { UserRole } from '@/modules/auth/utils/roles';
 import { devLogin } from '@/modules/auth/utils/devLogin';
 import { toast } from '@/hooks/use-toast';
+import { useAuthGate } from '@/modules/auth/hooks/useAuthGate';
 
 export const LoginPage = () => {
-  const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
-
-  useEffect(() => {
-    // If user is already logged in, redirect to dashboard
-    if (user && !isLoading) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [user, isLoading, navigate]);
-  // Fallback: show form after 2s even if auth is still loading
-  const [forceShowForm, setForceShowForm] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setForceShowForm(true), 2000);
-    return () => clearTimeout(t);
-  }, []);
+  // Use AuthGate to handle auth state and auto-redirect
+  const { ready } = useAuthGate({ 
+    redirectOnReady: true, 
+    waitForProfile: true 
+  });
 
   // Handle test user login
   const handleDevLogin = async (role: UserRole) => {
@@ -37,15 +27,15 @@ export const LoginPage = () => {
     // Success notifications are already handled in devLogin
   };
 
-  // Show loading state while checking authentication, but with timeout
-  if (isLoading && !forceShowForm) {
+  // Show loading state while AuthGate determines readiness
+  if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-lg mt-4">Verifiserer...</p>
           <p className="text-sm text-muted-foreground mt-2">
-            Hvis dette tar for lang tid, prøv å refresh siden
+            Vent mens vi setter opp din sesjon...
           </p>
         </div>
       </div>

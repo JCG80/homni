@@ -14,13 +14,14 @@ export interface UnifiedQuickLoginProps {
   showHeader?: boolean;
 }
 
+// Only canonical roles (Ultimate Master 2.0 standard)
 const roles: { role: UserRole; label: string; color: string }[] = [
   { role: 'master_admin', label: 'Master Admin', color: 'text-purple-500' },
   { role: 'admin', label: 'Admin', color: 'text-blue-500' },
   { role: 'content_editor', label: 'Editor', color: 'text-green-500' },
   { role: 'company', label: 'Company', color: 'text-amber-500' },
   { role: 'user', label: 'User', color: 'text-slate-500' },
-  { role: 'anonymous', label: 'Anonymous', color: 'text-gray-400' },
+  { role: 'anonymous', label: 'Guest', color: 'text-gray-400' },
 ];
 
 export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: UnifiedQuickLoginProps) => {
