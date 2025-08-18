@@ -6,7 +6,7 @@
 import { UserRole } from '@/modules/auth/utils/roles/types';
 
 export interface NavigationItem {
-  path: string;
+  href: string;
   label: string;
   icon?: string;
   badge?: string | number;
@@ -28,36 +28,36 @@ export type Role = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | '
  */
 export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', NavigationItem[]> = {
   guest: [
-    { path: '/', label: 'Forside' },
-    { path: '/sammenlign', label: 'Sammenlign' },
-    { path: '/om-oss', label: 'Om oss' },
-    { path: '/login', label: 'Logg inn' },
+    { href: '/', label: 'Forside' },
+    { href: '/sammenlign', label: 'Sammenlign' },
+    { href: '/om-oss', label: 'Om oss' },
+    { href: '/login', label: 'Logg inn' },
   ],
 
   user: [
-    { path: '/', label: 'Dashboard' },
-    { path: '/dokumenter', label: 'Mine dokumenter' },
-    { path: '/eiendommer', label: 'Eiendommer' },
-    { path: '/sammenlign', label: 'Sammenlign' },
-    { path: '/profil', label: 'Profil' },
+    { href: '/', label: 'Dashboard' },
+    { href: '/dokumenter', label: 'Mine dokumenter' },
+    { href: '/eiendommer', label: 'Eiendommer' },
+    { href: '/sammenlign', label: 'Sammenlign' },
+    { href: '/profil', label: 'Profil' },
   ],
 
   company: [
-    { path: '/', label: 'Bedrift Dashboard' },
-    { path: '/leads', label: 'Mine Leads' },
-    { path: '/leads/kanban', label: 'Pipeline' },
-    { path: '/pakker', label: 'Abonnementer' },
-    { path: '/rapporter', label: 'Rapporter' },
-    { path: '/innstillinger', label: 'Innstillinger' },
+    { href: '/', label: 'Bedrift Dashboard' },
+    { href: '/leads', label: 'Mine Leads' },
+    { href: '/leads/kanban', label: 'Pipeline' },
+    { href: '/pakker', label: 'Abonnementer' },
+    { href: '/rapporter', label: 'Rapporter' },
+    { href: '/innstillinger', label: 'Innstillinger' },
   ],
 
   content_editor: [
-    { path: '/', label: 'Innhold Dashboard' },
-    { path: '/cms', label: 'Innholdsstyring' },
-    { path: '/cms/artikler', label: 'Artikler' },
-    { path: '/cms/sider', label: 'Sider' },
-    { path: '/cms/media', label: 'Media' },
-    { path: '/cms/preview', label: 'Forhåndsvisning' },
+    { href: '/', label: 'Innhold Dashboard' },
+    { href: '/cms', label: 'Innholdsstyring' },
+    { href: '/cms/artikler', label: 'Artikler' },
+    { href: '/cms/sider', label: 'Sider' },
+    { href: '/cms/media', label: 'Media' },
+    { href: '/cms/preview', label: 'Forhåndsvisning' },
   ],
 };
 
@@ -67,27 +67,27 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
  */
 export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
   admin: [
-    { path: '/admin', label: 'Admin Dashboard' },
-    { path: '/admin/leads', label: 'Alle Leads' },
-    { path: '/admin/leads/distribution', label: 'Lead-distribusjon' },
-    { path: '/admin/pakker', label: 'Lead-pakker' },
-    { path: '/admin/kjøpere', label: 'Kjøper-kontoer' },
-    { path: '/admin/brukere', label: 'Brukere' },
-    { path: '/admin/bedrifter', label: 'Bedrifter' },
-    { path: '/admin/rapporter', label: 'System-rapporter' },
-    { path: '/admin/innstillinger', label: 'System-innstillinger' },
+    { href: '/admin', label: 'Admin Dashboard' },
+    { href: '/admin/leads', label: 'Alle Leads' },
+    { href: '/admin/leads/distribution', label: 'Lead-distribusjon' },
+    { href: '/admin/pakker', label: 'Lead-pakker' },
+    { href: '/admin/kjøpere', label: 'Kjøper-kontoer' },
+    { href: '/admin/brukere', label: 'Brukere' },
+    { href: '/admin/bedrifter', label: 'Bedrifter' },
+    { href: '/admin/rapporter', label: 'System-rapporter' },
+    { href: '/admin/innstillinger', label: 'System-innstillinger' },
   ],
 
   master_admin: [
-    { path: '/master', label: 'Master Dashboard' },
-    { path: '/master/system', label: 'System-oversikt' },
-    { path: '/master/moduler', label: 'Moduler' },
-    { path: '/master/feature-flags', label: 'Feature Flags' },
-    { path: '/master/roller', label: 'Roller & Tilganger' },
-    { path: '/master/database', label: 'Database' },
-    { path: '/master/sikkerhet', label: 'Sikkerhet' },
-    { path: '/master/overvåking', label: 'Overvåking' },
-    { path: '/master/backup', label: 'Backup & Recovery' },
+    { href: '/master', label: 'Master Dashboard' },
+    { href: '/master/system', label: 'System-oversikt' },
+    { href: '/master/moduler', label: 'Moduler' },
+    { href: '/master/feature-flags', label: 'Feature Flags' },
+    { href: '/master/roller', label: 'Roller & Tilganger' },
+    { href: '/master/database', label: 'Database' },
+    { href: '/master/sikkerhet', label: 'Sikkerhet' },
+    { href: '/master/overvåking', label: 'Overvåing' },
+    { href: '/master/backup', label: 'Backup & Recovery' },
   ],
 };
 
@@ -97,27 +97,27 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
  */
 export const navConfig: Record<UserRole, NavigationConfig> = {
   guest: {
-    main: navUser.guest.map(item => ({ label: item.label, href: item.path })),
+    main: navUser.guest.map(item => ({ label: item.label, href: item.href })),
     secondary: []
   },
   user: {
-    main: navUser.user.map(item => ({ label: item.label, href: item.path })),
+    main: navUser.user.map(item => ({ label: item.label, href: item.href })),
     secondary: []
   },
   company: {
-    main: navUser.company.map(item => ({ label: item.label, href: item.path })),
+    main: navUser.company.map(item => ({ label: item.label, href: item.href })),
     secondary: []
   },
   content_editor: {
-    main: navUser.content_editor.map(item => ({ label: item.label, href: item.path })),
+    main: navUser.content_editor.map(item => ({ label: item.label, href: item.href })),
     secondary: []
   },
   admin: {
-    main: navControl.admin.map(item => ({ label: item.label, href: item.path })),
+    main: navControl.admin.map(item => ({ label: item.label, href: item.href })),
     secondary: []
   },
   master_admin: {
-    main: navControl.master_admin.map(item => ({ label: item.label, href: item.path })),
+    main: navControl.master_admin.map(item => ({ label: item.label, href: item.href })),
     secondary: []
   }
 };
