@@ -12,19 +12,43 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 // Add comprehensive script collection
 const newScripts = {
   ...packageJson.scripts,
+  // Core
+  "dev": packageJson.scripts?.dev || "vite",
+  "build": packageJson.scripts?.build || "vite build",
+  "preview": packageJson.scripts?.preview || "vite preview",
+
+  // Quality & Types
+  "typecheck": "tsc --noEmit",
+  "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+  "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
+  "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+  "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+
+  // Tests
+  "test": "vitest",
+  "test:watch": "vitest --watch",
   "test:unit": "vitest run",
-  "test:e2e": "playwright test",
-  "test:cypress": "cypress run",
-  "test:marketplace": "ts-node scripts/test-marketplace.ts",
   "test:coverage": "vitest run --coverage",
-  "guard:legacy-roles": "node scripts/guardLegacyRoles.js",
+  "e2e": "playwright test",
+  "e2e:ui": "playwright test --ui",
+
+  // Guards & Health
+  "check:duplicates": "ts-node scripts/checkDuplicates.ts",
   "guard:required": "ts-node --transpile-only scripts/guardRequiredFiles.ts",
-  "guard:rls": "node scripts/guardRls.js",
-  "guard:functions": "node scripts/guardFunctions.js", 
-  "guard:migrations": "node scripts/guardMigrations.js",
-  "guard:marketplace": "ts-node scripts/test-marketplace.ts",
-  "check:duplicates": "node scripts/checkDuplicates.js",
-  "repo:health": "npm run typecheck && npm run build && npm run test:unit && npm run check:duplicates && npm run guard:legacy-roles && npm run guard:rls && npm run guard:functions && npm run guard:migrations",
+  "guard:legacy-roles": "ts-node --transpile-only scripts/guardLegacyRoles.ts",
+  "guard:rls": "ts-node scripts/checkRls.ts",
+  "guard:functions": "ts-node scripts/checkFunctions.ts",
+  "guard:migrations": "ts-node scripts/checkMigrations.ts",
+  "migrations:check": "ts-node scripts/checkMigrations.ts",
+  "migrations:generate-downs": "ts-node scripts/generateDownMigrations.ts",
+  "repo:health": "ts-node scripts/repo-health.ts",
+
+  // DX Utilities
+  "seed:users": "ts-node scripts/seedTestUsers.ts",
+  "update:supabase-imports": "node scripts/updateSupabaseImports.js",
+  "types:generate": "supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts",
+
+  // Phase complete
   "phase:complete": "npm run repo:health && echo '✅ Phase marked as SHIPPABLE'"
 };
 
