@@ -1,221 +1,148 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
-import { toast } from '@/hooks/use-toast';
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Shield, Users, Crown, Building2, Edit3, User } from 'lucide-react';
+import { useAuth } from '@/modules/auth/hooks';
+import { RoleManagement } from '@/modules/admin/components/RoleManagement';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 
-interface User {
-  id: string;
-  email: string;
-  account_type: 'user' | 'company' | 'admin' | 'master_admin';
-  internal_admin: boolean;
-  module_access: string[];
-  last_sign_in_at?: string;
-  created_at?: string;
-}
+const roleIcons: Record<UserRole, React.ComponentType<{ className?: string }>> = {
+  guest: User,
+  user: User,
+  company: Building2,
+  content_editor: Edit3,
+  admin: Shield,
+  master_admin: Crown,
+};
 
-export const RoleManagementPage: React.FC = () => {
-  const { isMasterAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState('members');
+const roleLabels: Record<UserRole, string> = {
+  guest: 'Gjest',
+  user: 'Bruker',
+  company: 'Bedrift',
+  content_editor: 'Innholdsredaktør',
+  admin: 'Administrator',
+  master_admin: 'Master Admin',
+};
 
-  // Fetch users
-  const { data: users, isLoading, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_profiles' as any)
-        .select('*');
-      
-      if (error) throw error;
-      return data as unknown as User[];
-    },
-  });
+export function RoleManagementPage() {
+  const { user, profile, role, isAdmin, isMasterAdmin } = useAuth();
 
-  // Group users by role
-  const members = users?.filter(user => user.account_type === 'user') || [];
-  const companies = users?.filter(user => user.account_type === 'company') || [];
-
-  // Function to update user modules
-  const updateUserModules = async (userId: string, modules: string[]) => {
-    try {
-      const { error } = await supabase
-        .from('user_profiles' as any)
-        .update({ module_access: modules })
-        .eq('id', userId);
-      
-      if (error) throw error;
-      toast({
-        title: "Moduler oppdatert",
-        description: "Brukerens moduler har blitt oppdatert",
-        variant: "success" as any,
-      });
-    } catch (err) {
-      console.error('Error updating user modules:', err);
-      toast({
-        title: "Feil ved oppdatering",
-        description: "Kunne ikke oppdatere brukerens moduler",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Handle error display
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: "Feil ved henting av brukere",
-        description: error instanceof Error ? error.message : "Ukjent feil",
-        variant: "destructive",
-      });
-    }
-  }, [error]);
-
-  if (!isMasterAdmin) {
+  if (!isAdmin && !isMasterAdmin) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Ingen tilgang</h1>
-        <p>Du har ikke tilgang til denne siden.</p>
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <Shield className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Ingen tilgang</h3>
+            <p className="text-muted-foreground">
+              Du har ikke tilgang til rolleadministrasjon
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
+  if (!user || !profile) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="animate-pulse space-y-4">
+              <div className="h-6 bg-muted rounded w-1/3"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+              <div className="h-32 bg-muted rounded"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const Icon = role ? roleIcons[role as UserRole] : User;
+
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Rolleadministrasjon</h1>
-      
-      <AdminNavigation />
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList>
-          <TabsTrigger value="members">Brukere</TabsTrigger>
-          <TabsTrigger value="companies">Bedrifter</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="members" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Brukeroversikt</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-2">E-post</th>
-                        <th className="text-left p-2">Navn</th>
-                        <th className="text-left p-2">Registrert</th>
-                        <th className="text-left p-2">Siste pålogging</th>
-                        <th className="text-left p-2">Handlinger</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {members.length > 0 ? (
-                        members.map(user => (
-                          <tr key={user.id} className="border-b hover:bg-muted/50">
-                            <td className="p-2">{user.email}</td>
-                            <td className="p-2">{/* TODO: Add name field */}</td>
-                            <td className="p-2">{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
-                            <td className="p-2">{user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : 'N/A'}</td>
-                            <td className="p-2">
-                              <button className="text-primary hover:underline">Tilbakestill passord</button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={5} className="p-4 text-center text-muted-foreground">Ingen brukere funnet</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="companies" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Bedriftsoversikt</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-2">E-post</th>
-                        <th className="text-left p-2">Bedriftsnavn</th>
-                        <th className="text-left p-2">Moduler</th>
-                        <th className="text-left p-2">Handlinger</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {companies.length > 0 ? (
-                        companies.map(company => (
-                          <tr key={company.id} className="border-b hover:bg-muted/50">
-                            <td className="p-2">{company.email}</td>
-                            <td className="p-2">{/* TODO: Add company name field */}</td>
-                            <td className="p-2">
-                              {/* TODO: Sett inn modul-tilgangs-UI her */}
-                              <div className="space-x-1">
-                                {company.module_access?.map((module, idx) => (
-                                  <span key={idx} className="inline-block bg-primary/10 text-primary px-2 py-1 rounded text-xs">
-                                    {module}
-                                  </span>
-                                ))}
-                                {(!company.module_access || company.module_access.length === 0) && (
-                                  <span className="text-muted-foreground">Ingen moduler</span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="p-2">
-                              <button 
-                                className="text-primary hover:underline mr-2"
-                                onClick={() => {
-                                  // Example function to update modules
-                                  const modules = prompt("Angi moduler (kommaseparert)", company.module_access?.join(','))?.split(',');
-                                  if (modules) {
-                                    updateUserModules(company.id, modules);
-                                  }
-                                }}
-                              >
-                                Endre moduler
-                              </button>
-                              <button className="text-primary hover:underline">
-                                Tilbakestill passord
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={4} className="p-4 text-center text-muted-foreground">Ingen bedrifter funnet</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Rolleadministrasjon</h1>
+        <p className="text-muted-foreground">
+          Administrer roller og tilganger for brukere i systemet
+        </p>
+      </div>
+
+      {/* Current User Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Din konto
+          </CardTitle>
+          <CardDescription>
+            Oversikt over dine roller og tilganger
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Icon className="h-8 w-8" />
+              <div>
+                <p className="font-semibold">{profile.full_name}</p>
+                <p className="text-sm text-muted-foreground">{user.email}</p>
+              </div>
+            </div>
+            <Badge variant="secondary" className="ml-auto">
+              {role ? roleLabels[role as UserRole] : 'Ukjent'}
+            </Badge>
+            {isMasterAdmin && (
+              <Badge variant="destructive">
+                Master Admin
+              </Badge>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Role Management Section */}
+      {isMasterAdmin && (
+        <RoleManagement
+          userId={user.id}
+          userName={profile.full_name || user.email || 'Ukjent bruker'}
+          currentRole={role as UserRole}
+        />
+      )}
+
+      {/* Info Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Om rollesystemet</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Grunnroller</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {Object.entries(roleLabels).map(([key, label]) => {
+                const Icon = roleIcons[key as UserRole];
+                return (
+                  <div key={key} className="flex items-center gap-2">
+                    <Icon className="h-4 w-4" />
+                    <span className="text-sm">{label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-semibold mb-2">Rolletildelinger</h4>
+            <p className="text-sm text-muted-foreground">
+              Master administratorer kan tildele og fjerne roller fra brukere. 
+              Alle endringer blir logget og sporet i systemet.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-};
+}
 
 export default RoleManagementPage;

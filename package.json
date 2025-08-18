@@ -59,7 +59,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "commands": "^0.0.7",
-    "date-fns": "^3.6.0",
+    "date-fns": "^4.1.0",
     "direct": "^0.1.1",
     "edits": "^0.1.0",
     "embla-carousel-react": "^8.3.0",

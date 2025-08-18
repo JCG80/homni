@@ -85,7 +85,7 @@ export function PersonaSwitcher({ className }: PersonaSwitcherProps) {
           {/* Future: Available role grants will be listed here */}
           <DropdownMenuItem disabled className="flex items-center gap-2 text-muted-foreground">
             <Settings className="h-4 w-4" />
-            <span>Administrer roller</span>
+            <span>Bytt persona</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
