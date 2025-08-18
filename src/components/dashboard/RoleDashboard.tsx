@@ -25,14 +25,20 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
   showBreadcrumbs = true,
   showSidebar = true
 }) => {
-  const { role, isAuthenticated, isLoading } = useAuth();
+  const { role, isAuthenticated, isLoading, profile, user } = useAuth();
+  
+  // Get effective role from either role prop or profile data
+  const effectiveRole = role || profile?.role || (user?.role);
   
   console.log("RoleDashboard - State:", { 
     role, 
+    effectiveRole,
     isAuthenticated, 
     isLoading, 
     requiredRole, 
-    allowAnyAuthenticated 
+    allowAnyAuthenticated,
+    profileRole: profile?.role,
+    userRole: user?.role
   });
   
   // Check if user is loading
@@ -77,7 +83,7 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
     const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     
     // If role is still loading or undefined, wait for it to load
-    if (!role || role === null || role === undefined) {
+    if (!effectiveRole || effectiveRole === null || effectiveRole === undefined) {
       console.log("RoleDashboard - Role not ready, showing loading state");
       return (
         <PageLayout 
@@ -93,17 +99,17 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
     }
     
     // Special case: master_admin has access to everything
-    if (role === 'master_admin') {
+    if (effectiveRole === 'master_admin') {
       console.log("RoleDashboard - Master admin access granted");
       // Allow access
     } 
     // Check if user has required role
-    else if (!allowedRoles.includes(role as UserRole)) {
+    else if (!allowedRoles.includes(effectiveRole as UserRole)) {
       console.log("RoleDashboard - Access denied, redirecting to unauthorized");
       return <Navigate to="/unauthorized" replace />;
     }
     
-    console.log("RoleDashboard - Role access granted for:", role);
+    console.log("RoleDashboard - Role access granted for:", effectiveRole);
   }
   
   return (
