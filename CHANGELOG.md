@@ -4,6 +4,12 @@
 ## [Unreleased]
 
 ### Changed
+- **PHASE 1-6 CLEANUP COMPLETE**: Standardized status/pipeline system repo-wide
+- Database migration: converted enum values from emojis to slugs ('new', 'in_progress', 'won', 'lost', etc.)
+- TypeScript standardization: all types now use slug-based values consistently
+- UI layer: proper emoji/label mapping separated from business logic
+- Removed duplicate navigation config and consolidated imports
+- Created comprehensive documentation for standardization process
 - Standardized user roles across the application to: 'anonymous', 'user', 'company', 'admin', 'master_admin'
 - Updated all role-related utilities to use the new standardized roles
 - Removed deprecated roles: 'provider', 'editor', 'member', 'guest'

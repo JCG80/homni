@@ -28,7 +28,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['Header', 'MainContent', 'Footer'],
     keyComponents: ['ServiceSelector', 'ExampleTags', 'ServiceSelection'],
     primaryActions: ['Select Service', 'Browse Categories', 'Login'],
-    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
+    roles: ['anonymous', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
   },
   {
     path: '/login',
@@ -36,7 +36,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['MainContent', 'Footer'],
     keyComponents: ['LoginForm', 'LoginTabs', 'QuickLogin'],
     primaryActions: ['Login', 'Switch Tab', 'Sign Up'],
-    roles: ['guest'],
+    roles: ['anonymous'],
   },
   {
     path: '/register',
@@ -44,7 +44,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['MainContent', 'Footer'],
     keyComponents: ['RegisterForm', 'RegisterTabs'],
     primaryActions: ['Register', 'Switch Tab'],
-    roles: ['guest'],
+    roles: ['anonymous'],
   },
   
   // Lead routes

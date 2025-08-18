@@ -50,11 +50,11 @@ export function LeadStatusUpdateTest() {
           try {
             const result = await updateLeadStatus(
               'db7e8d51-2a8d-4a8d-a3c5-d4e8ea551122',
-              'completed' as LeadStatus
+              'converted' as LeadStatus
             );
             toast({
               title: 'Status Updated',
-              description: '✅ Lead ble oppdatert til "completed"',
+              description: '✅ Lead ble oppdatert til "converted"',
             });
           } catch (err) {
             toast({
@@ -65,7 +65,7 @@ export function LeadStatusUpdateTest() {
           }
         }}
       >
-        Test "completed" status på known-lead
+        Test "converted" status på known-lead
       </Button>
     </div>
   );
