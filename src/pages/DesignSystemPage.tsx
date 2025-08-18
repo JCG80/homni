@@ -17,6 +17,14 @@ export const DesignSystemPage = () => {
   return (
     <PageLayout title="Design System" description="Homni Design System elements and components">
       <div className="space-y-10">
+        {/* Test if basic rendering works */}
+        <div className="p-4 bg-card rounded-lg border">
+          <h2 className="text-2xl font-bold mb-4">Design System Test</h2>
+          <p className="text-muted-foreground mb-4">
+            If you can see this text, the page is rendering correctly.
+          </p>
+        </div>
+        
         {/* Color Tokens */}
         <section id="colors" className="space-y-6">
           <h2>Color System</h2>
