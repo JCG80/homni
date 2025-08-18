@@ -48,7 +48,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'guest' as UserRole
+      role: 'anonymous' as UserRole
     });
 
     const { getByTestId } = render(
@@ -146,7 +146,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'guest' as UserRole,
+      role: 'anonymous' as UserRole,
       canAccessModule: vi.fn().mockReturnValue(true),
       hasRole: vi.fn().mockReturnValue(false)
     });
@@ -166,7 +166,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'guest' as UserRole,
+      role: 'anonymous' as UserRole,
       canAccessModule: vi.fn().mockReturnValue(false),
       hasRole: vi.fn().mockReturnValue(false)
     });

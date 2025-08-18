@@ -48,7 +48,7 @@ describe('Auth role determination', () => {
     expect(determineUserRole(mockUserData)).toBe('master_admin');
   });
 
-  test('should default to member role if no role is specified', () => {
+  test('should default to user role if no role is specified', () => {
     const mockUserData = {
       user: {
         user_metadata: {},

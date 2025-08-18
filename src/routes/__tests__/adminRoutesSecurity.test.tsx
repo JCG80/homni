@@ -42,7 +42,7 @@ describe('Admin route security via RoleDashboard', () => {
     expect(screen.queryByText('Protected Admin')).not.toBeInTheDocument();
   });
 
-  it('denies access to member role for admin-only content', () => {
+  it('denies access to user role for admin-only content', () => {
     mockAuth.isAuthenticated = true;
     mockAuth.role = 'user';
 

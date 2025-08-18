@@ -72,10 +72,10 @@ test.describe('Quick Login Flow', () => {
     
     // Clear the search and try another term
     await page.locator('data-test-id=quick-login-search').fill('');
-    await page.locator('data-test-id=quick-login-search').fill('member');
+    await page.locator('data-test-id=quick-login-search').fill('user');
     
     // Check that the search results are updated
-    await expect(page.getByText(/member/i)).toBeVisible();
+    await expect(page.getByText(/user/i)).toBeVisible();
   });
 
   test('should redirect to appropriate dashboard after login', async ({ page }) => {
@@ -102,14 +102,14 @@ test.describe('Quick Login Flow', () => {
     // Click the Quick Login dropdown trigger again
     await quickLoginTrigger.click();
     
-    // Find and click a member user
-    const memberUser = page.getByText(/member/i).first();
-    await memberUser.click();
+    // Find and click a user
+    const userUser = page.getByText(/user/i).first();
+    await userUser.click();
     
-    // Wait for redirection to member dashboard
-    await page.waitForURL(/.*dashboard.*member.*/);
+    // Wait for redirection to user dashboard
+    await page.waitForURL(/.*dashboard$/);
     
-    // Verify member-specific UI elements
-    await expect(page.getByText(/member dashboard|user dashboard/i)).toBeVisible({ timeout: 5000 });
+    // Verify user-specific UI elements
+    await expect(page.getByText(/dashboard|velkommen/i)).toBeVisible({ timeout: 5000 });
   });
 });

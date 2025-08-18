@@ -78,7 +78,7 @@ describe('Company Role Access', () => {
     expect(getByText('Company Content')).toBeInTheDocument();
   });
 
-  test('should prevent member role from accessing company-only routes', () => {
+  test('should prevent user role from accessing company-only routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,

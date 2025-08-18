@@ -79,7 +79,7 @@ describe('Admin Role Access', () => {
     expect(getByText('Admin Content')).toBeInTheDocument();
   });
 
-  test('should prevent member role from accessing admin-only routes', () => {
+  test('should prevent user role from accessing admin-only routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,

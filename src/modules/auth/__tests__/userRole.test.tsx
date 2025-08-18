@@ -22,8 +22,8 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-describe('Member Role Access', () => {
-  test('should allow member role to access member-specific modules', () => {
+describe('User Role Access', () => {
+  test('should allow user role to access user-specific modules', () => {
     expect(canAccessModule('user', 'dashboard')).toBe(true);
     expect(canAccessModule('user', 'leads')).toBe(true);
     expect(canAccessModule('user', 'leads/my')).toBe(true);
@@ -33,7 +33,7 @@ describe('Member Role Access', () => {
     expect(canAccessModule('user', 'my-account')).toBe(true);
   });
 
-  test('should not allow member role to access admin or company modules', () => {
+  test('should not allow user role to access admin or company modules', () => {
     expect(canAccessModule('user', 'admin')).toBe(false);
     expect(canAccessModule('user', 'company/profile')).toBe(false);
     expect(canAccessModule('user', 'content')).toBe(false);
@@ -60,7 +60,7 @@ describe('Member Role Access', () => {
     expect(getByTestId('navigate')).toHaveAttribute('data-to', '/login');
   });
 
-  test('should allow member role to access routes with member role requirement', () => {
+  test('should allow user role to access routes with user role requirement', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,

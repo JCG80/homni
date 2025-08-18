@@ -56,7 +56,7 @@ export interface UserProfile {
   metadata: {
     role?: UserRole;
     company_id?: string;
-    account_type?: 'member' | 'company';
+    account_type?: 'user' | 'company';
     internal_admin?: boolean;
     [key: string]: any;
   };
