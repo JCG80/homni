@@ -1,251 +1,80 @@
-
 openapi: 3.0.3
 info:
   title: Homni API
-  description: API for the Homni platform (Bytt.no × Boligmappa.no × Propr.no)
+  description: |
+    The Homni platform API provides endpoints for lead generation, property documentation, 
+    and DIY home selling features. This hybrid platform combines functionality from 
+    Bytt.no (lead generation), Boligmappa.no (property documentation), and Propr.no (DIY selling).
   version: 1.0.0
   contact:
     name: Homni Support
     email: support@homni.no
-    url: https://homni.no/support
+  license:
+    name: Proprietary
+    
 servers:
-  - url: https://api.homni.no/v1
-    description: Production server
-  - url: https://staging-api.homni.no/v1
-    description: Staging server
-  - url: http://localhost:54321
+  - url: https://kkazhcihooovsuwravhs.supabase.co/functions/v1
+    description: Production API
+  - url: http://localhost:54321/functions/v1
     description: Local development
 
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-    
-  schemas:
-    Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        details:
-          type: object
-    
-    Lead:
-      type: object
-      required:
-        - id
-        - submitted_by
-        - title
-        - description
-        - category
-        - status
-      properties:
-        id:
-          type: string
-          format: uuid
-        submitted_by:
-          type: string
-          format: uuid
-        company_id:
-          type: string
-          format: uuid
-          nullable: true
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        metadata:
-          type: object
-        title:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-        status:
-          type: string
-          enum: [new, in_progress, won, lost]
-        lead_type:
-          type: string
-          default: general
-    
-    UserProfile:
-      type: object
-      required:
-        - id
-        - user_id
-      properties:
-        id:
-          type: string
-          format: uuid
-        user_id:
-          type: string
-          format: uuid
-        metadata:
-          type: object
-        updated_at:
-          type: string
-          format: date-time
-        preferences:
-          type: object
-          nullable: true
-        address:
-          type: string
-          nullable: true
-        region:
-          type: string
-          nullable: true
-        profile_picture_url:
-          type: string
-          nullable: true
-        full_name:
-          type: string
-          nullable: true
-        email:
-          type: string
-          nullable: true
-        phone:
-          type: string
-          nullable: true
-        display_name:
-          type: string
-          nullable: true
-    
-    CompanyProfile:
-      type: object
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: string
-          format: uuid
-        user_id:
-          type: string
-          format: uuid
-          nullable: true
-        name:
-          type: string
-        status:
-          type: string
-          default: active
-        tags:
-          type: array
-          items:
-            type: string
-        contact_name:
-          type: string
-          nullable: true
-        email:
-          type: string
-          nullable: true
-        phone:
-          type: string
-          nullable: true
-        industry:
-          type: string
-          nullable: true
-        subscription_plan:
-          type: string
-          default: free
-        modules_access:
-          type: array
-          items:
-            type: string
-        metadata:
-          type: object
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
 
 paths:
-  /leads:
+  /health:
     get:
-      summary: Get leads
-      description: Retrieve leads based on filters
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [new, in_progress, won, lost]
-        - name: category
-          in: query
-          schema:
-            type: string
-        - name: company_id
-          in: query
-          schema:
-            type: string
-            format: uuid
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 10
-        - name: offset
-          in: query
-          schema:
-            type: integer
-            default: 0
+      summary: Health Check
+      description: Check the health status of the API and database
+      operationId: getHealth
+      tags:
+        - System
+      security: []
       responses:
         '200':
-          description: Successfully retrieved leads
+          description: Service is healthy
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Lead'
-                  count:
-                    type: integer
-                  total:
-                    type: integer
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
+                  status:
+                    type: string
+                    enum: [healthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [connected, error]
+                      latency_ms:
+                        type: number
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /leads:
     post:
-      summary: Create a new lead
-      description: Create a new lead in the system
-      security:
-        - BearerAuth: []
+      summary: Create Lead
+      description: Create a new property lead for distribution to qualified buyers
+      operationId: createLead
+      tags:
+        - Leads
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - title
-                - description
-                - category
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
-                category:
-                  type: string
-                metadata:
-                  type: object
+              $ref: '#/components/schemas/CreateLeadRequest'
       responses:
         '201':
           description: Lead created successfully
@@ -254,181 +83,110 @@ paths:
               schema:
                 $ref: '#/components/schemas/Lead'
         '400':
-          description: Invalid request
-        '401':
-          description: Unauthorized
-  
-  /leads/{id}:
-    get:
-      summary: Get lead by ID
-      description: Retrieve a specific lead by its ID
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Successfully retrieved lead
+          description: Invalid input
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Lead'
-        '404':
-          description: Lead not found
+                $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized
-        '403':
-          description: Forbidden
-    patch:
-      summary: Update a lead
-      description: Update an existing lead
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
-                category:
-                  type: string
-                status:
-                  type: string
-                  enum: [new, in_progress, won, lost]
-                company_id:
-                  type: string
-                  format: uuid
-                metadata:
-                  type: object
-      responses:
-        '200':
-          description: Lead updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Lead'
-        '400':
-          description: Invalid request
-        '404':
-          description: Lead not found
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-  
-  /profile:
-    get:
-      summary: Get user profile
-      description: Retrieve the current user's profile
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Successfully retrieved profile
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-        '401':
-          description: Unauthorized
-    patch:
-      summary: Update user profile
-      description: Update the current user's profile
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                full_name:
-                  type: string
-                email:
-                  type: string
-                phone:
-                  type: string
-                address:
-                  type: string
-                region:
-                  type: string
-                display_name:
-                  type: string
-                preferences:
-                  type: object
-      responses:
-        '200':
-          description: Profile updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-        '400':
-          description: Invalid request
-        '401':
-          description: Unauthorized
-  
-  /companies:
-    get:
-      summary: Get companies
-      description: Retrieve companies based on filters
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [active, inactive, suspended]
-        - name: industry
-          in: query
-          schema:
-            type: string
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 10
-        - name: offset
-          in: query
-          schema:
-            type: integer
-            default: 0
-      responses:
-        '200':
-          description: Successfully retrieved companies
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/CompanyProfile'
-                  count:
-                    type: integer
-                  total:
-                    type: integer
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: apikey
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+    CreateLeadRequest:
+      type: object
+      required:
+        - property_type
+        - location
+        - contact_info
+      properties:
+        property_type:
+          type: string
+          enum: [house, apartment, cabin, commercial]
+        location:
+          type: object
+          required:
+            - address
+            - postal_code
+            - city
+          properties:
+            address:
+              type: string
+            postal_code:
+              type: string
+            city:
+              type: string
+            municipality:
+              type: string
+        contact_info:
+          type: object
+          required:
+            - name
+            - email
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+
+    Lead:
+      type: object
+      required:
+        - id
+        - property_type
+        - location
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        property_type:
+          type: string
+          enum: [house, apartment, cabin, commercial]
+        location:
+          type: object
+        contact_info:
+          type: object
+        status:
+          type: string
+          enum: [pending, distributed, closed]
+        created_at:
+          type: string
+          format: date-time
+
+tags:
+  - name: System
+    description: System health and status endpoints
+  - name: Leads
+    description: Lead generation and management
