@@ -15,6 +15,7 @@ import { Settings, LogOut, User, Building2 } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from '@/modules/auth/api';
+import { PersonaSwitcher } from './PersonaSwitcher';
 
 interface ProfileHeaderProps {
   showFullProfile?: boolean;
@@ -65,6 +66,7 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
+      <PersonaSwitcher />
       {showFullProfile && (
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
