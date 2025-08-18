@@ -11,7 +11,7 @@ This feature provides an easy way to switch between different user profiles duri
 2. Add user profiles using the `VITE_DEV_USER_` prefix followed by a unique key:
 
 ```env
-VITE_DEV_USER_PRIVAT='{"id":"u1","name":"Ola Nordmann","role":"member","initials":"ON"}'
+VITE_DEV_USER_PRIVAT='{"id":"u1","name":"Ola Nordmann","role":"user","initials":"ON"}'
 VITE_DEV_USER_BEDRIFT='{"id":"u2","name":"ACME AS","role":"business","initials":"AC"}'
 VITE_DEV_USER_SUPER='{"id":"u3","name":"Super Admin","role":"master_admin","initials":"SA"}'
 ```

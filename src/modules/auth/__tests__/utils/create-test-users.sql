@@ -12,7 +12,7 @@ VALUES (
   'user@test.local',
   crypt('Test1234!', gen_salt('bf')),
   now(),
-  '{"role":"member", "full_name":"Test User"}'::jsonb
+  '{"role":"user", "full_name":"Test User"}'::jsonb
 )
 ON CONFLICT (email) DO NOTHING;
 
@@ -77,14 +77,14 @@ SELECT
   raw_user_meta_data->>'full_name',
   email,
   CASE 
-    WHEN raw_user_meta_data->>'role' = 'member' THEN '+47 55544333'
+    WHEN raw_user_meta_data->>'role' = 'user' THEN '+47 55544333'
     WHEN raw_user_meta_data->>'role' = 'company' THEN '+47 22334455'
     WHEN raw_user_meta_data->>'role' = 'admin' THEN '+47 99988777'
     WHEN raw_user_meta_data->>'role' = 'master_admin' THEN '+47 12345678'
     ELSE '+47 00000000'
   END,
   CASE 
-    WHEN raw_user_meta_data->>'role' = 'member' THEN 'Testveien 1, 0123 Oslo'
+    WHEN raw_user_meta_data->>'role' = 'user' THEN 'Testveien 1, 0123 Oslo'
     WHEN raw_user_meta_data->>'role' = 'company' THEN 'Bedriftsveien 10, 0123 Oslo'
     WHEN raw_user_meta_data->>'role' = 'admin' THEN 'Adminveien 5, 0123 Oslo'
     WHEN raw_user_meta_data->>'role' = 'master_admin' THEN 'Masterveien 10, 0123 Oslo'
@@ -94,7 +94,7 @@ SELECT
   'https://api.dicebear.com/7.x/avataaars/svg?seed=' || raw_user_meta_data->>'role',
   json_build_object('role', raw_user_meta_data->>'role'),
   CASE 
-    WHEN raw_user_meta_data->>'role' = 'member' THEN '{"theme": "light", "notifications": true, "language": "no"}'::jsonb
+    WHEN raw_user_meta_data->>'role' = 'user' THEN '{"theme": "light", "notifications": true, "language": "no"}'::jsonb
     WHEN raw_user_meta_data->>'role' = 'admin' THEN '{"theme": "dark", "notifications": true, "language": "no", "adminView": "advanced"}'::jsonb
     WHEN raw_user_meta_data->>'role' = 'master_admin' THEN '{"theme": "system", "notifications": true, "language": "no", "adminView": "full", "developerMode": true}'::jsonb
     ELSE '{}'::jsonb

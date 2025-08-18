@@ -40,7 +40,7 @@ describe('User Role Access', () => {
     expect(canAccessModule('user', 'settings')).toBe(false);
   });
 
-  test('should redirect guest users from member-specific routes', () => {
+  test('should redirect guest users from user-specific routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
@@ -52,7 +52,7 @@ describe('User Role Access', () => {
     const { getByTestId } = render(
       <MemoryRouter>
         <ProtectedRoute allowedRoles={['user']}>
-          <div>Member Content</div>
+          <div>User Content</div>
         </ProtectedRoute>
       </MemoryRouter>
     );
@@ -72,11 +72,11 @@ describe('User Role Access', () => {
     const { getByText } = render(
       <MemoryRouter>
         <ProtectedRoute allowedRoles={['user']}>
-          <div>Member Content</div>
+          <div>User Content</div>
         </ProtectedRoute>
       </MemoryRouter>
     );
 
-    expect(getByText('Member Content')).toBeInTheDocument();
+    expect(getByText('User Content')).toBeInTheDocument();
   });
 });

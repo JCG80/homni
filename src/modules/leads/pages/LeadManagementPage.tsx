@@ -77,7 +77,7 @@ export const LeadManagementPage: React.FC = () => {
       return <AdminLeadsPage />;
     case 'company':
       return <CompanyLeadsPage />;
-    case 'member':
+    case 'user':
       return <UserLeadsPage />;
     default:
       // If role is unrecognized or not yet loaded, show a message

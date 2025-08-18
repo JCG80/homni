@@ -11,7 +11,7 @@ vi.mock('import.meta', () => ({
     VITE_DEV_USER_PRIVAT: JSON.stringify({
       id: 'u1',
       name: 'Ola Nordmann',
-      role: 'member',
+      role: 'user',
       initials: 'ON'
     }),
     VITE_DEV_USER_BEDRIFT: JSON.stringify({
