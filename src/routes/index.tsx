@@ -23,9 +23,9 @@ export const AppRouteComponents = () => {
       {/* Public routes */}
       {mainRoutes}
       
-      {/* Dashboard routes (role-based) */}
+      {/* Dashboard routes (role-based) - SIMPLIFIED TO REDUCE CONFLICTS */}
       <Route path="/dashboard" element={
-        <RoleDashboard title="Dashboard" requiredRole={["user", "company", "admin", "master_admin", "content_editor"]}>
+        <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
           <Dashboard />
         </RoleDashboard>
       } />

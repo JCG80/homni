@@ -1,4 +1,3 @@
-
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -43,26 +42,41 @@ export const ProtectedRoute = ({
       if (isCheckingPermission) {
         console.warn('Permission check taking too long, finishing check');
         setIsCheckingPermission(false);
-        // Default to allowing access after timeout
-        setIsAllowed(true);
+        // Default to allowing access after timeout for authenticated users
+        if (isAuthenticated) {
+          setIsAllowed(true);
+        }
       }
     }, 5000);
     
     return () => clearTimeout(timeoutId);
-  }, [isCheckingPermission]);
+  }, [isCheckingPermission, isAuthenticated]);
 
   // Check if user is allowed to access this route
   useEffect(() => {
     const checkAccess = async () => {
+      console.log("ProtectedRoute - Starting access check:", { 
+        isLoading, 
+        isAuthenticated, 
+        role, 
+        path: location.pathname,
+        allowedRoles,
+        allowAnyAuthenticated,
+        module 
+      });
+
       setIsCheckingPermission(true);
       
       // Wait for auth to initialize
-      if (isLoading) return;
+      if (isLoading) {
+        console.log("ProtectedRoute - Still loading auth state");
+        return;
+      }
       
       // PRIORITY: Check module access first (handles public modules for anonymous users)
       if (module) {
         const hasModuleAccess = canAccessModule(module);
-        console.log(`Checking module access for ${module} with role ${role}:`, hasModuleAccess);
+        console.log(`ProtectedRoute - Module access check for ${module}:`, hasModuleAccess);
         setIsAllowed(hasModuleAccess);
         setIsCheckingPermission(false);
         return;
@@ -70,49 +84,53 @@ export const ProtectedRoute = ({
       
       // If not authenticated and no module specified, redirect to login
       if (!isAuthenticated) {
-        console.log("User not authenticated, redirecting to login");
+        console.log("ProtectedRoute - User not authenticated, will redirect to login");
         setIsAllowed(false);
         setIsCheckingPermission(false);
         return;
       }
       
+      // CRITICAL FIX: If user is authenticated but role is still undefined/null, wait a bit more
+      if (isAuthenticated && (!role || role === null || role === undefined)) {
+        console.log("ProtectedRoute - User authenticated but role not ready, waiting...");
+        // Don't set isAllowed yet, keep checking
+        setTimeout(() => {
+          // Re-trigger this effect after a short delay
+          setIsCheckingPermission(true);
+        }, 100);
+        return;
+      }
+      
       // If any authenticated user is allowed, allow access
-      if (allowAnyAuthenticated) {
-        console.log("Any authenticated user allowed, granting access");
+      if (allowAnyAuthenticated && isAuthenticated && role) {
+        console.log("ProtectedRoute - Any authenticated user allowed, granting access");
         setIsAllowed(true);
         setIsCheckingPermission(false);
         return;
       }
       
       // If specific roles are required, check if the user has one of them
-      if (allowedRoles.length > 0) {
+      if (allowedRoles.length > 0 && role) {
         const hasRequiredRole = allowedRoles.some(r => hasRole(r));
-        console.log("Role check:", { userRole: role, allowedRoles, hasRequiredRole });
+        console.log("ProtectedRoute - Role check:", { userRole: role, allowedRoles, hasRequiredRole });
         setIsAllowed(hasRequiredRole);
         setIsCheckingPermission(false);
         return;
       }
       
-      // By default, allow access if we reach this point (user is authenticated)
-      setIsAllowed(true);
+      // By default, allow access if we reach this point and user is authenticated with a role
+      if (isAuthenticated && role) {
+        console.log("ProtectedRoute - Default: authenticated user with role, allowing access");
+        setIsAllowed(true);
+      } else {
+        console.log("ProtectedRoute - Default: denying access");
+        setIsAllowed(false);
+      }
       setIsCheckingPermission(false);
     };
     
     checkAccess();
-  }, [isLoading, isAuthenticated, role, allowedRoles, allowAnyAuthenticated, module, canAccessModule, hasRole]);
-
-  // Add enhanced debug logging
-  useEffect(() => {
-    console.log("ProtectedRoute - Auth state:", { 
-      path: location.pathname,
-      isAuthenticated, 
-      role, 
-      isLoading,
-      isCheckingPermission,
-      allowedRoles,
-      isAllowed
-    });
-  }, [location.pathname, isAuthenticated, role, isLoading, isCheckingPermission, allowedRoles, isAllowed]);
+  }, [isLoading, isAuthenticated, role, allowedRoles, allowAnyAuthenticated, module, canAccessModule, hasRole, location.pathname]);
 
   // Show loading state while checking auth or permissions, but only if it takes more than a moment
   if ((isLoading || isCheckingPermission || isAllowed === null) && showLoadingUI) {
@@ -128,6 +146,7 @@ export const ProtectedRoute = ({
   
   // If auth check is complete but user is not authenticated, redirect to login with return URL
   if (!isLoading && !isCheckingPermission && !isAuthenticated) {
+    console.log("ProtectedRoute - Redirecting to login");
     toast({
       title: "Pålogging kreves",
       description: "Du må logge inn for å se denne siden",
@@ -140,6 +159,7 @@ export const ProtectedRoute = ({
 
   // If auth check is complete but user is not allowed, redirect to unauthorized
   if (!isLoading && !isCheckingPermission && isAuthenticated && isAllowed === false) {
+    console.log("ProtectedRoute - Access denied, redirecting to unauthorized");
     toast({
       title: "Ingen tilgang",
       description: "Du har ikke tilgang til denne siden",
@@ -154,5 +174,6 @@ export const ProtectedRoute = ({
   }
   
   // User is authenticated and allowed to access this route
+  console.log("ProtectedRoute - Access granted, rendering children");
   return <>{children}</>;
 };

@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react';
 interface RoleDashboardProps {
   children: React.ReactNode;
   requiredRole?: UserRole | UserRole[];
+  allowAnyAuthenticated?: boolean;
   title?: string;
   description?: string;
   showBreadcrumbs?: boolean;
@@ -18,12 +19,21 @@ interface RoleDashboardProps {
 export const RoleDashboard: React.FC<RoleDashboardProps> = ({
   children,
   requiredRole,
+  allowAnyAuthenticated = false,
   title = 'Dashboard',
   description,
   showBreadcrumbs = true,
   showSidebar = true
 }) => {
   const { role, isAuthenticated, isLoading } = useAuth();
+  
+  console.log("RoleDashboard - State:", { 
+    role, 
+    isAuthenticated, 
+    isLoading, 
+    requiredRole, 
+    allowAnyAuthenticated 
+  });
   
   // Check if user is loading
   if (isLoading) {
@@ -45,12 +55,30 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
     return <Navigate to="/login" replace />;
   }
   
+  // If allowAnyAuthenticated is true and user is authenticated, allow access
+  if (allowAnyAuthenticated && isAuthenticated) {
+    console.log("RoleDashboard - Allowing any authenticated user");
+    return (
+      <PageLayout 
+        title={title} 
+        description={description}
+        showSidebar={showSidebar}
+        showBreadcrumbs={showBreadcrumbs}
+      >
+        <div className="space-y-6">
+          {children}
+        </div>
+      </PageLayout>
+    );
+  }
+  
   // Check role access if requiredRole is specified
   if (requiredRole) {
     const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     
     // If role is still loading or undefined, wait for it to load
     if (!role || role === null || role === undefined) {
+      console.log("RoleDashboard - Role not ready, showing loading state");
       return (
         <PageLayout 
           title="Laster..." 
@@ -66,12 +94,16 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
     
     // Special case: master_admin has access to everything
     if (role === 'master_admin') {
+      console.log("RoleDashboard - Master admin access granted");
       // Allow access
     } 
     // Check if user has required role
     else if (!allowedRoles.includes(role as UserRole)) {
+      console.log("RoleDashboard - Access denied, redirecting to unauthorized");
       return <Navigate to="/unauthorized" replace />;
     }
+    
+    console.log("RoleDashboard - Role access granted for:", role);
   }
   
   return (
