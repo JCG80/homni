@@ -1,0 +1,45 @@
+{
+  "navigation": {
+    "home": "Hjem",
+    "dashboard": "Dashboard", 
+    "leads": "Leads",
+    "profile": "Profil",
+    "settings": "Indstillinger",
+    "help": "Hjælp",
+    "logout": "Log ud"
+  },
+  "actions": {
+    "save": "Gem",
+    "cancel": "Annuller",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "view": "Se",
+    "search": "Søg",
+    "filter": "Filtrer",
+    "export": "Eksporter",
+    "import": "Importer"
+  },
+  "status": {
+    "loading": "Indlæser...",
+    "error": "Fejl",
+    "success": "Succes",
+    "warning": "Advarsel",
+    "info": "Information"
+  },
+  "validation": {
+    "required": "Dette felt er påkrævet",
+    "email": "Ugyldig e-mailadresse",
+    "min_length": "Minimum {{count}} tegn",
+    "max_length": "Maksimum {{count}} tegn"
+  },
+  "common": {
+    "yes": "Ja",
+    "no": "Nej",
+    "ok": "OK",
+    "close": "Luk",
+    "back": "Tilbage",
+    "next": "Næste",
+    "previous": "Forrige",
+    "continue": "Fortsæt"
+  }
+}

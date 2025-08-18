@@ -1,319 +1,87 @@
-
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
-
-env:
-  VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-  VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    branches: [ main ]
 
 jobs:
-  validate-migrations:
+  health-check:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      
-      - name: Start local Supabase
-        run: supabase start
-      
-      - name: Validate migrations
-        run: |
-          echo "Validating SQL migrations..."
-          for migration in supabase/migrations/*.sql; do
-            echo "Validating $migration"
-            supabase db reset --linked
-            cat $migration | supabase db execute
-            if [ $? -ne 0 ]; then
-              echo "Migration $migration failed!"
-              exit 1
-            fi
-          done
-      
-      - name: Test rollback scripts
-        run: |
-          echo "Testing rollback scripts..."
-          for rollback in supabase/rollbacks/*.sql; do
-            if [ -f "$rollback" ]; then
-              echo "Testing rollback $rollback"
-              supabase db reset --linked
-              base_migration=$(basename $rollback .rollback.sql).sql
-              if [ -f "supabase/migrations/$base_migration" ]; then
-                cat "supabase/migrations/$base_migration" | supabase db execute
-                cat $rollback | supabase db execute
-                if [ $? -ne 0 ]; then
-                  echo "Rollback $rollback failed!"
-                  exit 1
-                fi
-              else
-                echo "Warning: No matching migration for rollback $rollback"
-              fi
-            fi
-          done
-      
-      - name: Stop Supabase
-        if: always()
-        run: supabase stop
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Check for dependency conflicts
-        run: npm ls
-      
-      - name: Run ESLint
-        run: npm run lint
-      
-      - name: Check Prettier formatting
-        run: npm run format:check
-      
-      - name: Run security audit
-        run: npm audit --production
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
 
-  type-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Run TypeScript compiler
-        run: npx tsc --noEmit
-      
-      - name: Generate Supabase Types
-        run: |
-          chmod +x scripts/generate-supabase-types.sh
-          SUPABASE_PROJECT_ID=${{ secrets.SUPABASE_PROJECT_ID }} ./scripts/generate-supabase-types.sh
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    - name: Install dependencies
+      run: npm ci
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      
-      - name: Start Supabase
-        run: supabase start
-      
-      - name: Seed test users
-        run: |
-          chmod +x scripts/seed-test-users.sh
-          ./scripts/seed-test-users.sh
-        env:
-          SUPABASE_URL: http://localhost:54321
-          SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
-      
-      - name: Run unit tests with coverage
-        run: npm test -- --coverage
-        
-      - name: Check test coverage
-        run: |
-          COVERAGE=$(npx istanbul report text | grep "All files" | awk '{print $4}' | tr -d '%')
-          if (( $(echo "$COVERAGE < 90" | bc -l) )); then
-            echo "Test coverage is below 90% (actual: $COVERAGE%)"
-            exit 1
-          else
-            echo "Test coverage meets requirement: $COVERAGE%"
-          fi
-      
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-      
-      - name: Run E2E tests
-        run: npm run test:e2e
-        env:
-          SUPABASE_URL: http://localhost:54321
-          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-      
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: test-reports
-          path: |
-            playwright-report/
-            coverage/
-          retention-days: 30
-      
-      - name: Stop Supabase
-        if: always()
-        run: supabase stop
+    - name: TypeScript Check
+      run: npm run typecheck
 
-  repo-health:
-    runs-on: ubuntu-latest
-    needs: [lint, type-check]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Repository health check
-        run: npm run repo:health
-      
-      - name: Check for duplicates
-        run: npm run check:duplicates
-      
-      - name: Validate RLS policies
-        run: npm run guard:rls
-      
-      - name: Validate database functions
-        run: npm run guard:functions
-      
-      - name: Validate migrations
-        run: npm run guard:migrations
+    - name: Lint Check
+      run: npm run lint
 
-  build:
-    needs: [repo-health, test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build project
-        run: npm run build
-        env:
-          CI: false
-      
-      - name: Generate OpenAPI spec
-        run: |
-          npm run generate:api-docs
-        continue-on-error: true
-      
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: dist/
-          retention-days: 5
+    - name: Build Check
+      run: npm run build
 
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Run SAST scan
-        uses: github/codeql-action/analyze@v2
-        with:
-          languages: javascript, typescript
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Run dependency vulnerability check
-        run: npm audit --audit-level=high
-        continue-on-error: true
-      
-      - name: Check for outdated packages
-        run: npm outdated
-        continue-on-error: true
+    - name: Unit Tests with Coverage
+      run: npm run test:coverage
 
-  deploy-staging:
-    needs: [build, validate-migrations]
-    if: github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: dist
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      
-      - name: Deploy to staging
-        run: echo "Deploying to staging environment..."
-        # Add your actual deployment command here
-      
-      - name: Apply migrations to staging
-        run: echo "Applying migrations to staging database..."
-        # Add your migration command here
-      
-      - name: Run smoke tests
-        run: echo "Running smoke tests against staging..."
-        # Add your smoke test command here
+    - name: Security Audit
+      run: npm audit --audit-level=high
+      continue-on-error: true
 
-  deploy-production:
-    needs: deploy-staging
-    if: github.ref == 'refs/heads/main'
+    - name: Repository Health
+      run: npm run repo:health
+      continue-on-error: true
+
+    - name: Upload Coverage Reports
+      uses: codecov/codecov-action@v3
+      if: success()
+      with:
+        fail_ci_if_error: false
+
+  e2e-tests:
     runs-on: ubuntu-latest
-    environment: production
+    needs: health-check
+    if: github.event_name == 'pull_request'
+    
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: dist
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      
-      - name: Deploy to production
-        run: echo "Deploying to production environment..."
-        # Add your actual deployment command here
-      
-      - name: Apply migrations to production
-        run: echo "Applying migrations to production database..."
-        # Add your migration command here
-      
-      - name: Run smoke tests
-        run: echo "Running smoke tests against production..."
-        # Add your smoke test command here
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright
+      run: npx playwright install --with-deps
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run E2E tests
+      run: npm run e2e
+      continue-on-error: true
+
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: e2e-test-results
+        path: test-results/

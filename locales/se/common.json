@@ -1,0 +1,45 @@
+{
+  "navigation": {
+    "home": "Hem",
+    "dashboard": "Instrumentpanel", 
+    "leads": "Leads",
+    "profile": "Profil",
+    "settings": "Inställningar",
+    "help": "Hjälp",
+    "logout": "Logga ut"
+  },
+  "actions": {
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Radera",
+    "edit": "Redigera",
+    "view": "Visa",
+    "search": "Sök",
+    "filter": "Filtrera",
+    "export": "Exportera",
+    "import": "Importera"
+  },
+  "status": {
+    "loading": "Laddar...",
+    "error": "Fel",
+    "success": "Framgång",
+    "warning": "Varning",
+    "info": "Information"
+  },
+  "validation": {
+    "required": "Detta fält är obligatoriskt",
+    "email": "Ogiltig e-postadress",
+    "min_length": "Minimum {{count}} tecken",
+    "max_length": "Maximum {{count}} tecken"
+  },
+  "common": {
+    "yes": "Ja",
+    "no": "Nej",
+    "ok": "OK",
+    "close": "Stäng",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "previous": "Föregående",
+    "continue": "Fortsätt"
+  }
+}
