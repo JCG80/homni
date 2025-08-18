@@ -1246,6 +1246,27 @@ export type Database = {
         }
         Relationships: []
       }
+      role_switch_audit: {
+        Row: {
+          created_at: string
+          id: string
+          new_mode: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          new_mode: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          new_mode?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       service_modules: {
         Row: {
           created_at: string
@@ -1597,6 +1618,10 @@ export type Database = {
           buyer_id: string
           cost: number
         }[]
+      }
+      get_active_mode: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_auth_user_role: {
         Args: Record<PropertyKey, never>
