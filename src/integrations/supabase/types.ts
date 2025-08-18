@@ -1617,16 +1617,7 @@ export type Database = {
         | "master_admin"
         | "user"
         | "guest"
-      pipeline_stage:
-        | "new"
-        | "👀 qualified"
-        | "💬 contacted"
-        | "📞 negotiating"
-        | "✅ converted"
-        | "lost"
-        | "⏸️ paused"
-        | "in_progress"
-        | "won"
+      pipeline_stage: "new" | "in_progress" | "won" | "lost"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1763,17 +1754,7 @@ export const Constants = {
         "user",
         "guest",
       ],
-      pipeline_stage: [
-        "new",
-        "👀 qualified",
-        "💬 contacted",
-        "📞 negotiating",
-        "✅ converted",
-        "lost",
-        "⏸️ paused",
-        "in_progress",
-        "won",
-      ],
+      pipeline_stage: ["new", "in_progress", "won", "lost"],
     },
   },
 } as const
