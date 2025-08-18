@@ -27,11 +27,11 @@ export const DesignSystemPage = () => {
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
                 <div key={weight} className="flex flex-col items-center">
-                  <div 
-                    className="w-20 h-20 rounded-md shadow-sm border"
-                    style={{ backgroundColor: `hsl(var(--primary-${weight}))` }}
-                    aria-label={`Primary color ${weight}`}
-                  />
+              <div 
+                className="w-20 h-20 rounded-md shadow-sm border"
+                style={{ backgroundColor: `hsl(var(--primary-${weight}))` }}
+                aria-label={`Primary color ${weight}`}
+              />
                   <span className="text-sm mt-1">{weight}</span>
                 </div>
               ))}
@@ -43,11 +43,11 @@ export const DesignSystemPage = () => {
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
                 <div key={weight} className="flex flex-col items-center">
-                  <div 
-                    className="w-20 h-20 rounded-md shadow-sm border"
-                    style={{ backgroundColor: `hsl(var(--secondary-${weight}))` }}
-                    aria-label={`Secondary color ${weight}`}
-                  />
+              <div 
+                className="w-20 h-20 rounded-md shadow-sm border"
+                style={{ backgroundColor: `hsl(var(--secondary-${weight}))` }}
+                aria-label={`Secondary color ${weight}`}
+              />
                   <span className="text-sm mt-1">{weight}</span>
                 </div>
               ))}
