@@ -33,49 +33,52 @@ export interface Lead {
   updated_at: string;
 }
 
-// Kun for visning (UI)
-export const STATUS_EMOJI: Record<LeadStatus, string> = {
-  new: '📥 new',
-  qualified: '👀 qualified',
-  contacted: '💬 contacted',
-  negotiating: '📞 negotiating',
-  converted: '✅ converted',
-  lost: '❌ lost',
-  paused: '⏸️ paused',
+// Clean status labels for UI display
+export const STATUS_LABELS: Record<LeadStatus, string> = {
+  new: 'Ny',
+  qualified: 'Kvalifisert',
+  contacted: 'Kontaktet',
+  negotiating: 'Forhandler',
+  converted: 'Konvertert',
+  lost: 'Tapt',
+  paused: 'Pauset',
 };
 
-export const PIPELINE_EMOJI: Record<PipelineStage, string> = {
-  new: 'Nye ✨',
-  in_progress: 'I gang 🚀',
-  won: 'Vunnet 🏆',
-  lost: 'Tapt ❌',
+export const PIPELINE_LABELS: Record<PipelineStage, string> = {
+  new: 'Ny',
+  in_progress: 'I gang',
+  won: 'Vunnet',
+  lost: 'Tapt',
 };
 
-// Map clean statuses to emoji statuses for database compatibility
-export function mapToEmojiStatus(status: LeadStatus | string): string {
-  const emojiMap: Record<string, string> = {
-    new: '📥 new',
-    qualified: '👀 qualified',
-    contacted: '💬 contacted',
-    negotiating: '📞 negotiating',
-    converted: '✅ converted',
-    lost: '❌ lost',
-    paused: '⏸️ paused',
-    assigned: '👀 qualified', // Map assigned to qualified for DB
-  };
-  return emojiMap[status] || '📥 new';
-}
-
-// Tåler legacy/emoji-verdier:
+// Legacy emoji compatibility - normalize from old emoji values to clean slugs
 const statusMap: Record<string, LeadStatus> = {
-  new: 'new', '📥 new': 'new',
-  qualified: 'qualified', '👀 qualified': 'qualified',
-  contacted: 'contacted', '💬 contacted': 'contacted',
-  negotiating: 'negotiating', '📞 negotiating': 'negotiating',
-  converted: 'converted', '✅ converted': 'converted', '🏆 won': 'converted',
-  lost: 'lost', '❌ lost': 'lost',
-  paused: 'paused', '⏸️ paused': 'paused',
-  '🚀 in_progress': 'qualified', // legacy fallback
+  // Clean values
+  new: 'new',
+  qualified: 'qualified', 
+  contacted: 'contacted',
+  negotiating: 'negotiating',
+  converted: 'converted',
+  lost: 'lost',
+  paused: 'paused',
+  
+  // Legacy emoji mappings
+  '📥 new': 'new',
+  '👀 qualified': 'qualified',
+  '💬 contacted': 'contacted', 
+  '📞 negotiating': 'negotiating',
+  '✅ converted': 'converted',
+  '🏆 won': 'converted',
+  '❌ lost': 'lost',
+  '⏸️ paused': 'paused',
+  '🚀 in_progress': 'qualified',
+  
+  // Additional legacy mappings
+  assigned: 'qualified',
+  under_review: 'qualified',
+  in_progress: 'qualified',
+  completed: 'converted',
+  archived: 'paused'
 };
 
 export function normalizeStatus(s: string): LeadStatus {

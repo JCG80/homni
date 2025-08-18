@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Lead, LeadStatus, STATUS_EMOJI } from '@/types/leads';
+import { Lead, LeadStatus, STATUS_LABELS } from '@/types/leads';
 import { updateLeadStatus } from '../api/lead-update';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,7 +23,7 @@ export const CompanyLeadActions: React.FC<CompanyLeadActionsProps> = ({
       
       toast({
         title: "Status oppdatert",
-        description: `Lead status endret til ${STATUS_EMOJI[newStatus]}`,
+        description: `Lead status endret til ${STATUS_LABELS[newStatus]}`,
       });
       
       onLeadUpdate();
@@ -40,7 +40,7 @@ export const CompanyLeadActions: React.FC<CompanyLeadActionsProps> = ({
     <div className="space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-2">Lead Actions</h3>
-        <Badge variant="outline">{STATUS_EMOJI[lead.status]}</Badge>
+        <Badge variant="outline">{STATUS_LABELS[lead.status]}</Badge>
       </div>
       
       <div className="flex gap-2">

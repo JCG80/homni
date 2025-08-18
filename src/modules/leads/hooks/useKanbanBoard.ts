@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Lead, LeadStatus, PipelineStage, normalizeStatus, statusToPipeline, PIPELINE_EMOJI, LeadCounts } from '@/types/leads';
+import { Lead, LeadStatus, PipelineStage, normalizeStatus, statusToPipeline, PIPELINE_LABELS, LeadCounts } from '@/types/leads';
 import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
 import { KanbanColumn } from '../components/kanban/types';
 import { toast } from '@/hooks/use-toast';
@@ -22,10 +22,10 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
   });
 
   const columnDefinitions: Array<{ id: PipelineStage; title: string; status: LeadStatus }> = [
-    { id: 'new', title: PIPELINE_EMOJI.new, status: 'new' },
-    { id: 'in_progress', title: PIPELINE_EMOJI.in_progress, status: 'qualified' },
-    { id: 'won', title: PIPELINE_EMOJI.won, status: 'converted' },
-    { id: 'lost', title: PIPELINE_EMOJI.lost, status: 'lost' },
+    { id: 'new', title: PIPELINE_LABELS.new, status: 'new' },
+    { id: 'in_progress', title: PIPELINE_LABELS.in_progress, status: 'qualified' },
+    { id: 'won', title: PIPELINE_LABELS.won, status: 'converted' },
+    { id: 'lost', title: PIPELINE_LABELS.lost, status: 'lost' },
   ];
 
   const fetchBoardData = useCallback(async () => {

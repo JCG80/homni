@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LeadStatus, LEAD_STATUSES, STATUS_EMOJI } from '@/types/leads';
+import { LeadStatus, LEAD_STATUSES, STATUS_LABELS } from '@/types/leads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface LeadStatusSelectorProps {
@@ -26,7 +26,7 @@ export const LeadStatusSelector: React.FC<LeadStatusSelectorProps> = ({
       <SelectContent>
         {LEAD_STATUSES.map(status => (
           <SelectItem key={status} value={status}>
-            {STATUS_EMOJI[status]}
+            {STATUS_LABELS[status]}
           </SelectItem>
         ))}
       </SelectContent>

@@ -1,5 +1,5 @@
 
-import { LeadStatus, STATUS_EMOJI } from '@/types/leads';
+import { LeadStatus, STATUS_LABELS } from '@/types/leads';
 
 interface LeadStatusBadgeProps {
   status: LeadStatus;
@@ -22,7 +22,7 @@ export const LeadStatusBadge = ({ status, className = '' }: LeadStatusBadgeProps
   
   return (
     <span className={`${baseClasses} ${statusColor} text-white ${className}`}>
-      {STATUS_EMOJI[status]}
+      {STATUS_LABELS[status]}
     </span>
   );
 };

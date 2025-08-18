@@ -13,3 +13,6 @@ export * from './common';
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
 export type { Lead, LeadFormValues, LeadStatus, PipelineStage, CompanyProfile } from './leads';
 export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
+
+// Export label constants for clean UI display
+export { STATUS_LABELS, PIPELINE_LABELS, LEAD_STATUSES } from './leads';

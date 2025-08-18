@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { LeadStatus, mapToEmojiStatus } from "@/types/leads";
+import { LeadStatus } from "@/types/leads";
 
 /**
  * Manually assigns a lead to a specific company
@@ -30,14 +30,14 @@ export const assignLeadToCompany = async (
     }
     
     const previousStatus = lead.status;
-    const assignedStatus = mapToEmojiStatus('assigned');
+    const assignedStatus = 'qualified'; // Map assigned to qualified
     
     // Update the lead with the new company_id and status
     const { error: updateError } = await supabase
       .from('leads')
       .update({
         company_id: companyId,
-        status: assignedStatus as any,
+        status: assignedStatus,
         updated_at: new Date().toISOString()
       })
       .eq('id', leadId);
@@ -113,13 +113,13 @@ export const updateLeadStatus = async (
     }
     
     const previousStatus = lead.status;
-    const dbStatus = mapToEmojiStatus(newStatus as string);
+    const dbStatus = newStatus; // Use clean status directly
     
     // Update the lead status
     const { error: updateError } = await supabase
       .from('leads')
       .update({
-        status: dbStatus as any,
+        status: dbStatus,
         updated_at: new Date().toISOString()
       })
       .eq('id', leadId);

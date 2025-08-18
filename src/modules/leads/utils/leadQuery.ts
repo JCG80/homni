@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { withRetry } from "@/utils/apiRetry";
-import { mapToEmojiStatus } from "@/types/leads";
+// No imports needed for lead query
 
 /**
  * Fetches unassigned leads based on the provided filters
@@ -17,7 +17,7 @@ export async function fetchUnassignedLeads(options: {
   let query = supabase
     .from('leads')
     .select('*')
-    .eq('status', mapToEmojiStatus('new') as any)
+    .eq('status', 'new')
     .is('company_id', null);
   
   // Filter by lead type if specified

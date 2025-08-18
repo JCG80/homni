@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Calendar, User, Mail, Phone, Building } from 'lucide-react';
-import { Lead, STATUS_EMOJI } from '@/types/leads';
+import { Lead, STATUS_LABELS } from '@/types/leads';
 import { fetchLeadStatus } from '../api/lead-fetch';
 import { LeadContactInfo } from '../components/LeadContactInfo';
 import { CompanyLeadActions } from '../components/CompanyLeadActions';
@@ -130,7 +130,7 @@ export const LeadDetailsPage: React.FC = () => {
         </div>
         
         <Badge variant="outline">
-          {STATUS_EMOJI[lead.status]}
+          {STATUS_LABELS[lead.status]}
         </Badge>
       </div>
 
