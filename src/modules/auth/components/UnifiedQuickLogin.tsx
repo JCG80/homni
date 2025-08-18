@@ -21,7 +21,7 @@ const roles: { role: UserRole; label: string; color: string }[] = [
   { role: 'content_editor', label: 'Editor', color: 'text-green-500' },
   { role: 'company', label: 'Company', color: 'text-amber-500' },
   { role: 'user', label: 'User', color: 'text-slate-500' },
-  { role: 'anonymous', label: 'Guest', color: 'text-gray-400' },
+  { role: 'guest', label: 'Guest', color: 'text-gray-400' },
 ];
 
 export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: UnifiedQuickLoginProps) => {

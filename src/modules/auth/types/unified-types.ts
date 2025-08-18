@@ -7,7 +7,7 @@
  * Standard user roles in the application
  */
 export type UserRole = 
-  | 'anonymous'     // Not logged in (replaces guest)
+  | 'guest'         // Not logged in (replaces anonymous)
   | 'user'          // Regular user (replaces member) 
   | 'company'       // Company user
   | 'content_editor' // Content editor

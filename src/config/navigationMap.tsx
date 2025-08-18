@@ -28,7 +28,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['Header', 'MainContent', 'Footer'],
     keyComponents: ['ServiceSelector', 'ExampleTags', 'ServiceSelection'],
     primaryActions: ['Select Service', 'Browse Categories', 'Login'],
-    roles: ['anonymous', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
+    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
   },
   {
     path: '/login',
@@ -36,7 +36,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['MainContent', 'Footer'],
     keyComponents: ['LoginForm', 'LoginTabs', 'QuickLogin'],
     primaryActions: ['Login', 'Switch Tab', 'Sign Up'],
-    roles: ['anonymous'],
+    roles: ['guest'],
   },
   {
     path: '/register',
@@ -44,7 +44,7 @@ export const screenInventory: ScreenInfo[] = [
     layoutSlots: ['MainContent', 'Footer'],
     keyComponents: ['RegisterForm', 'RegisterTabs'],
     primaryActions: ['Register', 'Switch Tab'],
-    roles: ['anonymous'],
+    roles: ['guest'],
   },
   
   // Lead routes
@@ -144,8 +144,8 @@ export const screenInventory: ScreenInfo[] = [
 
 // User flow definitions
 export const userFlows = {
-  anonymous: {
-    title: 'Anonymous User Flow',
+  guest: {
+    title: 'Guest User Flow',
     steps: [
       { step: 1, path: '/', action: 'Select a service category' },
       { step: 2, path: '/select-services', action: 'Complete service form' },
@@ -154,10 +154,10 @@ export const userFlows = {
       { step: 5, path: '/login', action: 'Login to track requests' },
     ],
   },
-  member: {
-    title: 'Member User Flow',
+  user: {
+    title: 'User Flow',
     steps: [
-      { step: 1, path: '/login', action: 'Login with member credentials' },
+      { step: 1, path: '/login', action: 'Login with user credentials' },
       { step: 2, path: '/dashboard/user', action: 'View dashboard' },
       { step: 3, path: '/leads', action: 'Check leads/requests' },
       { step: 4, path: '/dashboard/documents', action: 'Access documents' },

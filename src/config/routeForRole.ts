@@ -21,7 +21,7 @@ export function routeForRole(role: UserRole): string {
       return '/dashboard/company';
     case 'user':
       return '/dashboard';
-    case 'anonymous':
+    case 'guest':
     default:
       return '/';
   }

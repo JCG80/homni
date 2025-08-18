@@ -9,7 +9,7 @@ import { UserRole } from './types';
  */
 export function getAllowedModulesForRole(role: UserRole): string[] {
   switch (role) {
-    case 'anonymous':
+    case 'guest':
       return ['home', 'leads/submit', 'info', 'login', 'register'];
     case 'user':
       return ['dashboard', 'leads', 'leads/my', 'profile', 'properties', 'maintenance', 'my-account'];

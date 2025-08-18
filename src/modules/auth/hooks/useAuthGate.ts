@@ -31,7 +31,7 @@ export function useAuthGate(opts: UseAuthGateOptions = {}) {
     
     if (opts.waitForProfile !== false) {
       // Wait for profile to be loaded AND role to be determined
-      return !!profile && !!derivedRole && derivedRole !== 'anonymous';
+      return !!profile && !!derivedRole && derivedRole !== 'guest';
     }
     
     // Just wait for auth to complete
