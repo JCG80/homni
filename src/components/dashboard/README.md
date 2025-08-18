@@ -15,7 +15,7 @@ The dashboard system consists of:
 
 Role-specific dashboards are implemented under `/src/pages/dashboard/`:
 
-- `/member`: For regular users
+- `/user`: For regular users
 - `/company`: For business users
 - `/content_editor`: For content management users
 - `/admin`: For administrator users
@@ -39,7 +39,7 @@ import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
 
 const MyDashboardPage = () => {
   return (
-    <RoleDashboard requiredRole="member" title="My Dashboard">
+    <RoleDashboard requiredRole="user" title="My Dashboard">
       {/* Dashboard content */}
     </RoleDashboard>
   );

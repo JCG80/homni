@@ -28,7 +28,7 @@ export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthB
     if (email === 'content@test.local') role = 'content_editor';
   }
   
-  // If still no role, default to member for authenticated users
+  // If still no role, default to user for authenticated users
   if (!role && isAuthenticated) {
     role = 'user';
   }
@@ -36,7 +36,7 @@ export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthB
   console.log("useAuthDerivedState - Determined role:", role, "From profile:", profile?.role, "From user:", user?.role);
 
   // Get account type from user metadata or profile
-  const account_type = (profile as any)?.metadata?.account_type || (profile as any)?.account_type || 'member';
+  const account_type = (profile as any)?.metadata?.account_type || (profile as any)?.account_type || 'user';
   
   // Get internal admin flag from user metadata, profile, or module_access
   const internal_admin = 

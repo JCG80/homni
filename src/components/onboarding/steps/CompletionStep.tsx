@@ -22,7 +22,7 @@ export const CompletionStep = ({ userType, formData, onComplete, onBack }: Compl
   const { handleSubmit, isSubmitting, error } = useRegistrationSubmit();
   
   const completeRegistration = async () => {
-    // Map UserType (member/company) to registration API's expected format (private/business)
+    // Map UserType (user/company) to registration API's expected format (private/business)
     const mappedUserType = userType === 'user' ? 'private' : 'business';
     
     // Create registration data object with the mapped user type

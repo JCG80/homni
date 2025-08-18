@@ -14,10 +14,10 @@ The navigation system is built around the concept of role-based access control, 
 
 The navigation configuration in `navigation.tsx` defines navigation items for each user role:
 
-- `member`: Regular users with property-focused navigation
+- `user`: Regular users with property-focused navigation
 - `company`: Business users with lead and analytics focused navigation
 - `content_editor`: Users who manage content
-- `admin`: Administrator users with company and member management
+- `admin`: Administrator users with company and user management
 - `master_admin`: Super administrators with full system access
 - `guest`: Unauthenticated users
 

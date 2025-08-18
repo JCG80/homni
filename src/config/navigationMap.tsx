@@ -110,10 +110,10 @@ export const screenInventory: ScreenInfo[] = [
   },
   {
     path: '/admin/members',
-    name: 'Members Management',
+    name: 'Users Management',
     layoutSlots: ['Header', 'Sidebar', 'MainContent', 'Footer'],
-    keyComponents: ['MemberList', 'MemberFilter', 'MemberDetails'],
-    primaryActions: ['View Member', 'Edit Member', 'Deactivate Member'],
+    keyComponents: ['UserList', 'UserFilter', 'UserDetails'],
+    primaryActions: ['View User', 'Edit User', 'Deactivate User'],
     roles: ['admin', 'master_admin'],
   },
   {
@@ -180,7 +180,7 @@ export const userFlows = {
       { step: 1, path: '/login', action: 'Login with admin credentials' },
       { step: 2, path: '/admin/system-modules', action: 'Manage system modules' },
       { step: 3, path: '/admin/companies', action: 'Manage company accounts' },
-      { step: 4, path: '/admin/members', action: 'Manage member accounts' },
+      { step: 4, path: '/admin/members', action: 'Manage user accounts' },
       { step: 5, path: '/admin/leads', action: 'Overview all leads' },
     ],
   },

@@ -38,7 +38,7 @@ export const ProfileStep = ({
   onBack 
 }: ProfileStepProps) => {
   
-  // Schema for member
+  // Schema for user
   const memberSchema = z.object({
     phoneNumber: z.string().optional(),
   });
@@ -49,7 +49,7 @@ export const ProfileStep = ({
     phoneNumber: z.string().optional(),
   });
 
-  // Form for member
+  // Form for user
   const memberForm = useForm<z.infer<typeof memberSchema>>({
     resolver: zodResolver(memberSchema),
     defaultValues: {

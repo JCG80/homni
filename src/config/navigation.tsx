@@ -184,7 +184,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
       description: "Administrer bedriftskontoer",
     },
     {
-      title: "Medlemmer",
+      title: "Brukere",
       href: "/admin/members",
       icon: Users,
       description: "Administrer medlemskontoer",
@@ -218,7 +218,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
       description: "Administrer bedriftskontoer",
     },
     {
-      title: "Medlemmer",
+      title: "Brukere",
       href: "/admin/members",
       icon: Users,
       description: "Administrer medlemskontoer",

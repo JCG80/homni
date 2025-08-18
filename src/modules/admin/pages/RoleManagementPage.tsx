@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 interface User {
   id: string;
   email: string;
-  account_type: 'member' | 'company' | 'admin' | 'master_admin';
+  account_type: 'user' | 'company' | 'admin' | 'master_admin';
   internal_admin: boolean;
   module_access: string[];
   last_sign_in_at?: string;
@@ -35,7 +35,7 @@ export const RoleManagementPage: React.FC = () => {
   });
 
   // Group users by role
-  const members = users?.filter(user => user.account_type === 'member') || [];
+  const members = users?.filter(user => user.account_type === 'user') || [];
   const companies = users?.filter(user => user.account_type === 'company') || [];
 
   // Function to update user modules
@@ -90,14 +90,14 @@ export const RoleManagementPage: React.FC = () => {
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList>
-          <TabsTrigger value="members">Medlemmer</TabsTrigger>
+          <TabsTrigger value="members">Brukere</TabsTrigger>
           <TabsTrigger value="companies">Bedrifter</TabsTrigger>
         </TabsList>
         
         <TabsContent value="members" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Medlemsoversikt</CardTitle>
+              <CardTitle>Brukeroversikt</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -131,7 +131,7 @@ export const RoleManagementPage: React.FC = () => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={5} className="p-4 text-center text-muted-foreground">Ingen medlemmer funnet</td>
+                          <td colSpan={5} className="p-4 text-center text-muted-foreground">Ingen brukere funnet</td>
                         </tr>
                       )}
                     </tbody>

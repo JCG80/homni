@@ -1,7 +1,7 @@
 
 import { Json } from '@/integrations/supabase/types';
 
-export interface Member {
+export interface AppUser {
   id: string;
   full_name?: string;
   email?: string;
