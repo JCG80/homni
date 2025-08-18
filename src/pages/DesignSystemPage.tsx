@@ -12,6 +12,8 @@ import {
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { UserMenu } from '@/components/ui/user-menu';
 import { PageLayout } from '@/components/layout';
+import { ColorSwatch } from '@/components/design-system/ColorSwatch';
+import { InteractiveLink } from '@/components/ui/interactive-link';
 
 export const DesignSystemPage = () => {
   return (
@@ -26,14 +28,12 @@ export const DesignSystemPage = () => {
             <h3 id="primary-colors">Primary Colors</h3>
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
-                <div key={weight} className="flex flex-col items-center">
-              <div 
-                className="w-20 h-20 rounded-md shadow-sm border"
-                style={{ backgroundColor: `hsl(var(--primary-${weight}))` }}
-                aria-label={`Primary color ${weight}`}
-              />
-                  <span className="text-sm mt-1">{weight}</span>
-                </div>
+                <ColorSwatch 
+                  key={`primary-${weight}`}
+                  colorName={`Primary ${weight}`}
+                  colorValue={`hsl(var(--primary-${weight}))`}
+                  label={`${weight}`}
+                />
               ))}
             </div>
           </div>
@@ -42,14 +42,12 @@ export const DesignSystemPage = () => {
             <h3 id="secondary-colors">Secondary Colors</h3>
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
-                <div key={weight} className="flex flex-col items-center">
-              <div 
-                className="w-20 h-20 rounded-md shadow-sm border"
-                style={{ backgroundColor: `hsl(var(--secondary-${weight}))` }}
-                aria-label={`Secondary color ${weight}`}
-              />
-                  <span className="text-sm mt-1">{weight}</span>
-                </div>
+                <ColorSwatch 
+                  key={`secondary-${weight}`}
+                  colorName={`Secondary ${weight}`}
+                  colorValue={`hsl(var(--secondary-${weight}))`}
+                  label={`${weight}`}
+                />
               ))}
             </div>
           </div>
@@ -57,50 +55,20 @@ export const DesignSystemPage = () => {
           <div className="space-y-4" aria-labelledby="neutral-colors">
             <h3 id="neutral-colors">Neutral & UI Colors</h3>
             <div className="flex flex-wrap gap-4">
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-background border" aria-label="Background color" />
-                <span className="text-sm mt-1">background</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-foreground border" aria-label="Foreground color" />
-                <span className="text-sm mt-1">foreground</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-muted border" aria-label="Muted color" />
-                <span className="text-sm mt-1">muted</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-accent border" aria-label="Accent color" />
-                <span className="text-sm mt-1">accent</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-card border" aria-label="Card color" />
-                <span className="text-sm mt-1">card</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-border border" aria-label="Border color" />
-                <span className="text-sm mt-1">border</span>
-              </div>
+              <ColorSwatch colorName="Background" colorValue="hsl(var(--background))" label="background" />
+              <ColorSwatch colorName="Foreground" colorValue="hsl(var(--foreground))" label="foreground" />
+              <ColorSwatch colorName="Muted" colorValue="hsl(var(--muted))" label="muted" />
+              <ColorSwatch colorName="Accent" colorValue="hsl(var(--accent))" label="accent" />
+              <ColorSwatch colorName="Card" colorValue="hsl(var(--card))" label="card" />
+              <ColorSwatch colorName="Border" colorValue="hsl(var(--border))" label="border" />
             </div>
             
             <h3 id="feedback-colors">Feedback Colors</h3>
             <div className="flex flex-wrap gap-4">
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-destructive border" aria-label="Destructive color" />
-                <span className="text-sm mt-1">destructive</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-success border" aria-label="Success color" />
-                <span className="text-sm mt-1">success</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-warning border" aria-label="Warning color" />
-                <span className="text-sm mt-1">warning</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-info border" aria-label="Info color" />
-                <span className="text-sm mt-1">info</span>
-              </div>
+              <ColorSwatch colorName="Destructive" colorValue="hsl(var(--destructive))" label="destructive" />
+              <ColorSwatch colorName="Success" colorValue="hsl(var(--success))" label="success" />
+              <ColorSwatch colorName="Warning" colorValue="hsl(var(--warning))" label="warning" />
+              <ColorSwatch colorName="Info" colorValue="hsl(var(--info))" label="info" />
             </div>
           </div>
         </section>
@@ -308,22 +276,16 @@ export const DesignSystemPage = () => {
             <h3>Interactive Text Links</h3>
             <div className="space-y-2">
               <div>
-                <a 
-                  href="#" 
-                  className="story-link text-primary font-medium focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm"
-                >
+                <InteractiveLink to="#" variant="underline">
                   Story Link with Underline Animation
-                </a>
+                </InteractiveLink>
                 <p className="text-sm text-muted-foreground mt-1">Links with animated underline on hover</p>
               </div>
               
               <div>
-                <a 
-                  href="#" 
-                  className="hover-scale text-primary font-medium inline-block focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm"
-                >
+                <InteractiveLink to="#" variant="scale">
                   Scaling Link
-                </a>
+                </InteractiveLink>
                 <p className="text-sm text-muted-foreground mt-1">Links that slightly scale up on hover</p>
               </div>
             </div>
