@@ -73,7 +73,7 @@ export const ProtectedRoute = ({
         return;
       }
       
-      // PRIORITY: Check module access first (handles public modules for anonymous users)
+      // PRIORITY: Check module access first (handles public modules for guest users)
       if (module) {
         const hasModuleAccess = canAccessModule(module);
         console.log(`ProtectedRoute - Module access check for ${module}:`, hasModuleAccess);

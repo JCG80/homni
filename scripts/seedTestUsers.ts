@@ -9,7 +9,7 @@ import { supabase } from '../src/lib/supabaseClient';
 console.log('👥 Seeding test users...');
 
 const testUsers = [
-  { role: 'anonymous', email: 'guest@example.com' },
+  { role: 'guest', email: 'guest@example.com' },
   { role: 'user', email: 'user@example.com' },
   { role: 'company', email: 'company@example.com' },
   { role: 'content_editor', email: 'editor@example.com' },

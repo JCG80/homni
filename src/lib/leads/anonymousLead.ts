@@ -9,7 +9,7 @@ interface AnonymousLeadData {
 
 export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
   try {
-    // First create the lead without submitted_by since it's for anonymous users
+    // First create the lead without submitted_by since it's for guest users
     const { data: lead, error: leadError } = await supabase
       .from('leads')
       .insert({

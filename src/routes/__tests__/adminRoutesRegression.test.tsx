@@ -53,7 +53,7 @@ describe('Security Regression - Admin route access by role', () => {
     mockAuth.role = 'user';
   });
 
-  it('denies all admin routes for anonymous users (redirect to login handled elsewhere)', () => {
+  it('denies all admin routes for guest users (redirect to login handled elsewhere)', () => {
     mockAuth.isAuthenticated = false;
     mockAuth.user = null;
     mockAuth.role = 'guest';

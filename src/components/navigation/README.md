@@ -19,7 +19,7 @@ The navigation configuration in `navigation.tsx` defines navigation items for ea
 - `content_editor`: Users who manage content
 - `admin`: Administrator users with company and member management
 - `master_admin`: Super administrators with full system access
-- `anonymous`: Unauthenticated users
+- `guest`: Unauthenticated users
 
 ## Usage
 

@@ -66,7 +66,7 @@ describe('seedTestUsers', () => {
     expect(getExpectedModulesForRole('company')).toContain('dashboard');
     expect(getExpectedModulesForRole('content_editor')).toContain('content');
     expect(getExpectedModulesForRole('member')).toContain('profile');
-    expect(getExpectedModulesForRole('anonymous')).toContain('login');
+    expect(getExpectedModulesForRole('guest')).toContain('login');
     expect(getExpectedModulesForRole('unknown' as UserRole)).toEqual([]);
   });
   

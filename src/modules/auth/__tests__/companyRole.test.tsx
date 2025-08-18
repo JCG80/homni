@@ -36,7 +36,7 @@ describe('Company Role Access', () => {
     expect(canAccessModule('company', 'internal-access')).toBe(false);
   });
 
-  test('should redirect anonymous users from company-specific routes', () => {
+  test('should redirect guest users from company-specific routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,

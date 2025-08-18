@@ -36,7 +36,7 @@ This module handles all authentication and user management functions.
 
 The system supports the following user roles:
 
-- `anonymous`: Unauthenticated user or user with minimal privileges
+- `guest`: Unauthenticated user or user with minimal privileges
 - `user`: Standard authenticated user
 - `member`: Member with standard privileges
 - `company`: Company account with lead access

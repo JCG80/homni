@@ -40,7 +40,7 @@ describe('User Role Access', () => {
     expect(canAccessModule('user', 'settings')).toBe(false);
   });
 
-  test('should redirect anonymous users from member-specific routes', () => {
+  test('should redirect guest users from member-specific routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,

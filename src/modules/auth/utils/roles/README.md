@@ -5,7 +5,7 @@
 The application uses a strict role-based access control system with the following roles:
 
 ### Core Roles
-- **`anonymous`**: Not logged in users with limited access to public content
+- **`guest`**: Not logged in users with limited access to public content
 - **`user`**: Regular authenticated users (previously known as "member")
 - **`company`**: Business/company users with access to company-specific features
 - **`content_editor`**: Users who can create and edit content
@@ -16,7 +16,7 @@ The application uses a strict role-based access control system with the followin
 
 ### Legacy Role Mappings
 - `member` → `user` (deprecated, use `user` instead)
-- `guest` → `anonymous` (deprecated, use `anonymous` instead)
+- `anonymous` → `guest` (deprecated, use `guest` instead)
 
 ## Role Validation
 

@@ -48,7 +48,7 @@ describe('ProtectedRoute Component', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'anonymous' as UserRole
+      role: 'guest' as UserRole
     });
 
     const { getByTestId } = render(
@@ -142,11 +142,11 @@ describe('ProtectedRoute Component', () => {
     expect(getByText('Authenticated Content')).toBeInTheDocument();
   });
 
-  test('should allow anonymous users to access allowed modules', () => {
+  test('should allow guest users to access allowed modules', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'anonymous' as UserRole,
+      role: 'guest' as UserRole,
       canAccessModule: vi.fn().mockReturnValue(true),
       hasRole: vi.fn().mockReturnValue(false)
     });
@@ -162,11 +162,11 @@ describe('ProtectedRoute Component', () => {
     expect(getByText('Public Content')).toBeInTheDocument();
   });
 
-  test('should redirect anonymous users from protected modules', () => {
+  test('should redirect guest users from protected modules', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
-      role: 'anonymous' as UserRole,
+      role: 'guest' as UserRole,
       canAccessModule: vi.fn().mockReturnValue(false),
       hasRole: vi.fn().mockReturnValue(false)
     });

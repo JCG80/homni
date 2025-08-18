@@ -37,7 +37,7 @@ describe('Admin Role Access', () => {
     expect(canAccessModule('admin', 'internal-access')).toBe(true); // Admin can access all modules now
   });
 
-  test('should redirect anonymous users from admin-specific routes', () => {
+  test('should redirect guest users from admin-specific routes', () => {
     (useAuth as any).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,

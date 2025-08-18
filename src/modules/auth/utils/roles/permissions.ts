@@ -100,7 +100,7 @@ export function getRolePermissions(role: UserRole | null): Record<string, boolea
       permissions.canCreate = true; // Users can create leads
       break;
     default:
-      // Anonymous users only have view permissions
+      // Guest users only have view permissions
       break;
   }
   

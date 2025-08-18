@@ -17,7 +17,7 @@ export const useRoleCheck = (props?: RoleCheckProps) => {
     // Get role from props or null
     const role = roleFromProps || null;
     
-    // Determine if role is anonymous
+    // Determine if role is guest (unauthenticated)
     const isAnonymous = !role || role === 'guest';
     
     // Check if user is admin (admin or master_admin)
