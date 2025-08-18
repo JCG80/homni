@@ -34,16 +34,35 @@ export const LoginPage = () => {
   // Redirect to dashboard if already logged in
   useEffect(() => {
     if (isAuthenticated && role && !isLoading) {
-      console.log(`LoginPage - User already authenticated, redirecting to: ${returnUrl}`);
+      console.log(`LoginPage - User already authenticated, redirecting...`);
       
-      // Use returnUrl if provided, otherwise use role-based dashboard
-      if (returnUrl && returnUrl !== '/login' && returnUrl !== '/dashboard') {
+      // Get role-based redirect path
+      const getRoleBasedPath = (userRole: string) => {
+        switch (userRole) {
+          case 'master_admin':
+          case 'admin':
+            return '/admin';
+          case 'company':
+            return '/dashboard/company';
+          case 'content_editor':
+            return '/dashboard/content-editor';
+          case 'user':
+            return '/dashboard/user';
+          default:
+            return '/dashboard';
+        }
+      };
+      
+      // Use returnUrl if provided and valid, otherwise use role-based dashboard
+      if (returnUrl && returnUrl !== '/login' && returnUrl !== '/' && !returnUrl.includes('login')) {
         navigate(returnUrl, { replace: true });
       } else {
-        redirectToDashboard();
+        const targetPath = getRoleBasedPath(role);
+        console.log(`LoginPage - Redirecting ${role} to: ${targetPath}`);
+        navigate(targetPath, { replace: true });
       }
     }
-  }, [user, isLoading, isAuthenticated, role, navigate, returnUrl, redirectToDashboard]);
+  }, [user, isLoading, isAuthenticated, role, navigate, returnUrl]);
 
   // Animation variants
   const containerVariants = {

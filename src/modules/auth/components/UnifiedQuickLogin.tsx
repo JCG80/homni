@@ -38,24 +38,6 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
     console.log('UnifiedQuickLogin mounted with redirectTo:', redirectTo);
   }, [redirectTo]);
   
-  const getRoleBasedRedirect = (role: UserRole): string => {
-    switch (role) {
-      case 'master_admin':
-      case 'admin':
-        return '/admin';
-      case 'company':
-        return '/dashboard/company';
-      case 'content_editor':
-        return '/dashboard/content-editor';
-      case 'user':
-        return '/dashboard/user';
-      case 'anonymous':
-        return '/';
-      default:
-        return '/dashboard';
-    }
-  };
-  
   const handleLogin = async (role: UserRole) => {
     try {
       console.log(`Attempting quick login as ${role}`);
@@ -69,14 +51,9 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
           onSuccess();
         }
         
-        // Navigate to role-specific dashboard or provided redirectTo
-        const targetUrl = redirectTo || getRoleBasedRedirect(role);
-        console.log(`Login successful, navigating to: ${targetUrl}`);
-        
-        // Small delay to ensure auth state is updated
-        setTimeout(() => {
-          navigate(targetUrl);
-        }, 500);
+        // Don't manually navigate - let the auth state change handle it
+        // The LoginPage useEffect will automatically redirect based on the new role
+        console.log(`Login successful for ${role}, waiting for automatic redirect...`);
       }
     } catch (error) {
       console.error('Failed to login with test user:', error);
