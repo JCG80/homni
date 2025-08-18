@@ -17,7 +17,7 @@ export class AuthService {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as UserRoleAssignment[];
     } catch (error) {
       console.error('Error fetching user roles:', error);
       return [];
@@ -145,7 +145,7 @@ export class AuthService {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as UserProfile;
     } catch (error) {
       console.error('Error fetching user profile:', error);
       return null;
@@ -246,7 +246,7 @@ export class AuthService {
         });
 
       if (error) throw error;
-      return data;
+      return data as UserProfile;
     } catch (error) {
       console.error('Error ensuring user profile:', error);
       return null;

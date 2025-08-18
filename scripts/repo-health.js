@@ -51,9 +51,9 @@ function checkLegacyRoles() {
   console.log('📋 Checking for legacy roles...');
   const legacyPatterns = [
     /['"]member['"]/g,
-    /['"]guest['"]/g,
+    /['"]anonymous['"]/g,
     /role:\s*['"]member['"]/g,
-    /role:\s*['"]guest['"]/g
+    /role:\s*['"]anonymous['"]/g
   ];
   
   let violations = [];

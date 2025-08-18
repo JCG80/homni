@@ -119,7 +119,7 @@ async function checkFunction(functionName: string): Promise<FunctionCheck> {
       // Try calling with test parameters
       const { error } = await supabase.rpc('has_role', { 
         _user_id: '00000000-0000-0000-0000-000000000000', 
-        _role: 'member' 
+        _role: 'user' 
       });
       if (error && !error.message.includes('does not exist')) {
         check.hasSecurityDefiner = true;
