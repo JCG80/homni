@@ -3,12 +3,12 @@
  * Maps legacy roles to canonical values with fallback to 'guest'
  */
 
-export type UserRole = 'anonymous' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
+export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
 
 const LEGACY_ROLE_MAP: Record<string, UserRole> = {
   // Anonymous/Guest mapping
-  'guest': 'anonymous',
-  'anon': 'anonymous',
+  'anonymous': 'guest',
+  'anon': 'guest',
   
   // User mapping  
   'member': 'user',
@@ -43,7 +43,7 @@ const LEGACY_ROLE_MAP: Record<string, UserRole> = {
  */
 export function normalizeRole(role: string | null | undefined): UserRole {
   if (!role || typeof role !== 'string') {
-    return 'anonymous';
+  return 'guest';
   }
   
   const cleanRole = role.toLowerCase().trim();
@@ -61,14 +61,14 @@ export function normalizeRole(role: string | null | undefined): UserRole {
   
   // Fallback to anonymous for unknown roles
   console.warn(`Unknown role '${role}' normalized to 'anonymous'`);
-  return 'anonymous';
+  return 'guest';
 }
 
 /**
  * Checks if a role is already canonical (no mapping needed)
  */
 function isCanonicalRole(role: string): boolean {
-  const canonicalRoles: UserRole[] = ['anonymous', 'user', 'company', 'content_editor', 'admin', 'master_admin'];
+  const canonicalRoles: UserRole[] = ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'];
   return canonicalRoles.includes(role as UserRole);
 }
 
@@ -89,7 +89,7 @@ export function isLegacyRole(role: string | null | undefined): boolean {
  */
 export function getRoleDisplayName(role: UserRole): string {
   const displayNames: Record<UserRole, string> = {
-    'anonymous': 'Anonymous',
+    'guest': 'Guest',
     'user': 'User',
     'company': 'Company',
     'content_editor': 'Content Editor',
@@ -105,7 +105,7 @@ export function getRoleDisplayName(role: UserRole): string {
  */
 export function getRoleLevel(role: UserRole): number {
   const levels: Record<UserRole, number> = {
-    'anonymous': 0,
+    'guest': 0,
     'user': 1,
     'company': 2,
     'content_editor': 3,

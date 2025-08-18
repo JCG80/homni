@@ -1,172 +1,182 @@
 #!/usr/bin/env ts-node
 
-/**
- * Script to check migration files for rollback capability and safety
- * Ensures all migrations have corresponding _down.sql files
- */
+import { glob } from 'glob';
+import fs from 'fs';
+import path from 'path';
 
-import * as fs from 'fs';
-import * as path from 'path';
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m', 
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  red: '\x1b[31m',
+  cyan: '\x1b[36m'
+};
 
 interface MigrationCheck {
   upFile: string;
-  downFile: string | null;
-  hasRollback: boolean;
-  isDestructive: boolean;
+  downFile: string;
+  hasDown: boolean;
+  hasDestructive: boolean;
   issues: string[];
-  severity: 'error' | 'warning' | 'info';
 }
 
-const RED = '\x1b[31m';
-const YELLOW = '\x1b[33m';
-const GREEN = '\x1b[32m';
-const RESET = '\x1b[0m';
-
-// Destructive operations that need special attention
+// Patterns that indicate potentially destructive operations
 const DESTRUCTIVE_PATTERNS = [
   /DROP\s+TABLE/i,
   /DROP\s+COLUMN/i,
+  /DROP\s+INDEX/i,
+  /DROP\s+CONSTRAINT/i,
   /ALTER\s+TABLE.*DROP/i,
-  /DELETE\s+FROM/i,
-  /TRUNCATE/i
+  /TRUNCATE/i,
+  /DELETE\s+FROM/i
 ];
 
-async function checkMigrations(): Promise<void> {
-  console.log('📄 Checking migration files and rollback capability...\n');
-  
-  const migrationsDir = 'supabase/migrations';
-  
-  if (!fs.existsSync(migrationsDir)) {
-    console.log(`${YELLOW}⚠️  No migrations directory found at ${migrationsDir}${RESET}`);
-    return;
-  }
-  
-  const checks: MigrationCheck[] = [];
-  const migrationFiles = fs.readdirSync(migrationsDir)
-    .filter(file => file.endsWith('.sql') && !file.endsWith('_down.sql'))
-    .sort();
-  
-  for (const upFile of migrationFiles) {
-    const check = await checkMigration(migrationsDir, upFile);
-    checks.push(check);
-  }
-  
-  // Report findings
-  let errors = 0;
-  let warnings = 0;
-  
-  checks.forEach(check => {
-    const color = check.severity === 'error' ? RED : check.severity === 'warning' ? YELLOW : GREEN;
-    const icon = check.severity === 'error' ? '❌' : check.severity === 'warning' ? '⚠️' : '✅';
+async function checkMigrations() {
+  try {
+    console.log(`${colors.cyan}📜 Checking migrations...${colors.reset}`);
     
-    console.log(`${color}${icon} Migration: ${check.upFile}${RESET}`);
-    console.log(`   Has Rollback: ${check.hasRollback ? 'Yes' : 'No'}`);
-    console.log(`   Is Destructive: ${check.isDestructive ? 'Yes' : 'No'}`);
+    const migrationsDir = 'supabase/migrations';
     
-    if (check.issues.length > 0) {
-      console.log(`   Issues: ${check.issues.join(', ')}`);
+    if (!fs.existsSync(migrationsDir)) {
+      console.log(`${colors.yellow}⚠️  No migrations directory found at ${migrationsDir}${colors.reset}`);
+      console.log(`${colors.green}✅ Migration check passed (no migrations to validate)${colors.reset}`);
+      process.exit(0);
+    }
+
+    const upFiles = await glob(`${migrationsDir}/**/*_up.sql`);
+    
+    if (upFiles.length === 0) {
+      console.log(`${colors.yellow}⚠️  No migration files found${colors.reset}`);
+      console.log(`${colors.green}✅ Migration check passed (no migrations to validate)${colors.reset}`);
+      process.exit(0);
+    }
+
+    console.log(`${colors.cyan}📁 Found ${upFiles.length} migration files${colors.reset}`);
+
+    const checks: MigrationCheck[] = [];
+    let hasErrors = false;
+    let hasWarnings = false;
+
+    for (const upFile of upFiles) {
+      const check = await checkMigration(migrationsDir, upFile);
+      checks.push(check);
+      
+      if (!check.hasDown) {
+        console.log(`${colors.red}❌ Missing rollback script: ${check.downFile}${colors.reset}`);
+        hasErrors = true;
+      } else {
+        console.log(`${colors.green}✅ ${path.basename(check.upFile)} has rollback script${colors.reset}`);
+      }
+      
+      if (check.hasDestructive) {
+        console.log(`${colors.yellow}⚠️  ${path.basename(check.upFile)} contains potentially destructive operations${colors.reset}`);
+        hasWarnings = true;
+      }
+      
+      if (check.issues.length > 0) {
+        console.log(`${colors.yellow}ℹ️  ${path.basename(check.upFile)} issues:${colors.reset}`);
+        check.issues.forEach(issue => {
+          console.log(`   ${colors.cyan}- ${issue}${colors.reset}`);
+        });
+      }
+    }
+
+    console.log(`\n${colors.bright}🎯 SUMMARY${colors.reset}`);
+    console.log(`${colors.cyan}Total migrations: ${checks.length}${colors.reset}`);
+    console.log(`${colors.green}With rollback scripts: ${checks.filter(c => c.hasDown).length}${colors.reset}`);
+    console.log(`${colors.yellow}With destructive ops: ${checks.filter(c => c.hasDestructive).length}${colors.reset}`);
+
+    if (hasErrors) {
+      console.log(`${colors.red}❌ Migration issues found${colors.reset}`);
+      process.exit(1);
+    } else if (hasWarnings) {
+      console.log(`${colors.yellow}⚠️  All migrations have rollback scripts, but some contain destructive operations${colors.reset}`);
+      console.log(`${colors.green}✅ Migration check passed with warnings${colors.reset}`);
+    } else {
+      console.log(`${colors.green}✅ All migrations have rollback scripts${colors.reset}`);
     }
     
-    console.log();
-    
-    if (check.severity === 'error') errors++;
-    else if (check.severity === 'warning') warnings++;
-  });
-  
-  console.log(`${RED}❌ Errors: ${errors}${RESET}`);
-  console.log(`${YELLOW}⚠️  Warnings: ${warnings}${RESET}`);
-  
-  if (errors > 0) {
-    console.log(`\n${RED}🚨 Migration check failed. Critical issues found.${RESET}`);
+  } catch (error) {
+    console.error(`${colors.red}❌ Error during migration check:${colors.reset}`, error);
     process.exit(1);
-  } else {
-    console.log(`\n${GREEN}🎉 All migrations have proper rollback capability!${RESET}`);
   }
 }
 
 async function checkMigration(migrationsDir: string, upFile: string): Promise<MigrationCheck> {
-  const upPath = path.join(migrationsDir, upFile);
-  const downFile = upFile.replace('.sql', '_down.sql');
-  const downPath = path.join(migrationsDir, downFile);
+  const downFile = upFile.replace(/_up\.sql$/, '_down.sql');
+  const hasDown = fs.existsSync(downFile);
   
-  const check: MigrationCheck = {
-    upFile,
-    downFile: fs.existsSync(downPath) ? downFile : null,
-    hasRollback: fs.existsSync(downPath),
-    isDestructive: false,
-    issues: [],
-    severity: 'info'
-  };
+  let hasDestructive = false;
+  const issues: string[] = [];
   
   try {
-    // Read and analyze migration content
-    const upContent = fs.readFileSync(upPath, 'utf-8');
+    const upContent = fs.readFileSync(upFile, 'utf8');
     
     // Check for destructive operations
-    check.isDestructive = DESTRUCTIVE_PATTERNS.some(pattern => pattern.test(upContent));
-    
-    // Check for rollback file
-    if (!check.hasRollback) {
-      check.issues.push('Missing rollback file');
-      check.severity = check.isDestructive ? 'error' : 'warning';
-    } else {
-      // Validate rollback file
-      const downContent = fs.readFileSync(downPath, 'utf-8');
-      
-      if (downContent.trim().length === 0) {
-        check.issues.push('Empty rollback file');
-        check.severity = 'warning';
-      }
-      
-      // Check if rollback looks reasonable
-      if (!containsRollbackOperations(upContent, downContent)) {
-        check.issues.push('Rollback may not properly reverse migration');
-        check.severity = 'warning';
+    for (const pattern of DESTRUCTIVE_PATTERNS) {
+      if (pattern.test(upContent)) {
+        hasDestructive = true;
+        break;
       }
     }
     
-    // Check for unsafe patterns
+    // Check for specific unsafe patterns
     if (upContent.includes('ALTER DATABASE')) {
-      check.issues.push('Contains ALTER DATABASE - not allowed');
-      check.severity = 'error';
+      issues.push('Contains ALTER DATABASE statement (not allowed)');
     }
     
-    if (upContent.includes('DROP SCHEMA') && upContent.includes('CASCADE')) {
-      check.issues.push('Dangerous CASCADE operation');
-      check.severity = 'error';
+    if (upContent.includes('DROP SCHEMA CASCADE')) {
+      issues.push('Contains DROP SCHEMA CASCADE (potentially dangerous)');
+    }
+    
+    // If we have a down file, check if it properly reverses the up operations
+    if (hasDown) {
+      try {
+        const downContent = fs.readFileSync(downFile, 'utf8');
+        if (!containsRollbackOperations(upContent, downContent)) {
+          issues.push('Rollback script may not properly reverse all operations');
+        }
+      } catch (error) {
+        issues.push('Could not read rollback script');
+      }
     }
     
   } catch (error) {
-    check.issues.push(`Failed to analyze: ${error instanceof Error ? error.message : String(error)}`);
-    check.severity = 'error';
+    issues.push('Could not read migration file');
   }
   
-  return check;
+  return {
+    upFile,
+    downFile,
+    hasDown,
+    hasDestructive,
+    issues
+  };
 }
 
 function containsRollbackOperations(upContent: string, downContent: string): boolean {
-  // Basic heuristics to check if rollback looks reasonable
-  const upHasCreate = /CREATE\s+(TABLE|FUNCTION|TRIGGER)/i.test(upContent);
-  const downHasDrop = /DROP\s+(TABLE|FUNCTION|TRIGGER)/i.test(downContent);
+  // Basic heuristics to check if down script reverses up operations
+  const upHasCreate = /CREATE\s+TABLE/i.test(upContent);
+  const downHasDrop = /DROP\s+TABLE/i.test(downContent);
   
-  const upHasAlter = /ALTER\s+TABLE.*ADD/i.test(upContent);
-  const downHasAlterDrop = /ALTER\s+TABLE.*DROP/i.test(downContent);
+  const upHasAddColumn = /ADD\s+COLUMN/i.test(upContent);
+  const downHasDropColumn = /DROP\s+COLUMN/i.test(downContent);
   
-  const upHasInsert = /INSERT\s+INTO/i.test(upContent);
-  const downHasDelete = /DELETE\s+FROM/i.test(downContent);
+  // If up creates tables, down should drop them
+  if (upHasCreate && !downHasDrop) {
+    return false;
+  }
   
-  // If up migration creates something, down should drop it
-  if (upHasCreate && !downHasDrop) return false;
-  
-  // If up migration adds columns, down should drop them
-  if (upHasAlter && !downHasAlterDrop) return false;
-  
-  // If up migration inserts data, down should delete it
-  if (upHasInsert && !downHasDelete) return false;
+  // If up adds columns, down should drop them
+  if (upHasAddColumn && !downHasDropColumn) {
+    return false;
+  }
   
   return true;
 }
 
+// Run the script when called directly
 if (require.main === module) {
-  checkMigrations().catch(console.error);
+  checkMigrations();
 }

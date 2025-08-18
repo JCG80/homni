@@ -255,7 +255,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
     },
   ],
   
-  anonymous: [
+  guest: [
     {
       title: "Hjem",
       href: "/",
@@ -278,8 +278,8 @@ export const serviceConfig: NavItem[] = serviceNavItems;
 export const docConfig: NavItem[] = docNavItems;
 
 // Helper function to get navigation items based on user role
-export function getNavigation(role: UserRole = 'anonymous'): NavItem[] {
-  return navConfig[role] || navConfig.anonymous;
+export function getNavigation(role: UserRole = 'guest'): NavItem[] {
+  return navConfig[role] || navConfig.guest;
 }
 
 // Helper function to get service navigation items
