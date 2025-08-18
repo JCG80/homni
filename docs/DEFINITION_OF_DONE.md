@@ -76,7 +76,7 @@ This document outlines the specific acceptance criteria that must be met for a f
 
 ### Auth Module
 
-- All 6 roles properly implemented (anonymous, member, company, content_editor, admin, master_admin)
+- All 6 roles properly implemented (guest, user, company, content_editor, admin, master_admin)
 - Role-based access correctly enforced for all routes
 - Login/logout/registration flows function correctly
 - Password reset and account management work as expected

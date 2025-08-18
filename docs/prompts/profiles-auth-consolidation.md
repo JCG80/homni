@@ -10,7 +10,7 @@ Unified user profile and authentication system with role-based access control.
 - `Authenticated`: Authentication wrapper with role checking
 
 ## Standardized Roles
-- `anonymous`: Unauthenticated users
+- `guest`: Unauthenticated users
 - `user`: Standard authenticated users
 - `company`: Business accounts
 - `content_editor`: Content management role

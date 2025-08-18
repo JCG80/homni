@@ -4,7 +4,7 @@
 
 | Rolle | Kan | Kan ikke |
 |---|---|---|
-| `anonymous` | Opprette lead (insert i `leads`) | Lese andres data |
+| `guest` | Opprette lead (insert i `leads`) | Lese andres data |
 | `user` (privat) | Opprette lead; lese **egne** leads | Kjøpe leads; lese andres |
 | `company` (basis) | — | Kjøpe leads før de har buyer-capability |
 | `company` + **Kjøper** | Abonnere på pakker; auto-kjøp; caps; pause; pipeline DnD for **egne** tildelinger | Se/endre andres leads/økonomi |
@@ -32,7 +32,7 @@
 ```
 
 ### Policies per rolle
-**anonymous:**
+**guest:**
 - `leads`: INSERT only (create new leads)
 - Andre tabeller: DENY
 
