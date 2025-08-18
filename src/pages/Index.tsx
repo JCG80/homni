@@ -4,14 +4,15 @@ import { useAuth } from '@/modules/auth/hooks';
 import { LandingPage } from './LandingPage';
 
 const Index: React.FC = () => {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, isLoading } = useAuth();
 
-  // If authenticated, redirect to the appropriate dashboard when role is resolved
-  if (isAuthenticated && role) {
+  // If authenticated and role is resolved, redirect to the appropriate dashboard
+  if (isAuthenticated && role && !isLoading) {
+    console.log('[Index] Redirecting authenticated user to dashboard:', { role });
     return <Navigate to={`/dashboard/${role}`} replace />;
   }
 
-  // Otherwise, show the landing page
+  // Otherwise, show the landing page (includes loading state handling)
   return <LandingPage />;
 };
 

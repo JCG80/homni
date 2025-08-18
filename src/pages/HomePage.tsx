@@ -44,13 +44,30 @@ export const HomePage = () => {
     setActiveTab(value);
   };
 
-  // If user is authenticated but role not yet resolved, show a brief loader
+  // If user is authenticated but role not yet resolved, show enhanced loader with fallback options
   if (isAuthenticated && !role) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-md mx-auto p-6">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Omdirigerer til dashboard...</p>
+          <p className="text-lg mb-4">Omdirigerer til dashboard...</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Hvis omdirigeringen tar for lang tid, kan du navigere manuelt:
+          </p>
+          <div className="space-y-2">
+            <button 
+              onClick={() => navigate('/dashboard')} 
+              className="block w-full px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              Gå til Dashboard
+            </button>
+            <button 
+              onClick={() => navigate('/profile')} 
+              className="block w-full px-4 py-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
+            >
+              Min Profil
+            </button>
+          </div>
         </div>
       </div>
     );

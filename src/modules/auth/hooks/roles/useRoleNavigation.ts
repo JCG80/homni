@@ -35,6 +35,11 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
       return;
     }
 
+    if (!role) {
+      console.warn("[useRoleNavigation] Cannot redirect - no role available", { isAuthenticated, role });
+      return;
+    }
+
     console.log("[useRoleNavigation] Redirecting with role:", role);
 
     try {
@@ -46,18 +51,13 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
       }
       
       // Directly navigate to the role-specific dashboard if role is available
-      if (role) {
-        const dashboardPath = `/dashboard/${role}`;
-        console.log(`[useRoleNavigation] Navigating to role dashboard: ${dashboardPath}`);
-        navigate(dashboardPath, { replace: true });
-        return;
-      }
-      
-      // Otherwise use the main dashboard route which will handle the redirection
-      console.log("[useRoleNavigation] No role available, using main dashboard route");
-      navigate('/dashboard', { replace: true });
+      const dashboardPath = `/dashboard/${role}`;
+      console.log(`[useRoleNavigation] Navigating to role dashboard: ${dashboardPath}`);
+      navigate(dashboardPath, { replace: true });
     } catch (error) {
       console.error("[useRoleNavigation] Navigation error:", error);
+      // Fallback to generic dashboard
+      navigate('/dashboard', { replace: true });
     }
   };
 
@@ -85,7 +85,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     navigate(`/dashboard/${targetRole}`);
   };
 
-  // Auto-redirect if enabled
+  // Auto-redirect with timeout protection
   useEffect(() => {
     if (!autoRedirect || isLoading) {
       return;
@@ -93,7 +93,13 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
 
     if (isAuthenticated && role) {
       console.log(`[useRoleNavigation] Auto-redirect triggered with role: ${role}`);
-      redirectToDashboard();
+      
+      // Add slight delay to prevent redirect loops
+      const redirectTimeout = setTimeout(() => {
+        redirectToDashboard();
+      }, 100);
+
+      return () => clearTimeout(redirectTimeout);
     }
   }, [isAuthenticated, isLoading, autoRedirect, role]);
 
