@@ -14,6 +14,7 @@ import { UserMenu } from '@/components/ui/user-menu';
 import { PageLayout } from '@/components/layout';
 import { ColorSwatch } from '@/components/design-system/ColorSwatch';
 import { InteractiveLink } from '@/components/ui/interactive-link';
+import { DesignUtilitiesDemo } from '@/components/design-system/DesignUtilitiesDemo';
 
 export const DesignSystemPage = () => {
   return (
@@ -203,6 +204,9 @@ export const DesignSystemPage = () => {
         {/* Cards */}
         <section id="cards" className="space-y-6" aria-labelledby="cards-heading">
           <h2 id="cards-heading">Cards</h2>
+          <div className="space-y-6">
+            <h3>Card Variants</h3>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card>
@@ -219,7 +223,7 @@ export const DesignSystemPage = () => {
               </CardFooter>
             </Card>
             
-            <Card className="warm-card">
+            <Card variant="warm">
               <CardHeader>
                 <CardTitle>Warm Card</CardTitle>
                 <CardDescription>A card with a warm gradient background</CardDescription>
@@ -232,7 +236,7 @@ export const DesignSystemPage = () => {
               </CardFooter>
             </Card>
             
-            <Card className="border-primary/20 bg-primary-50/50">
+            <Card variant="highlighted">
               <CardHeader className="pb-2">
                 <CardTitle>Highlighted Card</CardTitle>
                 <CardDescription>Styled with primary color</CardDescription>
@@ -242,6 +246,19 @@ export const DesignSystemPage = () => {
               </CardContent>
               <CardFooter>
                 <Button variant="soft" className="w-full">Action</Button>
+              </CardFooter>
+            </Card>
+            
+            <Card variant="soft">
+              <CardHeader>
+                <CardTitle>Soft Card</CardTitle>
+                <CardDescription>A subtle muted background variant</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>Perfect for secondary content or less prominent information.</p>
+              </CardContent>
+              <CardFooter>
+                <Button variant="outline">Secondary Action</Button>
               </CardFooter>
             </Card>
           </div>
@@ -291,6 +308,9 @@ export const DesignSystemPage = () => {
             </div>
           </div>
         </section>
+        
+        {/* Design Utilities */}
+        <DesignUtilitiesDemo />
       </div>
     </PageLayout>
   );
