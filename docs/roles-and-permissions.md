@@ -55,3 +55,10 @@
 - Alt admin har +
 - `feature_flags`: CRUD
 - System-funksjoner og secrets
+
+## Capability Matrix
+
+### Mode switching (personal ↔ professional)
+- Aktiv modus lagres i `app_metadata.active_mode` og leses i RLS via `get_active_mode()`.
+- `RoleModeSwitcher` viser kun personal/professional (kontrollplan byttes separat).
+- E2E‑tester verifiserer at **kontrollmenyer aldri vises** i bruker‑modus.
