@@ -6,7 +6,7 @@ import { LandingPage } from './LandingPage';
 const Index: React.FC = () => {
   const { isAuthenticated, role } = useAuth();
 
-  // If authenticated, redirect to the appropriate dashboard
+  // If authenticated, redirect to the appropriate dashboard when role is resolved
   if (isAuthenticated && role) {
     return <Navigate to={`/dashboard/${role}`} replace />;
   }

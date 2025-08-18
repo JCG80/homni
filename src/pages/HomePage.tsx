@@ -44,8 +44,8 @@ export const HomePage = () => {
     setActiveTab(value);
   };
 
-  // If user is authenticated, don't show the landing page
-  if (isAuthenticated) {
+  // If user is authenticated but role not yet resolved, show a brief loader
+  if (isAuthenticated && !role) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
