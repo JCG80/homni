@@ -17,26 +17,20 @@ export const DesignSystemPage = () => {
   return (
     <PageLayout title="Design System" description="Homni Design System elements and components">
       <div className="space-y-10">
-        {/* Test if basic rendering works */}
-        <div className="p-4 bg-card rounded-lg border">
-          <h2 className="text-2xl font-bold mb-4">Design System Test</h2>
-          <p className="text-muted-foreground mb-4">
-            If you can see this text, the page is rendering correctly.
-          </p>
-        </div>
         
         {/* Color Tokens */}
-        <section id="colors" className="space-y-6">
-          <h2>Color System</h2>
+        <section id="colors" className="space-y-6" aria-labelledby="colors-heading">
+          <h2 id="colors-heading">Color System</h2>
           
-          <div className="space-y-4">
-            <h3>Primary Colors</h3>
+          <div className="space-y-4" aria-labelledby="primary-colors">
+            <h3 id="primary-colors">Primary Colors</h3>
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
                 <div key={weight} className="flex flex-col items-center">
                   <div 
-                    className={`w-20 h-20 rounded-md shadow-sm bg-primary-${weight}`} 
+                    className="w-20 h-20 rounded-md shadow-sm border"
                     style={{ backgroundColor: `hsl(var(--primary-${weight}))` }}
+                    aria-label={`Primary color ${weight}`}
                   />
                   <span className="text-sm mt-1">{weight}</span>
                 </div>
@@ -44,14 +38,15 @@ export const DesignSystemPage = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3>Secondary Colors</h3>
+          <div className="space-y-4" aria-labelledby="secondary-colors">
+            <h3 id="secondary-colors">Secondary Colors</h3>
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
                 <div key={weight} className="flex flex-col items-center">
                   <div 
-                    className={`w-20 h-20 rounded-md shadow-sm bg-secondary-${weight}`} 
+                    className="w-20 h-20 rounded-md shadow-sm border"
                     style={{ backgroundColor: `hsl(var(--secondary-${weight}))` }}
+                    aria-label={`Secondary color ${weight}`}
                   />
                   <span className="text-sm mt-1">{weight}</span>
                 </div>
@@ -59,51 +54,51 @@ export const DesignSystemPage = () => {
             </div>
           </div>
           
-          <div className="space-y-4">
-            <h3>Neutral & UI Colors</h3>
+          <div className="space-y-4" aria-labelledby="neutral-colors">
+            <h3 id="neutral-colors">Neutral & UI Colors</h3>
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-background" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-background border" aria-label="Background color" />
                 <span className="text-sm mt-1">background</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-foreground" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-foreground border" aria-label="Foreground color" />
                 <span className="text-sm mt-1">foreground</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-muted" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-muted border" aria-label="Muted color" />
                 <span className="text-sm mt-1">muted</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-accent" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-accent border" aria-label="Accent color" />
                 <span className="text-sm mt-1">accent</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-card" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-card border" aria-label="Card color" />
                 <span className="text-sm mt-1">card</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-border" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-border border" aria-label="Border color" />
                 <span className="text-sm mt-1">border</span>
               </div>
             </div>
             
-            <h3>Feedback Colors</h3>
+            <h3 id="feedback-colors">Feedback Colors</h3>
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-destructive" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-destructive border" aria-label="Destructive color" />
                 <span className="text-sm mt-1">destructive</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-success" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-success border" aria-label="Success color" />
                 <span className="text-sm mt-1">success</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-warning" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-warning border" aria-label="Warning color" />
                 <span className="text-sm mt-1">warning</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-md shadow-sm bg-info" />
+                <div className="w-20 h-20 rounded-md shadow-sm bg-info border" aria-label="Info color" />
                 <span className="text-sm mt-1">info</span>
               </div>
             </div>
@@ -111,8 +106,8 @@ export const DesignSystemPage = () => {
         </section>
         
         {/* Typography */}
-        <section id="typography" className="space-y-6">
-          <h2>Typography</h2>
+        <section id="typography" className="space-y-6" aria-labelledby="typography-heading">
+          <h2 id="typography-heading">Typography</h2>
           
           <div className="space-y-6">
             <div>
@@ -168,8 +163,8 @@ export const DesignSystemPage = () => {
         </section>
         
         {/* Buttons */}
-        <section id="buttons" className="space-y-6">
-          <h2>Buttons</h2>
+        <section id="buttons" className="space-y-6" aria-labelledby="buttons-heading">
+          <h2 id="buttons-heading">Buttons</h2>
           
           <div className="space-y-4">
             <h3>Button Variants</h3>
@@ -215,22 +210,19 @@ export const DesignSystemPage = () => {
           <div className="space-y-4">
             <h3>Icon Buttons</h3>
             <div className="flex flex-wrap gap-4">
-              <Button size="icon-sm" variant="outline">
-                <span className="sr-only">Small Icon</span>
+              <Button size="icon-sm" variant="outline" aria-label="Small eye icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                   <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
                   <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41z" clipRule="evenodd" />
                 </svg>
               </Button>
-              <Button size="icon" variant="outline">
-                <span className="sr-only">Default Icon</span>
+              <Button size="icon" variant="outline" aria-label="Default eye icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                   <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
                   <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41z" clipRule="evenodd" />
                 </svg>
               </Button>
-              <Button size="icon-lg" variant="outline">
-                <span className="sr-only">Large Icon</span>
+              <Button size="icon-lg" variant="outline" aria-label="Large eye icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
                   <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
                   <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41z" clipRule="evenodd" />
@@ -241,10 +233,10 @@ export const DesignSystemPage = () => {
         </section>
         
         {/* Cards */}
-        <section id="cards" className="space-y-6">
-          <h2>Cards</h2>
+        <section id="cards" className="space-y-6" aria-labelledby="cards-heading">
+          <h2 id="cards-heading">Cards</h2>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Default Card</CardTitle>
@@ -259,13 +251,20 @@ export const DesignSystemPage = () => {
               </CardFooter>
             </Card>
             
-            <div className="warm-card p-6 space-y-4">
-              <h3 className="text-xl font-semibold">Warm Card</h3>
-              <p>A card with a warm gradient background that provides a cozy feel.</p>
-              <Button className="warm-button">Learn More</Button>
-            </div>
+            <Card className="warm-card">
+              <CardHeader>
+                <CardTitle>Warm Card</CardTitle>
+                <CardDescription>A card with a warm gradient background</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>A card with a warm gradient background that provides a cozy feel.</p>
+              </CardContent>
+              <CardFooter>
+                <Button className="warm-button">Learn More</Button>
+              </CardFooter>
+            </Card>
             
-            <Card className="border-primary/20 bg-primary-50/50">
+            <Card className="border-primary/20" style={{ backgroundColor: 'hsl(var(--primary-50) / 0.5)' }}>
               <CardHeader className="pb-2">
                 <CardTitle>Highlighted Card</CardTitle>
                 <CardDescription>Styled with primary color</CardDescription>
@@ -281,10 +280,10 @@ export const DesignSystemPage = () => {
         </section>
         
         {/* Interactive Elements */}
-        <section id="interactive" className="space-y-6">
-          <h2>Interactive Elements</h2>
+        <section id="interactive" className="space-y-6" aria-labelledby="interactive-heading">
+          <h2 id="interactive-heading">Interactive Elements</h2>
           
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-4">
               <h3>Theme Toggle</h3>
               <div className="flex items-center space-x-2">
@@ -296,7 +295,10 @@ export const DesignSystemPage = () => {
             <div className="space-y-4">
               <h3>User Menu</h3>
               <div className="flex items-center space-x-2">
-                <UserMenu user={{ name: "John Doe", email: "john@example.com" }} onLogout={() => alert("Logout clicked")} />
+                <UserMenu 
+                  user={{ name: "John Doe", email: "john@example.com" }} 
+                  onLogout={() => alert("Logout clicked")} 
+                />
                 <span className="text-sm text-muted-foreground">User menu with dropdown options</span>
               </div>
             </div>
@@ -306,12 +308,22 @@ export const DesignSystemPage = () => {
             <h3>Interactive Text Links</h3>
             <div className="space-y-2">
               <div>
-                <a href="#" className="story-link text-primary font-medium">Story Link with Underline Animation</a>
+                <a 
+                  href="#" 
+                  className="story-link text-primary font-medium focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm"
+                >
+                  Story Link with Underline Animation
+                </a>
                 <p className="text-sm text-muted-foreground mt-1">Links with animated underline on hover</p>
               </div>
               
               <div>
-                <a href="#" className="hover-scale text-primary font-medium inline-block">Scaling Link</a>
+                <a 
+                  href="#" 
+                  className="hover-scale text-primary font-medium inline-block focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm"
+                >
+                  Scaling Link
+                </a>
                 <p className="text-sm text-muted-foreground mt-1">Links that slightly scale up on hover</p>
               </div>
             </div>
