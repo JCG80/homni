@@ -1201,6 +1201,51 @@ export type Database = {
           },
         ]
       }
+      role_grants: {
+        Row: {
+          context: string | null
+          created_at: string
+          expires_at: string | null
+          granted_at: string
+          granted_by: string | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       service_modules: {
         Row: {
           created_at: string
@@ -1572,6 +1617,10 @@ export type Database = {
           version: string
         }[]
       }
+      get_user_effective_roles: {
+        Args: { _user_id?: string }
+        Returns: string[]
+      }
       get_user_enabled_modules: {
         Args: { user_id?: string }
         Returns: {
@@ -1597,6 +1646,28 @@ export type Database = {
         Args: { _user_id: string }
         Returns: number
       }
+      grant_role: {
+        Args: {
+          _context?: string
+          _expires_at?: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: {
+          context: string | null
+          created_at: string
+          expires_at: string | null
+          granted_at: string
+          granted_by: string | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+      }
       has_module_access: {
         Args: { module_name: string; user_id?: string }
         Returns: boolean
@@ -1608,12 +1679,24 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_role_grant: {
+        Args: {
+          _context?: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id?: string
+        }
+        Returns: boolean
+      }
       has_role_level: {
         Args: { _min_level: number; _user_id: string }
         Returns: boolean
       }
       is_feature_enabled: {
         Args: { flag_name: string; user_id?: string }
+        Returns: boolean
+      }
+      is_master_admin: {
+        Args: { _user_id?: string }
         Returns: boolean
       }
       is_plugin_enabled: {
@@ -1630,6 +1713,14 @@ export type Database = {
           phone: string
           updated_at: string
         }[]
+      }
+      revoke_role: {
+        Args: {
+          _context?: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
       }
       update_user_profile: {
         Args: {
