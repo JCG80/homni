@@ -49,6 +49,21 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
   if (requiredRole) {
     const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     
+    // If role is still loading or undefined, wait for it to load
+    if (!role || role === null || role === undefined) {
+      return (
+        <PageLayout 
+          title="Laster..." 
+          showSidebar={showSidebar}
+          showBreadcrumbs={false}
+        >
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        </PageLayout>
+      );
+    }
+    
     // Special case: master_admin has access to everything
     if (role === 'master_admin') {
       // Allow access
