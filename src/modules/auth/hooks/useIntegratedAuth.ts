@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useAuthContext } from './useAuthContext';
-import { useRoleContext } from '../providers/RoleProvider';
+import { useRoleContext } from '@/contexts/RoleContext';
 import type { UserRole } from '@/types/auth';
 
 type Mode = 'personal' | 'professional';

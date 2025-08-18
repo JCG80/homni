@@ -7,7 +7,7 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { Toaster } from '@/components/ui/toaster';
 import './App.css';
 import { AuthProvider } from '@/modules/auth/hooks/useAuth';
-import { RoleProvider } from '@/modules/auth/providers/RoleProvider';
+import { RoleProvider } from '@/contexts/RoleContext';
 import { AuthWrapper } from './modules/auth/components/AuthWrapper';
 import { I18nProvider } from './lib/i18n/I18nProvider';
 
