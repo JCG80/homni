@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Admin Menu Visibility', () => {
-  test('admin-meny vises ikke i bruker-modus', async ({ page }) => {
-    // Navigate to homepage (assuming some form of auth state)
-    await page.goto('/');
+test('admin‑meny vises ikke i bruker‑modus', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('Admin')).toHaveCount(0);
+  await expect(page.getByText('Master')).toHaveCount(0);
+});
     
     // Wait for page to load
     await page.waitForLoadState('networkidle');
