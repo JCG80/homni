@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { RoleDashboard } from '../components/dashboard/RoleDashboard';
 import { Dashboard } from '../pages/Dashboard';
 import { mainRoutes } from './mainRoutes';
-import { memberRoutes } from './memberRoutes';
+import { userRoutes } from './userRoutes';
 import { companyRoutes } from './companyRoutes';
 import { adminRoutes } from './adminRoutes';
 import { leadRoutes } from './leadRoutes';
@@ -54,8 +54,8 @@ export const AppRouteComponents = () => {
       {/* Documentation routes */}
       {docsRoutes}
       
-      {/* Member routes (require authentication) */}
-      {memberRoutes}
+      {/* User routes (require authentication) */}
+      {userRoutes}
       
       {/* Company routes (require authentication + company role) */}
       {companyRoutes}

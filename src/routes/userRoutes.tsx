@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
@@ -8,11 +7,11 @@ import { MyAccountPage } from '@/pages/MyAccountPage';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 
 /**
- * Routes specifically for authenticated members (regular users)
+ * Routes specifically for authenticated users (regular users)
  */
-export const memberRoutes = (
+export const userRoutes = (
   <>
-    {/* Member Dashboard */}
+    {/* User Dashboard */}
     <Route 
       path="/dashboard/user" 
       element={
@@ -22,7 +21,7 @@ export const memberRoutes = (
       } 
     />
     
-    {/* Member Profile */}
+    {/* User Profile */}
     <Route 
       path="/profile" 
       element={
@@ -32,7 +31,7 @@ export const memberRoutes = (
       } 
     />
     
-    {/* Member Account */}
+    {/* User Account */}
     <Route 
       path="/account" 
       element={
