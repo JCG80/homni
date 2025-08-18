@@ -1,5 +1,7 @@
 # Homni Platform - Lead Marketplace & Home Services
 
+> **📖 Single Source of Truth:** [Homni Master Prompt](docs/HOMNI_MASTER_PROMPT.md)
+
 ## Overview
 Homni is a modular platform combining lead generation (Bytt.no style), property documentation (Boligmappa.no style), and DIY property sales (Propr.no style). Built with automated lead distribution, role-based access, and marketplace automation.
 

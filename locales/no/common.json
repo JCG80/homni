@@ -1,0 +1,45 @@
+{
+  "navigation": {
+    "home": "Hjem",
+    "dashboard": "Dashbord", 
+    "leads": "Leads",
+    "profile": "Profil",
+    "settings": "Innstillinger",
+    "help": "Hjelp",
+    "logout": "Logg ut"
+  },
+  "actions": {
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "edit": "Rediger",
+    "view": "Vis",
+    "search": "Søk",
+    "filter": "Filtrer",
+    "export": "Eksporter",
+    "import": "Importer"
+  },
+  "status": {
+    "loading": "Laster...",
+    "error": "Feil",
+    "success": "Vellykket",
+    "warning": "Advarsel",
+    "info": "Informasjon"
+  },
+  "validation": {
+    "required": "Dette feltet er påkrevd",
+    "email": "Ugyldig e-postadresse",
+    "min_length": "Minimum {{count}} tegn",
+    "max_length": "Maksimum {{count}} tegn"
+  },
+  "common": {
+    "yes": "Ja",
+    "no": "Nei",
+    "ok": "OK",
+    "close": "Lukk",
+    "back": "Tilbake",
+    "next": "Neste",
+    "previous": "Forrige",
+    "continue": "Fortsett"
+  }
+}

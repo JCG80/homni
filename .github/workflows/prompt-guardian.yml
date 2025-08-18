@@ -1,0 +1,47 @@
+name: Prompt Guardian
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  guard-prompts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: diff
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > changed.txt
+
+      - name: Decide if PROMPT_LOG update is required
+        id: need_log
+        run: |
+          CHANGED="$(cat changed.txt)"
+          NEED=false
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -Eqi '(^|/)(docs|prompts|specs|README|ROADMAP|ARCHITECTURE)\.md|(^|/)docs/|(^|/)prompts/'; then NEED=true; fi
+          if echo "$CHANGED" | grep -Eqi '(^|/)locales/|(^|/)src/.+/(copy|content|marketing)/'; then NEED=true; fi
+          TITLE="${{ github.event.pull_request.title }}"
+          BODY="${{ github.event.pull_request.body }}"
+          if echo "$TITLE" | grep -Eqi '^prompt:' || echo "$BODY" | grep -Eqi '\bprompt\b' ; then NEED=true; fi
+          echo "need=$NEED" >> $GITHUB_OUTPUT
+
+      - name: Verify PROMPT_LOG.md updated when required
+        if: steps.need_log.outputs.need == 'true'
+        run: |
+          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -qx "PROMPT_LOG.md"; then
+            echo "::error ::PR-en utløser Prompt Guardian, men mangler oppdatert PROMPT_LOG.md."
+            exit 1
+          fi
+
+      - name: Enforce Guardian-status format
+        if: steps.need_log.outputs.need == 'true'
+        run: |
+          if ! grep -q "Guardian-status:" PROMPT_LOG.md; then
+            echo "::error ::PROMPT_LOG.md mangler 'Guardian-status:' i siste oppføring."
+            exit 1
+          fi
