@@ -5,12 +5,12 @@ Kort beskrivelse av endringen og hensikten.
 - [ ] `npm run typecheck && npm run build`
 - [ ] Manuell klikketest av berørte sider/flows
 
-## Prompt-Guard sjekk
-- [ ] Berører PR-en prompts/dokumentasjon/i18n/retning?
-- [ ] Hvis ja: oppdatert `PROMPT_LOG.md` med:
-  - Dato, Formål, Retningssjekk, **Guardian-status: ✅/⚠️**
+## CI-Gate Sjekkliste
+- [ ] **Prompt Guardian:** Berører PR-en prompts/docs/i18n? → Oppdater `PROMPT_LOG.md`
+- [ ] **Status Sentinel:** Berører PR-en src/supabase/roles-and-permissions? → Oppdater `docs/status/NOW.md`
 
-## Sjekkliste
+## Kvalitetssikring
 - [ ] Lint & type-check grønt
 - [ ] Evt. migrasjoner har rollback
 - [ ] Tester oppdatert/lagt til (der det er naturlig)
+- [ ] Status-dokumentasjon oppdatert ved core-endringer

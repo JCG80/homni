@@ -50,7 +50,19 @@ Dette dokumentet holder oversikt over alle AI-prompter, retningsendringer og str
 - Sentralisert navigasjon i src/routes/navConfig.ts
 - Repo-wide cleanup infrastructure på plass
 
-**🚨 Sikkerhetsmerknad:** Migration introduserte RLS-advarsler som må adresseres
+## 📅 18. august 2025 – Status Pack etablert
+- **Formål:** Én sannhet for status NÅ + backlog for senere, CI-gates for dokumentasjonskonsistens
+- **Retning:** Skiller brukerflater fra kontrollplan; krever oppdatert status ved core-endringer
+- **Bygger på:** Repo-wide review, Master Prompt, Prompt Guardian
+- **Status:** Operasjonell
+- **Guardian-status:** ✅ Godkjent
+
+**Detaljer:**
+- Status Pack: NOW.md, DONE_LAST_3_DAYS.md, roles-and-permissions.md, buyer-capability.md, LATER_FEATURES.md
+- CI-agenter: Status Sentinel (NOW.md gate) + Prompt Guardian (PROMPT_LOG.md gate)
+- RoleModeSwitcher: UI-komponent for å bytte mellom bruker og admin-modus
+- Navigation separation: navUser (brukerflater) vs navControl (kontrollplan)
+- E2E tests: Playwright test for admin-meny synlighet i forskjellige modi
 
 ---
 

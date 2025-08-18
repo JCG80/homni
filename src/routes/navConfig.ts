@@ -1,13 +1,13 @@
 /**
  * Centralized navigation configuration for role-based routing
- * Single source of truth for navigation structure
+ * UPDATED: Separates user interfaces from control plan interfaces
  */
 
 import { UserRole } from '@/modules/auth/utils/roles/types';
 
 export interface NavigationItem {
+  path: string;
   label: string;
-  href: string;
   icon?: string;
   badge?: string | number;
   children?: NavigationItem[];
@@ -20,102 +20,105 @@ export interface NavigationConfig {
   mobile?: NavigationItem[];
 }
 
+export type Role = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
+
 /**
- * Navigation configuration per role
- * Each role gets a tailored navigation structure
+ * USER INTERFACES (Brukerflater)
+ * Focus: Productivity, self-service, business value
+ */
+export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', NavigationItem[]> = {
+  guest: [
+    { path: '/', label: 'Forside' },
+    { path: '/sammenlign', label: 'Sammenlign' },
+    { path: '/om-oss', label: 'Om oss' },
+    { path: '/login', label: 'Logg inn' },
+  ],
+
+  user: [
+    { path: '/', label: 'Dashboard' },
+    { path: '/dokumenter', label: 'Mine dokumenter' },
+    { path: '/eiendommer', label: 'Eiendommer' },
+    { path: '/sammenlign', label: 'Sammenlign' },
+    { path: '/profil', label: 'Profil' },
+  ],
+
+  company: [
+    { path: '/', label: 'Bedrift Dashboard' },
+    { path: '/leads', label: 'Mine Leads' },
+    { path: '/leads/kanban', label: 'Pipeline' },
+    { path: '/pakker', label: 'Abonnementer' },
+    { path: '/rapporter', label: 'Rapporter' },
+    { path: '/innstillinger', label: 'Innstillinger' },
+  ],
+
+  content_editor: [
+    { path: '/', label: 'Innhold Dashboard' },
+    { path: '/cms', label: 'Innholdsstyring' },
+    { path: '/cms/artikler', label: 'Artikler' },
+    { path: '/cms/sider', label: 'Sider' },
+    { path: '/cms/media', label: 'Media' },
+    { path: '/cms/preview', label: 'Forhåndsvisning' },
+  ],
+};
+
+/**
+ * CONTROL PLAN (Kontrollplan)  
+ * Focus: System administration, monitoring, configuration
+ */
+export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
+  admin: [
+    { path: '/admin', label: 'Admin Dashboard' },
+    { path: '/admin/leads', label: 'Alle Leads' },
+    { path: '/admin/leads/distribution', label: 'Lead-distribusjon' },
+    { path: '/admin/pakker', label: 'Lead-pakker' },
+    { path: '/admin/kjøpere', label: 'Kjøper-kontoer' },
+    { path: '/admin/brukere', label: 'Brukere' },
+    { path: '/admin/bedrifter', label: 'Bedrifter' },
+    { path: '/admin/rapporter', label: 'System-rapporter' },
+    { path: '/admin/innstillinger', label: 'System-innstillinger' },
+  ],
+
+  master_admin: [
+    { path: '/master', label: 'Master Dashboard' },
+    { path: '/master/system', label: 'System-oversikt' },
+    { path: '/master/moduler', label: 'Moduler' },
+    { path: '/master/feature-flags', label: 'Feature Flags' },
+    { path: '/master/roller', label: 'Roller & Tilganger' },
+    { path: '/master/database', label: 'Database' },
+    { path: '/master/sikkerhet', label: 'Sikkerhet' },
+    { path: '/master/overvåking', label: 'Overvåking' },
+    { path: '/master/backup', label: 'Backup & Recovery' },
+  ],
+};
+
+/**
+ * LEGACY: Backward compatibility with existing navConfig usage
+ * TODO: Migrate existing code to use navUser/navControl directly
  */
 export const navConfig: Record<UserRole, NavigationConfig> = {
   guest: {
-    main: [
-      { label: 'Hjem', href: '/' },
-      { label: 'Sammenlign', href: '/sammenlign' },
-      { label: 'Om oss', href: '/om-oss' },
-    ],
-    secondary: [
-      { label: 'Logg inn', href: '/auth/login' },
-      { label: 'Registrer', href: '/auth/register' },
-    ]
+    main: navUser.guest.map(item => ({ label: item.label, href: item.path })),
+    secondary: []
   },
-
   user: {
-    main: [
-      { label: 'Dashbord', href: '/dashboard' },
-      { label: 'Mine dokumenter', href: '/dokumenter' },
-      { label: 'Sammenlign', href: '/sammenlign' },
-      { label: 'Profil', href: '/profil' },
-    ],
-    secondary: [
-      { label: 'Innstillinger', href: '/innstillinger' },
-      { label: 'Hjelp', href: '/hjelp' },
-    ]
+    main: navUser.user.map(item => ({ label: item.label, href: item.path })),
+    secondary: []
   },
-
   company: {
-    main: [
-      { label: 'Dashbord', href: '/dashboard' },
-      { label: 'Leads', href: '/leads' },
-      { 
-        label: 'Leads Management', 
-        href: '/leads',
-        children: [
-          { label: 'Oversikt', href: '/leads/oversikt' },
-          { label: 'Kanban', href: '/leads/kanban' },
-          { label: 'Pipeline', href: '/leads/pipeline' },
-        ]
-      },
-      { label: 'Pakker', href: '/pakker' },
-      { label: 'Rapporter', href: '/rapporter' },
-    ],
-    secondary: [
-      { label: 'Bedriftsprofil', href: '/bedrift/profil' },
-      { label: 'Innstillinger', href: '/innstillinger' },
-    ]
+    main: navUser.company.map(item => ({ label: item.label, href: item.path })),
+    secondary: []
   },
-
   content_editor: {
-    main: [
-      { label: 'Dashbord', href: '/dashboard' },
-      { label: 'Innhold', href: '/admin/innhold' },
-      { label: 'Artikler', href: '/admin/artikler' },
-      { label: 'Sider', href: '/admin/sider' },
-    ],
-    secondary: [
-      { label: 'Forhåndsvisning', href: '/admin/preview' },
-      { label: 'Publisering', href: '/admin/publish' },
-    ]
+    main: navUser.content_editor.map(item => ({ label: item.label, href: item.path })),
+    secondary: []
   },
-
   admin: {
-    main: [
-      { label: 'Dashbord', href: '/dashboard' },
-      { label: 'Brukere', href: '/admin/brukere' },
-      { label: 'Bedrifter', href: '/admin/bedrifter' },
-      { label: 'Leads', href: '/admin/leads' },
-      { label: 'Pakker', href: '/admin/pakker' },
-      { label: 'Rapporter', href: '/admin/rapporter' },
-    ],
-    secondary: [
-      { label: 'Systeminnstillinger', href: '/admin/system' },
-      { label: 'Logger', href: '/admin/logger' },
-    ]
+    main: navControl.admin.map(item => ({ label: item.label, href: item.path })),
+    secondary: []
   },
-
   master_admin: {
-    main: [
-      { label: 'Dashbord', href: '/dashboard' },
-      { label: 'System', href: '/admin/system' },
-      { label: 'Database', href: '/admin/database' },
-      { label: 'Moduler', href: '/admin/moduler' },
-      { label: 'Feature Flags', href: '/admin/feature-flags' },
-      { label: 'Brukere', href: '/admin/brukere' },
-      { label: 'Bedrifter', href: '/admin/bedrifter' },
-      { label: 'Leads', href: '/admin/leads' },
-    ],
-    secondary: [
-      { label: 'Overvåking', href: '/admin/monitoring' },
-      { label: 'Sikkerhet', href: '/admin/security' },
-      { label: 'Backup', href: '/admin/backup' },
-    ]
+    main: navControl.master_admin.map(item => ({ label: item.label, href: item.path })),
+    secondary: []
   }
 };
 

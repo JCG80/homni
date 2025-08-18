@@ -1,0 +1,105 @@
+name: Status Sentinel
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  guard-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: diff
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > changed.txt
+          echo "Changed files:"
+          cat changed.txt
+
+      - name: Check for core system changes
+        id: core_changes
+        run: |
+          CHANGED="$(cat changed.txt)"
+          REQUIRES_UPDATE=false
+          
+          # High-impact changes that require NOW.md update
+          if echo "$CHANGED" | grep -Eq '^src/|^supabase/migrations/|^supabase/functions/'; then 
+            REQUIRES_UPDATE=true
+            echo "Core system changes detected"
+          fi
+          
+          # Architecture documentation changes
+          if echo "$CHANGED" | grep -Eq '^docs/roles-and-permissions\.md|^docs/data-models/|^docs/architecture/'; then
+            REQUIRES_UPDATE=true
+            echo "Architecture documentation changes detected"
+          fi
+          
+          # Configuration changes
+          if echo "$CHANGED" | grep -Eq '\.config\.(js|ts)$|^package\.json$|^tsconfig.*\.json$'; then
+            REQUIRES_UPDATE=true
+            echo "Configuration changes detected"
+          fi
+          
+          echo "requires_update=$REQUIRES_UPDATE" >> $GITHUB_OUTPUT
+
+      - name: Verify NOW.md updated when required
+        if: steps.core_changes.outputs.requires_update == 'true'
+        run: |
+          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -qx "docs/status/NOW.md"; then
+            echo "::error ::Core system changes detected but docs/status/NOW.md not updated."
+            echo "::error ::The following changes require status documentation:"
+            cat changed.txt | grep -E '^src/|^supabase/|^docs/(roles|data-models|architecture)' || true
+            echo "::error ::Please update docs/status/NOW.md to reflect current system state."
+            exit 1
+          fi
+
+      - name: Validate NOW.md content freshness
+        if: steps.core_changes.outputs.requires_update == 'true'
+        run: |
+          # Check if NOW.md was modified recently (within last 24 hours of PR)
+          LAST_MODIFIED=$(git log -1 --format="%ai" -- docs/status/NOW.md)
+          TWENTY_FOUR_HOURS_AGO=$(date -d "24 hours ago" --iso-8601=seconds)
+          
+          if [[ "$LAST_MODIFIED" < "$TWENTY_FOUR_HOURS_AGO" ]]; then
+            echo "::warning ::NOW.md last modified: $LAST_MODIFIED"
+            echo "::warning ::This seems outdated for current PR changes"
+          fi
+
+      - name: Check required sections in NOW.md
+        if: steps.core_changes.outputs.requires_update == 'true'
+        run: |
+          if [ -f "docs/status/NOW.md" ]; then
+            # Verify key sections exist
+            if ! grep -q "## 🎯 \*\*CORE FEATURES" docs/status/NOW.md; then
+              echo "::warning ::NOW.md missing CORE FEATURES section"
+            fi
+            if ! grep -q "## 🚧 \*\*IN PROGRESS" docs/status/NOW.md; then
+              echo "::warning ::NOW.md missing IN PROGRESS section"  
+            fi
+            if ! grep -q "## 🔒 \*\*TECHNICAL DEBT" docs/status/NOW.md; then
+              echo "::warning ::NOW.md missing TECHNICAL DEBT section"
+            fi
+            echo "✅ NOW.md structure validation complete"
+          else
+            echo "::error ::docs/status/NOW.md file not found"
+            exit 1
+          fi
+
+      - name: Status Sentinel Summary
+        if: always()
+        run: |
+          echo "📊 Status Sentinel Report"
+          echo "========================="
+          if [ "${{ steps.core_changes.outputs.requires_update }}" == "true" ]; then
+            echo "🎯 Core changes detected - Status update required"
+            if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "docs/status/NOW.md"; then
+              echo "✅ NOW.md updated in this PR"
+            else
+              echo "❌ NOW.md update missing"
+            fi
+          else
+            echo "ℹ️  No core changes detected - Status update optional"
+          fi
