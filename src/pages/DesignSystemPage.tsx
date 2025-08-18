@@ -111,32 +111,32 @@ export const DesignSystemPage = () => {
           
           <div className="space-y-6">
             <div>
-              <h1>Heading 1</h1>
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold">Heading 1</div>
               <p className="text-sm text-muted-foreground">3xl/4xl/5xl - Font Bold</p>
             </div>
             
             <div>
-              <h2>Heading 2</h2>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-bold">Heading 2</div>
               <p className="text-sm text-muted-foreground">2xl/3xl/4xl - Font Bold</p>
             </div>
             
             <div>
-              <h3>Heading 3</h3>
+              <div className="text-xl md:text-2xl font-bold">Heading 3</div>
               <p className="text-sm text-muted-foreground">xl/2xl - Font Bold</p>
             </div>
             
             <div>
-              <h4>Heading 4</h4>
+              <div className="text-lg md:text-xl font-semibold">Heading 4</div>
               <p className="text-sm text-muted-foreground">lg/xl - Font Semibold</p>
             </div>
             
             <div>
-              <h5>Heading 5</h5>
+              <div className="text-base md:text-lg font-semibold">Heading 5</div>
               <p className="text-sm text-muted-foreground">base/lg - Font Semibold</p>
             </div>
             
             <div>
-              <h6>Heading 6</h6>
+              <div className="text-sm md:text-base font-semibold">Heading 6</div>
               <p className="text-sm text-muted-foreground">sm/base - Font Semibold</p>
             </div>
             
@@ -264,7 +264,7 @@ export const DesignSystemPage = () => {
               </CardFooter>
             </Card>
             
-            <Card className="border-primary/20" style={{ backgroundColor: 'hsl(var(--primary-50) / 0.5)' }}>
+            <Card className="border-primary/20 bg-primary-50/50">
               <CardHeader className="pb-2">
                 <CardTitle>Highlighted Card</CardTitle>
                 <CardDescription>Styled with primary color</CardDescription>

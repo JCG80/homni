@@ -252,8 +252,12 @@
   @apply bg-gradient-to-br from-white to-secondary/50 rounded-lg shadow-sm hover:shadow-md transition duration-300;
 }
 
+.dark .warm-card {
+  @apply from-card to-secondary/20;
+}
+
 .warm-button {
-  @apply bg-primary text-white hover:bg-primary/90 transition-colors;
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors;
 }
 
 .soft-input {
