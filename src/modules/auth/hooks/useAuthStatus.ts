@@ -25,12 +25,12 @@ export const useAuthStatus = () => {
     }
   }, [error]);
   
-  // Sjekk om brukeren er logget inn som gjest (anonym)
-  const isAnonymous = !isAuthenticated;
+  // Sjekk om brukeren er logget inn som gjest
+  const isGuest = !isAuthenticated;
   
   return {
     isAuthenticated,
-    isAnonymous,
+    isGuest,
     isLoading, 
     isReady,
     user,

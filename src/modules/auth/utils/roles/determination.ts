@@ -28,7 +28,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
       if (email === 'master-admin@test.local' || email === 'master@test.local') return 'master_admin' as UserRole;
       if (email === 'admin@test.local') return 'admin' as UserRole;
       if (email === 'company@test.local' || email === 'provider@test.local') return 'company' as UserRole;
-      if (email === 'user@test.local' || email === 'member@test.local') return 'user' as UserRole;
+      if (email === 'user@test.local' || email === 'testuser@test.local') return 'user' as UserRole;
       if (email === 'content@test.local') return 'content_editor' as UserRole;
       if (email === 'guest@test.local') return 'guest' as UserRole;
     }

@@ -19,9 +19,9 @@ export const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isMasterAdmin: false,
   isCompany: false,
-  isMember: false,
+  isUser: false,
   isContentEditor: false,
-  isAnonymous: true,
+  isGuest: true,
   hasRole: () => false,
   canAccess: () => false, // Keep this for backward compatibility
   canAccessModule: () => false,

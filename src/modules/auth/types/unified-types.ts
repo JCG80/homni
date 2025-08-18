@@ -156,9 +156,9 @@ export interface AuthContextType extends AuthState {
   isAdmin: boolean;
   isMasterAdmin: boolean;
   isCompany: boolean;
-  isMember: boolean;
+  isUser: boolean;
   isContentEditor: boolean;
-  isAnonymous: boolean;
+  isGuest: boolean;
   
   // Aliases for backward compatibility
   loading: boolean;

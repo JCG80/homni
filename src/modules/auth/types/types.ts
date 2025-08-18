@@ -88,9 +88,9 @@ export interface AuthContextType {
   isAdmin: boolean;
   isMasterAdmin: boolean;
   isCompany: boolean;
-  isMember: boolean;
+  isUser: boolean;
   isContentEditor: boolean;
-  isAnonymous: boolean;
+  isGuest: boolean;
   
   // Role checking methods
   hasRole: (role: string | string[]) => boolean;
