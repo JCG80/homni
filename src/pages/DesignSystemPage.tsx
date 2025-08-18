@@ -22,7 +22,7 @@ export const DesignSystemPage = () => {
         <section id="colors" className="space-y-6" aria-labelledby="colors-heading">
           <h2 id="colors-heading">Color System</h2>
           
-          <div className="space-y-4" aria-labelledby="primary-colors">
+          <div className="space-y-4">
             <h3 id="primary-colors">Primary Colors</h3>
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
@@ -38,7 +38,7 @@ export const DesignSystemPage = () => {
             </div>
           </div>
 
-          <div className="space-y-4" aria-labelledby="secondary-colors">
+          <div className="space-y-4">
             <h3 id="secondary-colors">Secondary Colors</h3>
             <div className="flex flex-wrap gap-4">
               {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
