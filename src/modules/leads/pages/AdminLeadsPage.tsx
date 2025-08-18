@@ -159,7 +159,7 @@ export const AdminLeadsPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="border rounded-md overflow-hidden">
-                    <table className="w-full">
+                    <table className="w-full" data-testid="leads-table">
                       <thead className="bg-muted/50">
                         <tr>
                           <th className="px-4 py-2 text-left font-medium">Kunde</th>
@@ -176,7 +176,7 @@ export const AdminLeadsPage: React.FC = () => {
                           const status = getStatusLabel(lead.status);
                           return (
                             <tr key={lead.id} className="border-t">
-                              <td className="px-4 py-3 font-medium">{lead.customerName}</td>
+                              <td className="px-4 py-3 font-medium" data-testid="lead-title">{lead.customerName}</td>
                               <td className="px-4 py-3">
                                 <div>{lead.email}</div>
                                 <div className="text-sm text-muted-foreground">{lead.phone}</div>
@@ -184,7 +184,10 @@ export const AdminLeadsPage: React.FC = () => {
                               <td className="px-4 py-3">{lead.company}</td>
                               <td className="px-4 py-3">{lead.service}</td>
                               <td className="px-4 py-3">
-                                <Badge variant={status.variant as any}>
+                                <Badge 
+                                  variant={status.variant as any}
+                                  data-testid="lead-pipeline-stage"
+                                >
                                   {status.label}
                                 </Badge>
                               </td>
@@ -192,7 +195,13 @@ export const AdminLeadsPage: React.FC = () => {
                                 {new Date(lead.createdAt).toLocaleDateString('no-NO')}
                               </td>
                               <td className="px-4 py-3 text-right space-x-2">
-                                <Button size="sm" variant="outline">Vis detaljer</Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  data-testid="distribute-leads-button"
+                                >
+                                  Vis detaljer
+                                </Button>
                                 <Button size="sm" variant="outline">Rediger</Button>
                               </td>
                             </tr>

@@ -72,6 +72,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
         <Label htmlFor="title">Tittel *</Label>
         <Input
           id="title"
+          data-testid="lead-title-input"
           value={formData.title}
           onChange={(e) => handleInputChange('title', e.target.value)}
           required
@@ -110,7 +111,11 @@ export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
 
       <div>
         <Label htmlFor="category">Kategori</Label>
-        <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+        <Select 
+          value={formData.category} 
+          onValueChange={(value) => handleInputChange('category', value)}
+          data-testid="lead-category-select"
+        >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -137,6 +142,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
         <Label htmlFor="description">Beskrivelse *</Label>
         <Textarea
           id="description"
+          data-testid="lead-description-input"
           value={formData.description}
           onChange={(e) => handleInputChange('description', e.target.value)}
           required
@@ -144,7 +150,12 @@ export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
         />
       </div>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full">
+      <Button 
+        type="submit" 
+        disabled={isSubmitting} 
+        className="w-full"
+        data-testid="lead-submit-button"
+      >
         {isSubmitting ? 'Sender...' : 'Send forespørsel'}
       </Button>
     </form>
