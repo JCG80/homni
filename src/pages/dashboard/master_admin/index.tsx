@@ -2,7 +2,7 @@
 import React from 'react';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShieldCheck, Database, Activity, BarChart, Settings, Users } from 'lucide-react';
+import { ShieldCheck, Database, Activity, BarChart, Settings, Users, CreditCard, UserCheck } from 'lucide-react';
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -161,6 +161,56 @@ const MasterAdminDashboard: React.FC = () => {
             </Button>
           </div>
         </DashboardWidget>
+
+        <DashboardWidget
+          title={
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              <span>Payment & Subscriptions</span>
+            </div>
+          }
+        >
+          <div className="space-y-4">
+            <div className="border rounded-lg p-4 bg-muted/30">
+              <h4 className="text-sm font-medium">Revenue Overview</h4>
+              <div className="flex justify-between mt-2">
+                <span className="text-sm">Active Subscriptions</span>
+                <span className="text-sm font-bold">247</span>
+              </div>
+              <div className="flex justify-between mt-1">
+                <span className="text-sm">Monthly Revenue</span>
+                <span className="text-sm font-bold">€12,350</span>
+              </div>
+              <div className="flex justify-between mt-1">
+                <span className="text-sm">Payment Issues</span>
+                <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">3 failed</span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" asChild>
+                <Link to="/admin/billing">
+                  <CreditCard className="mr-1 h-4 w-4" />
+                  Billing
+                </Link>
+              </Button>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/admin/subscriptions">
+                  Subscriptions
+                </Link>
+              </Button>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/admin/onboarding">
+                  <UserCheck className="mr-1 h-4 w-4" />
+                  Onboarding
+                </Link>
+              </Button>
+              <Button size="sm" variant="outline">
+                Payment Logs
+              </Button>
+            </div>
+          </div>
+        </DashboardWidget>
         
         <Card className="col-span-1 md:col-span-3">
           <CardHeader>
@@ -202,6 +252,18 @@ const MasterAdminDashboard: React.FC = () => {
               <Button variant="outline">
                 <ShieldCheck className="mr-2 h-5 w-5" />
                 Security Settings
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/admin/billing">
+                  <CreditCard className="mr-2 h-5 w-5" />
+                  Payment Management
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/admin/onboarding">
+                  <UserCheck className="mr-2 h-5 w-5" />
+                  Onboarding Flow
+                </Link>
               </Button>
             </div>
           </CardContent>
