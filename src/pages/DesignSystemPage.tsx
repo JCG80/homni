@@ -15,6 +15,8 @@ import { PageLayout } from '@/components/layout';
 import { ColorSwatch } from '@/components/design-system/ColorSwatch';
 import { InteractiveLink } from '@/components/ui/interactive-link';
 import { DesignUtilitiesDemo } from '@/components/design-system/DesignUtilitiesDemo';
+import { ComponentDocumentation } from '@/components/design-system/ComponentDocumentation';
+import { NavigationTester } from '@/components/navigation/NavigationTester';
 
 export const DesignSystemPage = () => {
   return (
@@ -311,6 +313,54 @@ export const DesignSystemPage = () => {
         
         {/* Design Utilities */}
         <DesignUtilitiesDemo />
+        
+        {/* Component Documentation */}
+        <section id="component-docs" className="space-y-6" aria-labelledby="component-docs-heading">
+          <h2 id="component-docs-heading">Komponent Dokumentasjon</h2>
+          
+          <ComponentDocumentation
+            name="ColorSwatch"
+            description="Gjenbrukbar komponent for visning av farger i designsystemet"
+            props={[
+              { name: 'colorName', type: 'string', description: 'Navn på fargen for tilgjengelighet', required: true },
+              { name: 'colorValue', type: 'string', description: 'CSS farge verdi (HSL anbefales)', required: true },
+              { name: 'label', type: 'string', description: 'Kort label som vises under fargen', required: true }
+            ]}
+            example={
+              <ColorSwatch 
+                colorName="Primary" 
+                colorValue="hsl(var(--primary))" 
+                label="primary" 
+              />
+            }
+          />
+          
+          <ComponentDocumentation
+            name="InteractiveLink"
+            description="Animerte lenker med forskjellige hover-effekter"
+            props={[
+              { name: 'to', type: 'string', description: 'Destinasjons-URL for lenken', required: true },
+              { name: 'variant', type: '"underline" | "scale"', description: 'Type animasjon på hover' },
+              { name: 'children', type: 'React.ReactNode', description: 'Innhold i lenken', required: true }
+            ]}
+            variants={[
+              { name: 'underline', description: 'Animert understreking på hover' },
+              { name: 'scale', description: 'Skalering på hover' }
+            ]}
+            example={
+              <div className="space-x-4">
+                <InteractiveLink to="#" variant="underline">Underline Link</InteractiveLink>
+                <InteractiveLink to="#" variant="scale">Scale Link</InteractiveLink>
+              </div>
+            }
+          />
+        </section>
+        
+        {/* Navigation Testing */}
+        <section id="navigation-test" className="space-y-6" aria-labelledby="navigation-test-heading">
+          <h2 id="navigation-test-heading">Navigasjonstesting</h2>
+          <NavigationTester />
+        </section>
       </div>
     </PageLayout>
   );
