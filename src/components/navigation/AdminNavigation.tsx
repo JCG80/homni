@@ -42,6 +42,21 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({ role }) => {
             </li>
           )}
 
+          {/* Admin and master admin can see insurance management */}
+          {(role === 'admin' || role === 'master_admin') && (
+            <li>
+              <NavLink 
+                to="/admin/insurance/companies"
+                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+              >
+                <div className="text-sm font-medium leading-none">Forsikring</div>
+                <p className="line-clamp-2 text-xs text-muted-foreground mt-1">
+                  Administrasjon av forsikringsselskaper
+                </p>
+              </NavLink>
+            </li>
+          )}
+
           {/* All admin roles can access system modules */}
           {(role === 'admin' || role === 'master_admin') && (
             <li>
