@@ -35,17 +35,20 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
   ],
 
   user: [
-    { href: '/', label: 'Dashboard' },
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/leads', label: 'Lead Engine' },
+    { href: '/property', label: 'Eiendomsforvaltning' },
+    { href: '/sales', label: 'DIY Salg' },
     { href: '/dokumenter', label: 'Mine dokumenter' },
-    { href: '/eiendommer', label: 'Eiendommer' },
-    { href: '/sammenlign', label: 'Sammenlign' },
     { href: '/profil', label: 'Profil' },
   ],
 
   company: [
-    { href: '/', label: 'Bedrift Dashboard' },
-    { href: '/leads', label: 'Mine Leads' },
-    { href: '/leads/kanban', label: 'Pipeline' },
+    { href: '/dashboard/company', label: 'Bedrift Dashboard' },
+    { href: '/leads/manage', label: 'Lead Management' },
+    { href: '/property/portfolio', label: 'Eiendoms Portefølje' },
+    { href: '/sales/pipeline', label: 'Salg Pipeline' },
+    { href: '/leads/kanban', label: 'Lead Pipeline' },
     { href: '/pakker', label: 'Abonnementer' },
     { href: '/rapporter', label: 'Rapporter' },
     { href: '/innstillinger', label: 'Innstillinger' },

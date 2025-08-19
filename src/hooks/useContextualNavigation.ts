@@ -11,7 +11,7 @@ interface ContextualSuggestion {
   description: string;
   action: () => void;
   priority: 'high' | 'medium' | 'low';
-  category: 'navigation' | 'action' | 'shortcut';
+  category: 'navigation' | 'action' | 'shortcut' | 'workflow' | 'business' | 'admin' | 'frequent';
 }
 
 interface ContextualNavigationState {
@@ -42,6 +42,64 @@ export function useContextualNavigation() {
     const suggestions: ContextualSuggestion[] = [];
     const quickActions: ContextualSuggestion[] = [];
 
+    // Business workflow suggestions based on current route
+    if (currentPath === '/leads' && ['user', 'company'].includes(userRole)) {
+      suggestions.push({
+        id: 'lead-to-property',
+        title: 'Registrer eiendom',
+        description: 'Neste steg: Dokumenter eiendomsinformasjon for dette leddet',
+        action: () => navigate('/property'),
+        priority: 'high',
+        category: 'workflow'
+      });
+      suggestions.push({
+        id: 'lead-to-sales',
+        title: 'Start salgsoppsett',
+        description: 'Opprett DIY salg basert på dette leddet',
+        action: () => navigate('/sales'),
+        priority: 'medium',
+        category: 'workflow'
+      });
+    }
+
+    if (currentPath === '/property' && ['user', 'company'].includes(userRole)) {
+      suggestions.push({
+        id: 'property-to-sales',
+        title: 'Opprett salg',
+        description: 'Start salgsoppsett for denne eiendommen',
+        action: () => navigate('/sales'),
+        priority: 'high',
+        category: 'workflow'
+      });
+      suggestions.push({
+        id: 'property-to-leads',
+        title: 'Finn flere leads',
+        description: 'Søk etter lignende eiendommer',
+        action: () => navigate('/leads'),
+        priority: 'medium',
+        category: 'workflow'
+      });
+    }
+
+    if (currentPath === '/sales' && ['user', 'company'].includes(userRole)) {
+      suggestions.push({
+        id: 'sales-to-property',
+        title: 'Oppdater eiendom',
+        description: 'Legg til flere detaljer i eiendomsregisteret',
+        action: () => navigate('/property'),
+        priority: 'medium',
+        category: 'workflow'
+      });
+      suggestions.push({
+        id: 'sales-to-leads',
+        title: 'Finn nye leads',
+        description: 'Søk etter potensielle kjøpere',
+        action: () => navigate('/leads'),
+        priority: 'medium',
+        category: 'workflow'
+      });
+    }
+
     // Navigation suggestions based on current route
     if (currentPath === '/') {
       if (userRole !== 'guest') {
@@ -65,20 +123,18 @@ export function useContextualNavigation() {
       });
     }
 
-    // Admin suggestions
+    // Admin suggestions and quick actions
     if (currentPath.startsWith('/admin')) {
-      if (userRole === 'master_admin') {
-        suggestions.push({
-          id: 'manage-users',
-          title: 'Administrer Brukere',
-          description: 'Håndter brukerkontoer og tilganger',
-          action: () => navigate('/admin/members'),
-          priority: 'high',
-          category: 'action',
-        });
-      }
-      
       if (['admin', 'master_admin'].includes(userRole)) {
+        quickActions.push({
+          id: 'admin-leads',
+          title: 'Lead-distribusjon',
+          description: 'Administrer alle leads i systemet',
+          action: () => navigate('/admin/leads'),
+          priority: 'high',
+          category: 'admin'
+        });
+        
         suggestions.push({
           id: 'view-leads',
           title: 'Se Leads',
@@ -88,15 +144,71 @@ export function useContextualNavigation() {
           category: 'action',
         });
       }
+      
+      if (userRole === 'master_admin') {
+        suggestions.push({
+          id: 'manage-users',
+          title: 'Administrer Brukere',
+          description: 'Håndter brukerkontoer og tilganger',
+          action: () => navigate('/admin/members'),
+          priority: 'high',
+          category: 'action',
+        });
+        suggestions.push({
+          id: 'manage-modules',
+          title: 'Moduler',
+          description: 'Konfigurer systemmoduler',
+          action: () => navigate('/admin/modules'),
+          priority: 'medium',
+          category: 'admin',
+        });
+      }
     }
 
-    // Dashboard suggestions
+    // Dashboard suggestions with business quick actions
     if (currentPath === '/dashboard') {
+      if (userRole === 'user') {
+        quickActions.push({
+          id: 'quick-lead-search',
+          title: 'Søk leads',
+          description: 'Finn relevante kundeemner',
+          action: () => navigate('/leads'),
+          priority: 'high',
+          category: 'business'
+        });
+        quickActions.push({
+          id: 'quick-property-add',
+          title: 'Legg til eiendom',
+          description: 'Registrer ny eiendom',
+          action: () => navigate('/property'),
+          priority: 'medium',
+          category: 'business'
+        });
+      }
+      if (userRole === 'company') {
+        quickActions.push({
+          id: 'quick-lead-management',
+          title: 'Administrer leads',
+          description: 'Se alle dine leads og pipeline',
+          action: () => navigate('/leads/manage'),
+          priority: 'high',
+          category: 'business'
+        });
+        quickActions.push({
+          id: 'quick-sales-pipeline',
+          title: 'Salg pipeline',
+          description: 'Oversikt over aktive salg',
+          action: () => navigate('/sales/pipeline'),
+          priority: 'medium',
+          category: 'business'
+        });
+      }
+      
       const userNav = navUser[userRole] || [];
       const controlNav = navControl[userRole] || [];
       
-      [...userNav, ...controlNav].slice(0, 3).forEach((navItem, index) => {
-        if (navItem.href !== '/dashboard') {
+      [...userNav, ...controlNav].slice(0, 2).forEach((navItem, index) => {
+        if (navItem.href !== '/dashboard' && !navItem.href.includes('/dashboard/')) {
           suggestions.push({
             id: `nav-${navItem.href}`,
             title: `Gå til ${navItem.label}`,
