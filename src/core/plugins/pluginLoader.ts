@@ -43,9 +43,9 @@ export class PluginLoader {
           version: plugin.version,
           description: plugin.description || '',
           entry_point: plugin.entry_point,
-          dependencies: Array.isArray(plugin.dependencies) ? 
-            plugin.dependencies.filter((dep: any) => typeof dep === 'string') : [],
-          metadata: typeof plugin.metadata === 'object' ? plugin.metadata : {},
+          dependencies: Array.isArray((plugin as any).dependencies) ? 
+            ((plugin as any).dependencies as any[]).filter((dep: any) => typeof dep === 'string') : [],
+          metadata: typeof plugin.metadata === 'object' && plugin.metadata !== null ? plugin.metadata as Record<string, any> : {},
         };
         await this.loadPlugin(manifest);
       }
@@ -174,9 +174,9 @@ export class PluginLoader {
             version: depPlugin.version,
             description: depPlugin.description || '',
             entry_point: depPlugin.entry_point,
-            dependencies: Array.isArray(depPlugin.dependencies) ? 
-              depPlugin.dependencies.filter((dep: any) => typeof dep === 'string') : [],
-            metadata: typeof depPlugin.metadata === 'object' ? depPlugin.metadata : {},
+            dependencies: Array.isArray((depPlugin as any).dependencies) ? 
+              ((depPlugin as any).dependencies as any[]).filter((dep: any) => typeof dep === 'string') : [],
+            metadata: typeof depPlugin.metadata === 'object' && depPlugin.metadata !== null ? depPlugin.metadata as Record<string, any> : {},
           };
           await this.loadPlugin(manifest);
         }

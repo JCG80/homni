@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { initializePlugins } from '@/core/plugins/pluginLoader';
+import { initializeModules } from '@/core/modules/moduleRegistry';
 
 // Create a stable QueryClient instance
 const queryClient = new QueryClient({
@@ -22,8 +23,11 @@ const queryClient = new QueryClient({
   },
 });
 
-// Initialize plugins on app start
-initializePlugins().catch(console.error);
+// Initialize plugins and modules on app start
+Promise.all([
+  initializePlugins(),
+  initializeModules()
+]).catch(console.error);
 
 export default function App() {
   return (
