@@ -248,15 +248,18 @@ export type Database = {
           created_at: string | null
           deleted_at: string | null
           email: string | null
+          feature_overrides: Json
           id: string
           industry: string | null
           metadata: Json | null
           modules_access: string[] | null
           name: string
+          notification_preferences: Json
           phone: string | null
           status: string | null
           subscription_plan: string | null
           tags: string[] | null
+          ui_preferences: Json
           updated_at: string | null
           user_id: string | null
         }
@@ -265,15 +268,18 @@ export type Database = {
           created_at?: string | null
           deleted_at?: string | null
           email?: string | null
+          feature_overrides?: Json
           id?: string
           industry?: string | null
           metadata?: Json | null
           modules_access?: string[] | null
           name: string
+          notification_preferences?: Json
           phone?: string | null
           status?: string | null
           subscription_plan?: string | null
           tags?: string[] | null
+          ui_preferences?: Json
           updated_at?: string | null
           user_id?: string | null
         }
@@ -282,15 +288,18 @@ export type Database = {
           created_at?: string | null
           deleted_at?: string | null
           email?: string | null
+          feature_overrides?: Json
           id?: string
           industry?: string | null
           metadata?: Json | null
           modules_access?: string[] | null
           name?: string
+          notification_preferences?: Json
           phone?: string | null
           status?: string | null
           subscription_plan?: string | null
           tags?: string[] | null
+          ui_preferences?: Json
           updated_at?: string | null
           user_id?: string | null
         }
