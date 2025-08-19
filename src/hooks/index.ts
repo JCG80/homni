@@ -5,3 +5,4 @@ export * from './usePersonaSwitch';
 export * from './useNavigationContext';
 export * from './usePWA';
 export * from './useContextualNavigation';
+export * from './useServiceWorker';

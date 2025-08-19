@@ -4,6 +4,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { QuickAccessFAB } from './QuickAccessFAB';
 import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
 import { ContextualNavigationPanel } from '@/components/navigation/ContextualNavigationPanel';
+import { ServiceWorkerUpdateBanner, OfflineIndicator } from '@/components/pwa/ServiceWorkerComponents';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -32,6 +33,12 @@ export function AppLayout({ children, className }: AppLayoutProps) {
       
       {/* PWA Install Banner */}
       <PWAInstallBanner />
+      
+      {/* Service Worker Update Banner */}
+      <ServiceWorkerUpdateBanner />
+      
+      {/* Offline Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }

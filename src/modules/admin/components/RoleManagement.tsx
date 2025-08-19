@@ -68,14 +68,14 @@ export function RoleManagement({ userId, userName, currentRole }: RoleManagement
   } = useRoleGrants(userId);
 
   const handleGrantRole = () => {
-    grantRole(selectedRole, context || undefined);
+    grantRole(selectedRole, context ? { context } : undefined);
     setIsGrantDialogOpen(false);
     setContext('');
     setSelectedRole('user');
   };
 
   const handleRevokeRole = (role: UserRole, grantContext?: string) => {
-    revokeRole(role, grantContext);
+    revokeRole(role, grantContext ? { context: grantContext } : undefined);
   };
 
   const availableRoles = ALL_ROLES.filter(role => 

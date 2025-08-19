@@ -4,10 +4,11 @@ import { UserRole } from '@/modules/auth/utils/roles/types';
 export interface RoleGrant {
   id: string;
   user_id: string;
-  role: UserRole;
+  granted_role: UserRole;
   granted_by: string;
   granted_at: string;
-  context?: string;
+  expires_at?: string;
+  context: Record<string, any>;
   is_active: boolean;
 }
 
@@ -21,7 +22,9 @@ export class RoleGrantsService {
    */
   static async getUserRoleGrants(userId: string): Promise<RoleGrant[]> {
     try {
-      // Implementation will be added when proper database schema is available
+      // For now, return empty array until database is set up
+      // This will be implemented when the role_grants table is created
+      console.log('getUserRoleGrants called for:', userId);
       return [];
     } catch (error) {
       console.error('Failed to fetch user role grants:', error);
@@ -33,13 +36,14 @@ export class RoleGrantsService {
    * Grant a role to a user
    */
   static async grantRole(
-    userId: string, 
+    userId: string,
     role: UserRole,
-    context?: string
+    context?: Record<string, any>,
+    expiresAt?: string
   ): Promise<void> {
     try {
-      // Implementation will be added when proper database schema is available
-      console.info(`Role granted: ${role} to user ${userId}${context ? ` in context ${context}` : ''}`);
+      // For now, just log the action until database is set up
+      console.info(`Role granted: ${role} to user ${userId}${context ? ` in context ${JSON.stringify(context)}` : ''}`);
     } catch (error) {
       console.error('Failed to grant role:', error);
       throw error;
@@ -52,11 +56,11 @@ export class RoleGrantsService {
   static async revokeRole(
     userId: string, 
     role: UserRole, 
-    context?: string
+    context?: Record<string, any>
   ): Promise<void> {
     try {
-      // Implementation will be added when proper database schema is available
-      console.info(`Role revoked: ${role} from user ${userId}${context ? ` in context ${context}` : ''}`);
+      // For now, just log the action until database is set up
+      console.info(`Role revoked: ${role} from user ${userId}${context ? ` in context ${JSON.stringify(context)}` : ''}`);
     } catch (error) {
       console.error('Failed to revoke role:', error);
       throw error;
@@ -69,10 +73,10 @@ export class RoleGrantsService {
   static async hasRoleGrant(
     userId: string, 
     role: UserRole, 
-    context?: string
+    context?: Record<string, any>
   ): Promise<boolean> {
     try {
-      // Implementation will be added when proper database schema is available
+      // For now, return false until database is set up
       return false;
     } catch (error) {
       console.error('Failed to check role grant:', error);
@@ -85,8 +89,9 @@ export class RoleGrantsService {
    */
   static async isMasterAdmin(userId: string): Promise<boolean> {
     try {
-      // Implementation will be added when proper database schema is available
-      return false;
+      // Check both base role and granted roles
+      const effectiveRoles = await this.getUserEffectiveRoles(userId);
+      return effectiveRoles.includes('master_admin');
     } catch (error) {
       console.error('Failed to check master admin status:', error);
       return false;
@@ -98,11 +103,22 @@ export class RoleGrantsService {
    */
   static async getUserEffectiveRoles(userId: string): Promise<UserRole[]> {
     try {
-      // Implementation will be added when proper database schema is available
+      // For now, return empty array until database is set up
       return [];
     } catch (error) {
       console.error('Failed to fetch effective roles:', error);
       return [];
     }
+  }
+
+  /**
+   * Helper method to check if contexts match
+   */
+  private static contextMatches(grantContext: Record<string, any>, checkContext: Record<string, any>): boolean {
+    if (!checkContext || Object.keys(checkContext).length === 0) return true;
+    
+    return Object.entries(checkContext).every(([key, value]) => 
+      grantContext[key] === value
+    );
   }
 }

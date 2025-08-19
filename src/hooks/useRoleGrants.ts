@@ -47,7 +47,7 @@ export function useRoleGrants(targetUserId?: string) {
 
   // Grant role mutation
   const grantRoleMutation = useMutation({
-    mutationFn: ({ role, context }: { role: UserRole; context?: string }) => 
+    mutationFn: ({ role, context }: { role: UserRole; context?: Record<string, any> }) => 
       userId ? RoleGrantsService.grantRole(userId, role, context) : Promise.reject('No user ID'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['role-grants', userId] });
@@ -63,7 +63,7 @@ export function useRoleGrants(targetUserId?: string) {
 
   // Revoke role mutation
   const revokeRoleMutation = useMutation({
-    mutationFn: ({ role, context }: { role: UserRole; context?: string }) => 
+    mutationFn: ({ role, context }: { role: UserRole; context?: Record<string, any> }) => 
       userId ? RoleGrantsService.revokeRole(userId, role, context) : Promise.reject('No user ID'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['role-grants', userId] });
@@ -77,11 +77,11 @@ export function useRoleGrants(targetUserId?: string) {
     },
   });
 
-  const grantRole = (role: UserRole, context?: string) => {
+  const grantRole = (role: UserRole, context?: Record<string, any>) => {
     grantRoleMutation.mutate({ role, context });
   };
 
-  const revokeRole = (role: UserRole, context?: string) => {
+  const revokeRole = (role: UserRole, context?: Record<string, any>) => {
     revokeRoleMutation.mutate({ role, context });
   };
 
