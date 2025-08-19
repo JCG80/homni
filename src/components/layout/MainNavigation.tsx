@@ -22,8 +22,14 @@ export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();
   const isMobile = useIsMobile();
   
-  // For mobile, we'll handle navigation differently via the sidebar
-  if (isMobile) return null;
+  // For mobile, we'll handle navigation via MobileNavigation component
+  if (isMobile) {
+    return (
+      <div className="md:hidden flex-1">
+        {/* Mobile navigation is handled by Header component's Sheet */}
+      </div>
+    );
+  }
   
   return (
     <NavigationMenu className="hidden md:flex">

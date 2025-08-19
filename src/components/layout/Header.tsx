@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/sheet";
 import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ContextSwitcher } from './ContextSwitcher';
+import { MobileNavigation } from './MobileNavigation';
 
 interface HeaderProps {
   activeTab: string;
@@ -53,7 +55,11 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
             </SheetTrigger>
             <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0">
               <div className="py-4">
-                <LayoutSidebar />
+                {isAuthenticated ? (
+                  <MobileNavigation />
+                ) : (
+                  <LayoutSidebar />
+                )}
               </div>
             </SheetContent>
           </Sheet>
@@ -76,7 +82,10 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
           )}
           
           {isAuthenticated ? (
-            <ProfileHeader />
+            <div className="flex items-center space-x-2">
+              <ContextSwitcher variant={isMobile ? 'compact' : 'full'} />
+              <ProfileHeader />
+            </div>
           ) : (
             <Button 
               variant="outline" 
