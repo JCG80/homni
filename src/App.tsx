@@ -43,10 +43,10 @@ export default function App() {
             <AuthProvider>
               <RoleProvider>
                 <AuthWrapper>
-                  <AppLayout className="min-h-screen bg-background text-foreground">
-                    <AppRoutes />
+                  <div className="min-h-screen bg-background text-foreground">
+                    <AppLayout />
                     <Toaster />
-                  </AppLayout>
+                  </div>
                 </AuthWrapper>
               </RoleProvider>
             </AuthProvider>
