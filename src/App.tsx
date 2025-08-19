@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { supabase } from '@/lib/supabaseClient';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { initializePlugins } from '@/core/plugins/pluginLoader';
 
 // Create a stable QueryClient instance
 const queryClient = new QueryClient({
@@ -20,6 +21,9 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Initialize plugins on app start
+initializePlugins().catch(console.error);
 
 export default function App() {
   return (
