@@ -1,4 +1,4 @@
-import React, { lazy, ComponentType } from 'react';
+import React, { lazy, ComponentType, useCallback } from 'react';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 
 // Lazy load business modules
@@ -67,25 +67,29 @@ export const moduleRegistry: Record<string, ModuleConfig> = {
   }
 };
 
-// Hook for preloading modules based on user role
+// Hook for preloading modules based on user role with enhanced performance
 export const useLazyModules = (role: UserRole | string | null) => {
-  const preloadModules = () => {
-    if (!role) return;
+  const preloadModules = useCallback(() => {
+    if (!role) return Promise.resolve();
 
-    Object.entries(moduleRegistry).forEach(([moduleId, config]) => {
+    const preloadPromises = Object.entries(moduleRegistry).map(async ([moduleId, config]) => {
       if (config.preload && config.roles.includes(role as UserRole)) {
-        // Preload the module if it supports it
         try {
           const LazyComponent = config.component as any;
           if (LazyComponent._payload && LazyComponent._payload._fn) {
-            LazyComponent._payload._fn();
+            await LazyComponent._payload._fn();
           }
+          return { moduleId, success: true };
         } catch (error) {
           console.warn(`Failed to preload module ${moduleId}:`, error);
+          return { moduleId, success: false, error };
         }
       }
+      return { moduleId, success: true, skipped: true };
     });
-  };
+
+    return Promise.allSettled(preloadPromises);
+  }, [role]);
 
   const loadModule = (moduleId: string): ComponentType<any> | null => {
     const config = moduleRegistry[moduleId];
@@ -103,10 +107,29 @@ export const useLazyModules = (role: UserRole | string | null) => {
       .map(([moduleId]) => moduleId);
   };
 
+  const preloadSpecificModule = useCallback(async (moduleId: string) => {
+    const config = moduleRegistry[moduleId];
+    if (!config || !role || !config.roles.includes(role as UserRole)) {
+      return false;
+    }
+
+    try {
+      const LazyComponent = config.component as any;
+      if (LazyComponent._payload && LazyComponent._payload._fn) {
+        await LazyComponent._payload._fn();
+      }
+      return true;
+    } catch (error) {
+      console.warn(`Failed to preload module ${moduleId}:`, error);
+      return false;
+    }
+  }, [role]);
+
   return {
     preloadModules,
     loadModule,
     getAvailableModules,
+    preloadSpecificModule,
     moduleRegistry
   };
 };
