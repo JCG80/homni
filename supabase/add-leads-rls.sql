@@ -1,42 +1,86 @@
+-- Canonical RLS policies for public.leads (safe, non-recursive)
+-- Run in Supabase SQL editor if you need to re-seed policies for the leads table
+-- Uses helper functions: has_role(), get_current_user_company_id()
 
--- This is a SQL file that needs to be run in the Supabase SQL editor
--- to set up proper RLS policies for the leads table
-
--- First, enable RLS on the leads table
+-- 1) Ensure RLS is enabled
 ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 
--- Policy to allow users to view their own submitted leads
-CREATE POLICY "Users can view their own leads"
-  ON public.leads
-  FOR SELECT
-  USING (auth.uid() = submitted_by);
+-- 2) Clean up legacy/duplicate policies to avoid conflicts
+DO $$ BEGIN
+  BEGIN DROP POLICY IF EXISTS "Users can view their own leads" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+  BEGIN DROP POLICY IF EXISTS "Companies can view leads assigned to them" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+  BEGIN DROP POLICY IF EXISTS "Admins can view all leads" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+  BEGIN DROP POLICY IF EXISTS "Users can create their own leads" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+  BEGIN DROP POLICY IF EXISTS "Admins can update any lead" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+  BEGIN DROP POLICY IF EXISTS "Companies can update their assigned leads" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+  BEGIN DROP POLICY IF EXISTS "Anon can insert minimal lead" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+  BEGIN DROP POLICY IF EXISTS "Companies can view assigned leads" ON public.leads; EXCEPTION WHEN undefined_object THEN NULL; END;
+END $$;
 
--- Policy to allow companies to view leads assigned to them
-CREATE POLICY "Companies can view leads assigned to them"
-  ON public.leads
-  FOR SELECT
-  USING ((SELECT role FROM auth.users WHERE id = auth.uid()) = 'company' AND company_id = (SELECT company_id FROM user_profiles WHERE id = auth.uid()));
+-- 3) Canonical policies (aligned with app tests and helpers)
 
--- Policy to allow admins to view all leads
-CREATE POLICY "Admins can view all leads"
+-- Anonymous users can insert a minimal lead (no ownership/company linkage)
+CREATE POLICY "Anon can insert minimal lead"
   ON public.leads
-  FOR SELECT
-  USING ((SELECT role FROM auth.users WHERE id = auth.uid()) IN ('admin', 'master-admin'));
+  FOR INSERT
+  WITH CHECK (
+    submitted_by IS NULL
+    AND company_id IS NULL
+    AND (
+      status IS NULL
+      OR status = ANY (ARRAY['new','qualified','contacted','negotiating','converted','lost','paused'])
+    )
+  );
 
--- Policy to allow users to create their own leads
+-- Authenticated users can create their own leads
 CREATE POLICY "Users can create their own leads"
   ON public.leads
   FOR INSERT
   WITH CHECK (auth.uid() = submitted_by);
 
--- Policy to allow admins to update any lead
-CREATE POLICY "Admins can update any lead"
+-- Users can view their own submitted leads
+CREATE POLICY "Users can view their own leads"
   ON public.leads
-  FOR UPDATE
-  USING ((SELECT role FROM auth.users WHERE id = auth.uid()) IN ('admin', 'master-admin'));
+  FOR SELECT
+  USING (auth.uid() = submitted_by);
 
--- Policy to allow companies to update leads assigned to them
+-- Companies can view leads assigned to their company
+CREATE POLICY "Companies can view assigned leads"
+  ON public.leads
+  FOR SELECT
+  USING (
+    has_role(auth.uid(), 'company'::app_role)
+    AND company_id IS NOT NULL
+    AND company_id = get_current_user_company_id()
+  );
+
+-- Companies can update leads assigned to their company
 CREATE POLICY "Companies can update their assigned leads"
   ON public.leads
   FOR UPDATE
-  USING ((SELECT role FROM auth.users WHERE id = auth.uid()) = 'company' AND company_id = (SELECT company_id FROM user_profiles WHERE id = auth.uid()));
+  USING (
+    has_role(auth.uid(), 'company'::app_role)
+    AND company_id = get_current_user_company_id()
+  );
+
+-- Admins can view all leads
+CREATE POLICY "Admins can view all leads"
+  ON public.leads
+  FOR SELECT
+  USING (
+    has_role(auth.uid(), 'admin'::app_role)
+    OR has_role(auth.uid(), 'master_admin'::app_role)
+  );
+
+-- Admins can update any lead
+CREATE POLICY "Admins can update any lead"
+  ON public.leads
+  FOR UPDATE
+  USING (
+    has_role(auth.uid(), 'admin'::app_role)
+    OR has_role(auth.uid(), 'master_admin'::app_role)
+  );
+
+-- Note:
+-- We intentionally do NOT allow DELETE for anon/users by default.
+-- If cleanup of test data is needed, prefer RPC with SECURITY DEFINER and proper checks.
