@@ -93,7 +93,7 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
 
 /**
  * LEGACY: Backward compatibility with existing navConfig usage
- * TODO: Migrate existing code to use navUser/navControl directly
+ * DEPRECATED: Use navUser/navControl directly for new implementations
  */
 export const navConfig: Record<UserRole, NavigationConfig> = {
   guest: {

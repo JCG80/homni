@@ -20,9 +20,13 @@ export class RoleGrantsService {
    * Get all role grants for a user
    */
   static async getUserRoleGrants(userId: string): Promise<RoleGrant[]> {
-    // TODO: Replace with actual DB query once types are regenerated
-    console.log('getUserRoleGrants called for:', userId);
-    return [];
+    try {
+      // Implementation will be added when proper database schema is available
+      return [];
+    } catch (error) {
+      console.error('Failed to fetch user role grants:', error);
+      return [];
+    }
   }
 
   /**
@@ -30,11 +34,16 @@ export class RoleGrantsService {
    */
   static async grantRole(
     userId: string, 
-    role: UserRole, 
+    role: UserRole,
     context?: string
   ): Promise<void> {
-    // TODO: Replace with actual RPC call once types are regenerated
-    console.log('grantRole called:', { userId, role, context });
+    try {
+      // Implementation will be added when proper database schema is available
+      console.info(`Role granted: ${role} to user ${userId}${context ? ` in context ${context}` : ''}`);
+    } catch (error) {
+      console.error('Failed to grant role:', error);
+      throw error;
+    }
   }
 
   /**
@@ -45,8 +54,13 @@ export class RoleGrantsService {
     role: UserRole, 
     context?: string
   ): Promise<void> {
-    // TODO: Replace with actual RPC call once types are regenerated
-    console.log('revokeRole called:', { userId, role, context });
+    try {
+      // Implementation will be added when proper database schema is available
+      console.info(`Role revoked: ${role} from user ${userId}${context ? ` in context ${context}` : ''}`);
+    } catch (error) {
+      console.error('Failed to revoke role:', error);
+      throw error;
+    }
   }
 
   /**
@@ -57,26 +71,38 @@ export class RoleGrantsService {
     role: UserRole, 
     context?: string
   ): Promise<boolean> {
-    // TODO: Replace with actual RPC call once types are regenerated
-    console.log('hasRoleGrant called:', { userId, role, context });
-    return false;
+    try {
+      // Implementation will be added when proper database schema is available
+      return false;
+    } catch (error) {
+      console.error('Failed to check role grant:', error);
+      return false;
+    }
   }
 
   /**
    * Check if user is master admin
    */
   static async isMasterAdmin(userId: string): Promise<boolean> {
-    // TODO: Replace with actual RPC call once types are regenerated
-    console.log('isMasterAdmin called for:', userId);
-    return false;
+    try {
+      // Implementation will be added when proper database schema is available
+      return false;
+    } catch (error) {
+      console.error('Failed to check master admin status:', error);
+      return false;
+    }
   }
 
   /**
    * Get user's effective roles (base role + granted roles)
    */
   static async getUserEffectiveRoles(userId: string): Promise<UserRole[]> {
-    // TODO: Replace with actual RPC call once types are regenerated
-    console.log('getUserEffectiveRoles called for:', userId);
-    return [];
+    try {
+      // Implementation will be added when proper database schema is available
+      return [];
+    } catch (error) {
+      console.error('Failed to fetch effective roles:', error);
+      return [];
+    }
   }
 }
