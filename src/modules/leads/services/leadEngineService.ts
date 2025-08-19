@@ -32,6 +32,26 @@ export interface LeadDistribution {
 
 export class LeadEngineService {
   /**
+   * Search leads with criteria (Bytt.no style)
+   */
+  async searchLeads(criteria: any): Promise<any[]> {
+    // Mock implementation - replace with actual search logic
+    return [
+      {
+        id: '1',
+        title: 'Boligkjøp i Oslo',
+        description: 'Familie søker leilighet i Oslo sentrum',
+        location: 'Oslo',
+        leadType: 'buyer',
+        priority: 'high',
+        estimatedValue: 5500000,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ];
+  }
+
+  /**
    * Submit new lead (Bytt.no style)
    */
   async submitLead(lead: LeadSubmission): Promise<{ id: string; status: string }> {

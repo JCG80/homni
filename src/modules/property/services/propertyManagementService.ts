@@ -27,6 +27,49 @@ export interface MaintenanceTask {
 
 export class PropertyManagementService {
   /**
+   * Get maintenance tasks for property
+   */
+  async getMaintenanceTasks(propertyId: string): Promise<any[]> {
+    // Mock implementation - replace with actual data fetching
+    return [
+      {
+        id: '1',
+        property_id: propertyId,
+        title: 'Vedlikehold av varmepumpe',
+        description: 'Årlig service av varmepumpe',
+        priority: 'medium',
+        status: 'pending',
+        dueDate: '2024-12-31',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+  }
+
+  /**
+   * Get property documents
+   */
+  async getPropertyDocuments(propertyId: string): Promise<any[]> {
+    // Mock implementation - replace with actual data fetching
+    return [
+      {
+        id: '1',
+        property_id: propertyId,
+        title: 'Kjøpekontrakt',
+        document_type: 'contract',
+        documentType: 'contract',
+        file_name: 'contract.pdf',
+        file_path: '/documents/contract.pdf',
+        file_size: 1024,
+        uploaded_at: new Date().toISOString(),
+        uploadedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+    ];
+  }
+
+  /**
    * Create property profile (Boligmappa.no style)
    */
   async createProperty(property: {
