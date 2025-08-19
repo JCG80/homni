@@ -9,6 +9,7 @@ import { AppRoutes } from '@/Routes';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { supabase } from '@/lib/supabaseClient';
 import { RoleProvider } from '@/contexts/RoleContext';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 // Create a stable QueryClient instance
 const queryClient = new QueryClient({
@@ -34,10 +35,10 @@ export default function App() {
             <AuthProvider>
               <RoleProvider>
                 <AuthWrapper>
-                  <div className="min-h-screen bg-background text-foreground">
+                  <AppLayout className="min-h-screen bg-background text-foreground">
                     <AppRoutes />
                     <Toaster />
-                  </div>
+                  </AppLayout>
                 </AuthWrapper>
               </RoleProvider>
             </AuthProvider>
