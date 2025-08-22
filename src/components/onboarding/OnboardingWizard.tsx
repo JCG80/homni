@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { StepIndicator } from './StepIndicator';
 import { SignupStep } from './steps/SignupStep';
 import { ProfileStep } from './steps/ProfileStep';
+import { PricingStep } from './steps/PricingStep';
 import { CompletionStep } from './steps/CompletionStep';
 import { useAuth } from '@/modules/auth/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +16,7 @@ export type UserType = 'user' | 'company';
 export const OnboardingWizard = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [userType, setUserType] = useState<UserType>('user');
+  const [selectedPlan, setSelectedPlan] = useState<string>('free');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -26,7 +28,7 @@ export const OnboardingWizard = () => {
   const navigate = useNavigate();
   const { refreshProfile, isAuthenticated } = useAuth();
 
-  const totalSteps = 3;
+  const totalSteps = 4;
   
   // Check if user is already authenticated
   useEffect(() => {
@@ -64,6 +66,10 @@ export const OnboardingWizard = () => {
   
   const handleFormChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
+  };
+  
+  const handlePlanSelect = (planId: string) => {
+    setSelectedPlan(planId);
   };
   
   const handleComplete = async () => {
@@ -149,9 +155,19 @@ export const OnboardingWizard = () => {
               )}
               
               {currentStep === 3 && (
+                <PricingStep
+                  selectedPlan={selectedPlan}
+                  onPlanSelect={handlePlanSelect}
+                  onNext={handleNext}
+                  onBack={handleBack}
+                />
+              )}
+              
+              {currentStep === 4 && (
                 <CompletionStep 
                   userType={userType}
                   formData={formData}
+                  selectedPlan={selectedPlan}
                   onComplete={handleComplete}
                   onBack={handleBack}
                 />

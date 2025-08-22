@@ -14,11 +14,12 @@ interface CompletionStepProps {
     companyName?: string;
     phoneNumber?: string;
   };
+  selectedPlan?: string;
   onComplete: () => void;
   onBack: () => void;
 }
 
-export const CompletionStep = ({ userType, formData, onComplete, onBack }: CompletionStepProps) => {
+export const CompletionStep = ({ userType, formData, selectedPlan, onComplete, onBack }: CompletionStepProps) => {
   const { handleSubmit, isSubmitting, error } = useRegistrationSubmit();
   
   const completeRegistration = async () => {
@@ -55,31 +56,49 @@ export const CompletionStep = ({ userType, formData, onComplete, onBack }: Compl
         </p>
       </div>
       
-      <div className="bg-muted/50 p-4 rounded-lg">
-        <h3 className="font-medium mb-2">Account Information</h3>
-        <div className="grid grid-cols-2 gap-y-2 text-sm">
-          <div className="text-muted-foreground">Account Type:</div>
-          <div className="font-medium capitalize">{userType}</div>
-          
-          <div className="text-muted-foreground">Name:</div>
-          <div>{formData.fullName}</div>
-          
-          <div className="text-muted-foreground">Email:</div>
-          <div>{formData.email}</div>
-          
-          {formData.phoneNumber && (
-            <>
-              <div className="text-muted-foreground">Phone:</div>
-              <div>{formData.phoneNumber}</div>
-            </>
-          )}
-          
-          {userType === 'company' && formData.companyName && (
-            <>
-              <div className="text-muted-foreground">Company:</div>
-              <div>{formData.companyName}</div>
-            </>
-          )}
+      <div className="space-y-4">
+        <div className="bg-muted/50 p-4 rounded-lg">
+          <h3 className="font-medium mb-2">Account Information</h3>
+          <div className="grid grid-cols-2 gap-y-2 text-sm">
+            <div className="text-muted-foreground">Account Type:</div>
+            <div className="font-medium capitalize">{userType}</div>
+            
+            <div className="text-muted-foreground">Name:</div>
+            <div>{formData.fullName}</div>
+            
+            <div className="text-muted-foreground">Email:</div>
+            <div>{formData.email}</div>
+            
+            {formData.phoneNumber && (
+              <>
+                <div className="text-muted-foreground">Phone:</div>
+                <div>{formData.phoneNumber}</div>
+              </>
+            )}
+            
+            {userType === 'company' && formData.companyName && (
+              <>
+                <div className="text-muted-foreground">Company:</div>
+                <div>{formData.companyName}</div>
+              </>
+            )}
+          </div>
+        </div>
+        
+        <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
+          <h3 className="font-medium mb-2 text-primary">Selected Plan</h3>
+          <div className="text-sm">
+            <span className="font-medium capitalize">
+              {selectedPlan === 'free' ? 'Starter (Free)' : 
+               selectedPlan?.includes('professional') ? 'Professional' :
+               selectedPlan?.includes('enterprise') ? 'Enterprise' : 'Free'}
+            </span>
+            {selectedPlan !== 'free' && (
+              <span className="text-muted-foreground ml-2">
+                • Payment will be processed after registration
+              </span>
+            )}
+          </div>
         </div>
       </div>
       
