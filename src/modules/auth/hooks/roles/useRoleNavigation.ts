@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../useAuth';
+import { routeForRole } from '@/config/routeForRole';
+import { UserRole } from '@/types/auth';
 
 interface UseRoleNavigationOptions {
   /**
@@ -51,7 +53,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
       }
       
       // Directly navigate to the role-specific dashboard if role is available
-      const dashboardPath = `/dashboard/${role}`;
+      const dashboardPath = routeForRole(role as UserRole);
       console.log(`[useRoleNavigation] Navigating to role dashboard: ${dashboardPath}`);
       navigate(dashboardPath, { replace: true });
     } catch (error) {
@@ -82,7 +84,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     }
     
     console.log(`[useRoleNavigation] goToDashboard called for role: ${targetRole}`);
-    navigate(`/dashboard/${targetRole}`);
+    navigate(routeForRole(targetRole as UserRole));
   };
 
   // Auto-redirect with timeout protection

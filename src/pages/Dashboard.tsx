@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { routeForRole } from '@/config/routeForRole';
+import { UserRole } from '@/types/auth';
 
 export const Dashboard: React.FC = () => {
   const { isLoading, role, isAuthenticated, user } = useAuth();
@@ -50,7 +52,7 @@ export const Dashboard: React.FC = () => {
   }
   
   // If the user has a role, send them to their role-based dashboard
-  const dashboardPath = `/dashboard/${role}`;
+  const dashboardPath = routeForRole(role as UserRole);
   console.log(`Dashboard - Redirecting to role-specific dashboard: ${dashboardPath}`);
   
   return <Navigate to={dashboardPath} replace />;

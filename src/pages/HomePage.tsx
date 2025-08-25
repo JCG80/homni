@@ -9,6 +9,8 @@ import { ServicesSection } from '@/components/sections/ServicesSection';
 import { InsuranceSection } from '@/components/sections/InsuranceSection';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { routeForRole } from '@/config/routeForRole';
+import { UserRole } from '@/types/auth';
 
 export const HomePage = () => {
   const [activeTab, setActiveTab] = useState<string>('private');
@@ -36,7 +38,7 @@ export const HomePage = () => {
     checkFeatureFlag();
 
     if (isAuthenticated && role) {
-      navigate(`/dashboard/${role}`, { replace: true });
+      navigate(routeForRole(role as UserRole), { replace: true });
     }
   }, [isAuthenticated, role, navigate]);
 
