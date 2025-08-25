@@ -2,7 +2,7 @@
  * Hook for checking module access in the plugin-driven architecture
  */
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { AuthService } from '@/services/authService';
 
 interface UseModuleAccessOptions {

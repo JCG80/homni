@@ -2,7 +2,7 @@
 import React from 'react';
 import { Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { DashboardWidget } from '@/components/dashboard';
 import { TeamMemberItem } from './TeamMemberItem';
 
 export const TeamMembersWidget: React.FC = () => {

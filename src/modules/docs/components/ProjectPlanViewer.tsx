@@ -6,7 +6,7 @@ import { Pencil } from 'lucide-react';
 import { useProjectPlan } from '../hooks/useProjectPlan';
 import { MarkdownViewer } from './MarkdownViewer';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { ProjectPlanEditor } from './ProjectPlanEditor';
 import { Badge } from '@/components/ui/badge';
 

@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { VisitorWizard } from '@/components/landing/VisitorWizard';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 import { InsuranceSection } from '@/components/sections/InsuranceSection';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { supabase } from '@/integrations/supabase/client';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/types/auth';

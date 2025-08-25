@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Lead } from '@/types/leads';
 import { Loader2, Search, AlertCircle } from 'lucide-react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { Badge } from '@/components/ui/badge';
 
 interface LeadsTableProps {

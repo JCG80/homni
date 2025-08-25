@@ -1,6 +1,6 @@
 
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';

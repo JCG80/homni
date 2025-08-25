@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 import { Users, Building, Settings, LayoutGrid, Shield, DatabaseIcon } from 'lucide-react';
 

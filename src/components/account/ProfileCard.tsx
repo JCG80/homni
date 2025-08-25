@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { User, Edit, Mail, Phone, Home } from 'lucide-react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useNavigate } from 'react-router-dom';
 
 export const ProfileCard = () => {

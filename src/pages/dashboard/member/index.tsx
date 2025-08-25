@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Building, FileText, Clock, Plus, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { DashboardWidget } from '@/components/dashboard';
 
 const MemberDashboard: React.FC = () => {
   return (

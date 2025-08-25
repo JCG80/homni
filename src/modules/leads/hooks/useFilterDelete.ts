@@ -4,7 +4,7 @@ import { userFiltersApi } from '../api/user-filters';
 import { UserLeadFilter } from '../types/user-filters';
 import { toast } from '@/hooks/use-toast';
 import { withRetry } from '@/utils/apiRetry';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 import { canAccessModule } from '@/modules/auth/utils/roleUtils';
 

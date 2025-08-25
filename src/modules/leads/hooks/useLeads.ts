@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { insertLead } from '../api/lead-create';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { Lead } from '@/types/leads';
 import { getLeads, getUserLeads, getCompanyLeads, getLeadById } from '../api/lead-list';

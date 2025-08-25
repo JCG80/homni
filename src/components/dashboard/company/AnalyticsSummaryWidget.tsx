@@ -3,7 +3,7 @@ import React from 'react';
 import { BarChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { DashboardWidget } from '@/components/dashboard';
 
 export const AnalyticsSummaryWidget: React.FC = () => {
   return (

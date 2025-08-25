@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { insertLead } from '../../api';
 import { Lead, LeadStatus } from '../../types/types';
 import { toast } from '@/hooks/use-toast';

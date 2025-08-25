@@ -23,7 +23,7 @@ import { LeadStatusBadge } from '@/modules/leads/components/LeadStatusBadge';
 import { toast } from '@/hooks/use-toast';
 import { assignLeadToCompany } from '@/modules/leads/api/lead-assign';
 import { processUnassignedLeads } from '@/modules/leads/utils/processLeads';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 
 export const InsuranceLeadsTab = () => {
   const [leads, setLeads] = useState([]);

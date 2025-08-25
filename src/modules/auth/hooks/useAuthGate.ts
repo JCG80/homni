@@ -5,7 +5,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { normalizeRole } from '@/modules/auth/normalizeRole';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { routeForRole } from '@/config/routeForRole';
 
 interface UseAuthGateOptions {

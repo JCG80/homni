@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { Service } from '@/modules/services/types/services';
 import { useCreateLead } from './useLeads';
 import { toast } from 'sonner';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useNavigate } from 'react-router-dom';
 
 export const useServiceLeadCreation = () => {

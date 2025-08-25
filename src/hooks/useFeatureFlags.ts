@@ -2,7 +2,7 @@
  * Hook for accessing feature flags with role-based controls
  */
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { AuthService } from '@/services/authService';
 
 interface UseFeatureFlagsOptions {

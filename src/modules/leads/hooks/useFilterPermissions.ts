@@ -1,5 +1,5 @@
 
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 
 /**
  * Hook to check if a user has the necessary permissions to manage filters

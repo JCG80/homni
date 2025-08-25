@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, Home, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 
 export const PowerComparisonHeader = () => {
   const { isAuthenticated } = useAuth();

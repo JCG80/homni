@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageSquare, FileText, User, Bell, Mail, Heart, Home } from 'lucide-react';

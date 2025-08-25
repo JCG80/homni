@@ -2,7 +2,7 @@
 import React from 'react';
 import { Plus, Activity, Users, BarChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { DashboardWidget } from '@/components/dashboard';
 
 export const QuickActionsWidget: React.FC = () => {
   return (

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { ServicePreference } from '../types/services';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { toast } from 'sonner';
 
 export const useServicePreferences = () => {

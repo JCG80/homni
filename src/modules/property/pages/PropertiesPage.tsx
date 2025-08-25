@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { getUserProperties } from '../api';
 import { Property } from '../types/propertyTypes';
 import { PropertyList } from '../components/PropertyList';

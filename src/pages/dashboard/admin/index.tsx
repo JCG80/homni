@@ -3,7 +3,7 @@ import React from 'react';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building, Users, Settings, Activity, ShieldCheck } from 'lucide-react';
-import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import { DashboardWidget } from '@/components/dashboard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 

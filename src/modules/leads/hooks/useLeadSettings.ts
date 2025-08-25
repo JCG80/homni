@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { LeadSettings } from '../types/lead-settings';
 import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 
 /**
  * Hook for managing lead settings with support for company-specific configurations

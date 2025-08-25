@@ -3,7 +3,7 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
-import { AuthProvider } from '@/modules/auth/hooks/useAuth';
+import { AuthProvider } from '@/modules/auth/hooks';
 import { AuthWrapper } from '@/modules/auth/components/AuthWrapper';
 import { AppRoutes } from '@/Routes';
 import { ErrorBoundary } from '@/components/ErrorBoundary';

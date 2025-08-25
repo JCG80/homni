@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { AdminLeadsPage } from './AdminLeadsPage';
 import { CompanyLeadsPage } from './CompanyLeadsPage';
 import { UserLeadsPage } from './UserLeadsPage';

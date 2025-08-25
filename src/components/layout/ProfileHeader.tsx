@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Settings, LogOut, User, Building2 } from 'lucide-react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from '@/modules/auth/api';
 import { PersonaSwitcher } from './PersonaSwitcher';
