@@ -3,13 +3,7 @@ import { useFilterRetry } from './useFilterRetry';
 import { useFilterErrorHandling } from './useFilterErrorHandling';
 import { UserLeadFilter } from '../types/user-filters';
 import { useAuth } from '@/modules/auth/hooks';
-
-interface UseFilterFetchProps {
-  setFilters: (filters: UserLeadFilter[]) => void;
-  setActiveFilter: (filter: UserLeadFilter | null) => void;
-  setIsLoading: (isLoading: boolean) => void;
-  setError: (error: string | null) => void;
-}
+import { UseFilterFetchProps } from '@/types/hooks';
 
 /**
  * Hook for fetching user filters with enhanced retry capability

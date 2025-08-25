@@ -6,11 +6,7 @@ import {
   fetchUserModuleAccess, 
   updateUserModuleAccess 
 } from '../api/moduleAccess';
-
-interface UseModuleAccessProps {
-  userId: string;
-  onUpdate?: () => void;
-}
+import { UseModuleAccessProps } from '@/types/admin';
 
 export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
   const { user } = useAuth();

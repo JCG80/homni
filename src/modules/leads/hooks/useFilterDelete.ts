@@ -7,14 +7,7 @@ import { withRetry } from '@/utils/apiRetry';
 import { useAuth } from '@/modules/auth/hooks';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 import { canAccessModule } from '@/modules/auth/utils/roleUtils';
-
-interface UseFilterDeleteProps {
-  filters: UserLeadFilter[];
-  activeFilter: UserLeadFilter | null;
-  setFilters: (filters: UserLeadFilter[] | ((prev: UserLeadFilter[]) => UserLeadFilter[])) => void;
-  setActiveFilter: (filter: UserLeadFilter | null) => void;
-  setIsLoading: (isLoading: boolean) => void;
-}
+import { UseFilterHookProps } from '@/types/hooks';
 
 /**
  * Hook for deleting filters with automatic retry and role-based access control
@@ -25,7 +18,7 @@ export function useFilterDelete({
   setFilters,
   setActiveFilter,
   setIsLoading
-}: UseFilterDeleteProps) {
+}: Pick<UseFilterHookProps, 'filters' | 'activeFilter' | 'setFilters' | 'setActiveFilter' | 'setIsLoading'>) {
   const { role } = useAuth();
   
   // Check if user has access to manage filters

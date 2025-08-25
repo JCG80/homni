@@ -8,11 +8,31 @@ export * from './auth';
 export * from './leads';
 export * from './marketplace';
 export * from './common';
+export * from './hooks';
+export * from './admin';
 
 // Legacy compatibility exports
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
 export type { Lead, LeadFormValues, LeadStatus, PipelineStage, CompanyProfile } from './leads';
 export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
+
+// Hook types
+export type { 
+  UseFilterHookProps, 
+  UseFilterFetchProps, 
+  UseKanbanBoardProps, 
+  UseLoginFormProps, 
+  UseRoleCheckProps 
+} from './hooks';
+
+// Admin types
+export type { 
+  UseModuleAccessProps, 
+  ModuleAccessManagerProps, 
+  Module, 
+  AdminLog, 
+  CompanyStatistics 
+} from './admin';
 
 // Export label constants for clean UI display
 export { STATUS_LABELS, PIPELINE_LABELS, LEAD_STATUSES } from './leads';

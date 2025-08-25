@@ -7,14 +7,7 @@ import { withRetry } from '@/utils/apiRetry';
 import { useAuth } from '@/modules/auth/hooks';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 import { canAccessModule } from '@/modules/auth/utils/roleUtils';
-
-interface UseFilterCreateProps {
-  filters: UserLeadFilter[];
-  setFilters: (filters: UserLeadFilter[] | ((prev: UserLeadFilter[]) => UserLeadFilter[])) => void;
-  activeFilter: UserLeadFilter | null;
-  setActiveFilter: (filter: UserLeadFilter | null) => void;
-  setIsLoading: (isLoading: boolean) => void;
-}
+import { UseFilterHookProps } from '@/types/hooks';
 
 /**
  * Hook for creating new filters with automatic retry and role-based access control
@@ -24,7 +17,7 @@ export function useFilterCreate({
   setFilters,
   setActiveFilter,
   setIsLoading
-}: UseFilterCreateProps) {
+}: Pick<UseFilterHookProps, 'filters' | 'setFilters' | 'activeFilter' | 'setActiveFilter' | 'setIsLoading'>) {
   const { role } = useAuth();
   
   // Check if user has access to manage filters

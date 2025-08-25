@@ -1,3 +1,6 @@
+/**
+ * Admin-specific types
+ */
 
 import { Json } from '@/integrations/supabase/types';
 
@@ -85,4 +88,15 @@ export interface Module {
   active?: boolean; // UI display property
 }
 
-// ModuleAccessManagerProps moved to @/types/admin to avoid duplication
+/**
+ * Props for module access management hooks and components
+ */
+export interface UseModuleAccessProps {
+  userId: string;
+  onUpdate?: () => void;
+}
+
+export interface ModuleAccessManagerProps {
+  userId: string;
+  onUpdate?: () => void;
+}

@@ -3,7 +3,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMutation } from '@tanstack/react-query';
-import { ModuleAccessManagerProps } from '../types/types';
+import { ModuleAccessManagerProps } from '@/types/admin';
 import { AdminStatusToggle } from './moduleAccess/AdminStatusToggle';
 import { ModulesList } from './moduleAccess/ModulesList';
 import { AccessErrorState } from './moduleAccess/AccessErrorState';

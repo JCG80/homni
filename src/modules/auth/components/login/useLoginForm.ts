@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { UseLoginFormProps } from '@/types/hooks';
 
 // Enhanced validation schema with more helpful error messages
 const formSchema = z.object({
@@ -18,12 +19,6 @@ const formSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof formSchema>;
-
-interface UseLoginFormProps {
-  onSuccess?: () => void;
-  redirectTo?: string;
-  userType?: 'private' | 'business'; 
-}
 
 export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: UseLoginFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);

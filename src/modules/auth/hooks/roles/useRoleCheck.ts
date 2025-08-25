@@ -2,15 +2,12 @@
 import { useMemo } from 'react';
 import { UserRole } from '../../types/unified-types';
 import { isUserRole } from '../../utils/roles/guards';
-
-interface RoleCheckProps {
-  role?: UserRole | null;
-}
+import { UseRoleCheckProps } from '@/types/hooks';
 
 /**
  * Hook that provides role checking utilities
  */
-export const useRoleCheck = (props?: RoleCheckProps) => {
+export const useRoleCheck = (props?: UseRoleCheckProps) => {
   const roleFromProps = props?.role;
   
   return useMemo(() => {

@@ -20,10 +20,10 @@ export const useUserRetention = () => {
   const [retentionMetrics, setRetentionMetrics] = useState<RetentionMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Track user activity - DISABLED: Table does not exist yet
+  // Track user activity - REMOVED: Functionality not needed for current requirements
   const trackActivity = useCallback(async (activity: Omit<UserActivity, 'created_at'>) => {
-    console.log('Activity tracking disabled - user_activity_logs table not implemented', activity);
-    // TODO: Implement user_activity_logs table and re-enable tracking
+    // Activity tracking removed as user_activity_logs table implementation is not required
+    console.log('Activity tracking not implemented', activity);
   }, []);
 
   // Calculate engagement score

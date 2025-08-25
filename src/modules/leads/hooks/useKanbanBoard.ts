@@ -3,11 +3,7 @@ import { Lead, LeadStatus, PipelineStage, normalizeStatus, statusToPipeline, PIP
 import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
 import { KanbanColumn } from '../components/kanban/types';
 import { toast } from '@/hooks/use-toast';
-
-interface UseKanbanBoardProps {
-  companyId?: string;
-  userId?: string;
-}
+import { UseKanbanBoardProps } from '@/types/hooks';
 
 export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) => {
   const [leads, setLeads] = useState<Lead[]>([]);
