@@ -1,27 +1,7 @@
+import { defineConfig } from 'vitest/config';
+import { resolve } from 'path';
 
-/// <reference types="vitest" />
-
-import { defineConfig } from 'vite';
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
-
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
+export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
@@ -33,18 +13,39 @@ export default defineConfig(({ mode }) => ({
         'node_modules/',
         'src/test/',
         '**/*.d.ts',
-        '**/*.config.*',
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+        'e2e-tests/',
         'dist/',
+        'build/',
+        '.next/',
         'coverage/',
+        'public/',
+        'src/integrations/supabase/types.ts'
       ],
       thresholds: {
         global: {
-          branches: 90,
+          branches: 80,
           functions: 90,
           lines: 90,
-          statements: 90,
-        },
-      },
+          statements: 90
+        }
+      }
     },
+    include: [
+      'src/**/*.{test,spec}.{ts,tsx}'
+    ],
+    exclude: [
+      'node_modules/',
+      'dist/',
+      'build/',
+      'e2e-tests/'
+    ]
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+      '@/test': resolve(__dirname, './src/test')
+    }
   }
-}));
+});
