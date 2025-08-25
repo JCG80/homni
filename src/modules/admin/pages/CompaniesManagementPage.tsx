@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Loader } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import { useRoleProtection } from '@/modules/auth/hooks';
 import { CompanyDetailView } from '../components/CompanyDetailView';
 import { CompanyProfile } from '../types/types';
 import { CompaniesTable } from '../components/companies/CompaniesTable';
@@ -11,8 +11,8 @@ import { CompaniesError } from '../components/companies/CompaniesError';
 import { useCompanies } from '../hooks/useCompanies';
 
 export const CompaniesManagementPage = () => {
-  // Role guard to ensure only master admins can access this page
-  const { isAllowed, loading } = useRoleGuard({ 
+  // Role protection to ensure only master admins can access this page
+  const { isAllowed, loading } = useRoleProtection({ 
     allowedRoles: ['master_admin'],
     redirectTo: '/unauthorized'
   });
@@ -32,7 +32,7 @@ export const CompaniesManagementPage = () => {
   }
   
   if (!isAllowed) {
-    return null; // Will be redirected by the useRoleGuard hook
+    return null; // Will be redirected by the useRoleProtection hook
   }
 
   return (

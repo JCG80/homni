@@ -17,10 +17,10 @@ vi.mock('@/modules/auth/hooks', () => ({
   useAuth: () => mockAuth,
 }));
 
-// Mock role guard used by InternalAccessPage
-const mockUseRoleGuard = vi.fn(() => ({ isAllowed: false, loading: false }));
-vi.mock('@/modules/auth/hooks/useRoleGuard', () => ({
-  useRoleGuard: () => mockUseRoleGuard(),
+// Mock role protection used by InternalAccessPage
+const mockUseRoleProtection = vi.fn(() => ({ isAllowed: false, loading: false }));
+vi.mock('@/modules/auth/hooks/useRoleProtection', () => ({
+  useRoleProtection: () => mockUseRoleProtection(),
 }));
 
 describe('Admin routes comprehensive security - internal access', () => {
@@ -32,7 +32,7 @@ describe('Admin routes comprehensive security - internal access', () => {
   });
 
   it('denies /admin/internal-access for non-master_admin', () => {
-    mockUseRoleGuard.mockReturnValue({ isAllowed: false, loading: false });
+    mockUseRoleProtection.mockReturnValue({ isAllowed: false, loading: false });
 
     render(
       <MemoryRouter initialEntries={["/admin/internal-access"]}>
@@ -47,7 +47,7 @@ describe('Admin routes comprehensive security - internal access', () => {
     mockAuth.role = 'master_admin';
     mockAuth.isAdmin = true;
     mockAuth.isMasterAdmin = true;
-    mockUseRoleGuard.mockReturnValue({ isAllowed: true, loading: false });
+    mockUseRoleProtection.mockReturnValue({ isAllowed: true, loading: false });
 
     render(
       <MemoryRouter initialEntries={["/admin/internal-access"]}>

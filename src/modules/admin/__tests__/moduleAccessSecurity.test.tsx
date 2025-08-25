@@ -35,9 +35,9 @@ vi.mock('@/modules/auth/hooks', () => ({
   useAuth: () => mockAuth,
 }));
 
-// Mock the role guard hook
-vi.mock('@/modules/auth/hooks/useRoleGuard', () => ({
-  useRoleGuard: vi.fn(() => ({ isAllowed: false, loading: false }))
+// Mock the role protection hook
+vi.mock('@/modules/auth/hooks/useRoleProtection', () => ({
+  useRoleProtection: vi.fn(() => ({ isAllowed: false, loading: false }))
 }));
 
 // Mock Supabase client
@@ -138,8 +138,8 @@ describe('Phase 3B1: Module Access UI Testing', () => {
 
   describe('InternalAccessPage Security', () => {
     it('should redirect non-master_admin users', () => {
-      const mockUseRoleGuard = vi.mocked(require('@/modules/auth/hooks/useRoleGuard').useRoleGuard);
-      mockUseRoleGuard.mockReturnValue({ isAllowed: false, loading: false });
+      const mockUseRoleProtection = vi.mocked(require('@/modules/auth/hooks/useRoleProtection').useRoleProtection);
+      mockUseRoleProtection.mockReturnValue({ isAllowed: false, loading: false });
       
       renderWithProviders(<InternalAccessPage />);
       
@@ -148,8 +148,8 @@ describe('Phase 3B1: Module Access UI Testing', () => {
     });
 
     it('should allow access only for master_admin', () => {
-      const mockUseRoleGuard = vi.mocked(require('@/modules/auth/hooks/useRoleGuard').useRoleGuard);
-      mockUseRoleGuard.mockReturnValue({ isAllowed: true, loading: false });
+      const mockUseRoleProtection = vi.mocked(require('@/modules/auth/hooks/useRoleProtection').useRoleProtection);
+      mockUseRoleProtection.mockReturnValue({ isAllowed: true, loading: false });
       
       renderWithProviders(<InternalAccessPage />);
       

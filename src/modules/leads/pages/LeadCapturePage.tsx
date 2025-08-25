@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { LeadForm } from '../components/LeadForm';
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import { useRoleProtection } from '@/modules/auth/hooks';
 
 export const LeadCapturePage = () => {
-  const { loading } = useRoleGuard({
+  const { loading } = useRoleProtection({
     allowAnyAuthenticated: true,
     redirectTo: '/login'
   });

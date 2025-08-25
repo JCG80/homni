@@ -11,7 +11,7 @@ import {
 import { useAuth } from '@/modules/auth/hooks';
 import { useNavigationContext } from '@/hooks/useNavigationContext';
 import { Plus, Star, Clock, Home, Shield, Building2 } from 'lucide-react';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 

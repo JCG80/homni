@@ -13,8 +13,8 @@ vi.mock('@/modules/auth/hooks/useAuth', () => ({
   })
 }));
 
-vi.mock('@/modules/auth/hooks/useRoleGuard', () => ({
-  useRoleGuard: vi.fn().mockReturnValue({
+vi.mock('@/modules/auth/hooks/useRoleProtection', () => ({
+  useRoleProtection: vi.fn().mockReturnValue({
     isAllowed: true,
     loading: false
   })

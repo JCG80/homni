@@ -17,8 +17,3 @@ export { useRoleCheck, useRoleNavigation, useRoleProtection } from './roles';
 export { useAuthStatus } from './useAuthStatus';
 export { useAuthRetry } from './useAuthRetry';
 export { useProfileManager } from './useProfileManager';
-
-// Legacy hooks (deprecated but exported for backward compatibility)
-export { useRoleHelpers } from './useRoleHelpers';
-export { useRoleGuard } from './useRoleGuard';
-export { useRoleRedirect } from './useRoleRedirect';

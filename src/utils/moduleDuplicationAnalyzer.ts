@@ -30,11 +30,11 @@ export function analyzeHookDuplication(moduleNames: string[]) {
         recommendation: 'Merge these implementations into a single hook with consistent return type'
       },
       {
-        hookName: 'useRoleHelpers',
+        hookName: 'useRoleCheck',
         similarity: 0.72,
         locations: [
-          'src/modules/auth/hooks/useRoleHelpers.ts',
-          'src/modules/auth/hooks/useRoleGuard.ts'
+          'src/modules/auth/hooks/roles/useRoleCheck.ts',
+          'src/modules/auth/hooks/roles/useRoleProtection.ts'
         ],
         recommendation: 'Extract common role checking logic into a shared utility'
       }

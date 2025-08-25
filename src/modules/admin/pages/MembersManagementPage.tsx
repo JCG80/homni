@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Loader, User } from 'lucide-react';
 import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import { useRoleProtection } from '@/modules/auth/hooks';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UserDetailView } from '../components/MemberDetailView';
 import { UsersTable } from '../components/members/MembersTable';
@@ -26,8 +26,8 @@ interface User {
 }
 
 export function MembersManagementPage() {
-  // Role guard to ensure only master admins can access this page
-  const { isAllowed, loading } = useRoleGuard({ 
+  // Role protection to ensure only master admins can access this page
+  const { isAllowed, loading } = useRoleProtection({ 
     allowedRoles: ['master_admin'],
     redirectTo: '/unauthorized'
   });
@@ -51,7 +51,7 @@ export function MembersManagementPage() {
   }
   
   if (!isAllowed) {
-    return null; // Will be redirected by the useRoleGuard hook
+    return null; // Will be redirected by the useRoleProtection hook
   }
 
   return (

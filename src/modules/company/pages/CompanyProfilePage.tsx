@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import { useRoleProtection } from '@/modules/auth/hooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -28,7 +28,7 @@ export const CompanyProfilePage = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileData | null>(null);
   const [loadingCompanyProfile, setLoadingCompanyProfile] = useState(false);
-  const { loading } = useRoleGuard({
+  const { loading } = useRoleProtection({
     allowedRoles: ['company', 'admin', 'master_admin'],
     redirectTo: '/unauthorized'
   });

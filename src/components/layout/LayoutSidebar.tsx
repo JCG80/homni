@@ -12,7 +12,7 @@ import {
   PartnersSection,
   AccountSection
 } from './sidebar';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 import { motion } from 'framer-motion';
 
 export interface LayoutSidebarProps {

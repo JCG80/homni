@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 import { Navigate } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Loader2 } from 'lucide-react';

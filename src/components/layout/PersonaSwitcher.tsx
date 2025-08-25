@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/modules/auth/hooks';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 
 const roleIcons = {
   guest: User,

@@ -7,7 +7,7 @@ import {
   NavigationMenuItem, 
   NavigationMenuTrigger 
 } from '@/components/ui/navigation-menu';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 
 interface AdminNavigationProps {
   role?: UserRole;

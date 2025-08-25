@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus, Trash2, Crown, Shield, Edit3, Building2, User } from 'lucide-react';
-import { UserRole, ALL_ROLES } from '@/modules/auth/utils/roles/types';
+import { UserRole, UserProfile, ALL_ROLES } from '@/types/auth';
 import { useRoleGrants } from '@/hooks/useRoleGrants';
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';

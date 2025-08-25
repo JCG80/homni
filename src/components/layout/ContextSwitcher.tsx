@@ -12,7 +12,7 @@ import {
 import { useAuth } from '@/modules/auth/hooks';
 import { useNavigationContext } from '@/hooks/useNavigationContext';
 import { ChevronDown, User, Shield, Building2, Zap, Star } from 'lucide-react';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 import { useNavigate } from 'react-router-dom';
 
 interface ContextSwitcherProps {

@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { navUser, navControl } from '@/routes/navConfig';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 
 export const BreadcrumbNav = () => {
   const location = useLocation();

@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Loader, Settings } from 'lucide-react';
 import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
-import { useRoleGuard } from '@/modules/auth/hooks/useRoleGuard';
+import { useRoleProtection } from '@/modules/auth/hooks';
 import { supabase } from '@/lib/supabaseClient';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ModuleAccessManager } from '../components/ModuleAccessManager';
@@ -36,8 +36,8 @@ interface UserProfile {
 }
 
 export const InternalAccessPage = () => {
-  // Role guard to ensure only master admins can access this page
-  const { isAllowed, loading } = useRoleGuard({ 
+  // Role protection to ensure only master admins can access this page
+  const { isAllowed, loading } = useRoleProtection({ 
     allowedRoles: ['master_admin'],
     redirectTo: '/unauthorized'
   });
@@ -79,7 +79,7 @@ export const InternalAccessPage = () => {
   }
   
   if (!isAllowed) {
-    return null; // Will be redirected by the useRoleGuard hook
+    return null; // Will be redirected by the useRoleProtection hook
   }
 
   return (

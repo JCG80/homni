@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { navUser, navControl } from '@/routes/navConfig';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 import { cn } from '@/lib/utils';
 import { PersonaSwitcher } from './PersonaSwitcher';
 

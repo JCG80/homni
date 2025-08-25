@@ -11,7 +11,7 @@ import { PropertyNavigation } from '../navigation/PropertyNavigation';
 import { ServicesNavigation } from '../navigation/ServicesNavigation';
 import { DocsNavigation } from '../navigation/DocsNavigation';
 import { AuthenticatedNavigation } from '../navigation/AuthenticatedNavigation';
-import { UserRole } from '@/modules/auth/utils/roles/types'; 
+import { UserRole } from '@/types/auth'; 
 import { NavigationMenuItem } from '@/components/ui/navigation-menu';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';

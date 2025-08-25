@@ -2,7 +2,7 @@
  * Enhanced navigation configuration with business module integration
  */
 
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 import { Home, Search, Building, FileText, Target, DollarSign } from 'lucide-react';
 
 export interface NavigationItem {

@@ -5,7 +5,7 @@ import { getNavigation } from '@/config/navigation';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 
 interface RoleBasedNavigationProps {
   className?: string;

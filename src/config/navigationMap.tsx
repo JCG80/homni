@@ -1,5 +1,5 @@
 
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/types/auth';
 
 /**
  * This file serves as documentation for the complete navigation structure of the application.
