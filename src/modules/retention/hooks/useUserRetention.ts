@@ -20,22 +20,10 @@ export const useUserRetention = () => {
   const [retentionMetrics, setRetentionMetrics] = useState<RetentionMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Track user activity
+  // Track user activity - DISABLED: Table does not exist yet
   const trackActivity = useCallback(async (activity: Omit<UserActivity, 'created_at'>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      await supabase
-        .from('user_activity_logs')
-        .insert({
-          user_id: user.id,
-          ...activity,
-          created_at: new Date().toISOString()
-        });
-    } catch (error) {
-      console.error('Error tracking activity:', error);
-    }
+    console.log('Activity tracking disabled - user_activity_logs table not implemented', activity);
+    // TODO: Implement user_activity_logs table and re-enable tracking
   }, []);
 
   // Calculate engagement score
@@ -69,13 +57,13 @@ export const useUserRetention = () => {
         .eq('id', user.id)
         .single();
 
-      const metadata = profile?.metadata || {};
+      const metadata = (profile?.metadata as Record<string, any>) || {};
       
       setRetentionMetrics({
-        loginStreak: metadata.loginStreak || 0,
-        lastActiveDate: metadata.lastActiveDate || new Date().toISOString(),
-        totalSessions: metadata.totalSessions || 1,
-        engagementScore: metadata.engagementScore || 50
+        loginStreak: (metadata.loginStreak as number) || 0,
+        lastActiveDate: metadata.lastActiveDate as string || new Date().toISOString(),
+        totalSessions: (metadata.totalSessions as number) || 1,
+        engagementScore: (metadata.engagementScore as number) || 50
       });
     } catch (error) {
       console.error('Error loading retention metrics:', error);
@@ -118,10 +106,12 @@ export const useUserRetention = () => {
         totalSessions: retentionMetrics.totalSessions + 1
       };
 
+      const currentMetadata = (retentionMetrics as any) || {};
       await supabase
         .from('user_profiles')
         .update({
           metadata: {
+            ...currentMetadata,
             loginStreak: newStreak,
             lastActiveDate: now.toISOString(),
             totalSessions: updatedMetrics.totalSessions
