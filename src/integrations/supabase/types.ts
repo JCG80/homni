@@ -763,7 +763,7 @@ export type Database = {
           id: string
           lead_type: string | null
           metadata: Json | null
-          status: string
+          status: Database["public"]["Enums"]["lead_status"]
           submitted_by: string | null
           title: string
           updated_at: string
@@ -776,7 +776,7 @@ export type Database = {
           id?: string
           lead_type?: string | null
           metadata?: Json | null
-          status?: string
+          status?: Database["public"]["Enums"]["lead_status"]
           submitted_by?: string | null
           title: string
           updated_at?: string
@@ -789,7 +789,7 @@ export type Database = {
           id?: string
           lead_type?: string | null
           metadata?: Json | null
-          status?: string
+          status?: Database["public"]["Enums"]["lead_status"]
           submitted_by?: string | null
           title?: string
           updated_at?: string
@@ -1775,6 +1775,14 @@ export type Database = {
         | "master_admin"
         | "user"
         | "guest"
+      lead_status:
+        | "new"
+        | "qualified"
+        | "contacted"
+        | "negotiating"
+        | "converted"
+        | "lost"
+        | "paused"
       pipeline_stage: "new" | "in_progress" | "won" | "lost"
     }
     CompositeTypes: {
@@ -1911,6 +1919,15 @@ export const Constants = {
         "master_admin",
         "user",
         "guest",
+      ],
+      lead_status: [
+        "new",
+        "qualified",
+        "contacted",
+        "negotiating",
+        "converted",
+        "lost",
+        "paused",
       ],
       pipeline_stage: ["new", "in_progress", "won", "lost"],
     },
