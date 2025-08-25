@@ -224,7 +224,7 @@ export class BusinessFlowOrchestrator {
     await supabase
       .from('leads')
       .update({ 
-        status: status === 'completed' ? 'converted' : 'in_progress',
+        status: status === 'completed' ? 'converted' : 'qualified',
         updated_at: new Date().toISOString(),
       })
       .eq('id', flowId);

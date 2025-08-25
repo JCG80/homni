@@ -49,6 +49,12 @@ export const AppRouteComponents = () => {
         </RoleDashboard>
       } />
       
+      <Route path="/dashboard/admin" element={
+        <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
+          <Dashboard />
+        </RoleDashboard>
+      } />
+      
       {/* Service routes */}
       {serviceRoutes}
       
