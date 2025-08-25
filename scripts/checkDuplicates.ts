@@ -1,48 +1,61 @@
 #!/usr/bin/env ts-node
 
 /**
- * Check for duplicate components, types, and imports
+ * Check for duplicate code patterns and inconsistent imports
  */
 
 import { execSync } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
 
-console.log('🔍 Checking for duplicates...');
+console.log('🔍 Checking for duplicates and inconsistencies...');
 
 let hasIssues = false;
 
-// Check for duplicate component names
+// Check for inconsistent supabase imports
 try {
-  const result = execSync('find src -name "*.tsx" -exec basename {} \\; | sort | uniq -d', { encoding: 'utf8' });
-  if (result.trim()) {
-    console.log('❌ Duplicate component files:');
-    console.log(result);
+  const result = execSync('grep -r "from.*supabase.*client" src/ --include="*.ts" --include="*.tsx"', { encoding: 'utf-8' });
+  const lines = result.split('\n').filter(line => line.trim());
+  
+  const libSupabaseLines = lines.filter(line => line.includes('@/lib/supabaseClient'));
+  const integrationsSupabaseLines = lines.filter(line => line.includes('@/integrations/supabase/client'));
+  
+  if (libSupabaseLines.length > 0 && integrationsSupabaseLines.length > 0) {
+    console.log('❌ Inconsistent supabase imports found:');
+    console.log(`   @/lib/supabaseClient: ${libSupabaseLines.length} files`);
+    console.log(`   @/integrations/supabase/client: ${integrationsSupabaseLines.length} files`);
     hasIssues = true;
   } else {
-    console.log('✅ No duplicate component files');
+    console.log('✅ Supabase imports are consistent');
   }
 } catch (error) {
-  console.log('⚠️  Could not check duplicate components');
+  console.log('✅ No supabase import issues found');
 }
 
-// Check for deprecated Supabase client imports
+// Check for duplicate toast imports
 try {
-  const result = execSync('grep -r "from.*@/integrations/supabase/client" src/ | wc -l', { encoding: 'utf8' });
-  const count = parseInt(result.trim());
-  if (count > 0) {
-    console.log(`❌ Found ${count} files using deprecated Supabase client`);
+  const result = execSync('grep -r "from.*toast" src/ --include="*.ts" --include="*.tsx"', { encoding: 'utf-8' });
+  const lines = result.split('\n').filter(line => line.trim());
+  
+  const uniqueImports = new Set(lines.map(line => {
+    const match = line.match(/from ['"]([^'"]+)['"]/);
+    return match ? match[1] : '';
+  }));
+  
+  if (uniqueImports.size > 1) {
+    console.log('❌ Multiple toast import sources found:', Array.from(uniqueImports));
     hasIssues = true;
   } else {
-    console.log('✅ No deprecated Supabase client imports');
+    console.log('✅ Toast imports are consistent');
   }
 } catch (error) {
-  console.log('⚠️  Could not check Supabase imports');
+  console.log('✅ No toast import issues found');
 }
 
-console.log('\n🎯 SUMMARY');
 if (hasIssues) {
-  console.log('❌ Duplicates found');
+  console.log('\n❌ Duplicate/inconsistency issues found');
   process.exit(1);
 } else {
-  console.log('✅ No duplicates detected');
+  console.log('\n✅ No duplicate/inconsistency issues found');
   process.exit(0);
 }

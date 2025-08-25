@@ -1,38 +1,40 @@
 #!/usr/bin/env ts-node
 
 /**
- * Check migrations have corresponding rollback scripts
+ * Check migration files for completeness
  */
 
 import * as fs from 'fs';
+import * as path from 'path';
 
-console.log('📜 Checking migrations...');
+console.log('🔍 Checking migrations...');
 
-const migrationsDir = 'supabase/migrations';
+const migrationsDir = path.join(process.cwd(), 'supabase', 'migrations');
 
 if (!fs.existsSync(migrationsDir)) {
-  console.log('⚠️  No migrations directory found');
-  console.log('✅ Migration check passed (no migrations to validate)');
+  console.log('✅ No migrations directory found');
   process.exit(0);
 }
 
-const files = fs.readdirSync(migrationsDir);
-const sqlFiles = files.filter(f => f.endsWith('.sql') && !f.endsWith('_down.sql'));
+const migrationFiles = fs.readdirSync(migrationsDir)
+  .filter(file => file.endsWith('.sql') && !file.endsWith('_down.sql'));
+
 let hasIssues = false;
 
-for (const file of sqlFiles) {
+migrationFiles.forEach(file => {
   const downFile = file.replace('.sql', '_down.sql');
-  if (!files.includes(downFile)) {
-    console.log(`❌ Missing rollback script: ${downFile}`);
+  const downPath = path.join(migrationsDir, downFile);
+  
+  if (!fs.existsSync(downPath)) {
+    console.log(`❌ Missing down migration for: ${file}`);
     hasIssues = true;
   }
-}
+});
 
-console.log('\n🎯 SUMMARY');
 if (hasIssues) {
-  console.log('❌ Migration issues found');
+  console.log('\n❌ Migration issues found');
   process.exit(1);
 } else {
-  console.log('✅ All migrations have rollback scripts');
+  console.log('✅ All migrations have down scripts');
   process.exit(0);
 }
