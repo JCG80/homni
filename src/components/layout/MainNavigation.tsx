@@ -6,11 +6,11 @@ import {
   NavigationMenuList
 } from '@/components/ui/navigation-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { HomeNavLink } from '../navigation/HomeNavLink';
-import { PropertyNavigation } from '../navigation/PropertyNavigation';
-import { ServicesNavigation } from '../navigation/ServicesNavigation';
-import { DocsNavigation } from '../navigation/DocsNavigation';
-import { AuthenticatedNavigation } from '../navigation/AuthenticatedNavigation';
+import { HomeNavLink } from '@/components/navigation/HomeNavLink';
+import { PropertyNavigation } from '@/components/navigation/PropertyNavigation';
+import { ServicesNavigation } from '@/components/navigation/ServicesNavigation';
+import { DocsNavigation } from '@/components/navigation/DocsNavigation';
+import { AuthenticatedNavigation } from '@/components/navigation/AuthenticatedNavigation';
 import { UserRole } from '@/types/auth'; 
 import { NavigationMenuItem } from '@/components/ui/navigation-menu';
 import { NavLink } from 'react-router-dom';

@@ -17,47 +17,56 @@ const LOG_LEVELS: LogLevel = {
   ERROR: 'error'
 } as const;
 
+interface LogContext {
+  module?: string;
+  component?: string;
+  action?: string;
+  userId?: string;
+  [key: string]: any;
+}
+
 class Logger {
   private isDevelopment = import.meta.env.MODE === 'development';
 
-  private log(level: keyof LogLevel, message: string, ...args: any[]) {
+  private log(level: keyof LogLevel, message: string, context?: LogContext, ...args: any[]) {
     if (!this.isDevelopment && level !== 'ERROR') {
       return; // Only allow errors in production
     }
 
     const timestamp = new Date().toISOString();
-    const prefix = `[${timestamp}] [${level}]`;
+    const contextStr = context ? `[${context.module || 'App'}${context.component ? `::${context.component}` : ''}]` : '';
+    const prefix = `[${timestamp}] [${level}]${contextStr}`;
 
     switch (level) {
       case 'DEBUG':
-        console.debug(prefix, message, ...args);
+        console.debug(prefix, message, context, ...args);
         break;
       case 'INFO':
-        console.info(prefix, message, ...args);
+        console.info(prefix, message, context, ...args);
         break;
       case 'WARN':
-        console.warn(prefix, message, ...args);
+        console.warn(prefix, message, context, ...args);
         break;
       case 'ERROR':
-        console.error(prefix, message, ...args);
+        console.error(prefix, message, context, ...args);
         break;
     }
   }
 
-  debug(message: string, ...args: any[]) {
-    this.log('DEBUG', message, ...args);
+  debug(message: string, context?: LogContext, ...args: any[]) {
+    this.log('DEBUG', message, context, ...args);
   }
 
-  info(message: string, ...args: any[]) {
-    this.log('INFO', message, ...args);
+  info(message: string, context?: LogContext, ...args: any[]) {
+    this.log('INFO', message, context, ...args);
   }
 
-  warn(message: string, ...args: any[]) {
-    this.log('WARN', message, ...args);
+  warn(message: string, context?: LogContext, ...args: any[]) {
+    this.log('WARN', message, context, ...args);
   }
 
-  error(message: string, ...args: any[]) {
-    this.log('ERROR', message, ...args);
+  error(message: string, context?: LogContext, ...args: any[]) {
+    this.log('ERROR', message, context, ...args);
   }
 }
 

@@ -2,14 +2,14 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { CompanyProfile } from '../types/types';
+import { CompanyProfile } from '@/modules/admin/types/types';
 import { PurchasesTab } from './companyDetails/PurchasesTab';
 import { StatisticsTab } from './companyDetails/StatisticsTab';
 import { NotesTab } from './companyDetails/NotesTab';
 import { CompanyHeader } from './companyDetails/CompanyHeader';
 import { ModuleAccessTab } from './companyDetails/ModuleAccessTab';
 import { ErrorState } from './companyDetails/ErrorState';
-import { useCompanyDetails } from '../hooks/useCompanyDetails';
+import { useCompanyDetails } from '@/modules/admin/hooks/useCompanyDetails';
 
 interface CompanyDetailViewProps {
   company: CompanyProfile;

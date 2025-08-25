@@ -5,11 +5,12 @@
 
 // Core domain types
 export * from './auth';
+export * from './common';
 export * from './leads';
 export * from './marketplace';
-export * from './common';
 export * from './hooks';
 export * from './admin';
+export * from './logging';
 
 // Legacy compatibility exports
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';

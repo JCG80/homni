@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusBadge } from './members/StatusBadge';
-import { formatDate } from '../services/memberService';
+import { formatDate } from '@/modules/admin/services/memberService';
 
 interface User {
   id: string;

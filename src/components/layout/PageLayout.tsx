@@ -9,7 +9,7 @@ import {
   SheetContent,
   SheetTrigger
 } from "../ui/sheet";
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';

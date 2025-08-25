@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { TabHeader } from './login/TabHeader';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import { logger } from '@/utils/logger';
 
 interface LoginTabContentProps {
   title: string;
@@ -23,7 +24,7 @@ export const LoginTabContent: React.FC<LoginTabContentProps> = ({
   
   // Log the return URL for debugging
   useEffect(() => {
-    console.log(`LoginTabContent (${userType}) - Return URL:`, returnUrl);
+    logger.debug("Login initialized", { module: 'auth', component: 'LoginTabContent', userType, returnUrl });
   }, [returnUrl, userType]);
   
   const staggerDelay = 0.05;

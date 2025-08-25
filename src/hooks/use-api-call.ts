@@ -1,4 +1,7 @@
 
+import { withRetry } from '@/utils/apiRetry';
+import { logger } from '@/utils/logger';
+import { measureAsync } from '@/utils/performance';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 
@@ -58,11 +61,21 @@ export function useApiCall<T>() {
         return result;
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
-        console.error('API call failed:', error);
+        logger.error('API call failed', {
+          module: 'api',
+          component: 'useApiCall',
+          error: error.message,
+          functionName: apiFunction.name || 'anonymous'
+        });
 
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Retrying API call (${retryCount}/${maxRetries})...`);
+          logger.info('Retrying API call', {
+            module: 'api',
+            component: 'useApiCall',
+            attempt: retryCount + 1,
+            maxRetries: maxRetries
+          });
           // Exponential backoff
           const delay = Math.min(1000 * 2 ** retryCount, 8000);
           await new Promise(resolve => setTimeout(resolve, delay));
