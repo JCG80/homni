@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchLeadsValidated } from '@/modules/leads/api/lead-query';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -40,14 +41,11 @@ export const InsuranceLeadsTab = () => {
   const fetchInsuranceLeads = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .eq('lead_type', 'insurance')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setLeads(data || []);
+      // Use the validated query builder with lead type filter
+      const validatedLeads = await fetchLeadsValidated({
+        leadTypes: ['insurance']
+      });
+      setLeads(validatedLeads);
     } catch (error) {
       console.error('Error fetching insurance leads:', error);
       toast({

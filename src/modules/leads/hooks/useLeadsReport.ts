@@ -1,9 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Lead, isValidLeadStatus } from '@/types/leads';
+import { Lead } from '@/types/leads';
 import { toast } from '@/hooks/use-toast';
-import { parseLead } from '../utils/parseLead';
+import { fetchLeadsValidated } from '../api/lead-query';
 
 export const useLeadsReport = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -19,23 +18,14 @@ export const useLeadsReport = () => {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         
-        const { data, error } = await supabase
-          .from('leads')
-          .select('*')  // Select all fields to ensure we get customer details
-          .gte('created_at', thirtyDaysAgo.toISOString())
-          .order('created_at', { ascending: false });
+        // Use the validated query builder with date range filter
+        const validatedLeads = await fetchLeadsValidated({
+          dateRange: {
+            start: thirtyDaysAgo.toISOString()
+          }
+        });
         
-        if (error) {
-          throw new Error(error.message);
-        }
-        
-        // Use the shared parseLead utility to ensure all lead fields are properly handled
-        if (data) {
-          const validatedLeads = data.map(item => parseLead(item)) as Lead[];
-          setLeads(validatedLeads);
-        } else {
-          setLeads([]);
-        }
+        setLeads(validatedLeads);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
         setError(errorMessage);

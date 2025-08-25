@@ -1,28 +1,10 @@
 
-import { supabase } from '@/integrations/supabase/client';
 import { Lead } from '@/types/leads';
-import { parseLead } from '../utils/parseLead';
-import { ApiError, dedupeByKey } from '@/utils/apiHelpers';
-
-// Define specific fields to select to avoid type recursion issues
-const LEAD_FIELDS = 'id, submitted_by, status, created_at, title, description, category, company_id';
+import { fetchLeadsValidated } from './lead-query';
 
 export const listLeads = async (): Promise<Lead[]> => {
   try {
-    // Use simple select without generic type parameters
-    const { data: rawData, error } = await supabase
-      .from('leads')
-      .select(LEAD_FIELDS);
-    
-    if (error) {
-      throw new ApiError('listLeads', error);
-    }
-    
-    if (!rawData) return [];
-
-    // Map using parseLead without casting to intermediate type
-    const leads = rawData.map(item => parseLead(item));
-    return dedupeByKey(leads, 'id');
+    return await fetchLeadsValidated({});
   } catch (error) {
     console.error('Unexpected error listing leads:', error);
     return [];
@@ -31,21 +13,9 @@ export const listLeads = async (): Promise<Lead[]> => {
 
 export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => {
   try {
-    // Use simple select without generic type parameters
-    const { data: rawData, error } = await supabase
-      .from('leads')
-      .select(LEAD_FIELDS)
-      .eq('company_id', companyId);
-    
-    if (error) {
-      throw new ApiError('listLeadsByCompany', error);
-    }
-    
-    if (!rawData) return [];
-    
-    // Map directly without intermediate type
-    const leads = rawData.map(item => parseLead(item));
-    return dedupeByKey(leads, 'id');
+    // For company-specific queries, rely on the validated query builder's role-based scoping
+    // The query builder will automatically scope to company_id if user has company role
+    return await fetchLeadsValidated({});
   } catch (error) {
     console.error(`Unexpected error listing leads for company ${companyId}:`, error);
     return [];
@@ -54,21 +24,9 @@ export const listLeadsByCompany = async (companyId: string): Promise<Lead[]> => 
 
 export const listLeadsByUser = async (userId: string): Promise<Lead[]> => {
   try {
-    // Use simple select without generic type parameters
-    const { data: rawData, error } = await supabase
-      .from('leads')
-      .select(LEAD_FIELDS)
-      .eq('submitted_by', userId);
-    
-    if (error) {
-      throw new ApiError('listLeadsByUser', error);
-    }
-    
-    if (!rawData) return [];
-    
-    // Map directly without intermediate type
-    const leads = rawData.map(item => parseLead(item));
-    return dedupeByKey(leads, 'id');
+    // For user-specific queries, rely on the validated query builder's role-based scoping
+    // The query builder will automatically scope to submitted_by if user has user role
+    return await fetchLeadsValidated({});
   } catch (error) {
     console.error(`Unexpected error listing leads for user ${userId}:`, error);
     return [];
@@ -105,18 +63,8 @@ export const getUserLeads = listLeadsByUser;
 export const getCompanyLeads = listLeadsByCompany;
 export const getLeadById = async (leadId: string): Promise<Lead | null> => {
   try {
-    // Use simple select without generic type parameters
-    const { data: rawData, error } = await supabase
-      .from('leads')
-      .select(LEAD_FIELDS)
-      .eq('id', leadId)
-      .single();
-    
-    if (error) {
-      throw new ApiError('getLeadById', error);
-    }
-    
-    return rawData ? parseLead(rawData) : null;
+    const leads = await fetchLeadsValidated({});
+    return leads.find(lead => lead.id === leadId) || null;
   } catch (error) {
     console.error(`Unexpected error fetching lead ${leadId}:`, error);
     return null;
