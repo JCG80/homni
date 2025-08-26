@@ -1,6 +1,17 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Zap, Smartphone, Shield, Wifi, Factory, Truck, Building } from 'lucide-react';
+import { 
+  Hammer, 
+  Zap, 
+  PiggyBank, 
+  Shield, 
+  Home, 
+  Wrench, 
+  Calculator,
+  Heart,
+  Building,
+  Factory
+} from 'lucide-react';
 
 interface ServiceSelectionStepProps {
   role: 'private' | 'business';
@@ -9,17 +20,57 @@ interface ServiceSelectionStepProps {
 }
 
 const privateServices = [
-  { id: 'strom', name: 'Strøm', icon: Zap, description: 'Sammenlign strømpriser' },
-  { id: 'mobil', name: 'Mobil', icon: Smartphone, description: 'Mobilabonnement' },
-  { id: 'forsikring', name: 'Forsikring', icon: Shield, description: 'Boforsikring og bilforsikring' },
-  { id: 'bredband', name: 'Bredbånd', icon: Wifi, description: 'Internett og TV' },
+  { 
+    id: 'handverkere', 
+    name: 'Håndverkere', 
+    icon: Hammer, 
+    description: 'Rørlegger, elektriker, maler, tømrer'
+  },
+  { 
+    id: 'energi', 
+    name: 'Energiløsninger', 
+    icon: Zap, 
+    description: 'Varmepumpe, solceller, isolering'
+  },
+  { 
+    id: 'okonomi', 
+    name: 'Boligøkonomi', 
+    icon: PiggyBank, 
+    description: 'Refinansiering, forsikring, strøm'
+  },
+  { 
+    id: 'tilgjengelighet', 
+    name: 'Tilgjengelighet', 
+    icon: Heart, 
+    description: 'Trapp, rampe, bad tilpasning'
+  },
 ];
 
 const businessServices = [
-  { id: 'energi', name: 'Energi', icon: Factory, description: 'Bedriftens energiløsninger' },
-  { id: 'forsikring', name: 'Forsikring', icon: Shield, description: 'Bedriftsforsikring' },
-  { id: 'flate', name: 'Flåte', icon: Truck, description: 'Flåtehåndtering' },
-  { id: 'plassadm', name: 'Plassadministrasjon', icon: Building, description: 'Kontorplass og fasiliteter' },
+  { 
+    id: 'byggtjenester', 
+    name: 'Byggtjenester', 
+    icon: Building, 
+    description: 'Renovering, vedlikehold, utbygging'
+  },
+  { 
+    id: 'energi', 
+    name: 'Energioptimalisering', 
+    icon: Factory, 
+    description: 'Bedriftens energiløsninger og besparelser'
+  },
+  { 
+    id: 'vedlikehold', 
+    name: 'Vedlikehold', 
+    icon: Wrench, 
+    description: 'Fasilitetsforvaltning og service'
+  },
+  { 
+    id: 'okonomi', 
+    name: 'Eiendomsøkonomi', 
+    icon: Calculator, 
+    description: 'Finansiering og kostnadsoptimalisering'
+  },
 ];
 
 export const ServiceSelectionStep = ({ role, selectedService, onServiceSelect }: ServiceSelectionStepProps) => {
@@ -27,12 +78,15 @@ export const ServiceSelectionStep = ({ role, selectedService, onServiceSelect }:
 
   return (
     <div>
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold mb-2">
-          Hva kan vi hjelpe deg med?
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold mb-3">
+          {role === 'business' ? 'Bedriftens eiendomsbehov' : 'Forbedre boligen din'}
         </h2>
-        <p className="text-muted-foreground">
-          Velg tjenesten du ønsker tilbud på
+        <p className="text-lg text-muted-foreground">
+          {role === 'business' 
+            ? 'Få tilbud på tjenester som reduserer kostnader og forbedrer arbeidsplassen'
+            : 'Spar penger og bo tryggere med de riktige løsningene'
+          }
         </p>
       </div>
 

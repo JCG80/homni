@@ -24,6 +24,9 @@ interface FormData {
   service: string;
   postalCode: string;
   propertyType: string;
+  propertyAge?: string;
+  propertyCondition?: string;
+  specialNeeds?: string[];
   consumption?: string;
   employees?: string;
   name: string;
@@ -151,13 +154,16 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
       {/* Header with Role Toggle */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-4">
-          Sammenlign og spar på{' '}
-          <span className="text-primary">
-            {formData.role === 'business' ? 'bedriftstjenester' : 'hjemmetjenester'}
-          </span>
+          {formData.role === 'business' 
+            ? <>Spar penger på <span className="text-primary">bedriftens eiendom</span></>
+            : <>Forbedre boligen og <span className="text-primary">spar penger</span></>
+          }
         </h1>
         <p className="text-xl text-muted-foreground mb-6">
-          Få tilbud fra flere leverandører på 3 enkle steg
+          {formData.role === 'business'
+            ? 'Få tilbud på tjenester som reduserer kostnader og øker verdien'
+            : 'Få tilbud fra kvalitetsleverandører på 3 enkle steg'
+          }
         </p>
         
         <RoleToggle 
