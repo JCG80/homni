@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { VisitorWizard } from '@/components/landing/VisitorWizard';
-import { InsuranceSection } from '@/components/sections/InsuranceSection';
+
 import { useAuth } from '@/modules/auth/hooks';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/types/auth';
@@ -103,8 +103,7 @@ export const HomePage = () => {
             </div>
           </section>
           
-          {/* Insurance Section */}
-          <InsuranceSection />
+          {/* Removed competing InsuranceSection - using unified VisitorWizard instead */}
         </main>
         
         <Footer />

@@ -12,6 +12,7 @@ import { leadRoutes } from './leadRoutes';
 import { docsRoutes } from './docsRoutes';
 import { serviceRoutes } from './serviceRoutes';
 import { marketplaceRoutes } from './marketplaceRoutes';
+import { DashboardRoutes } from './dashboardRoutes';
 
 
 /**
@@ -29,7 +30,13 @@ export const AppRouteComponents = () => {
       <Route element={<AppLayout />}>
         <Route path="dashboard" element={
           <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
-            <Dashboard />
+            <DashboardRoutes />
+          </RoleDashboard>
+        } />
+        
+        <Route path="dashboard/*" element={
+          <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
+            <DashboardRoutes />
           </RoleDashboard>
         } />
         

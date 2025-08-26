@@ -36,6 +36,7 @@ interface FormData {
 export const VisitorWizard = ({ className }: VisitorWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     role: 'private',
     service: '',
@@ -109,7 +110,8 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
         }
       };
 
-      await createAnonymousLead(leadData);
+      const lead = await createAnonymousLead(leadData);
+      setSubmittedLeadId(lead.id);
       
       trackEvent('visitor_lead_submitted', { 
         role: formData.role, 
@@ -269,6 +271,7 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
               <SuccessStep
                 role={formData.role}
                 email={formData.email}
+                leadId={submittedLeadId}
               />
             </motion.div>
           )}

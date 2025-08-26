@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle, Mail, Clock, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LightRegistrationFlow } from './LightRegistrationFlow';
+import { useAuth } from '@/modules/auth/hooks';
+import { useNavigate } from 'react-router-dom';
 
 interface SuccessStepProps {
   role: 'private' | 'business';
   email: string;
+  leadId?: string;
 }
 
-export const SuccessStep = ({ role, email }: SuccessStepProps) => {
+export const SuccessStep = ({ role, email, leadId }: SuccessStepProps) => {
+  const [showRegistration, setShowRegistration] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleRegistrationSuccess = () => {
+    navigate('/dashboard');
+  };
   return (
     <div className="text-center max-w-lg mx-auto">
       <div className="mb-6">
@@ -57,22 +68,62 @@ export const SuccessStep = ({ role, email }: SuccessStepProps) => {
         </div>
       </div>
 
-      <div className="space-y-3">
-        <Button 
-          onClick={() => window.location.reload()}
-          className="w-full"
-        >
-          Send ny forespørsel
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          onClick={() => window.location.href = '/'}
-          className="w-full"
-        >
-          Tilbake til forsiden
-        </Button>
-      </div>
+      {!isAuthenticated && !showRegistration && (
+        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg mb-6 border border-primary/20">
+          <div className="text-center">
+            <h3 className="font-semibold mb-2 text-primary">Følg tilbudene dine live!</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Opprett en gratis konto for å følge statusen på forespørselen din og motta alle tilbudene på ett sted.
+            </p>
+            <Button 
+              onClick={() => setShowRegistration(true)}
+              className="w-full mb-3"
+            >
+              Opprett gratis konto
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Ingen bindinger • Gratis for alltid • Slett når du vil
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showRegistration ? (
+        <LightRegistrationFlow
+          email={email}
+          role={role}
+          leadId={leadId}
+          onSuccess={handleRegistrationSuccess}
+          onCancel={() => setShowRegistration(false)}
+        />
+      ) : (
+        <div className="space-y-3">
+          {isAuthenticated && (
+            <Button 
+              onClick={() => navigate('/dashboard')}
+              className="w-full"
+            >
+              Se mine forespørsler
+            </Button>
+          )}
+          
+          <Button 
+            onClick={() => window.location.reload()}
+            variant={isAuthenticated ? "outline" : "default"}
+            className="w-full"
+          >
+            Send ny forespørsel
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            onClick={() => window.location.href = '/'}
+            className="w-full"
+          >
+            Tilbake til forsiden
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
