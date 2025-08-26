@@ -9,8 +9,6 @@ import { AppRoutes } from '@/Routes';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { supabase } from '@/lib/supabaseClient';
 import { RoleProvider } from '@/contexts/RoleContext';
-import { initializePlugins } from '@/core/plugins/pluginLoader';
-import { initializeModules } from '@/core/modules/moduleRegistry';
 
 // Create a stable QueryClient instance
 const queryClient = new QueryClient({
@@ -21,12 +19,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-// Initialize plugins and modules on app start - but don't await in global scope
-Promise.all([
-  initializePlugins(),
-  initializeModules()
-]).catch(console.error);
 
 export default function App() {
   return (
