@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
-import { LandingPage } from './LandingPage';
+import { HomePage } from './HomePage';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/types/auth';
 
@@ -14,8 +14,8 @@ const Index: React.FC = () => {
     return <Navigate to={routeForRole(role as UserRole)} replace />;
   }
 
-  // Otherwise, show the landing page (includes loading state handling)
-  return <LandingPage />;
+  // Otherwise, show the home page (includes loading state handling)
+  return <HomePage />;
 };
 
 export default Index;

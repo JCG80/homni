@@ -67,20 +67,6 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
         
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">
-          {!isAuthenticated && (
-            <Tabs
-              defaultValue="private"
-              value={activeTab}
-              onValueChange={handleTabChange}
-              className="hidden sm:block"
-            >
-              <TabsList className="bg-transparent">
-                <TabsTrigger value="private" className="text-xs md:text-sm">Privatperson</TabsTrigger>
-                <TabsTrigger value="business" className="text-xs md:text-sm">Bedrift</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          )}
-          
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
               <ContextSwitcher variant={isMobile ? 'compact' : 'full'} />
@@ -88,7 +74,7 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
             </div>
           ) : (
             <Button 
-              variant="outline" 
+              variant="ghost" 
               onClick={goToLogin}
               size={isMobile ? "sm" : "default"}
               className="whitespace-nowrap"

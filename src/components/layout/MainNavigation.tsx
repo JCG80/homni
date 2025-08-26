@@ -37,33 +37,61 @@ export const MainNavigation = () => {
         {/* Home Link */}
         <HomeNavLink />
 
-        {/* Property Services */}
-        <PropertyNavigation />
+        {isAuthenticated ? (
+          <>
+            {/* Property Services */}
+            <PropertyNavigation />
 
-        {/* Utility Services */}
-        <ServicesNavigation />
+            {/* Utility Services */}
+            <ServicesNavigation />
 
-        {/* Documentation - now using the DocsNavigation component */}
-        <DocsNavigation />
+            {/* Documentation - now using the DocsNavigation component */}
+            <DocsNavigation />
 
-        {/* Companies Link */}
-        <NavigationMenuItem>
-          <NavLink 
-            to="/companies" 
-            className={({ isActive }) => 
-              cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
-            }
-          >
-            <Building className="h-4 w-4 mr-2" />
-            Partnere
-          </NavLink>
-        </NavigationMenuItem>
+            {/* Companies Link */}
+            <NavigationMenuItem>
+              <NavLink 
+                to="/companies" 
+                className={({ isActive }) => 
+                  cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
+                }
+              >
+                <Building className="h-4 w-4 mr-2" />
+                Partnere
+              </NavLink>
+            </NavigationMenuItem>
 
-        {/* Conditional menus based on authentication */}
-        <AuthenticatedNavigation 
-          isAuthenticated={isAuthenticated} 
-          role={role as UserRole}
-        />
+            {/* Conditional menus based on authentication */}
+            <AuthenticatedNavigation 
+              isAuthenticated={isAuthenticated} 
+              role={role as UserRole}
+            />
+          </>
+        ) : (
+          <>
+            {/* Simplified navigation for visitors */}
+            <NavigationMenuItem>
+              <NavLink 
+                to="/about" 
+                className={({ isActive }) => 
+                  cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
+                }
+              >
+                Om oss
+              </NavLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavLink 
+                to="/contact" 
+                className={({ isActive }) => 
+                  cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
+                }
+              >
+                Kontakt
+              </NavLink>
+            </NavigationMenuItem>
+          </>
+        )}
       </NavigationMenuList>
     </NavigationMenu>
   );

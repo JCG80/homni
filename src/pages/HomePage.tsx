@@ -5,38 +5,18 @@ import { Helmet } from 'react-helmet';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { VisitorWizard } from '@/components/landing/VisitorWizard';
-import { ServicesSection } from '@/components/sections/ServicesSection';
 import { InsuranceSection } from '@/components/sections/InsuranceSection';
 import { useAuth } from '@/modules/auth/hooks';
-import { supabase } from '@/integrations/supabase/client';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/types/auth';
 
 export const HomePage = () => {
   const [activeTab, setActiveTab] = useState<string>('private');
-  const [wizardEnabled, setWizardEnabled] = useState<boolean>(false);
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
 
-  // Check if visitor wizard is enabled and redirect authenticated users
+  // Redirect authenticated users to their dashboard
   useEffect(() => {
-    const checkFeatureFlag = async () => {
-      try {
-        const { data } = await supabase
-          .from('feature_flags')
-          .select('is_enabled')
-          .eq('name', 'visitor_wizard_enabled')
-          .single();
-        
-        setWizardEnabled(data?.is_enabled || false);
-      } catch (error) {
-        console.warn('Failed to check visitor wizard feature flag:', error);
-        setWizardEnabled(false);
-      }
-    };
-
-    checkFeatureFlag();
-
     if (isAuthenticated && role) {
       navigate(routeForRole(role as UserRole), { replace: true });
     }
@@ -46,7 +26,7 @@ export const HomePage = () => {
     setActiveTab(value);
   };
 
-  // If user is authenticated but role not yet resolved, show enhanced loader with fallback options
+  // If user is authenticated but role not yet resolved, show enhanced loader
   if (isAuthenticated && !role) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -75,20 +55,17 @@ export const HomePage = () => {
     );
   }
 
-  const getRoleText = () => activeTab === 'business' ? 'bedrift' : 'privatperson';
-  const metaDescription = `Sammenlign og spar på ${getRoleText()}-tjenester. Få tilbud fra flere leverandører på 3 enkle steg.`;
-
   return (
     <>
       <Helmet>
-        <title>Homni - Sammenlign og spar på {getRoleText()}-tjenester</title>
-        <meta name="description" content={metaDescription} />
-        <meta property="og:title" content={`Homni - Sammenlign og spar på ${getRoleText()}-tjenester`} />
-        <meta property="og:description" content={metaDescription} />
+        <title>Homni - Sammenlign tjenester på 3 enkle steg</title>
+        <meta name="description" content="Sammenlign leverandører og få tilbud på strøm, forsikring, mobil og bredbånd. Tar under 1 minutt - helt gratis og uforpliktende." />
+        <meta property="og:title" content="Homni - Sammenlign tjenester på 3 enkle steg" />
+        <meta property="og:description" content="Sammenlign leverandører og få tilbud på strøm, forsikring, mobil og bredbånd. Tar under 1 minutt - helt gratis og uforpliktende." />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`Homni - Sammenlign og spar på ${getRoleText()}-tjenester`} />
-        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:title" content="Homni - Sammenlign tjenester på 3 enkle steg" />
+        <meta name="twitter:description" content="Sammenlign leverandører og få tilbud på strøm, forsikring, mobil og bredbånd. Tar under 1 minutt - helt gratis og uforpliktende." />
         
         {/* Structured Data */}
         <script type="application/ld+json">
@@ -96,7 +73,7 @@ export const HomePage = () => {
             "@context": "https://schema.org",
             "@type": "WebPage",
             "name": "Homni - Sammenlign tjenester",
-            "description": metaDescription,
+            "description": "Sammenlign leverandører og få tilbud på strøm, forsikring, mobil og bredbånd. Tar under 1 minutt - helt gratis og uforpliktende.",
             "url": window.location.href,
             "provider": {
               "@type": "Organization",
@@ -105,7 +82,7 @@ export const HomePage = () => {
             },
             "mainEntity": {
               "@type": "Service",
-              "name": `${getRoleText().charAt(0).toUpperCase() + getRoleText().slice(1)}tjenester`,
+              "name": "Sammenligningstjenester",
               "provider": {
                 "@type": "Organization",
                 "name": "Homni"
@@ -119,31 +96,12 @@ export const HomePage = () => {
         <Header activeTab={activeTab} handleTabChange={handleTabChange} />
         
         <main>
-          {wizardEnabled ? (
-            /* Visitor-First Wizard */
-            <section className="py-16 bg-gradient-to-b from-background to-muted/30">
-              <div className="container mx-auto px-4">
-                <VisitorWizard />
-              </div>
-            </section>
-          ) : (
-            /* Fallback to existing sections */
-            <>
-              <section className="py-16 bg-muted/30">
-                <div className="container mx-auto px-4">
-                  <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-4xl font-bold mb-4">
-                      Sammenlign og spar på {getRoleText()}-tjenester
-                    </h1>
-                    <p className="text-xl text-muted-foreground mb-8">
-                      Få tilbud fra flere leverandører og velg det beste for deg
-                    </p>
-                  </div>
-                </div>
-              </section>
-              <ServicesSection activeTab={activeTab} />
-            </>
-          )}
+          {/* Visitor-First Wizard - Always enabled for optimal UX */}
+          <section className="py-16 bg-gradient-to-b from-background to-muted/30">
+            <div className="container mx-auto px-4">
+              <VisitorWizard />
+            </div>
+          </section>
           
           {/* Insurance Section */}
           <InsuranceSection />
