@@ -20,7 +20,7 @@ export function routeForRole(role: UserRole): string {
     case 'company':
       return '/dashboard/company';
     case 'user':
-      return '/dashboard';
+      return '/dashboard/user';
     case 'guest':
     default:
       return '/';
