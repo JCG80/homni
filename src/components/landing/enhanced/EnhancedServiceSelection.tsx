@@ -14,7 +14,10 @@ import {
   Calculator,
   TrendingUp,
   Users,
-  Clock
+  Clock,
+  Home,
+  Sun,
+  Thermometer
 } from 'lucide-react';
 import { UserRole } from '@/components/landing/VisitorWizard';
 
@@ -25,89 +28,139 @@ interface EnhancedServiceSelectionProps {
 }
 
 const privateServices = [
-  { 
-    id: 'handverkere', 
-    name: 'Håndverkere', 
-    icon: Hammer, 
-    description: 'Rørlegger, elektriker, maler, tømrer',
-    avgSavings: '8,000 - 15,000',
-    popularity: 'Mest populært',
+  {
+    id: 'power-comparison',
+    name: 'Strømavtale',
+    icon: Zap,
+    description: 'Sammenlign og bytt til billigste strømavtale',
+    avgSavings: '3,200',
+    popularity: 95,
+    timeframe: '2-3 dager',
+    details: ['Helt gratis tjeneste', 'Kun 2 min å fylle ut', 'Sparer deg for tusener', 'Får tilbud fra 20+ leverandører']
+  },
+  {
+    id: 'insurance',
+    name: 'Forsikring',
+    icon: Shield,
+    description: 'Finn beste forsikring for dine behov',
+    avgSavings: '2,800',
+    popularity: 88,
+    timeframe: '1-2 dager',
+    details: ['Sammenligner alle selskaper', 'Personlig rådgivning', 'Ingen skjulte gebyrer', 'Trygg og sikker tjeneste']
+  },
+  {
+    id: 'mortgage',
+    name: 'Boliglån',
+    icon: Home,
+    description: 'Få beste rente på boliglånet ditt',
+    avgSavings: '15,000',
+    popularity: 92,
+    timeframe: '3-5 dager',
+    details: ['Forhandler med 15+ banker', 'Gratis rentesjekk', 'Ekspertråd inkludert', 'Kan spare deg for tusenvis']
+  },
+  {
+    id: 'solar',
+    name: 'Solceller',
+    icon: Sun,
+    description: 'Installer solceller og spar penger',
+    avgSavings: '25,000',
+    popularity: 78,
     timeframe: '1-2 uker',
-    details: ['Sammenlign priser', 'Sjekket kvalitet', 'Garanti inkludert']
+    details: ['Gratis befaring og tilbud', 'Opp til 90% støtte', 'Profesjonell installasjon', '20 års garanti']
   },
-  { 
-    id: 'energi', 
-    name: 'Energiløsninger', 
-    icon: Zap, 
-    description: 'Varmepumpe, solceller, isolering',
-    avgSavings: '15,000 - 35,000',
-    popularity: 'Høy etterspørsel',
-    timeframe: '2-4 uker',
-    details: ['Støtte fra Enova', 'ROI 3-7 år', 'Miljøvennlig']
+  {
+    id: 'heating',
+    name: 'Varmepumpe',
+    icon: Thermometer,
+    description: 'Installer energieffektiv varmepumpe',
+    avgSavings: '8,500',
+    popularity: 85,
+    timeframe: '5-7 dager',
+    details: ['Miljøvennlig oppvarming', 'Statlige støtteordninger', 'Kvalitetssikret installasjon', 'Reduserte strømregninger']
   },
-  { 
-    id: 'okonomi', 
-    name: 'Boligøkonomi', 
-    icon: PiggyBank, 
-    description: 'Refinansiering, forsikring, strøm',
-    avgSavings: '5,000 - 25,000',
-    popularity: 'Stigende trend',
-    timeframe: '1-3 dager',
-    details: ['Lavere rente', 'Bedre vilkår', 'Ingen binding']
-  },
-  { 
-    id: 'tilgjengelighet', 
-    name: 'Tilgjengelighet', 
-    icon: Heart, 
-    description: 'Trapp, rampe, bad tilpasning',
-    avgSavings: 'Støtte tilgjengelig',
-    popularity: 'Spesialist',
-    timeframe: '2-6 uker',
-    details: ['NAV støtte', 'Kommunal hjelp', 'Sertifiserte']
-  },
+  {
+    id: 'eiendom',
+    name: 'Eiendom',
+    icon: Home,
+    description: 'Få hjelp med boligkjøp, -salg og -finansiering',
+    avgSavings: '12,000',
+    popularity: 82,
+    timeframe: '1-2 uker',
+    details: ['Ekspert eiendomsmegling', 'Markedsanalyse inkludert', 'Juridisk bistand', 'Maksimer boligens verdi']
+  }
 ];
 
 const businessServices = [
-  { 
-    id: 'byggtjenester', 
-    name: 'Byggtjenester', 
-    icon: Building, 
-    description: 'Renovering, vedlikehold, utbygging',
-    avgSavings: '50,000 - 200,000',
-    popularity: 'Høy verdi',
-    timeframe: '4-12 uker',
-    details: ['Økt eiendomsverdi', 'Prosjektledelse', 'Turnkey løsninger']
+  {
+    id: 'business-power',
+    name: 'Bedrift Strømavtale',
+    icon: Zap,
+    description: 'Kraftavtaler tilpasset bedrifter',
+    avgSavings: '25,000',
+    popularity: 89,
+    timeframe: '3-5 dager',
+    details: ['Forhandler gruppeavtaler', 'Fleksible leveringstider', 'Dedicated kundeservice', 'Risikostyring inkludert']
   },
-  { 
-    id: 'energi', 
-    name: 'Energioptimalisering', 
-    icon: Factory, 
-    description: 'Bedriftens energiløsninger og besparelser',
-    avgSavings: '75,000 - 300,000',
-    popularity: 'ESG fokus',
-    timeframe: '6-16 uker',
-    details: ['30-60% besparelse', 'Grønne sertifikater', 'Langsiktig ROI']
+  {
+    id: 'business-insurance',
+    name: 'Bedriftsforsikring',
+    icon: Shield,
+    description: 'Omfattende forsikring for bedriften',
+    avgSavings: '18,000',
+    popularity: 85,
+    timeframe: '5-7 dager',
+    details: ['Skreddersydde løsninger', 'Ansvarsforsikring inkludert', 'Skadeforebyggende tiltak', '24/7 skadeservice']
   },
-  { 
-    id: 'vedlikehold', 
-    name: 'Vedlikehold', 
-    icon: Wrench, 
-    description: 'Fasilitetsforvaltning og service',
-    avgSavings: '25,000 - 100,000',
-    popularity: 'Operasjonell',
-    timeframe: 'Løpende',
-    details: ['Forebyggende', 'Service avtaler', '24/7 support']
+  {
+    id: 'business-finance',
+    name: 'Bedriftsfinans',
+    icon: TrendingUp,
+    description: 'Lån og finansiering for bedrifter',
+    avgSavings: '45,000',
+    popularity: 78,
+    timeframe: '1-2 uker',
+    details: ['Konkurransedyktige renter', 'Fleksible nedbetalinger', 'Rask saksbehandling', 'Ingen skjulte gebyrer']
   },
-  { 
-    id: 'okonomi', 
-    name: 'Eiendomsøkonomi', 
-    icon: Calculator, 
-    description: 'Finansiering og kostnadsoptimalisering',
-    avgSavings: '100,000 - 500,000',
-    popularity: 'Strategisk',
-    timeframe: '2-8 uker',
-    details: ['Finansiering', 'Skatteoptimal', 'Portefølje analyse']
+  {
+    id: 'business-energy',
+    name: 'Energiløsninger',
+    icon: Sun,
+    description: 'Helhetlige energiløsninger for bedrifter',
+    avgSavings: '85,000',
+    popularity: 72,
+    timeframe: '2-4 uker',
+    details: ['Solceller og batterier', 'Smart energistyring', 'Enova-støtte inkludert', 'Miljøsertifisering']
   },
+  {
+    id: 'business-consulting',
+    name: 'Bedriftsrådgivning',
+    icon: Users,
+    description: 'Strategisk rådgivning og vekststøtte',
+    avgSavings: '65,000',
+    popularity: 68,
+    timeframe: '1-3 uker',
+    details: ['Erfarne konsulenter', 'Bransjespesifikk ekspertise', 'Digitalisering', 'Prosessoptimalisering']
+  },
+  {
+    id: 'eiendom',
+    name: 'Eiendom',
+    icon: Home,
+    description: 'Få hjelp med næringseiendommer og investeringer',
+    avgSavings: '125,000',
+    popularity: 75,
+    timeframe: '2-6 uker',
+    details: ['Kommersiell eiendomsmegling', 'Investeringsanalyse', 'Finansieringsbistand', 'Markedsvurderinger']
+  },
+  {
+    id: 'finans',
+    name: 'Finans',
+    icon: TrendingUp,
+    description: 'Få rådgivning om lån, sparing og pensjon for bedrifter',
+    avgSavings: '32,000',
+    popularity: 80,
+    timeframe: '1-2 uker',
+    details: ['Pensjonsordninger', 'Likviditetsstyring', 'Investeringsrådgivning', 'Skatteoptimalisering']
+  }
 ];
 
 export const EnhancedServiceSelection = ({ role, selectedService, onServiceSelect }: EnhancedServiceSelectionProps) => {
@@ -175,7 +228,7 @@ export const EnhancedServiceSelection = ({ role, selectedService, onServiceSelec
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-bold text-lg">{service.name}</h3>
-                        {service.popularity === 'Mest populært' && (
+                        {service.popularity >= 90 && (
                           <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
                             Populær
                           </Badge>
