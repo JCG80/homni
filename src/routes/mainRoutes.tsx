@@ -12,6 +12,7 @@ import { OnboardingPage } from '@/pages/OnboardingPage';
 import { DesignSystemPage } from '@/pages/DesignSystemPage';
 import { ServiceSelectionPage } from '@/modules/services/pages/ServiceSelectionPage';
 import { PropertyPurchasePage } from '@/pages/PropertyPurchasePage';
+import { AnonymousLeadsPage } from '@/pages/AnonymousLeadsPage';
 
 /**
  * Main public routes available to all users
@@ -33,6 +34,9 @@ export const mainRoutes = (
     
     {/* Service Selection */}
     <Route path="/select-services" element={<ServiceSelectionPage />} />
+    
+    {/* Anonymous Lead Viewer */}
+    <Route path="/mine-foresporsler" element={<AnonymousLeadsPage />} />
     
     {/* Property Services */}
     <Route path="/boligkjop" element={<PropertyPurchasePage />} />

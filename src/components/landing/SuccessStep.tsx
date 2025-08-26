@@ -161,9 +161,17 @@ export const SuccessStep = ({ role, email, leadId }: SuccessStepProps) => {
         />
       ) : (
         <div className="space-y-3">
-          {isAuthenticated && (
+          {isAuthenticated ? (
             <Button 
               onClick={() => navigate('/dashboard')}
+              className="w-full"
+              size="lg"
+            >
+              Se mine forespørsler
+            </Button>
+          ) : (
+            <Button 
+              onClick={() => navigate('/mine-foresporsler')}
               className="w-full"
               size="lg"
             >

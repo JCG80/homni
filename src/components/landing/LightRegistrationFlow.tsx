@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import { UserPlus, Mail, Lock } from 'lucide-react';
+import { useLinkAnonymousLeads } from '@/hooks/useLinkAnonymousLeads';
 
 interface LightRegistrationFlowProps {
   email: string;
@@ -26,6 +27,7 @@ export const LightRegistrationFlow = ({
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { linkLeads } = useLinkAnonymousLeads();
 
   const handlePasswordSignup = async () => {
     if (!password || password.length < 6) {
@@ -77,6 +79,17 @@ export const LightRegistrationFlow = ({
             .from('leads')
             .update({ submitted_by: data.user.id })
             .eq('id', leadId);
+        }
+
+        // Link any anonymous leads with matching email
+        try {
+          const linkedCount = await linkLeads(data.user.id, email);
+          if (linkedCount > 0) {
+            toast.success(`${linkedCount} tidligere forespørsel${linkedCount > 1 ? 'er' : ''} er nå knyttet til din konto!`);
+          }
+        } catch (error) {
+          console.warn('Could not link anonymous leads:', error);
+          // Don't fail the registration for this
         }
 
         toast.success('Konto opprettet! Sjekk e-posten din for bekreftelse.');
@@ -157,6 +170,17 @@ export const LightRegistrationFlow = ({
             .from('leads')
             .update({ submitted_by: data.user.id })
             .eq('id', leadId);
+        }
+
+        // Link any anonymous leads with matching email
+        try {
+          const linkedCount = await linkLeads(data.user.id, email);
+          if (linkedCount > 0) {
+            toast.success(`${linkedCount} tidligere forespørsel${linkedCount > 1 ? 'er' : ''} er nå knyttet til din konto!`);
+          }
+        } catch (error) {
+          console.warn('Could not link anonymous leads:', error);
+          // Don't fail the login for this
         }
 
         toast.success('Velkommen! Du er nå logget inn.');
