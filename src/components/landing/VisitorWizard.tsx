@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 import { RoleToggle } from './RoleToggle';
-import { ServiceSelectionStep } from './ServiceSelectionStep';
+import { EnhancedServiceSelection } from './enhanced/EnhancedServiceSelection';
 import { LocationContextStep } from './LocationContextStep';
 import { ContactStep } from './ContactStep';
-import { SuccessStep } from './SuccessStep';
+import { WizardCompletionSummary } from './enhanced/WizardCompletionSummary';
+import { EnhancedProgressIndicator } from './enhanced/EnhancedProgressIndicator';
+import { useWizardProgress } from '@/hooks/useWizardProgress';
+import { useEnhancedAnalytics } from '@/hooks/useEnhancedAnalytics';
 import { createAnonymousLead } from '@/lib/leads/anonymousLead';
-import { useVisitorAnalytics } from '@/lib/analytics/visitorAnalytics';
 import { toast } from 'sonner';
 
 export type UserRole = 'private' | 'business';
@@ -37,58 +38,99 @@ interface FormData {
 }
 
 export const VisitorWizard = ({ className }: VisitorWizardProps) => {
-  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<FormData>({
-    role: 'private',
-    service: '',
-    postalCode: '',
-    propertyType: '',
-    name: '',
-    email: '',
-    phone: '',
-    consent: false,
-  });
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [stepStartTime, setStepStartTime] = useState(Date.now());
+  
+  const { 
+    formData, 
+    currentStep, 
+    setCurrentStep, 
+    updateFormData, 
+    clearProgress, 
+    hasRestoredProgress 
+  } = useWizardProgress();
+  
+  const { 
+    trackEvent, 
+    trackStepPerformance, 
+    trackFormValidationError,
+    trackDropoff,
+    trackConversionFunnel 
+  } = useEnhancedAnalytics();
 
-  const { trackEvent } = useVisitorAnalytics();
-
-  // Load role from localStorage on mount
+  // Track step views and performance
   useEffect(() => {
-    const savedRole = localStorage.getItem('visitor_role') as UserRole;
-    if (savedRole && (savedRole === 'private' || savedRole === 'business')) {
-      setFormData(prev => ({ ...prev, role: savedRole }));
+    const timeSpent = Date.now() - stepStartTime;
+    if (timeSpent > 1000) { // Only track if user spent more than 1 second
+      trackStepPerformance(currentStep - 1, formData.role, timeSpent);
     }
-  }, []);
-
-  // Track step views
-  useEffect(() => {
+    
+    setStepStartTime(Date.now());
     trackEvent('visitor_step_view', { step: currentStep, role: formData.role });
-  }, [currentStep, formData.role, trackEvent]);
+    
+    // Start conversion funnel tracking
+    if (currentStep === 1) {
+      trackConversionFunnel(formData.role, formData.service);
+    }
+  }, [currentStep, formData.role, trackEvent, trackStepPerformance, trackConversionFunnel, stepStartTime]);
 
   const totalSteps = 4;
-  const progressPercentage = (currentStep / totalSteps) * 100;
 
   const handleRoleChange = (role: UserRole) => {
-    setFormData(prev => ({ ...prev, role }));
+    updateFormData({ role });
     localStorage.setItem('visitor_role', role);
     trackEvent('visitor_role_selected', { role });
+    setValidationErrors([]); // Clear errors when role changes
+  };
+
+  const validateCurrentStep = (): boolean => {
+    const errors: string[] = [];
+    
+    switch (currentStep) {
+      case 1:
+        if (!formData.service) errors.push('Velg en tjeneste');
+        break;
+      case 2:
+        if (!formData.postalCode) errors.push('Postnummer er påkrevd');
+        if (!formData.propertyType) errors.push('Velg eiendomstype');
+        break;
+      case 3:
+        if (!formData.name) errors.push('Navn er påkrevd');
+        if (!formData.email) errors.push('E-post er påkrevd');
+        if (!formData.phone) errors.push('Telefon er påkrevd');
+        if (!formData.consent) errors.push('Du må samtykke for å fortsette');
+        break;
+    }
+    
+    setValidationErrors(errors);
+    
+    if (errors.length > 0) {
+      errors.forEach(error => trackFormValidationError(currentStep, 'general', error));
+      return false;
+    }
+    
+    return true;
   };
 
   const handleNextStep = () => {
+    if (!validateCurrentStep()) {
+      toast.error('Vennligst fyll ut alle påkrevde felt');
+      return;
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
+      setValidationErrors([]);
     }
   };
 
   const handlePrevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      setValidationErrors([]);
     }
-  };
-
-  const updateFormData = (updates: Partial<FormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
   };
 
   const handleSubmit = async () => {
@@ -132,12 +174,6 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
     }
   };
 
-  const stepVariants = {
-    hidden: { opacity: 0, x: 20 },
-    visible: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -20 }
-  };
-
   const isStepComplete = (step: number): boolean => {
     switch (step) {
       case 1: return formData.service !== '';
@@ -146,8 +182,6 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
       default: return false;
     }
   };
-
-  const canProceed = isStepComplete(currentStep);
 
   return (
     <div className={`w-full max-w-4xl mx-auto ${className}`}>
@@ -172,137 +206,108 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
         />
       </div>
 
-      {/* Progress Indicator */}
-      <div className="mb-8" role="progressbar" aria-valuenow={progressPercentage} aria-valuemin={0} aria-valuemax={100}>
-        <div className="flex justify-between items-center mb-2">
-          {[1, 2, 3, 4].map((step) => (
-            <div key={step} className="flex items-center">
-              <div className={`
-                w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors
-                ${currentStep >= step 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-muted text-muted-foreground'
-                }
-              `}>
-                {currentStep > step ? (
-                  <CheckCircle className="w-5 h-5" />
-                ) : (
-                  step
-                )}
-              </div>
-              {step < 4 && (
-                <div className={`
-                  w-16 h-1 mx-2 transition-colors
-                  ${currentStep > step ? 'bg-primary' : 'bg-muted'}
-                `} />
-              )}
-            </div>
-          ))}
-        </div>
-        <Progress value={progressPercentage} className="h-2" />
-        <div className="text-center mt-2">
-          <span className="text-sm text-muted-foreground">
-            Steg {currentStep} av {totalSteps}
-          </span>
-        </div>
-      </div>
+      {/* Enhanced Progress Indicator */}
+      <EnhancedProgressIndicator
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        hasErrors={validationErrors.length > 0}
+        estimatedTimeRemaining={currentStep < 4 ? (4 - currentStep) * 120 : 0} // 2 min per step
+        hasRestoredProgress={hasRestoredProgress}
+      />
 
       {/* Step Content */}
       <Card className="p-8 min-h-[400px]">
         <AnimatePresence mode="wait">
-          {currentStep === 1 && (
-            <motion.div
-              key="step1"
-              variants={stepVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
-              <ServiceSelectionStep
+          <motion.div
+            key={`step-${currentStep}`}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {currentStep === 1 && (
+              <EnhancedServiceSelection
                 role={formData.role}
                 selectedService={formData.service}
                 onServiceSelect={(service) => {
                   updateFormData({ service });
                   trackEvent('visitor_product_selected', { product: service, role: formData.role });
+                  setValidationErrors([]); // Clear errors when service is selected
                 }}
               />
-            </motion.div>
-          )}
+            )}
 
-          {currentStep === 2 && (
-            <motion.div
-              key="step2"
-              variants={stepVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
+            {currentStep === 2 && (
               <LocationContextStep
                 role={formData.role}
                 service={formData.service}
                 formData={formData}
                 onDataChange={updateFormData}
               />
-            </motion.div>
-          )}
+            )}
 
-          {currentStep === 3 && (
-            <motion.div
-              key="step3"
-              variants={stepVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
+            {currentStep === 3 && (
               <ContactStep
                 role={formData.role}
                 formData={formData}
                 onDataChange={updateFormData}
               />
-            </motion.div>
-          )}
+            )}
 
-          {currentStep === 4 && (
-            <motion.div
-              key="step4"
-              variants={stepVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
-              <SuccessStep
-                role={formData.role}
-                email={formData.email}
+            {currentStep === 4 && (
+              <WizardCompletionSummary
+                formData={formData}
                 leadId={submittedLeadId}
+                onNewRequest={() => {
+                  clearProgress();
+                  setCurrentStep(1);
+                  setSubmittedLeadId(null);
+                  setValidationErrors([]);
+                }}
+                onViewDashboard={() => window.location.href = '/dashboard'}
               />
-            </motion.div>
-          )}
+            )}
+          </motion.div>
         </AnimatePresence>
 
-        {/* Navigation */}
+        {/* Enhanced Navigation */}
         {currentStep < 4 && (
           <div className="flex justify-between items-center mt-8 pt-6 border-t">
-            <Button
-              variant="outline"
-              onClick={handlePrevStep}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Tilbake
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={handlePrevStep}
+                disabled={currentStep === 1}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Tilbake
+              </Button>
+              
+              {hasRestoredProgress && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearProgress}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+                >
+                  <Save className="w-3 h-3" />
+                  Start på nytt
+                </Button>
+              )}
+            </div>
 
             <Button
               onClick={currentStep === 3 ? handleSubmit : handleNextStep}
-              disabled={!canProceed || isSubmitting}
-              className="flex items-center gap-2"
+              disabled={isSubmitting}
+              size="lg"
+              className="flex items-center gap-2 min-w-[140px]"
             >
               {isSubmitting ? (
-                'Sender...'
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                  Sender...
+                </div>
               ) : currentStep === 3 ? (
                 'Send forespørsel'
               ) : (
