@@ -69,7 +69,17 @@ export const MainNavigation = () => {
           </>
         ) : (
           <>
-            {/* Simplified navigation for visitors */}
+            {/* Public navigation focused on customer journey */}
+            <NavigationMenuItem>
+              <NavLink 
+                to="/select-services" 
+                className={({ isActive }) => 
+                  cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
+                }
+              >
+                Tjenester
+              </NavLink>
+            </NavigationMenuItem>
             <NavigationMenuItem>
               <NavLink 
                 to="/about" 

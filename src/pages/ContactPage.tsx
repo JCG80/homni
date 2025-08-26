@@ -2,8 +2,12 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { PublicBreadcrumb } from '@/components/navigation/PublicBreadcrumb';
+import { CallToAction } from '@/components/landing/CallToAction';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Mail, Phone, MapPin, MessageCircle, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const ContactPage = () => {
   return (
@@ -15,32 +19,54 @@ export const ContactPage = () => {
 
       <div className="min-h-screen bg-background">
         <Header activeTab="private" handleTabChange={() => {}} />
+        <PublicBreadcrumb />
         
         <main className="py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <h1 className="text-4xl font-bold mb-8">Kontakt oss</h1>
+              <div className="text-center mb-12">
+                <h1 className="text-4xl font-bold mb-4">Kontakt oss</h1>
+                <p className="text-xl text-muted-foreground">
+                  Vi er her for å hjelpe deg med å finne de beste tilbudene
+                </p>
+              </div>
+              
+              {/* Quick Contact CTA */}
+              <div className="mb-12">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="p-8 text-center">
+                    <MessageCircle className="h-12 w-12 text-primary mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold mb-4">Få svar på under 2 minutter</h2>
+                    <p className="text-lg text-muted-foreground mb-6">
+                      Istedenfor å vente på svar, få tilbud direkte fra våre leverandører
+                    </p>
+                    <Button asChild size="lg">
+                      <Link to="/#wizard">Start sammenligning nå</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <p className="text-lg mb-8">
-                    Har du spørsmål eller trenger hjelp? Vi er her for å assistere deg 
-                    med å finne de beste tilbudene.
-                  </p>
+                  <h2 className="text-2xl font-semibold mb-6">Kontaktinformasjon</h2>
                   
                   <div className="space-y-6">
                     <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Mail className="h-5 w-5" />
-                          E-post
+                          E-post support
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p>post@homni.no</p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Vi svarer vanligvis innen 24 timer
-                        </p>
+                        <p className="font-semibold">post@homni.no</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">
+                            Vi svarer vanligvis innen 2-4 timer i arbeidstid
+                          </p>
+                        </div>
                       </CardContent>
                     </Card>
                     
@@ -48,13 +74,14 @@ export const ContactPage = () => {
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Phone className="h-5 w-5" />
-                          Telefon
+                          Kundeservice
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p>+47 123 45 678</p>
+                        <p className="font-semibold">+47 123 45 678</p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Mandag - Fredag: 09:00 - 17:00
+                          Mandag - Fredag: 08:00 - 18:00<br />
+                          Lørdag: 10:00 - 14:00
                         </p>
                       </CardContent>
                     </Card>
@@ -63,7 +90,7 @@ export const ContactPage = () => {
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <MapPin className="h-5 w-5" />
-                          Adresse
+                          Besøksadresse
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -77,36 +104,65 @@ export const ContactPage = () => {
                 </div>
                 
                 <div>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Ofte stilte spørsmål</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <h3 className="font-semibold mb-2">Er tjenesten gratis?</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Ja, tjenesten er helt gratis for deg som kunde. Vi får betalt av leverandørene.
+                  <h2 className="text-2xl font-semibold mb-6">Ofte stilte spørsmål</h2>
+                  
+                  <div className="space-y-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Er tjenesten virkelig gratis?</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">
+                          Ja, helt gratis for deg som kunde. Vi får betalt av leverandørene 
+                          kun når de leverer gode tjenester til våre kunder.
                         </p>
-                      </div>
-                      
-                      <div>
-                        <h3 className="font-semibold mb-2">Hvor lang tid tar det?</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Det tar under 1 minutt å fylle ut skjemaet, og du får tilbud samme dag.
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Hvor raskt får jeg tilbud?</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">
+                          De fleste får tilbud samme dag, ofte innen få timer. 
+                          Du blir kontaktet direkte av leverandørene.
                         </p>
-                      </div>
-                      
-                      <div>
-                        <h3 className="font-semibold mb-2">Er jeg forpliktet til å kjøpe?</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Nei, tjenesten er helt uforpliktende. Du kan fritt velge om du vil gå videre med et tilbud.
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Må jeg kjøpe noe?</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">
+                          Nei, du kan fritt sammenligne tilbud og velge om du vil 
+                          gå videre. Ingen forpliktelser eller bindinger.
                         </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Hvordan sikrer dere kvalitet?</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">
+                          Alle våre partnere gjennomgår kvalitetskontroll og må opprettholde 
+                          høye standarder for å være med i vårt nettverk.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+          
+          {/* Bottom CTA */}
+          <div className="container mx-auto px-4 mt-16">
+            <CallToAction variant="compact" showFeatures={false} />
           </div>
         </main>
         
