@@ -13,7 +13,7 @@ export const userRoutes = (
   <>
     {/* User Dashboard */}
     <Route 
-      path="/dashboard/user" 
+      path="dashboard/user" 
       element={
         <RoleDashboard title="Bruker Dashboard" requiredRole="user">
           <Dashboard />
@@ -23,7 +23,7 @@ export const userRoutes = (
     
     {/* User Profile */}
     <Route 
-      path="/profile" 
+      path="profile" 
       element={
         <RoleDashboard title="Min profil">
           <ProfilePage />
@@ -33,7 +33,7 @@ export const userRoutes = (
     
     {/* User Account */}
     <Route 
-      path="/account" 
+      path="account" 
       element={
         <RoleDashboard title="Min konto">
           <MyAccountPage />

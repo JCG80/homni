@@ -16,7 +16,7 @@ import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
 export const leadRoutes = (
   <>
     <Route 
-      path="/leads" 
+      path="leads" 
       element={
         <RoleDashboard title="Forespørsler" requiredRole={["user", "company", "admin", "master_admin"]}>
           <LeadManagementPage />
@@ -24,7 +24,7 @@ export const leadRoutes = (
       } 
     />
     <Route 
-      path="/leads/kanban" 
+      path="leads/kanban" 
       element={
         <RoleDashboard title="Kanban-tavle" requiredRole={["user", "company", "admin", "master_admin"]}>
           <LeadKanbanPage />
@@ -32,16 +32,16 @@ export const leadRoutes = (
       } 
     />
     <Route 
-      path="/leads/:id" 
+      path="leads/:id" 
       element={
         <RoleDashboard title="Forespørselsdetaljer" requiredRole={["user", "company", "admin", "master_admin"]}>
           <LeadDetailsPage />
         </RoleDashboard>
       } 
     />
-    <Route path="/lead-capture" element={<LeadCapturePage />} />
+    <Route path="lead-capture" element={<LeadCapturePage />} />
     <Route 
-      path="/lead-settings" 
+      path="lead-settings" 
       element={
         <RoleDashboard title="Innstillinger" requiredRole={["admin", "master_admin"]}>
           <LeadSettingsPage />
@@ -49,7 +49,7 @@ export const leadRoutes = (
       } 
     />
     <Route 
-      path="/lead-reports" 
+      path="lead-reports" 
       element={
         <RoleDashboard title="Rapporter" requiredRole={["admin", "master_admin"]}>
           <LeadReportsPage />
@@ -57,7 +57,7 @@ export const leadRoutes = (
       } 
     />
     <Route 
-      path="/lead-test" 
+      path="lead-test" 
       element={
         <RoleDashboard title="Test" requiredRole={["admin", "master_admin"]}>
           <LeadTestPage />

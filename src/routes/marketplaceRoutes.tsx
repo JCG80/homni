@@ -10,7 +10,7 @@ export const marketplaceRoutes = (
   <>
     {/* Marketplace Dashboard - accessible to admins and companies */}
     <Route 
-      path="/marketplace" 
+      path="marketplace" 
       element={
         <RoleDashboard title="Marketplace" requiredRole={["admin", "master_admin", "company"]}>
           <MarketplaceDashboard />
@@ -20,7 +20,7 @@ export const marketplaceRoutes = (
     
     {/* Package Management - admin only */}
     <Route 
-      path="/marketplace/package-management" 
+      path="marketplace/package-management" 
       element={
         <RoleDashboard title="Package Management" requiredRole={["admin", "master_admin"]}>
           <PackageManagement />
@@ -30,7 +30,7 @@ export const marketplaceRoutes = (
     
     {/* Buyer Management - admin only */}
     <Route 
-      path="/marketplace/buyers" 
+      path="marketplace/buyers" 
       element={
         <RoleDashboard title="Buyer Management" requiredRole={["admin", "master_admin"]}>
           <BuyerManagement />
@@ -40,7 +40,7 @@ export const marketplaceRoutes = (
     
     {/* Lead Pipeline - company users */}
     <Route 
-      path="/marketplace/pipeline" 
+      path="marketplace/pipeline" 
       element={
         <RoleDashboard title="Lead Pipeline" requiredRole="company">
           <LeadPipeline />

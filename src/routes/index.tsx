@@ -12,7 +12,7 @@ import { leadRoutes } from './leadRoutes';
 import { docsRoutes } from './docsRoutes';
 import { serviceRoutes } from './serviceRoutes';
 import { marketplaceRoutes } from './marketplaceRoutes';
-import { businessRoutes } from './businessRoutes';
+
 
 /**
  * Main application routes component that combines all route definitions
@@ -25,33 +25,39 @@ export const AppRouteComponents = () => {
       {/* Public routes */}
       {mainRoutes}
       
-      {/* Dashboard routes (role-based) wrapped with AppLayout */}
-      <Route path="*" element={<AppLayout />}>
-        <Route path="/dashboard" element={
+      {/* Authenticated routes with AppLayout */}
+      <Route element={<AppLayout />}>
+        <Route path="dashboard" element={
           <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
             <Dashboard />
           </RoleDashboard>
         } />
         
-        <Route path="/dashboard/user" element={
+        <Route path="dashboard/user" element={
           <RoleDashboard title="Bruker Dashboard" requiredRole="user">
             <Dashboard />
           </RoleDashboard>
         } />
         
-        <Route path="/dashboard/company" element={
+        <Route path="dashboard/company" element={
           <RoleDashboard title="Bedrift Dashboard" requiredRole="company">
             <Dashboard />
           </RoleDashboard>
         } />
         
-        <Route path="/dashboard/content-editor" element={
+        <Route path="dashboard/content-editor" element={
           <RoleDashboard title="Content Editor" requiredRole="content_editor">
             <Dashboard />
           </RoleDashboard>
         } />
         
-        <Route path="/dashboard/admin" element={
+        <Route path="dashboard/admin" element={
+          <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
+            <Dashboard />
+          </RoleDashboard>
+        } />
+        
+        <Route path="admin" element={
           <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
             <Dashboard />
           </RoleDashboard>
@@ -69,9 +75,6 @@ export const AppRouteComponents = () => {
         {/* Company routes (require authentication + company role) */}
         {companyRoutes}
         
-        {/* Business module routes (Lead Engine, Property Management, DIY Selling) */}
-        {businessRoutes}
-        
         {/* Lead management routes */}
         {leadRoutes}
         
@@ -79,12 +82,6 @@ export const AppRouteComponents = () => {
         {marketplaceRoutes}
         
         {/* Admin routes (require authentication + admin/master_admin role) */}
-        <Route path="/admin" element={
-          <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
-            <Dashboard />
-          </RoleDashboard>
-        } />
-        
         {adminRoutes}
       </Route>
     </Routes>

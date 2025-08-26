@@ -9,7 +9,7 @@ import { FAQPage } from '@/modules/docs/pages/FAQPage';
  */
 export const docsRoutes = (
   <>
-    <Route path="/docs/project-plan" element={<ProjectPlanPage />} />
-    <Route path="/docs/faq" element={<FAQPage />} />
+    <Route path="docs/project-plan" element={<ProjectPlanPage />} />
+    <Route path="docs/faq" element={<FAQPage />} />
   </>
 );

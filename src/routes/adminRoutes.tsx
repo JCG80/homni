@@ -15,43 +15,43 @@ import { AdminInsuranceRoutes } from '@/modules/insurance/AdminInsuranceRoutes';
  */
 export const adminRoutes = (
   <>
-    <Route path="/admin/companies" element={
+    <Route path="admin/companies" element={
       <RoleDashboard title="Bedrifter" requiredRole={['admin', 'master_admin']}>
         <CompaniesManagementPage />
       </RoleDashboard>
     } />
     
-    <Route path="/admin/members" element={
+    <Route path="admin/members" element={
       <RoleDashboard title="Medlemmer" requiredRole={['admin', 'master_admin']}>
         <MembersManagementPage />
       </RoleDashboard>
     } />
     
-    <Route path="/admin/roles" element={
+    <Route path="admin/roles" element={
       <RoleDashboard title="Rolleadministrasjon" requiredRole="master_admin">
         <RoleManagementPage />
       </RoleDashboard>
     } />
     
-    <Route path="/admin/system-modules" element={
+    <Route path="admin/system-modules" element={
       <RoleDashboard title="Systemmoduler" requiredRole={['admin', 'master_admin']}>
         <SystemModulesPage />
       </RoleDashboard>
     } />
     
-    <Route path="/admin/internal-access" element={
+    <Route path="admin/internal-access" element={
       <RoleDashboard title="Modultilgang" requiredRole="master_admin">
         <InternalAccessPage />
       </RoleDashboard>
     } />
     
-    <Route path="/admin/leads" element={
+    <Route path="admin/leads" element={
       <RoleDashboard title="Admin Forespørsler" requiredRole={['admin', 'master_admin']}>
         <AdminLeadsPage />
       </RoleDashboard>
     } />
     
-    <Route path="/admin/insurance/*" element={
+    <Route path="admin/insurance/*" element={
       <RoleDashboard title="Forsikring" requiredRole={['admin', 'master_admin']}>
         <AdminInsuranceRoutes />
       </RoleDashboard>

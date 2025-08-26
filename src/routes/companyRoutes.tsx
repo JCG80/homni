@@ -12,7 +12,7 @@ export const companyRoutes = (
   <>
     {/* Company Dashboard */}
     <Route 
-      path="/dashboard/company" 
+      path="dashboard/company" 
       element={
         <RoleDashboard title="Bedrift Dashboard" requiredRole="company">
           <Dashboard />
@@ -22,7 +22,7 @@ export const companyRoutes = (
     
     {/* Companies List - Admin Only */}
     <Route 
-      path="/companies" 
+      path="companies" 
       element={
         <RoleDashboard title="Bedriftsliste" requiredRole={["admin", "master_admin"]}>
           <CompanyListPage />

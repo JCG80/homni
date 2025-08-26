@@ -8,7 +8,7 @@ import { PowerComparisonPage } from '@/pages/PowerComparisonPage';
  */
 export const serviceRoutes = (
   <>
-    <Route path="/power-comparison" element={<PowerComparisonPage />} />
-    <Route path="/strom" element={<PowerComparisonPage />} />
+    <Route path="power-comparison" element={<PowerComparisonPage />} />
+    <Route path="strom" element={<PowerComparisonPage />} />
   </>
 );
