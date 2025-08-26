@@ -2,7 +2,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { RoleDashboard } from '../components/dashboard/RoleDashboard';
-import { Dashboard } from '../pages/Dashboard';
+import { LeadsOffersDashboard } from '../components/dashboard/LeadsOffersDashboard';
 import { AppLayout } from '../components/layout/AppLayout';
 import { mainRoutes } from './mainRoutes';
 import { userRoutes } from './userRoutes';
@@ -23,74 +23,19 @@ export const AppRouteComponents = () => {
   
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Public routes - no authentication required */}
       {mainRoutes}
       
-      {/* Authenticated routes with AppLayout */}
-      <Route element={<AppLayout />}>
-        <Route path="dashboard" element={
-          <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
-            <DashboardRoutes />
-          </RoleDashboard>
-        } />
-        
-        <Route path="dashboard/*" element={
-          <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
-            <DashboardRoutes />
-          </RoleDashboard>
-        } />
-        
-        <Route path="dashboard/user" element={
-          <RoleDashboard title="Bruker Dashboard" requiredRole="user">
-            <Dashboard />
-          </RoleDashboard>
-        } />
-        
-        <Route path="dashboard/company" element={
-          <RoleDashboard title="Bedrift Dashboard" requiredRole="company">
-            <Dashboard />
-          </RoleDashboard>
-        } />
-        
-        <Route path="dashboard/content-editor" element={
-          <RoleDashboard title="Content Editor" requiredRole="content_editor">
-            <Dashboard />
-          </RoleDashboard>
-        } />
-        
-        <Route path="dashboard/admin" element={
-          <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
-            <Dashboard />
-          </RoleDashboard>
-        } />
-        
-        <Route path="admin" element={
-          <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
-            <Dashboard />
-          </RoleDashboard>
-        } />
-        
-        {/* Service routes */}
-        {serviceRoutes}
-        
-        {/* Documentation routes */}
-        {docsRoutes}
-        
-        {/* User routes (require authentication) */}
-        {userRoutes}
-        
-        {/* Company routes (require authentication + company role) */}
-        {companyRoutes}
-        
-        {/* Lead management routes */}
-        {leadRoutes}
-        
-        {/* Marketplace routes */}
-        {marketplaceRoutes}
-        
-        {/* Admin routes (require authentication + admin/master_admin role) */}
-        {adminRoutes}
-      </Route>
+      {/* Authenticated routes with minimal layout */}
+      <Route path="dashboard" element={<LeadsOffersDashboard />} />
+      <Route path="profile" element={
+        <RoleDashboard title="Min profil" allowAnyAuthenticated={true}>
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4">Min profil</h2>
+            <p>Profilside kommer snart...</p>
+          </div>
+        </RoleDashboard>
+      } />
     </Routes>
   );
 };
