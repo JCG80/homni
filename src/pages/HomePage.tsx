@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { VisitorWizard } from '@/components/landing/VisitorWizard';
 import { CallToAction } from '@/components/landing/CallToAction';
+import { TestimonialSection } from '@/components/testimonials/TestimonialSection';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Hammer, Zap, PiggyBank, Heart, ArrowRight, TrendingDown, Users, Shield } from 'lucide-react';
@@ -183,6 +184,9 @@ export const HomePage = () => {
               </div>
             </div>
           </section>
+
+          {/* Testimonials Section */}
+          <TestimonialSection />
 
           {/* CTA Section */}
           <section className="py-16 bg-background">
