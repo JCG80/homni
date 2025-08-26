@@ -9,6 +9,9 @@ interface AnonymousLeadData {
 
 export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
   try {
+    // Extract email from metadata for lead attribution
+    const anonymousEmail = leadData.metadata?.email || null;
+    
     // First create the lead without submitted_by since it's for guest users
     const { data: lead, error: leadError } = await supabase
       .from('leads')
@@ -17,6 +20,8 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
         description: leadData.description,
         category: leadData.category,
         metadata: leadData.metadata as any,
+        anonymous_email: anonymousEmail, // Store email for later attribution
+        session_id: Math.random().toString(36).substring(7), // Simple session tracking
         lead_type: 'visitor',
         submitted_by: null as unknown as string
       })

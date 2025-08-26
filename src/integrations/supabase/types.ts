@@ -756,6 +756,8 @@ export type Database = {
       }
       leads: {
         Row: {
+          anonymous_email: string | null
+          attributed_at: string | null
           category: string
           company_id: string | null
           created_at: string
@@ -763,12 +765,15 @@ export type Database = {
           id: string
           lead_type: string | null
           metadata: Json | null
+          session_id: string | null
           status: Database["public"]["Enums"]["lead_status"]
           submitted_by: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          anonymous_email?: string | null
+          attributed_at?: string | null
           category: string
           company_id?: string | null
           created_at?: string
@@ -776,12 +781,15 @@ export type Database = {
           id?: string
           lead_type?: string | null
           metadata?: Json | null
+          session_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           submitted_by?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          anonymous_email?: string | null
+          attributed_at?: string | null
           category?: string
           company_id?: string | null
           created_at?: string
@@ -789,6 +797,7 @@ export type Database = {
           id?: string
           lead_type?: string | null
           metadata?: Json | null
+          session_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           submitted_by?: string | null
           title?: string
@@ -1736,6 +1745,12 @@ export type Database = {
       is_plugin_enabled: {
         Args: { plugin_name: string }
         Returns: boolean
+      }
+      link_anonymous_leads_to_user: {
+        Args: { user_email_param: string; user_id_param: string }
+        Returns: {
+          linked_count: number
+        }[]
       }
       list_all_user_profiles: {
         Args: Record<PropertyKey, never>

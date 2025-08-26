@@ -5,6 +5,7 @@ import { Dashboard } from '@/pages/Dashboard';
 import { ProfilePage } from '@/modules/auth/pages/ProfilePage';
 import { MyAccountPage } from '@/pages/MyAccountPage';
 import { UserRole } from '@/modules/auth/utils/roles/types';
+import { EnhancedUserDashboard } from '@/components/dashboard/EnhancedUserDashboard';
 
 /**
  * Routes specifically for authenticated users (regular users)
@@ -15,9 +16,7 @@ export const userRoutes = (
     <Route 
       path="dashboard/user" 
       element={
-        <RoleDashboard title="Bruker Dashboard" requiredRole="user">
-          <Dashboard />
-        </RoleDashboard>
+        <EnhancedUserDashboard />
       } 
     />
     
