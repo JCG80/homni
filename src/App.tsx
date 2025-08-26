@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Initialize plugins and modules on app start
+// Initialize plugins and modules on app start - but don't await in global scope
 Promise.all([
   initializePlugins(),
   initializeModules()

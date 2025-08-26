@@ -22,69 +22,68 @@ export const AppRouteComponents = () => {
   
   return (
     <Routes>
-      {/* Wrapper route with AppLayout */}
+      {/* Public routes */}
+      {mainRoutes}
+      
+      {/* Dashboard routes (role-based) wrapped with AppLayout */}
       <Route path="*" element={<AppLayout />}>
-        {/* Public routes */}
-        {mainRoutes}
-      
-      {/* Dashboard routes (role-based) - SIMPLIFIED TO REDUCE CONFLICTS */}
-      <Route path="/dashboard" element={
-        <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
-          <Dashboard />
-        </RoleDashboard>
-      } />
-      
-      <Route path="/dashboard/user" element={
-        <RoleDashboard title="Bruker Dashboard" requiredRole="user">
-          <Dashboard />
-        </RoleDashboard>
-      } />
-      
-      <Route path="/dashboard/company" element={
-        <RoleDashboard title="Bedrift Dashboard" requiredRole="company">
-          <Dashboard />
-        </RoleDashboard>
-      } />
-      
-      <Route path="/dashboard/content-editor" element={
-        <RoleDashboard title="Content Editor" requiredRole="content_editor">
-          <Dashboard />
-        </RoleDashboard>
-      } />
-      
-      <Route path="/dashboard/admin" element={
-        <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
-          <Dashboard />
-        </RoleDashboard>
-      } />
-      
-      {/* Service routes */}
-      {serviceRoutes}
-      
-      {/* Documentation routes */}
-      {docsRoutes}
-      
-      {/* User routes (require authentication) */}
-      {userRoutes}
-      
-      {/* Company routes (require authentication + company role) */}
-      {companyRoutes}
-      
-      {/* Business module routes (Lead Engine, Property Management, DIY Selling) */}
-      {businessRoutes}
-      
-      {/* Lead management routes */}
-      {leadRoutes}
-      
-      {/* Marketplace routes */}
-      {marketplaceRoutes}
-      
-      {/* Admin routes (require authentication + admin/master_admin role) */}
-      <Route path="/admin" element={
-        <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
-          <Dashboard />
-        </RoleDashboard>
-      } />
+        <Route path="/dashboard" element={
+          <RoleDashboard title="Dashboard" allowAnyAuthenticated={true}>
+            <Dashboard />
+          </RoleDashboard>
+        } />
+        
+        <Route path="/dashboard/user" element={
+          <RoleDashboard title="Bruker Dashboard" requiredRole="user">
+            <Dashboard />
+          </RoleDashboard>
+        } />
+        
+        <Route path="/dashboard/company" element={
+          <RoleDashboard title="Bedrift Dashboard" requiredRole="company">
+            <Dashboard />
+          </RoleDashboard>
+        } />
+        
+        <Route path="/dashboard/content-editor" element={
+          <RoleDashboard title="Content Editor" requiredRole="content_editor">
+            <Dashboard />
+          </RoleDashboard>
+        } />
+        
+        <Route path="/dashboard/admin" element={
+          <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
+            <Dashboard />
+          </RoleDashboard>
+        } />
+        
+        {/* Service routes */}
+        {serviceRoutes}
+        
+        {/* Documentation routes */}
+        {docsRoutes}
+        
+        {/* User routes (require authentication) */}
+        {userRoutes}
+        
+        {/* Company routes (require authentication + company role) */}
+        {companyRoutes}
+        
+        {/* Business module routes (Lead Engine, Property Management, DIY Selling) */}
+        {businessRoutes}
+        
+        {/* Lead management routes */}
+        {leadRoutes}
+        
+        {/* Marketplace routes */}
+        {marketplaceRoutes}
+        
+        {/* Admin routes (require authentication + admin/master_admin role) */}
+        <Route path="/admin" element={
+          <RoleDashboard title="Admin Dashboard" requiredRole={['admin', 'master_admin']}>
+            <Dashboard />
+          </RoleDashboard>
+        } />
         
         {adminRoutes}
       </Route>
