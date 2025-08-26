@@ -12,10 +12,10 @@ interface GuestAccessCTAProps {
 }
 
 export const GuestAccessCTA = ({
-  title = "Fortsett som gjest",
-  description = "Få tilbud uten å registrere deg. Du kan opprette konto senere.",
-  linkTo = "/#wizard",
-  buttonText = "Start sammenligning",
+  title = "Velg tjenester uten konto",
+  description = "Sammenlign priser og få tilbud uten å registrere deg. Du kan opprette konto senere for å administrere alt på ett sted.",
+  linkTo = "/select-services",
+  buttonText = "Fortsett uten konto",
   className = ""
 }: GuestAccessCTAProps) => {
   return (

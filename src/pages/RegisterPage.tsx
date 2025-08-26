@@ -9,6 +9,8 @@ import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Users, Building2, Shield, Zap } from 'lucide-react';
 
 export const RegisterPage = () => {
   const [searchParams] = useSearchParams();
@@ -50,40 +52,74 @@ export const RegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <PageBreadcrumb 
-          items={[{ label: 'Registrer deg' }]} 
-          className="mb-8"
-        />
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Navigation */}
+        <div className="flex items-center justify-between mb-8">
+          <PageBreadcrumb 
+            items={[
+              { label: 'Tjenester', href: '/select-services' },
+              { label: 'Registrer deg' }
+            ]} 
+          />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            asChild
+          >
+            <Link to="/select-services">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Tilbake til tjenester
+            </Link>
+          </Button>
+        </div>
         
         <div className="flex items-center justify-center min-h-[calc(100vh-12rem)]">
-          <div className="w-full max-w-md space-y-8">
-            {/* Header */}
-            <div className="text-center">
-              <Link to="/" className="inline-block mb-6">
-                <span className="text-2xl font-bold text-primary">Homni</span>
+          <div className="w-full max-w-2xl space-y-8">
+            {/* Header with Value Proposition */}
+            <div className="text-center space-y-6">
+              <Link to="/" className="inline-block">
+                <span className="text-3xl font-bold text-primary">Homni</span>
               </Link>
               
+              <div className="space-y-4">
+                <h1 className="text-3xl font-bold">Opprett din konto</h1>
+                <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                  Få personaliserte tilbud, sammenlign priser og administrer alle dine tjenester på ett sted.
+                </p>
+              </div>
+
+              {/* Benefits */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+                <div className="flex flex-col items-center text-center p-4">
+                  <Shield className="h-8 w-8 text-primary mb-2" />
+                  <h3 className="font-semibold text-sm">Sikker og trygg</h3>
+                  <p className="text-xs text-muted-foreground">Dine data er beskyttet</p>
+                </div>
+                <div className="flex flex-col items-center text-center p-4">
+                  <Zap className="h-8 w-8 text-primary mb-2" />
+                  <h3 className="font-semibold text-sm">Rask sammenligning</h3>
+                  <p className="text-xs text-muted-foreground">Få tilbud på sekunder</p>
+                </div>
+                <div className="flex flex-col items-center text-center p-4">
+                  <Users className="h-8 w-8 text-primary mb-2" />
+                  <h3 className="font-semibold text-sm">Personlig service</h3>
+                  <p className="text-xs text-muted-foreground">Skreddersytt for deg</p>
+                </div>
+              </div>
+
+              {/* User Type Selection */}
               <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="private">Privatperson</TabsTrigger>
-                  <TabsTrigger value="business">Bedrift</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+                  <TabsTrigger value="private" className="flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Privatperson
+                  </TabsTrigger>
+                  <TabsTrigger value="business" className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4" />
+                    Bedrift
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
-
-              {/* Enhanced Flow Toggle (Development) */}
-              {import.meta.env.MODE === 'development' && (
-                <div className="flex items-center justify-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
-                  <Label htmlFor="enhanced-flow" className="text-sm">
-                    Bruk forbedret registreringsflow
-                  </Label>
-                  <Switch
-                    id="enhanced-flow"
-                    checked={useEnhancedFlow}
-                    onCheckedChange={setUseEnhancedFlow}
-                  />
-                </div>
-              )}
             </div>
         
             {/* Registration Forms */}
@@ -92,8 +128,8 @@ export const RegisterPage = () => {
                 <Tabs value={activeTab} onValueChange={handleTabChange}>
                   <TabsContent value="private" className="mt-0">
                     <div className="text-center mb-6">
-                      <h1 className="text-2xl font-bold mb-2">Registrer deg som privatperson</h1>
-                      <p className="text-muted-foreground">
+                      <h2 className="text-xl font-semibold mb-2">Registrer deg som privatperson</h2>
+                      <p className="text-muted-foreground text-sm">
                         Vi guider deg gjennom registreringen steg for steg
                       </p>
                     </div>
@@ -106,8 +142,8 @@ export const RegisterPage = () => {
                   
                   <TabsContent value="business" className="mt-0">
                     <div className="text-center mb-6">
-                      <h1 className="text-2xl font-bold mb-2">Registrer bedrift</h1>
-                      <p className="text-muted-foreground">
+                      <h2 className="text-xl font-semibold mb-2">Registrer bedrift</h2>
+                      <p className="text-muted-foreground text-sm">
                         Vi guider deg gjennom registreringen steg for steg
                       </p>
                     </div>
@@ -122,8 +158,8 @@ export const RegisterPage = () => {
                 <Tabs value={activeTab} onValueChange={handleTabChange}>
                   <TabsContent value="private" className="mt-0">
                     <div className="text-center mb-6">
-                      <h1 className="text-2xl font-bold mb-2">Registrer deg som privatperson</h1>
-                      <p className="text-muted-foreground">
+                      <h2 className="text-xl font-semibold mb-2">Registrer deg som privatperson</h2>
+                      <p className="text-muted-foreground text-sm">
                         Opprett en konto for å få tilgang til alle våre tjenester
                       </p>
                     </div>
@@ -133,8 +169,8 @@ export const RegisterPage = () => {
                   
                   <TabsContent value="business" className="mt-0">
                     <div className="text-center mb-6">
-                      <h1 className="text-2xl font-bold mb-2">Registrer bedrift</h1>
-                      <p className="text-muted-foreground">
+                      <h2 className="text-xl font-semibold mb-2">Registrer bedrift</h2>
+                      <p className="text-muted-foreground text-sm">
                         Opprett en bedriftskonto hos Homni
                       </p>
                     </div>
@@ -160,6 +196,20 @@ export const RegisterPage = () => {
                 </Link>
               </p>
             </div>
+
+            {/* Development Toggle - Less Prominent */}
+            {import.meta.env.MODE === 'development' && (
+              <div className="flex items-center justify-center gap-2 pt-4 border-t border-border/50">
+                <Label htmlFor="enhanced-flow" className="text-xs text-muted-foreground">
+                  Dev: Forbedret flow
+                </Label>
+                <Switch
+                  id="enhanced-flow"
+                  checked={useEnhancedFlow}
+                  onCheckedChange={setUseEnhancedFlow}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
