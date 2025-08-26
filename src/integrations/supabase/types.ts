@@ -1587,6 +1587,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_anonymous_lead_and_distribute: {
+        Args: {
+          p_anonymous_email: string
+          p_category: string
+          p_description: string
+          p_metadata: Json
+          p_session_id: string
+          p_title: string
+        }
+        Returns: string
+      }
       delete_user_profile: {
         Args: { profile_user_id: string }
         Returns: undefined

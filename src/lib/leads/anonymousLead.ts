@@ -11,39 +11,37 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
   try {
     // Extract email from metadata for lead attribution
     const anonymousEmail = leadData.metadata?.email || null;
+    const sessionId = Math.random().toString(36).substring(7);
     
-    // First create the lead without submitted_by since it's for guest users
-    const { data: lead, error: leadError } = await supabase
-      .from('leads')
-      .insert({
-        title: leadData.title,
-        description: leadData.description,
-        category: leadData.category,
-        metadata: leadData.metadata as any,
-        anonymous_email: anonymousEmail, // Store email for later attribution
-        session_id: Math.random().toString(36).substring(7), // Simple session tracking
-        lead_type: 'visitor',
-        submitted_by: null as unknown as string
-      })
-      .select('id')
-      .single();
+    // Use the RPC function to create and distribute the lead
+    const { data: leadId, error: rpcError } = await supabase.rpc(
+      'create_anonymous_lead_and_distribute',
+      {
+        p_title: leadData.title,
+        p_description: leadData.description,
+        p_category: leadData.category,
+        p_metadata: leadData.metadata as any,
+        p_anonymous_email: anonymousEmail,
+        p_session_id: sessionId
+      }
+    );
 
-    if (leadError) {
-      console.error('Error creating lead:', leadError);
-      throw new Error('Failed to create lead');
+    if (rpcError) {
+      console.error('Error creating anonymous lead:', rpcError);
+      
+      // Provide user-friendly Norwegian error messages
+      if (rpcError.code === '42501' || rpcError.message?.includes('permission denied')) {
+        throw new Error('Tilgang nektet. Vennligst prøv igjen.');
+      }
+      
+      throw new Error('Kunne ikke opprette forespørsel. Vennligst prøv igjen.');
     }
 
-    // Call the distribution function to match with packages and buyers
-    const { error: distributeError } = await supabase.rpc('distribute_new_lead', {
-      lead_id_param: lead.id
-    });
-
-    if (distributeError) {
-      console.warn('Lead created but distribution failed:', distributeError);
-      // Don't throw here as the lead is still created successfully
+    if (!leadId) {
+      throw new Error('Ingen ID returnert fra server. Vennligst prøv igjen.');
     }
 
-    return lead;
+    return { id: leadId };
   } catch (error) {
     console.error('Error in createAnonymousLead:', error);
     throw error;
