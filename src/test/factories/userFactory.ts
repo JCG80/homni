@@ -13,15 +13,16 @@ export const createMockUser = (overrides?: Partial<AuthUser>): AuthUser => ({
 
 export const createMockProfile = (overrides?: Partial<UserProfile>): UserProfile => ({
   id: 'test-profile-id',
-  display_name: 'Test User',
-  account_type: 'individual',
-  company_id: null,
-  notification_preferences: {},
-  ui_preferences: {},
-  feature_overrides: {},
+  full_name: 'Test User',
+  email: 'test@example.com',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  deleted_at: null,
+  metadata: {
+    role: 'user',
+    account_type: 'user',
+    internal_admin: false,
+  },
+  preferences: {},
   ...overrides,
 });
 
@@ -53,18 +54,18 @@ export const createMockAuthContext = (overrides?: any) => ({
 // Role-specific factories
 export const createAdminUser = () => ({
   user: createMockUser({ email: 'admin@test.com' }),
-  profile: createMockProfile({ display_name: 'Admin User' }),
+  profile: createMockProfile({ full_name: 'Admin User' }),
   role: 'admin' as UserRole,
 });
 
 export const createMasterAdminUser = () => ({
   user: createMockUser({ email: 'master@test.com' }),
-  profile: createMockProfile({ display_name: 'Master Admin' }),
+  profile: createMockProfile({ full_name: 'Master Admin' }),
   role: 'master_admin' as UserRole,
 });
 
 export const createCompanyUser = () => ({
   user: createMockUser({ email: 'company@test.com' }),
-  profile: createMockProfile({ display_name: 'Company User' }),
+  profile: createMockProfile({ full_name: 'Company User' }),
   role: 'company' as UserRole,
 });
