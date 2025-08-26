@@ -8,6 +8,7 @@ import { Service } from '../types/services';
 import { useAuth } from '@/modules/auth/hooks';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
 
 export const ServiceSelectionPage: React.FC = () => {
   const navigate = useNavigate();
@@ -102,16 +103,10 @@ export const ServiceSelectionPage: React.FC = () => {
   
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="mb-6 flex items-center">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => navigate('/')}
-          className="mr-2"
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake til forsiden
-        </Button>
-      </div>
+      <PageBreadcrumb 
+        items={[{ label: 'Velg tjenester' }]} 
+        className="mb-6" 
+      />
       
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">

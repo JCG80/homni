@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -8,6 +7,7 @@ import { PowerComparisonForm } from '@/components/power/PowerComparisonForm';
 import { PowerComparisonResults } from '@/components/power/PowerComparisonResults';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft } from 'lucide-react';
+import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
 
 export const PowerComparisonPage = () => {
   const [postnr, setPostnr] = useState('');
@@ -49,11 +49,12 @@ export const PowerComparisonPage = () => {
 
       <div className="flex-1">
         <div className="container mx-auto py-6 md:py-8 px-4">
+          <PageBreadcrumb 
+            items={[{ label: 'Strømsammenligning' }]} 
+            className="mb-6" 
+          />
+          
           <div className="mb-6 md:mb-8">
-            <Link to="/" className="text-primary hover:underline flex items-center mb-3 md:mb-4">
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Tilbake til forsiden
-            </Link>
             <h1 className="text-2xl md:text-3xl font-bold">Sammenlign strømpriser</h1>
             <p className="text-muted-foreground mt-2">
               Finn den beste strømavtalen for din bolig

@@ -81,6 +81,16 @@ export const MainNavigation = () => {
               </NavLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
+            <NavLink 
+              to="/boligkjop" 
+              className={({ isActive }) => 
+                cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
+              }
+            >
+              Boligkjøp
+            </NavLink>
+          </NavigationMenuItem>
+            <NavigationMenuItem>
               <NavLink 
                 to="/about" 
                 className={({ isActive }) => 

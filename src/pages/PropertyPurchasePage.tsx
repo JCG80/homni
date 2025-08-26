@@ -1,25 +1,30 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Home, Calculator, FileText, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft, Home, Calculator, FileText, Users, MessageSquare } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
 
 export const PropertyPurchasePage = () => {
+  const navigate = useNavigate();
+
+  const handleContactExpert = () => {
+    navigate('/', { state: { openWizard: true } });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <PageBreadcrumb 
+          items={[{ label: 'Boligkjøp' }]} 
+          className="mb-6" 
+        />
+        
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tilbake
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Boligkjøp</h1>
-            <p className="text-muted-foreground">Råd og verktøy for boligkjøp</p>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Boligkjøp</h1>
+          <p className="text-muted-foreground">Få hjelp gjennom hele boligkjøpsprosessen</p>
         </div>
 
         {/* Main Content */}
@@ -35,8 +40,8 @@ export const PropertyPurchasePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                Kommer snart
+              <Button className="w-full" onClick={handleContactExpert}>
+                Få råd fra ekspert
               </Button>
             </CardContent>
           </Card>
@@ -52,8 +57,8 @@ export const PropertyPurchasePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                Kommer snart
+              <Button className="w-full" onClick={handleContactExpert}>
+                Start kjøpsguide
               </Button>
             </CardContent>
           </Card>
@@ -69,8 +74,8 @@ export const PropertyPurchasePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                Kommer snart
+              <Button className="w-full" onClick={handleContactExpert}>
+                Få hjelp med boligsøk
               </Button>
             </CardContent>
           </Card>
@@ -78,16 +83,16 @@ export const PropertyPurchasePage = () => {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
+                <MessageSquare className="h-5 w-5 text-primary" />
                 <CardTitle>Ekspertrådgivning</CardTitle>
               </div>
               <CardDescription>
-                Få hjelp fra erfarne boligkjøpsrådgivere
+                Få personlig hjelp fra erfarne boligkjøpsrådgivere
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                Kommer snart
+              <Button className="w-full" onClick={handleContactExpert}>
+                Kontakt ekspert
               </Button>
             </CardContent>
           </Card>
@@ -97,30 +102,34 @@ export const PropertyPurchasePage = () => {
         <div className="mt-12">
           <Card>
             <CardHeader>
-              <CardTitle>Om Boligkjøp</CardTitle>
+              <CardTitle>Hvorfor velge Homni for boligkjøp?</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                Boligkjøp er en av de største investeringene du gjør i livet. Her finner du verktøy og 
-                ressurser som hjelper deg å ta informerte beslutninger gjennom hele kjøpsprosessen.
+                Vi kobler deg med de beste ekspertene i bransjen og gir deg tilgang til verktøy som gjør boligkjøpet enklere og tryggere.
               </p>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <h3 className="font-medium mb-2">Planlegging</h3>
+                  <h3 className="font-medium mb-2">Ekspertveiledning</h3>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Budsjettkalkulatorer</li>
-                    <li>• Lånemuligheter</li>
-                    <li>• Kostnadsoversikt</li>
+                    <li>• Personlig rådgivning</li>
+                    <li>• Markedskunnskap</li>
+                    <li>• Juridisk støtte</li>
                   </ul>
                 </div>
                 <div>
-                  <h3 className="font-medium mb-2">Gjennomføring</h3>
+                  <h3 className="font-medium mb-2">Praktiske verktøy</h3>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Boligsøk og sammenligning</li>
-                    <li>• Bud og forhandling</li>
-                    <li>• Kontraktshjelp</li>
+                    <li>• Budsjettkalkulatorer</li>
+                    <li>• Markedsanalyse</li>
+                    <li>• Dokumenthjelp</li>
                   </ul>
                 </div>
+              </div>
+              <div className="mt-6 text-center">
+                <Button size="lg" onClick={handleContactExpert}>
+                  Start din boligkjøpsreise
+                </Button>
               </div>
             </CardContent>
           </Card>

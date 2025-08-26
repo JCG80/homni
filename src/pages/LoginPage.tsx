@@ -101,72 +101,55 @@ export const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-secondary/30 via-background to-background">
-      <motion.div 
-        className="w-full max-w-md p-8 space-y-8"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div className="text-center" variants={itemVariants}>
-          <Link to="/" className="inline-block mb-6">
-            <div className="flex items-center justify-center">
-              <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center">
-                <ShieldCheck className="h-7 w-7 text-white" />
-              </div>
-              <span className="ml-2 text-2xl font-bold text-primary">Homni</span>
-            </div>
-          </Link>
-          
-          <motion.div className="flex justify-center mb-6 space-x-6" variants={itemVariants}>
-            <div className="text-center">
-              <div className="h-14 w-14 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center">
-                <Lock className="h-6 w-6 text-primary" />
-              </div>
-              <p className="text-xs text-muted-foreground">Sikker innlogging</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="h-14 w-14 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center">
-                <Globe className="h-6 w-6 text-primary" />
-              </div>
-              <p className="text-xs text-muted-foreground">Tilgang overalt</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="h-14 w-14 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-              </div>
-              <p className="text-xs text-muted-foreground">Beskyttet</p>
-            </div>
-          </motion.div>
-        </motion.div>
-        
-        <motion.div variants={itemVariants} className="bg-card rounded-lg shadow-lg border border-border/50 p-6">
-          <LoginTabs defaultTab={userType === 'business' ? 'business' : 'private'} />
-          
-          {import.meta.env.MODE === 'development' && (
-            <motion.div variants={itemVariants} className="border-t pt-4 mt-4">
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-xs text-muted-foreground">Utviklerverktøy</p>
-              </div>
-              <UnifiedQuickLogin redirectTo={returnUrl} />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <motion.div 
+          className="flex items-center justify-center min-h-[calc(100vh-4rem)]"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="w-full max-w-md space-y-6">
+            <motion.div className="text-center" variants={itemVariants}>
+              <Link to="/" className="inline-block mb-8">
+                <div className="flex items-center justify-center">
+                  <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center">
+                    <ShieldCheck className="h-7 w-7 text-white" />
+                  </div>
+                  <span className="ml-2 text-2xl font-bold text-primary">Homni</span>
+                </div>
+              </Link>
+              <h1 className="text-2xl font-bold mb-2">Velkommen tilbake</h1>
+              <p className="text-muted-foreground">Logg inn for å fortsette</p>
             </motion.div>
-          )}
-        </motion.div>
         
-        <motion.div variants={itemVariants} className="text-center text-sm">
-          <p className="text-muted-foreground mb-3">
-            Har du ikke konto?{' '}
-            <Link to="/register" className="text-primary hover:underline font-medium">
-              Registrer deg
-            </Link>
-          </p>
-          <Link to="/" className="hover:text-primary text-muted-foreground inline-flex items-center hover:underline">
-            <span>← Tilbake til forsiden</span>
-          </Link>
+            <motion.div variants={itemVariants} className="bg-card rounded-lg shadow-sm border p-6">
+              <LoginTabs defaultTab={userType === 'business' ? 'business' : 'private'} />
+              
+              {import.meta.env.MODE === 'development' && (
+                <motion.div variants={itemVariants} className="border-t pt-4 mt-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs text-muted-foreground">Utviklerverktøy</p>
+                  </div>
+                  <UnifiedQuickLogin redirectTo={returnUrl} />
+                </motion.div>
+              )}
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="text-center text-sm space-y-3">
+              <p className="text-muted-foreground">
+                Har du ikke konto?{' '}
+                <Link to="/register" className="text-primary hover:underline font-medium">
+                  Registrer deg her
+                </Link>
+              </p>
+              <Link to="/" className="text-primary hover:underline inline-flex items-center font-medium">
+                ← Tilbake til forsiden
+              </Link>
+            </motion.div>
+          </div>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 };
