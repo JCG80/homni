@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { RoleDashboard } from '../components/dashboard/RoleDashboard';
 import { Dashboard } from '../pages/Dashboard';
+import { AppLayout } from '../components/layout/AppLayout';
 import { mainRoutes } from './mainRoutes';
 import { userRoutes } from './userRoutes';
 import { companyRoutes } from './companyRoutes';
@@ -21,8 +22,10 @@ export const AppRouteComponents = () => {
   
   return (
     <Routes>
-      {/* Public routes */}
-      {mainRoutes}
+      {/* Wrapper route with AppLayout */}
+      <Route path="*" element={<AppLayout />}>
+        {/* Public routes */}
+        {mainRoutes}
       
       {/* Dashboard routes (role-based) - SIMPLIFIED TO REDUCE CONFLICTS */}
       <Route path="/dashboard" element={
@@ -82,8 +85,9 @@ export const AppRouteComponents = () => {
           <Dashboard />
         </RoleDashboard>
       } />
-      
-      {adminRoutes}
+        
+        {adminRoutes}
+      </Route>
     </Routes>
   );
 };

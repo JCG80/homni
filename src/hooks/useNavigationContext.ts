@@ -39,11 +39,16 @@ export function useNavigationContext(): NavigationContext {
 
   // Track current route visits
   useEffect(() => {
-    const currentPath = location.pathname;
-    if (currentPath !== '/') {
-      updateLastVisited(currentPath);
+    try {
+      const currentPath = location.pathname;
+      if (currentPath !== '/') {
+        updateLastVisited(currentPath);
+      }
+    } catch (error) {
+      // Silently handle Router context errors
+      console.warn('Router context not available in useNavigationContext');
     }
-  }, [location.pathname]);
+  }, [location?.pathname]);
 
   const updateLastVisited = useCallback((route: string) => {
     setPreferences(prev => {

@@ -21,8 +21,21 @@ interface ContextualNavigationState {
 }
 
 export function useContextualNavigation() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  // Add Router context safety checks
+  let location, navigate;
+  try {
+    location = useLocation();
+    navigate = useNavigate();
+  } catch (error) {
+    // Fallback when Router context is not available
+    console.warn('Router context not available in useContextualNavigation');
+    return {
+      suggestions: [],
+      quickActions: [],
+      isLoading: false,
+    };
+  }
+  
   const { role, isAuthenticated } = useAuth();
   const { getRecommendedRoutes, isFrequentRoute } = useNavigationContext();
   
