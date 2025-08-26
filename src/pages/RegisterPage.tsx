@@ -2,10 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { RegisterForm } from '@/modules/auth/components/RegisterForm';
+import { EnhancedRegistrationWizard } from '@/modules/auth/components/enhanced/EnhancedRegistrationWizard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/modules/auth/hooks';
 import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export const RegisterPage = () => {
   const [searchParams] = useSearchParams();
@@ -13,6 +16,7 @@ export const RegisterPage = () => {
   const { user, isLoading } = useAuth();
   const typeParam = searchParams.get('type');
   const [activeTab, setActiveTab] = useState<string>(typeParam === 'business' ? 'business' : 'private');
+  const [useEnhancedFlow, setUseEnhancedFlow] = useState(true);
 
   useEffect(() => {
     // If user is already logged in, redirect to dashboard
@@ -66,33 +70,79 @@ export const RegisterPage = () => {
                   <TabsTrigger value="business">Bedrift</TabsTrigger>
                 </TabsList>
               </Tabs>
+
+              {/* Enhanced Flow Toggle (Development) */}
+              {import.meta.env.MODE === 'development' && (
+                <div className="flex items-center justify-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
+                  <Label htmlFor="enhanced-flow" className="text-sm">
+                    Bruk forbedret registreringsflow
+                  </Label>
+                  <Switch
+                    id="enhanced-flow"
+                    checked={useEnhancedFlow}
+                    onCheckedChange={setUseEnhancedFlow}
+                  />
+                </div>
+              )}
             </div>
         
             {/* Registration Forms */}
             <div className="bg-card rounded-lg shadow-sm border p-6">
-              <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsContent value="private" className="mt-0">
-                  <div className="text-center mb-6">
-                    <h1 className="text-2xl font-bold mb-2">Registrer deg som privatperson</h1>
-                    <p className="text-muted-foreground">
-                      Opprett en konto for å få tilgang til alle våre tjenester
-                    </p>
-                  </div>
+              {useEnhancedFlow ? (
+                <Tabs value={activeTab} onValueChange={handleTabChange}>
+                  <TabsContent value="private" className="mt-0">
+                    <div className="text-center mb-6">
+                      <h1 className="text-2xl font-bold mb-2">Registrer deg som privatperson</h1>
+                      <p className="text-muted-foreground">
+                        Vi guider deg gjennom registreringen steg for steg
+                      </p>
+                    </div>
+                    
+                    <EnhancedRegistrationWizard 
+                      userType="private" 
+                      redirectTo="/dashboard"
+                    />
+                  </TabsContent>
                   
-                  <RegisterForm redirectTo="/dashboard" userType="private" showTabs={false} />
-                </TabsContent>
-                
-                <TabsContent value="business" className="mt-0">
-                  <div className="text-center mb-6">
-                    <h1 className="text-2xl font-bold mb-2">Registrer bedrift</h1>
-                    <p className="text-muted-foreground">
-                      Opprett en bedriftskonto hos Homni
-                    </p>
-                  </div>
+                  <TabsContent value="business" className="mt-0">
+                    <div className="text-center mb-6">
+                      <h1 className="text-2xl font-bold mb-2">Registrer bedrift</h1>
+                      <p className="text-muted-foreground">
+                        Vi guider deg gjennom registreringen steg for steg
+                      </p>
+                    </div>
+                    
+                    <EnhancedRegistrationWizard 
+                      userType="business" 
+                      redirectTo="/dashboard/company"
+                    />
+                  </TabsContent>
+                </Tabs>
+              ) : (
+                <Tabs value={activeTab} onValueChange={handleTabChange}>
+                  <TabsContent value="private" className="mt-0">
+                    <div className="text-center mb-6">
+                      <h1 className="text-2xl font-bold mb-2">Registrer deg som privatperson</h1>
+                      <p className="text-muted-foreground">
+                        Opprett en konto for å få tilgang til alle våre tjenester
+                      </p>
+                    </div>
+                    
+                    <RegisterForm redirectTo="/dashboard" userType="private" showTabs={false} />
+                  </TabsContent>
                   
-                  <RegisterForm redirectTo="/dashboard" userType="business" showTabs={false} />
-                </TabsContent>
-              </Tabs>
+                  <TabsContent value="business" className="mt-0">
+                    <div className="text-center mb-6">
+                      <h1 className="text-2xl font-bold mb-2">Registrer bedrift</h1>
+                      <p className="text-muted-foreground">
+                        Opprett en bedriftskonto hos Homni
+                      </p>
+                    </div>
+                    
+                    <RegisterForm redirectTo="/dashboard" userType="business" showTabs={false} />
+                  </TabsContent>
+                </Tabs>
+              )}
             </div>
 
             {/* Guest Access CTA */}
