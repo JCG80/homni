@@ -760,6 +760,7 @@ export type Database = {
           attributed_at: string | null
           category: string
           company_id: string | null
+          confirmation_email_sent_at: string | null
           created_at: string
           description: string
           id: string
@@ -776,6 +777,7 @@ export type Database = {
           attributed_at?: string | null
           category: string
           company_id?: string | null
+          confirmation_email_sent_at?: string | null
           created_at?: string
           description: string
           id?: string
@@ -792,6 +794,7 @@ export type Database = {
           attributed_at?: string | null
           category?: string
           company_id?: string | null
+          confirmation_email_sent_at?: string | null
           created_at?: string
           description?: string
           id?: string
