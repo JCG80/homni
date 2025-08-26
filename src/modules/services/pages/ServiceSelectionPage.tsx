@@ -9,6 +9,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { LoginUpgradeCTA } from '@/components/cta/LoginUpgradeCTA';
 
 export const ServiceSelectionPage: React.FC = () => {
   const navigate = useNavigate();
@@ -120,6 +121,15 @@ export const ServiceSelectionPage: React.FC = () => {
             </p>
           )}
         </div>
+        
+        {!isAuthenticated && (
+          <div className="mb-8">
+            <LoginUpgradeCTA 
+              title="Få tilgang til eksklusive fordeler"
+              description="Medlemmer får bedre priser, prioritert service og personlige anbefalinger."
+            />
+          </div>
+        )}
         
         <ServiceSelectionFlow 
           onSelectService={handleSelectService}

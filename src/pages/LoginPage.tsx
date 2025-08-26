@@ -3,39 +3,24 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { LoginTabs } from '@/components/auth/LoginTabs';
-import { toast } from '@/hooks/use-toast';
-import { useRoleNavigation } from '@/modules/auth/hooks/roles/useRoleNavigation';
-import { Globe, Lock, ShieldCheck } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { UnifiedQuickLogin } from '@/modules/auth/components/UnifiedQuickLogin';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, isLoading, isAuthenticated, role } = useAuth();
-  const { redirectToDashboard } = useRoleNavigation({ autoRedirect: false });
+  const { isLoading, isAuthenticated, role } = useAuth();
   
   // Get type parameter for initial tab selection
   const userType = searchParams.get('type') || 'private';
   
   // Get return URL from query parameters if available
   const returnUrl = searchParams.get('returnUrl') || '/dashboard';
-  
-  // Log authentication state for debugging
-  useEffect(() => {
-    console.log("LoginPage - Authentication state:", { 
-      isAuthenticated, 
-      role, 
-      returnUrl,
-      userType
-    });
-  }, [isAuthenticated, role, returnUrl, userType]);
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
     if (isAuthenticated && role && !isLoading) {
-      console.log(`LoginPage - User already authenticated, redirecting...`);
-      
       // Get role-based redirect path
       const getRoleBasedPath = (userRole: string) => {
         switch (userRole) {
@@ -58,42 +43,17 @@ export const LoginPage = () => {
         navigate(returnUrl, { replace: true });
       } else {
         const targetPath = getRoleBasedPath(role);
-        console.log(`LoginPage - Redirecting ${role} to: ${targetPath}`);
         navigate(targetPath, { replace: true });
       }
     }
-  }, [user, isLoading, isAuthenticated, role, navigate, returnUrl]);
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4 }
-    }
-  };
+  }, [isLoading, isAuthenticated, role, navigate, returnUrl]);
 
   // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="relative">
-            <div className="h-16 w-16 rounded-full border-4 border-muted animate-pulse"></div>
-            <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-          </div>
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-lg mt-4">Verifiserer...</p>
         </div>
       </div>
@@ -103,52 +63,53 @@ export const LoginPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <motion.div 
-          className="flex items-center justify-center min-h-[calc(100vh-4rem)]"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <div className="w-full max-w-md space-y-6">
-            <motion.div className="text-center" variants={itemVariants}>
-              <Link to="/" className="inline-block mb-8">
-                <div className="flex items-center justify-center">
-                  <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center">
-                    <ShieldCheck className="h-7 w-7 text-white" />
-                  </div>
-                  <span className="ml-2 text-2xl font-bold text-primary">Homni</span>
-                </div>
-              </Link>
-              <h1 className="text-2xl font-bold mb-2">Velkommen tilbake</h1>
-              <p className="text-muted-foreground">Logg inn for å fortsette</p>
-            </motion.div>
+        <PageBreadcrumb 
+          items={[{ label: 'Logg inn' }]} 
+          className="mb-8"
+        />
         
-            <motion.div variants={itemVariants} className="bg-card rounded-lg shadow-sm border p-6">
+        <div className="flex items-center justify-center min-h-[calc(100vh-12rem)]">
+          <div className="w-full max-w-md space-y-8">
+            {/* Header */}
+            <div className="text-center">
+              <Link to="/" className="inline-block mb-6">
+                <span className="text-2xl font-bold text-primary">Homni</span>
+              </Link>
+              <h1 className="text-3xl font-bold mb-2">Velkommen tilbake</h1>
+              <p className="text-muted-foreground">
+                Logg inn for å få tilgang til alle våre tjenester
+              </p>
+            </div>
+        
+            {/* Login Form */}
+            <div className="bg-card rounded-lg shadow-sm border p-6">
               <LoginTabs defaultTab={userType === 'business' ? 'business' : 'private'} />
               
               {import.meta.env.MODE === 'development' && (
-                <motion.div variants={itemVariants} className="border-t pt-4 mt-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-xs text-muted-foreground">Utviklerverktøy</p>
-                  </div>
+                <div className="border-t pt-4 mt-4">
+                  <p className="text-xs text-muted-foreground mb-4">Utviklerverktøy</p>
                   <UnifiedQuickLogin redirectTo={returnUrl} />
-                </motion.div>
+                </div>
               )}
-            </motion.div>
+            </div>
+
+            {/* Guest Access CTA */}
+            <GuestAccessCTA />
             
-            <motion.div variants={itemVariants} className="text-center text-sm space-y-3">
+            {/* Links */}
+            <div className="text-center text-sm space-y-2">
               <p className="text-muted-foreground">
                 Har du ikke konto?{' '}
-                <Link to="/register" className="text-primary hover:underline font-medium">
+                <Link 
+                  to={`/register${userType === 'business' ? '?type=business' : ''}`} 
+                  className="text-primary hover:underline font-medium"
+                >
                   Registrer deg her
                 </Link>
               </p>
-              <Link to="/" className="text-primary hover:underline inline-flex items-center font-medium">
-                ← Tilbake til forsiden
-              </Link>
-            </motion.div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

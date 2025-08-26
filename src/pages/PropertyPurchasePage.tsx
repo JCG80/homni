@@ -4,8 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, Home, Calculator, FileText, Users, MessageSquare } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
+import { LoginUpgradeCTA } from '@/components/cta/LoginUpgradeCTA';
+import { useAuth } from '@/modules/auth/hooks';
 
 export const PropertyPurchasePage = () => {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleContactExpert = () => {
@@ -99,40 +103,57 @@ export const PropertyPurchasePage = () => {
         </div>
 
         {/* Info Section */}
-        <div className="mt-12">
-          <Card>
-            <CardHeader>
-              <CardTitle>Hvorfor velge Homni for boligkjøp?</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">
-                Vi kobler deg med de beste ekspertene i bransjen og gir deg tilgang til verktøy som gjør boligkjøpet enklere og tryggere.
-              </p>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <h3 className="font-medium mb-2">Ekspertveiledning</h3>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Personlig rådgivning</li>
-                    <li>• Markedskunnskap</li>
-                    <li>• Juridisk støtte</li>
-                  </ul>
+        <div className="mt-12 grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Hvorfor velge Homni for boligkjøp?</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  Vi kobler deg med de beste ekspertene i bransjen og gir deg tilgang til verktøy som gjør boligkjøpet enklere og tryggere.
+                </p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <h3 className="font-medium mb-2">Ekspertveiledning</h3>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Personlig rådgivning</li>
+                      <li>• Markedskunnskap</li>
+                      <li>• Juridisk støtte</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-2">Praktiske verktøy</h3>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Budsjettkalkulatorer</li>
+                      <li>• Markedsanalyse</li>
+                      <li>• Dokumenthjelp</li>
+                    </ul>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium mb-2">Praktiske verktøy</h3>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Budsjettkalkulatorer</li>
-                    <li>• Markedsanalyse</li>
-                    <li>• Dokumenthjelp</li>
-                  </ul>
+                <div className="mt-6 text-center">
+                  <Button size="lg" onClick={handleContactExpert}>
+                    Start din boligkjøpsreise
+                  </Button>
                 </div>
-              </div>
-              <div className="mt-6 text-center">
-                <Button size="lg" onClick={handleContactExpert}>
-                  Start din boligkjøpsreise
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="space-y-6">
+            {!isAuthenticated && (
+              <LoginUpgradeCTA 
+                title="Få personlig oppfølging"
+                description="Logg inn for å få dedikert støtte gjennom hele boligkjøpsprosessen og tilgang til eksklusive verktøy."
+              />
+            )}
+            
+            <GuestAccessCTA 
+              title="Start sammenligningen"
+              description="Få tilbud på alle boligtjenester på ett sted."
+              buttonText="Sammenlign tjenester"
+            />
+          </div>
         </div>
       </div>
     </div>

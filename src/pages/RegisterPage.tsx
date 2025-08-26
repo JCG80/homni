@@ -4,7 +4,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/modules/auth/hooks';
-import { Button } from '@/components/ui/button';
+import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 
 export const RegisterPage = () => {
   const [searchParams] = useSearchParams();
@@ -33,9 +34,6 @@ export const RegisterPage = () => {
     navigate(`/register${value === 'business' ? '?type=business' : ''}`, { replace: true });
   };
 
-  const handleTryOnboardingWizard = () => {
-    navigate('/onboarding');
-  };
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -47,53 +45,72 @@ export const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg">
-        <div className="text-center">
-          <Link to="/" className="inline-block mb-6 text-2xl font-bold text-primary">Homni</Link>
-          
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
-            <TabsList className="grid w-full grid-cols-2 bg-white">
-              <TabsTrigger value="private">Privatperson</TabsTrigger>
-              <TabsTrigger value="business">Bedrift</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="private" className="mt-6">
-              <h1 className="text-3xl font-bold">Registrer deg som privatperson</h1>
-              <p className="text-muted-foreground mt-2">
-                Opprett en konto for å få tilgang til alle våre tjenester
-              </p>
-              
-              <RegisterForm redirectTo="/dashboard" userType="private" showTabs={false} />
-            </TabsContent>
-            
-            <TabsContent value="business" className="mt-6">
-              <h1 className="text-3xl font-bold">Registrer bedrift</h1>
-              <p className="text-muted-foreground mt-2">
-                Opprett en bedriftskonto hos Homni
-              </p>
-              
-              <RegisterForm redirectTo="/dashboard" userType="business" showTabs={false} />
-            </TabsContent>
-          </Tabs>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <PageBreadcrumb 
+          items={[{ label: 'Registrer deg' }]} 
+          className="mb-8"
+        />
         
-        <div className="text-center">
-          <Button variant="link" onClick={handleTryOnboardingWizard}>
-            Try our new guided onboarding wizard
-          </Button>
-        </div>
+        <div className="flex items-center justify-center min-h-[calc(100vh-12rem)]">
+          <div className="w-full max-w-md space-y-8">
+            {/* Header */}
+            <div className="text-center">
+              <Link to="/" className="inline-block mb-6">
+                <span className="text-2xl font-bold text-primary">Homni</span>
+              </Link>
+              
+              <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="private">Privatperson</TabsTrigger>
+                  <TabsTrigger value="business">Bedrift</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
         
-        <div className="text-center text-sm">
-          <p className="text-muted-foreground mb-2">
-            Har du allerede en konto?{' '}
-            <Link to={activeTab === 'business' ? '/login?type=business' : '/login'} className="text-primary hover:underline">
-              Logg inn
-            </Link>
-          </p>
-          <Link to="/" className="hover:text-primary text-muted-foreground">
-            ← Tilbake til forsiden
-          </Link>
+            {/* Registration Forms */}
+            <div className="bg-card rounded-lg shadow-sm border p-6">
+              <Tabs value={activeTab} onValueChange={handleTabChange}>
+                <TabsContent value="private" className="mt-0">
+                  <div className="text-center mb-6">
+                    <h1 className="text-2xl font-bold mb-2">Registrer deg som privatperson</h1>
+                    <p className="text-muted-foreground">
+                      Opprett en konto for å få tilgang til alle våre tjenester
+                    </p>
+                  </div>
+                  
+                  <RegisterForm redirectTo="/dashboard" userType="private" showTabs={false} />
+                </TabsContent>
+                
+                <TabsContent value="business" className="mt-0">
+                  <div className="text-center mb-6">
+                    <h1 className="text-2xl font-bold mb-2">Registrer bedrift</h1>
+                    <p className="text-muted-foreground">
+                      Opprett en bedriftskonto hos Homni
+                    </p>
+                  </div>
+                  
+                  <RegisterForm redirectTo="/dashboard" userType="business" showTabs={false} />
+                </TabsContent>
+              </Tabs>
+            </div>
+
+            {/* Guest Access CTA */}
+            <GuestAccessCTA />
+            
+            {/* Links */}
+            <div className="text-center text-sm space-y-2">
+              <p className="text-muted-foreground">
+                Har du allerede en konto?{' '}
+                <Link 
+                  to={activeTab === 'business' ? '/login?type=business' : '/login'} 
+                  className="text-primary hover:underline font-medium"
+                >
+                  Logg inn
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

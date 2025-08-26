@@ -2,6 +2,8 @@
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { useAuth } from '@/modules/auth/hooks';
 
 export const OnboardingPage = () => {
@@ -14,12 +16,34 @@ export const OnboardingPage = () => {
   
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-10">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">Welcome to Homni</h1>
-          <p className="text-muted-foreground">Complete the following steps to get started</p>
+      <div className="container mx-auto px-4 py-8">
+        <PageBreadcrumb 
+          items={[{ label: 'Kom i gang' }]} 
+          className="mb-8"
+        />
+        
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-4">Velkommen til Homni</h1>
+            <p className="text-lg text-muted-foreground">
+              Fullfør disse trinnene for å komme i gang med din konto
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <OnboardingWizard />
+            </div>
+            
+            <div className="space-y-6">
+              <GuestAccessCTA 
+                title="Eller start som gjest"
+                description="Prøv våre tjenester uten å opprette konto først."
+                buttonText="Utforsk tjenester"
+              />
+            </div>
+          </div>
         </div>
-        <OnboardingWizard />
       </div>
     </div>
   );
