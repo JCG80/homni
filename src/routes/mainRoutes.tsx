@@ -1,44 +1,23 @@
-
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { HomePage } from '@/pages/HomePage';
-import { AboutPage } from '@/pages/AboutPage';
-import { ContactPage } from '@/pages/ContactPage';
-import { LoginPage } from '@/pages/LoginPage';
-import { RegisterPage } from '@/modules/auth/pages/RegisterPage';
-import NotFound from '@/pages/NotFound';
-import { UnauthorizedPage } from '@/modules/auth/pages/UnauthorizedPage';
-import { OnboardingPage } from '@/pages/OnboardingPage';
-import { DesignSystemPage } from '@/pages/DesignSystemPage';
-import { ServiceSelectionPage } from '@/modules/services/pages/ServiceSelectionPage';
-import { PropertyPurchasePage } from '@/pages/PropertyPurchasePage';
-import { AnonymousLeadsPage } from '@/pages/AnonymousLeadsPage';
 
-/**
- * Main public routes available to all users
- */
-export const mainRoutes = (
-  <>
-    {/* Public routes */}
-    <Route path="/" element={<HomePage />} />
-    <Route path="/about" element={<AboutPage />} />
-    <Route path="/contact" element={<ContactPage />} />
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/register" element={<RegisterPage />} />
-    <Route path="/onboarding" element={<OnboardingPage />} />
-    <Route path="/unauthorized" element={<UnauthorizedPage />} />
-    <Route path="*" element={<NotFound />} />
-    
-    {/* Design System Page */}
-    <Route path="/design-system" element={<DesignSystemPage />} />
-    
-    {/* Service Selection */}
-    <Route path="/select-services" element={<ServiceSelectionPage />} />
-    
-    {/* Anonymous Lead Viewer */}
-    <Route path="/mine-foresporsler" element={<AnonymousLeadsPage />} />
-    
-    {/* Property Services */}
-    <Route path="/boligkjop" element={<PropertyPurchasePage />} />
-  </>
+// Simple homepage component
+const HomePage = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold">Homni Platform</h1>
+    <p className="text-muted-foreground mt-2">Welcome to your platform dashboard</p>
+  </div>
 );
+
+// Login page component  
+const LoginPage = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold">Login</h1>
+    <p className="text-muted-foreground mt-2">Please log in to access your account</p>
+  </div>
+);
+
+export const mainRoutes = [
+  <Route key="home" path="/" element={<HomePage />} />,
+  <Route key="login" path="/login" element={<LoginPage />} />,
+];

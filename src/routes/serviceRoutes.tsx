@@ -1,14 +1,23 @@
-
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { PowerComparisonPage } from '@/pages/PowerComparisonPage';
+import { RequireAuth } from '@/components/auth/RequireAuth';
 
-/**
- * Service-specific routes
- */
-export const serviceRoutes = (
-  <>
-    <Route path="power-comparison" element={<PowerComparisonPage />} />
-    <Route path="strom" element={<PowerComparisonPage />} />
-  </>
+// Services page component
+const ServicesPage = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold">Services</h1>
+    <p className="text-muted-foreground mt-2">Available platform services</p>
+  </div>
 );
+
+export const serviceRoutes = [
+  <Route 
+    key="services" 
+    path="/services" 
+    element={
+      <RequireAuth>
+        <ServicesPage />
+      </RequireAuth>
+    } 
+  />,
+];

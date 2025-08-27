@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SiteLayout } from '@/components/layout/SiteLayout';
-import { AuthProvider } from '@/modules/auth/hooks/useAuthContext';
+import { AuthProvider } from '@/modules/auth/hooks/useAuth';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
@@ -19,7 +19,7 @@ function App() {
         <AuthProvider>
           <SiteLayout>
             <Routes>
-              {/* All routes handled by Shell for now */}
+              {/* All routes handled by Shell */}
               <Route path="*" element={<Shell />} />
             </Routes>
           </SiteLayout>

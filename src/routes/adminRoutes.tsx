@@ -1,60 +1,40 @@
-
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
-import { CompaniesManagementPage } from '@/modules/admin/pages/CompaniesManagementPage';
-import { MembersManagementPage } from '@/modules/admin/pages/MembersManagementPage';
-import { InternalAccessPage } from '@/modules/admin/pages/InternalAccessPage';
-import { RoleManagementPage } from '@/modules/admin/pages/RoleManagementPage';
-import { SystemModulesPage } from '@/modules/system/pages/SystemModulesPage';
-import { AdminLeadsPage } from '@/modules/leads/pages/AdminLeadsPage';
-import { AdminInsuranceRoutes } from '@/modules/insurance/AdminInsuranceRoutes';
+import { RequireAuth } from '@/components/auth/RequireAuth';
 
-/**
- * Admin routes for authenticated admin users
- */
-export const adminRoutes = (
-  <>
-    <Route path="admin/companies" element={
-      <RoleDashboard title="Bedrifter" requiredRole={['admin', 'master_admin']}>
-        <CompaniesManagementPage />
-      </RoleDashboard>
-    } />
-    
-    <Route path="admin/members" element={
-      <RoleDashboard title="Medlemmer" requiredRole={['admin', 'master_admin']}>
-        <MembersManagementPage />
-      </RoleDashboard>
-    } />
-    
-    <Route path="admin/roles" element={
-      <RoleDashboard title="Rolleadministrasjon" requiredRole="master_admin">
-        <RoleManagementPage />
-      </RoleDashboard>
-    } />
-    
-    <Route path="admin/system-modules" element={
-      <RoleDashboard title="Systemmoduler" requiredRole={['admin', 'master_admin']}>
-        <SystemModulesPage />
-      </RoleDashboard>
-    } />
-    
-    <Route path="admin/internal-access" element={
-      <RoleDashboard title="Modultilgang" requiredRole="master_admin">
-        <InternalAccessPage />
-      </RoleDashboard>
-    } />
-    
-    <Route path="admin/leads" element={
-      <RoleDashboard title="Admin Forespørsler" requiredRole={['admin', 'master_admin']}>
-        <AdminLeadsPage />
-      </RoleDashboard>
-    } />
-    
-    <Route path="admin/insurance/*" element={
-      <RoleDashboard title="Forsikring" requiredRole={['admin', 'master_admin']}>
-        <AdminInsuranceRoutes />
-      </RoleDashboard>
-    } />
-  </>
+// Admin dashboard component
+const AdminDashboard = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+    <p className="text-muted-foreground mt-2">Welcome to the admin dashboard</p>
+  </div>
 );
+
+// API Admin placeholder 
+const ApiAdminPage = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold">API Admin</h1>
+    <p className="text-muted-foreground mt-2">API management interface</p>
+  </div>
+);
+
+export const adminRoutes = [
+  <Route 
+    key="admin-dashboard" 
+    path="/dashboard/admin" 
+    element={
+      <RequireAuth roles={['admin', 'master_admin']}>
+        <AdminDashboard />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="admin-api" 
+    path="/admin/api" 
+    element={
+      <RequireAuth roles={['admin', 'master_admin']}>
+        <ApiAdminPage />
+      </RequireAuth>
+    } 
+  />,
+];

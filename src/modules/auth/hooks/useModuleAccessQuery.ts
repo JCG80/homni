@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
-import { useAuth } from './useAuth';
+import { useAuthContext } from './useAuthContext';
 
 interface ModuleAccessResult {
   moduleAccess: string[];
@@ -12,7 +12,7 @@ interface ModuleAccessResult {
  * This replaces the metadata-based approach for proper security
  */
 export const useModuleAccessQuery = () => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   return useQuery({
     queryKey: ['module-access', user?.id],
