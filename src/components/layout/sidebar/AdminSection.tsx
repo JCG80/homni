@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FileText, Database, Shield, Users, Building } from 'lucide-react';
+import { FileText, Database, Shield, Users, Building, Plug2 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -43,6 +43,21 @@ export const AdminSection: React.FC<AdminSectionProps> = ({ isMasterAdmin }) => 
         >
           <Database size={16} />
           <span>Systemmoduler</span>
+        </NavLink>
+
+        <NavLink
+          to="/admin/api"
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-x-2 rounded-md px-3 py-2 text-sm font-medium",
+              isActive
+                ? "bg-accent text-foreground"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            )
+          }
+        >
+          <Plug2 size={16} />
+          <span>API &amp; Integrasjoner</span>
         </NavLink>
         
         {isMasterAdmin && (
