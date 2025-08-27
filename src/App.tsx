@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import ApiAdminPage from '@/pages/admin/ApiAdminPage';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { AuthProvider } from '@/modules/auth/hooks/useAuth';
@@ -25,19 +25,17 @@ function App() {
           <ActiveRoleProvider>
             <SiteLayout>
               <RoleSwitch />
-              <BrowserRouter>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <RequireAuth>
-                        <Shell />
-                      </RequireAuth>
-                    }
-                  />
-                  <Route path="/admin/api" element={<ApiAdminPage />} />
-                </Routes>
-              </BrowserRouter>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <RequireAuth>
+                      <Shell />
+                    </RequireAuth>
+                  }
+                />
+                <Route path="/admin/api" element={<ApiAdminPage />} />
+              </Routes>
             </SiteLayout>
             <Toaster />
           </ActiveRoleProvider>
