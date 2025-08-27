@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 type EmailEvent = {
   id: string;
@@ -20,27 +19,11 @@ const EmailEventsList: React.FC = () => {
   const [errorText, setErrorText] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("[EmailEventsList] fetching email_events");
-    supabase
-      .from("email_events")
-      .select(
-        "id,template_key,to_email,provider,status,error,created_at,sent_at,lead_id"
-      )
-      .order("created_at", { ascending: false })
-      .limit(25)
-      .then(({ data, error }) => {
-        if (error) {
-          console.error("[EmailEventsList] error", error);
-          setErrorText(
-            error.message ||
-              "Kun administratorer kan lese e-posthendelser (RLS)."
-          );
-        } else {
-          console.log("[EmailEventsList] data", data);
-          setItems((data as EmailEvent[]) || []);
-        }
-      })
-      .finally(() => setLoading(false));
+    // Placeholder data until database tables are synced - empty for now
+    const placeholderData: EmailEvent[] = [];
+    
+    setItems(placeholderData);
+    setLoading(false);
   }, []);
 
   if (loading) {

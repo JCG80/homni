@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 type Integration = {
   id: string;
@@ -20,24 +19,23 @@ const IntegrationsList: React.FC = () => {
   const [errorText, setErrorText] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("[IntegrationsList] fetching external_integrations");
-    supabase
-      .from("external_integrations")
-      .select("*")
-      .order("updated_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) {
-          console.error("[IntegrationsList] error", error);
-          setErrorText(
-            error.message ||
-              "Kun administratorer kan lese integrasjoner (RLS)."
-          );
-        } else {
-          console.log("[IntegrationsList] data", data);
-          setItems((data as Integration[]) || []);
-        }
-      })
-      .finally(() => setLoading(false));
+    // Placeholder data until database tables are synced
+    const placeholderData: Integration[] = [
+      {
+        id: "1",
+        name: "Resend Email Service",
+        provider: "resend",
+        category: "email",
+        is_enabled: false,
+        secret_name: "RESEND_API_KEY",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        config: {}
+      }
+    ];
+    
+    setItems(placeholderData);
+    setLoading(false);
   }, []);
 
   if (loading) {

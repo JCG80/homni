@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 type EmailTemplate = {
   id: string;
@@ -16,24 +15,19 @@ const EmailTemplatesList: React.FC = () => {
   const [errorText, setErrorText] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("[EmailTemplatesList] fetching email_templates");
-    supabase
-      .from("email_templates")
-      .select("id,key,subject,is_active,updated_at")
-      .order("updated_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) {
-          console.error("[EmailTemplatesList] error", error);
-          setErrorText(
-            error.message ||
-              "Kun administratorer kan lese e-postmaler (RLS)."
-          );
-        } else {
-          console.log("[EmailTemplatesList] data", data);
-          setItems((data as EmailTemplate[]) || []);
-        }
-      })
-      .finally(() => setLoading(false));
+    // Placeholder data until database tables are synced
+    const placeholderData: EmailTemplate[] = [
+      {
+        id: "1",
+        key: "lead_confirmation",
+        subject: "Din forespørsel er mottatt",
+        is_active: true,
+        updated_at: new Date().toISOString()
+      }
+    ];
+    
+    setItems(placeholderData);
+    setLoading(false);
   }, []);
 
   if (loading) {

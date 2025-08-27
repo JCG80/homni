@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ApiAdminPage from '@/pages/admin/ApiAdminPage';
 import { SiteLayout } from '@/components/layout/SiteLayout';
-import { AuthProvider } from '@/providers/AuthProvider';
+import { AuthProvider } from '@/modules/auth/hooks/useAuth';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
