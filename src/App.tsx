@@ -26,15 +26,18 @@ function App() {
             <SiteLayout>
               <RoleSwitch />
               <Routes>
+                {/* Public routes */}
+                <Route path="/admin/api" element={<ApiAdminPage />} />
+                
+                {/* All other routes */}
                 <Route
-                  path="/"
+                  path="*"
                   element={
                     <RequireAuth>
                       <Shell />
                     </RequireAuth>
                   }
                 />
-                <Route path="/admin/api" element={<ApiAdminPage />} />
               </Routes>
             </SiteLayout>
             <Toaster />
