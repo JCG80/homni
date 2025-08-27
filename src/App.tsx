@@ -1,15 +1,10 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import ApiAdminPage from '@/pages/admin/ApiAdminPage';
 import { SiteLayout } from '@/components/layout/SiteLayout';
-import { AuthProvider } from '@/modules/auth/hooks/useAuth';
+import { AuthProvider } from '@/modules/auth/hooks/useAuthContext';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
-import { RoleSwitch } from '@/components/RoleSwitch';
-import { ActiveRoleProvider } from '@/providers/ActiveRoleProvider';
-import { RequireAuth } from '@/components/auth/RequireAuth';
-import { useIsMasterAdmin } from '@/hooks/useIsMasterAdmin';
 import { Shell } from '@/components/layout/Shell';
 
 const queryClient = new QueryClient();
@@ -22,26 +17,13 @@ function App() {
     >
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ActiveRoleProvider>
-            <SiteLayout>
-              <RoleSwitch />
-              <Routes>
-                {/* Public routes */}
-                <Route path="/admin/api" element={<ApiAdminPage />} />
-                
-                {/* All other routes */}
-                <Route
-                  path="*"
-                  element={
-                    <RequireAuth>
-                      <Shell />
-                    </RequireAuth>
-                  }
-                />
-              </Routes>
-            </SiteLayout>
-            <Toaster />
-          </ActiveRoleProvider>
+          <SiteLayout>
+            <Routes>
+              {/* All routes handled by Shell for now */}
+              <Route path="*" element={<Shell />} />
+            </Routes>
+          </SiteLayout>
+          <Toaster />
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
