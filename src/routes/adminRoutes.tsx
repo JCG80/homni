@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/components/auth/RequireAuth';
+import AdminDashboardEnhanced from '@/pages/dashboard/admin/AdminDashboardEnhanced';
 
 // Enhanced Admin dashboard with real functionality
 const AdminDashboard = () => {
