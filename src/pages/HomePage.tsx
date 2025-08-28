@@ -98,9 +98,7 @@ export const HomePage = () => {
         </script>
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        <Header activeTab={activeTab} handleTabChange={handleTabChange} />
-        
+      <div className="min-h-screen bg-background">        
         <main>
           {/* Hero Section with Wizard */}
           <section id="wizard" className="py-16 bg-gradient-to-b from-background to-muted/30">
