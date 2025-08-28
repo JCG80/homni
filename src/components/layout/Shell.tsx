@@ -28,27 +28,23 @@ const NotFound = () => (
 
 export function Shell() {
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto py-6">
-        <Routes>
-          {/* Public routes */}
-          {mainRoutes}
-          
-          {/* Authenticated routes by role */}
-          {userRoutes}
-          {companyRoutes}
-          {adminRoutes}
-          {contentEditorRoutes}
-          {leadRoutes}
-          {docsRoutes}
-          {serviceRoutes}
-          {marketplaceRoutes}
-          
-          {/* Error routes */}
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-    </div>
+    <Routes>
+      {/* Public routes */}
+      {mainRoutes}
+      
+      {/* Authenticated routes by role */}
+      {userRoutes}
+      {companyRoutes}
+      {adminRoutes}
+      {contentEditorRoutes}
+      {leadRoutes}
+      {docsRoutes}
+      {serviceRoutes}
+      {marketplaceRoutes}
+      
+      {/* Error routes */}
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
