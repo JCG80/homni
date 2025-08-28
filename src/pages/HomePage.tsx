@@ -9,8 +9,10 @@ import { VisitorWizard } from '@/components/landing/VisitorWizard';
 import { CallToAction } from '@/components/landing/CallToAction';
 import { TestimonialSection } from '@/components/testimonials/TestimonialSection';
 import { Footer } from '@/components/layout/Footer';
+import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 
 export const HomePage = () => {
+  console.log('HomePage rendering');
 
   return (
     <>
@@ -53,7 +55,9 @@ export const HomePage = () => {
           {/* Hero Section with Wizard */}
           <section id="wizard" className="py-16 bg-gradient-to-b from-background to-muted/30">
             <div className="container mx-auto px-4">
-              <VisitorWizard />
+              <ErrorBoundary componentName="VisitorWizard">
+                <VisitorWizard />
+              </ErrorBoundary>
             </div>
           </section>
           
