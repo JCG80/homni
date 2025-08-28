@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Helmet } from "react-helmet";
 import IntegrationsList from "./api/IntegrationsList";
 import EmailTemplatesList from "./api/EmailTemplatesList";
 import EmailEventsList from "./api/EmailEventsList";
@@ -7,6 +8,12 @@ import EmailEventsList from "./api/EmailEventsList";
 const ApiAdminPage: React.FC = () => {
   return (
     <div className="p-4 md:p-6 space-y-6">
+      <Helmet>
+        <title>API & Integrasjoner – Admin</title>
+        <meta name="description" content="Admin: API-integrasjoner, e-postmaler og hendelser." />
+        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : ''} />
+        <meta name="robots" content="noindex,nofollow" />
+      </Helmet>
       <div className="space-y-1">
         <h1 className="text-xl font-semibold">API & Integrasjoner</h1>
         <p className="text-sm text-muted-foreground">
