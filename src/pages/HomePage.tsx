@@ -98,7 +98,6 @@ export const HomePage = () => {
         </script>
       </Helmet>
 
-      <div className="min-h-screen bg-background">        
         <main>
           {/* Hero Section with Wizard */}
           <section id="wizard" className="py-16 bg-gradient-to-b from-background to-muted/30">
@@ -195,7 +194,6 @@ export const HomePage = () => {
         </main>
         
         <Footer />
-      </div>
     </>
   );
 };
