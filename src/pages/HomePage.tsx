@@ -1,65 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { VisitorWizard } from '@/components/landing/VisitorWizard';
-import { CallToAction } from '@/components/landing/CallToAction';
-import { TestimonialSection } from '@/components/testimonials/TestimonialSection';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Hammer, Zap, PiggyBank, Heart, ArrowRight, TrendingDown, Users, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-import { useAuth } from '@/modules/auth/hooks';
-import { routeForRole } from '@/config/routeForRole';
-import { UserRole } from '@/types/auth';
+import { VisitorWizard } from '@/components/landing/VisitorWizard';
+import { CallToAction } from '@/components/landing/CallToAction';
+import { TestimonialSection } from '@/components/testimonials/TestimonialSection';
+import { Footer } from '@/components/layout/Footer';
 
 export const HomePage = () => {
-  const [activeTab, setActiveTab] = useState<string>('private');
-  const { isAuthenticated, role } = useAuth();
-  const navigate = useNavigate();
-
-  // Redirect authenticated users to their dashboard
-  useEffect(() => {
-    if (isAuthenticated && role) {
-      navigate(routeForRole(role as UserRole), { replace: true });
-    }
-  }, [isAuthenticated, role, navigate]);
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
-
-  // If user is authenticated but role not yet resolved, show enhanced loader
-  if (isAuthenticated && !role) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg mb-4">Omdirigerer til dashboard...</p>
-          <p className="text-sm text-muted-foreground mb-6">
-            Hvis omdirigeringen tar for lang tid, kan du navigere manuelt:
-          </p>
-          <div className="space-y-2">
-            <button 
-              onClick={() => navigate('/dashboard')} 
-              className="block w-full px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Gå til Dashboard
-            </button>
-            <button 
-              onClick={() => navigate('/profile')} 
-              className="block w-full px-4 py-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
-            >
-              Min Profil
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
