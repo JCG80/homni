@@ -4,7 +4,7 @@ import { SiteLayout } from '@/components/layout/SiteLayout';
 import { AuthProvider } from '@/modules/auth/hooks/useAuth';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/ui/sonner';
 import { Shell } from '@/components/layout/Shell';
 
 const queryClient = new QueryClient();
@@ -19,8 +19,8 @@ function App() {
         <AuthProvider>
           <SiteLayout>
             <Shell />
+            <Toaster />
           </SiteLayout>
-          <Toaster />
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
