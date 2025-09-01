@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { 
@@ -69,45 +68,25 @@ export const MainNavigation = () => {
           </>
         ) : (
           <>
-            {/* Public navigation focused on customer journey */}
+            {/* Public navigation focused on working routes */}
             <NavigationMenuItem>
               <NavLink 
-                to="/select-services" 
+                to="/homepage" 
                 className={({ isActive }) => 
                   cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
                 }
               >
-                Tjenester
-              </NavLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-            <NavLink 
-              to="/boligkjop" 
-              className={({ isActive }) => 
-                cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
-              }
-            >
-              Boligkjøp
-            </NavLink>
-          </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavLink 
-                to="/about" 
-                className={({ isActive }) => 
-                  cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
-                }
-              >
-                Om oss
+                Utforsk
               </NavLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavLink 
-                to="/contact" 
+                to="/debug" 
                 className={({ isActive }) => 
                   cn(navigationMenuTriggerStyle(), { "bg-accent text-accent-foreground": isActive })
                 }
               >
-                Kontakt
+                Test
               </NavLink>
             </NavigationMenuItem>
           </>
