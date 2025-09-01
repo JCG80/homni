@@ -1,23 +1,11 @@
-import { useTheme } from "next-themes"
 import { Toaster as Sonner, toast } from "sonner"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  // Add safety check for theme context
-  let theme = "system";
-  try {
-    const themeData = useTheme();
-    theme = themeData?.theme || "system";
-  } catch (error) {
-    // Fallback to system theme if context is not available
-    console.warn("Theme context not available, using system theme");
-    theme = "system";
-  }
-
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="system"
       className="toaster group"
       toastOptions={{
         classNames: {
