@@ -18,10 +18,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SiteLayout>
-            <Routes>
-              {/* All routes handled by Shell */}
-              <Route path="*" element={<Shell />} />
-            </Routes>
+            <Shell />
           </SiteLayout>
           <Toaster />
         </AuthProvider>
