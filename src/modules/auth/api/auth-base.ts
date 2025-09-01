@@ -1,11 +1,12 @@
 
 import { toast } from '@/hooks/use-toast';
+import { logger } from '@/utils/logger';
 
 /**
  * Generic API error handler
  */
 export const handleApiError = (error: any, defaultMessage: string = "En feil oppstod"): string => {
-  console.error("API Error:", error);
+  logger.error("API Error", { error, defaultMessage });
   
   // Try to extract a meaningful error message
   let errorMessage = defaultMessage;

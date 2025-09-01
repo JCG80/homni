@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { logger } from '@/utils/logger';
 
 interface VisitorEvent {
   visitor_role_selected: { role: 'private' | 'business' };
@@ -17,7 +18,7 @@ export const useVisitorAnalytics = () => {
     try {
       // In development, log to console
       if (import.meta.env.MODE === 'development') {
-        console.log(`🔥 Analytics Event: ${eventName}`, data);
+        logger.debug(`Analytics Event: ${eventName}`, { eventName, data, type: 'analytics' });
       }
 
       // Store events in localStorage for now (can be enhanced with actual analytics service)
@@ -39,7 +40,7 @@ export const useVisitorAnalytics = () => {
       // Future: Send to actual analytics service
       // sendToAnalyticsService(eventName, data);
     } catch (error) {
-      console.warn('Analytics tracking failed:', error);
+      logger.warn('Analytics tracking failed', { error, eventName, data });
     }
   }, []);
 

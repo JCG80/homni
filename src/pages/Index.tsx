@@ -4,13 +4,14 @@ import { useAuth } from '@/modules/auth/hooks';
 import { HomePage } from './HomePage';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/types/auth';
+import { logger } from '@/utils/logger';
 
 const Index: React.FC = () => {
   const { isAuthenticated, role, isLoading } = useAuth();
 
   // If authenticated and role is resolved, redirect to the appropriate dashboard
   if (isAuthenticated && role && !isLoading) {
-    console.log('[Index] Redirecting authenticated user to dashboard:', { role });
+    logger.debug('Redirecting authenticated user to dashboard', { role, userId: 'redacted' });
     return <Navigate to={routeForRole(role as UserRole)} replace />;
   }
 

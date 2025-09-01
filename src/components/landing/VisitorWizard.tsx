@@ -13,6 +13,7 @@ import { useWizardProgress } from '@/hooks/useWizardProgress';
 import { useEnhancedAnalytics } from '@/hooks/useEnhancedAnalytics';
 import { createAnonymousLead } from '@/lib/leads/anonymousLead';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 export type UserRole = 'private' | 'business';
 
@@ -62,11 +63,6 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
 
   // Track step views and performance
   useEffect(() => {
-    const timeSpent = Date.now() - stepStartTime;
-    if (timeSpent > 1000) { // Only track if user spent more than 1 second
-      trackStepPerformance(currentStep - 1, formData.role, timeSpent);
-    }
-    
     setStepStartTime(Date.now());
     trackEvent('visitor_step_view', { step: currentStep, role: formData.role });
     
@@ -74,7 +70,7 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
     if (currentStep === 1) {
       trackConversionFunnel(formData.role, formData.service);
     }
-  }, [currentStep, formData.role, trackEvent, trackStepPerformance, trackConversionFunnel, stepStartTime]);
+  }, [currentStep, formData.role, trackEvent, trackConversionFunnel]);
 
   const totalSteps = 4;
 
@@ -167,7 +163,7 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
       handleNextStep(); // Move to success step
       toast.success('Forespørsel sendt! Vi kontakter deg snart.');
     } catch (error) {
-      console.error('Error submitting lead:', error);
+      logger.error('Error submitting lead', { error, formData: { ...formData, email: '[REDACTED]', phone: '[REDACTED]' } });
       toast.error('Noe gikk galt. Prøv igjen.');
     } finally {
       setIsSubmitting(false);
