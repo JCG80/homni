@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 interface VisitorEvent {
   visitor_role_selected: { role: 'private' | 'business' };
