@@ -27,7 +27,24 @@ export const AppRouteComponents = () => {
       {mainRoutes}
       
       {/* Authenticated routes with minimal layout */}
-      <Route path="dashboard" element={<LeadsOffersDashboard />} />
+      <Route path="dashboard" element={
+        <div className="p-6">
+          <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
+          <div className="space-y-4">
+            <div className="bg-card p-4 rounded-lg border">
+              <h3 className="font-semibold mb-2">Tilgjengelige dashboards:</h3>
+              <div className="space-y-2">
+                <a href="/dashboard/admin" className="block p-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
+                  Admin Dashboard - For admin og master admin brukere
+                </a>
+                <a href="/profile" className="block p-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/90">
+                  Min Profil - Personlig profilside
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      } />
       <Route path="profile" element={
         <RoleDashboard title="Min profil" allowAnyAuthenticated={true}>
           <div className="p-6">
@@ -36,6 +53,15 @@ export const AppRouteComponents = () => {
           </div>
         </RoleDashboard>
       } />
+      
+      {/* Role-based routes */}
+      {userRoutes}
+      {companyRoutes}
+      {adminRoutes}
+      {leadRoutes}
+      {docsRoutes}
+      {serviceRoutes}
+      {marketplaceRoutes}
     </Routes>
   );
 };
