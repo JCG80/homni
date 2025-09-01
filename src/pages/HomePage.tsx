@@ -6,13 +6,23 @@ import { Card } from '@/components/ui/card';
 import { Hammer, Zap, PiggyBank, Heart, ArrowRight, TrendingDown, Users, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { VisitorWizard } from '@/components/landing/VisitorWizard';
+import { ValuePropositionSection } from '@/components/landing/enhanced/ValuePropositionSection';
 import { CallToAction } from '@/components/landing/CallToAction';
 import { TestimonialSection } from '@/components/testimonials/TestimonialSection';
 import { Footer } from '@/components/layout/Footer';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
+import { abTesting, AB_TESTS } from '@/lib/abTesting/abTestingFramework';
 
 export const HomePage = () => {
-  console.log('HomePage rendering');
+  const [selectedRole, setSelectedRole] = React.useState<'private' | 'business'>('private');
+  const wizardVariant = abTesting.getVariant(AB_TESTS.WIZARD_LAYOUT);
+  
+  React.useEffect(() => {
+    const savedRole = localStorage.getItem('visitor_role') as 'private' | 'business';
+    if (savedRole) {
+      setSelectedRole(savedRole);
+    }
+  }, []);
 
   return (
     <>
@@ -61,43 +71,8 @@ export const HomePage = () => {
             </div>
           </section>
           
-          {/* Benefits Section */}
-          <section className="py-16 bg-background">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4">Hvorfor velge Homni?</h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Vi gjør det enkelt å sammenligne og spare penger på tjenester til boligen din
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <Card className="p-6 text-center">
-                  <TrendingDown className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Spar penger</h3>
-                  <p className="text-muted-foreground">
-                    Sammenlign priser og finn de beste tilbudene. Gjennomsnittlig besparelse på 20-40%.
-                  </p>
-                </Card>
-                
-                <Card className="p-6 text-center">
-                  <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Kvalitetsleverandører</h3>
-                  <p className="text-muted-foreground">
-                    Alle våre partnere er kvalitetssikrede og har god erfaring med norske kunder.
-                  </p>
-                </Card>
-                
-                <Card className="p-6 text-center">
-                  <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Trygt og enkelt</h3>
-                  <p className="text-muted-foreground">
-                    Gratis tjeneste uten forpliktelser. Du velger selv om du vil gå videre med tilbudene.
-                  </p>
-                </Card>
-              </div>
-            </div>
-          </section>
+          {/* Enhanced Value Proposition */}
+          <ValuePropositionSection role={selectedRole} />
 
           {/* Service Categories Preview */}
           <section className="py-16 bg-muted/30">

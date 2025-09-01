@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
+import { RoleSpecificDashboard } from '@/pages/dashboard/enhanced/RoleSpecificDashboard';
+import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
 import { LeadOverviewWidget } from '@/components/dashboard/company/LeadOverviewWidget';
 import { AnalyticsSummaryWidget } from '@/components/dashboard/company/AnalyticsSummaryWidget';
 import { QuickActionsWidget } from '@/components/dashboard/company/QuickActionsWidget';

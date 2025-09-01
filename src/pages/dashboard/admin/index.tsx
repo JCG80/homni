@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
+import { RoleSpecificDashboard } from '@/pages/dashboard/enhanced/RoleSpecificDashboard';
+import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building, Users, Settings, Activity, ShieldCheck } from 'lucide-react';
 import { DashboardWidget } from '@/components/dashboard';
