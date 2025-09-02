@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 import { getNavigation } from '@/config/navigation';
 
 interface RoleBasedSectionProps {

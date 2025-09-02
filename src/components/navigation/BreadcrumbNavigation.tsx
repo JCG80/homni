@@ -4,7 +4,7 @@ import { ChevronRight, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getNavigation } from '@/config/navigation';
 import { useAuth } from '@/modules/auth/hooks';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 
 interface BreadcrumbItem {
   label: string;

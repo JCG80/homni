@@ -6,7 +6,7 @@ import {
   SidebarNavLink 
 } from '@/components/ui/sidebar';
 import { getNavigation } from '@/config/navigation';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/utils/roles/types';
 
 interface RoleBasedMenuProps {
   role: string;

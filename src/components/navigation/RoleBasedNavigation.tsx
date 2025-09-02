@@ -5,7 +5,9 @@ import { getNavigation } from '@/config/navigation';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/utils/roles/types';
+import { NavigationMenuItem } from '@/components/ui/navigation-menu';
+import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 
 interface RoleBasedNavigationProps {
   className?: string;
@@ -28,13 +30,32 @@ export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
   return (
     <nav className={cn(
       "flex",
-      variant === 'vertical' ? "flex-col space-y-1" : "space-x-4",
+      variant === 'vertical' ? "flex-col space-y-1" : "contents",
       className
     )}>
       {navItems.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.href);
         
+        // For horizontal navigation (used in NavigationMenu)
+        if (variant === 'horizontal') {
+          return (
+            <NavigationMenuItem key={item.href}>
+              <Link
+                to={item.href}
+                className={cn(
+                  navigationMenuTriggerStyle(),
+                  active && "bg-accent text-accent-foreground"
+                )}
+              >
+                {Icon && <Icon className="mr-2 h-4 w-4" />}
+                {item.title}
+              </Link>
+            </NavigationMenuItem>
+          );
+        }
+        
+        // For vertical navigation (sidebar style)
         return (
           <Link
             key={item.href}
