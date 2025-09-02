@@ -44,6 +44,102 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          properties: Json | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          properties?: Json | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          properties?: Json | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      analytics_metrics: {
+        Row: {
+          created_at: string
+          date_recorded: string
+          dimensions: Json | null
+          id: string
+          metric_name: string
+          metric_value: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_recorded?: string
+          dimensions?: Json | null
+          id?: string
+          metric_name: string
+          metric_value: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_recorded?: string
+          dimensions?: Json | null
+          id?: string
+          metric_name?: string
+          metric_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bi_reports: {
+        Row: {
+          generated_at: string
+          generated_by: string | null
+          id: string
+          report_data: Json
+          report_name: string
+          report_type: string
+          status: string
+        }
+        Insert: {
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          report_data: Json
+          report_name: string
+          report_type: string
+          status?: string
+        }
+        Update: {
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          report_data?: Json
+          report_name?: string
+          report_type?: string
+          status?: string
+        }
+        Relationships: []
+      }
       buyer_accounts: {
         Row: {
           auto_recharge: boolean | null
@@ -1335,6 +1431,33 @@ export type Database = {
           },
         ]
       }
+      system_health_metrics: {
+        Row: {
+          id: string
+          metric_name: string
+          metric_value: number
+          recorded_at: string
+          status: string
+          threshold_config: Json | null
+        }
+        Insert: {
+          id?: string
+          metric_name: string
+          metric_value: number
+          recorded_at?: string
+          status?: string
+          threshold_config?: Json | null
+        }
+        Update: {
+          id?: string
+          metric_name?: string
+          metric_value?: number
+          recorded_at?: string
+          status?: string
+          threshold_config?: Json | null
+        }
+        Relationships: []
+      }
       system_modules: {
         Row: {
           created_at: string | null
@@ -1408,6 +1531,45 @@ export type Database = {
           inserted_at?: string
           is_complete?: boolean | null
           task?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_activity_summaries: {
+        Row: {
+          conversion_events: number | null
+          created_at: string
+          date_summary: string
+          features_used: Json | null
+          id: string
+          session_count: number | null
+          time_spent_minutes: number | null
+          total_events: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversion_events?: number | null
+          created_at?: string
+          date_summary?: string
+          features_used?: Json | null
+          id?: string
+          session_count?: number | null
+          time_spent_minutes?: number | null
+          total_events?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversion_events?: number | null
+          created_at?: string
+          date_summary?: string
+          features_used?: Json | null
+          id?: string
+          session_count?: number | null
+          time_spent_minutes?: number | null
+          total_events?: number | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -1602,6 +1764,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      aggregate_user_daily_activity: {
+        Args: { target_date?: string }
+        Returns: undefined
+      }
       create_anonymous_lead_and_distribute: {
         Args: {
           p_anonymous_email: string
@@ -1796,6 +1962,16 @@ export type Database = {
           _user_id: string
         }
         Returns: undefined
+      }
+      track_analytics_event: {
+        Args: {
+          p_event_name: string
+          p_event_type: string
+          p_properties?: Json
+          p_session_id?: string
+          p_user_id?: string
+        }
+        Returns: string
       }
       update_user_profile: {
         Args: {

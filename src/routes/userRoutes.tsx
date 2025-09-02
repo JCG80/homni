@@ -4,6 +4,7 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { PropertyPage } from '@/pages/PropertyPage';
 import { PropertyDetailsPage } from '@/pages/PropertyDetailsPage';
 import { DIYSalesPage } from '@/pages/DIYSalesPage';
+import { AnalyticsPage } from '@/pages/AnalyticsPage';
 
 // User dashboard component
 const UserDashboard = () => (
