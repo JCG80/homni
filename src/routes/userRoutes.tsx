@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { PropertyPage } from '@/pages/PropertyPage';
 import { PropertyDetailsPage } from '@/pages/PropertyDetailsPage';
+import { DIYSalesPage } from '@/pages/DIYSalesPage';
 
 // User dashboard component
 const UserDashboard = () => (
@@ -37,6 +38,15 @@ export const userRoutes = [
     element={
       <RequireAuth roles={['user', 'company', 'admin', 'master_admin']}>
         <PropertyDetailsPage />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="diy-sales" 
+    path="/diy-sales" 
+    element={
+      <RequireAuth roles={['user', 'company', 'admin', 'master_admin']}>
+        <DIYSalesPage />
       </RequireAuth>
     } 
   />,
