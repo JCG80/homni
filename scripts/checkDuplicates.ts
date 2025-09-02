@@ -1,61 +1,145 @@
 #!/usr/bin/env ts-node
 
 /**
- * Check for duplicate code patterns and inconsistent imports
+ * Enhanced duplicate checker
  */
 
-import { execSync } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
+import { readdir, readFile } from 'fs/promises';
+import { join, extname } from 'path';
 
-console.log('🔍 Checking for duplicates and inconsistencies...');
+interface DuplicateResult {
+  type: string;
+  name: string;
+  files: string[];
+}
 
-let hasIssues = false;
-
-// Check for inconsistent supabase imports
-try {
-  const result = execSync('grep -r "from.*supabase.*client" src/ --include="*.ts" --include="*.tsx"', { encoding: 'utf-8' });
-  const lines = result.split('\n').filter(line => line.trim());
+async function findFiles(dir: string, extensions: string[]): Promise<string[]> {
+  const files: string[] = [];
   
-  const libSupabaseLines = lines.filter(line => line.includes('@/lib/supabaseClient'));
-  const integrationsSupabaseLines = lines.filter(line => line.includes('@/integrations/supabase/client'));
-  
-  if (libSupabaseLines.length > 0 && integrationsSupabaseLines.length > 0) {
-    console.log('❌ Inconsistent supabase imports found:');
-    console.log(`   @/lib/supabaseClient: ${libSupabaseLines.length} files`);
-    console.log(`   @/integrations/supabase/client: ${integrationsSupabaseLines.length} files`);
-    hasIssues = true;
-  } else {
-    console.log('✅ Supabase imports are consistent');
+  try {
+    const entries = await readdir(dir, { withFileTypes: true });
+    
+    for (const entry of entries) {
+      const fullPath = join(dir, entry.name);
+      
+      if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
+        files.push(...await findFiles(fullPath, extensions));
+      } else if (entry.isFile() && extensions.includes(extname(entry.name))) {
+        files.push(fullPath);
+      }
+    }
+  } catch (error) {
+    // Directory might not exist, skip it
   }
-} catch (error) {
-  console.log('✅ No supabase import issues found');
+  
+  return files;
 }
 
-// Check for duplicate toast imports
-try {
-  const result = execSync('grep -r "from.*toast" src/ --include="*.ts" --include="*.tsx"', { encoding: 'utf-8' });
-  const lines = result.split('\n').filter(line => line.trim());
+async function checkDuplicates() {
+  console.log('🚀 Starting duplicate check...');
   
-  const uniqueImports = new Set(lines.map(line => {
-    const match = line.match(/from ['"]([^'"]+)['"]/);
-    return match ? match[1] : '';
-  }));
+  const files = await findFiles('src', ['.tsx', '.ts']);
+  const components = new Map<string, string[]>();
+  const types = new Map<string, string[]>();
+  const routes = new Map<string, string[]>();
   
-  if (uniqueImports.size > 1) {
-    console.log('❌ Multiple toast import sources found:', Array.from(uniqueImports));
-    hasIssues = true;
-  } else {
-    console.log('✅ Toast imports are consistent');
+  let hasIssues = false;
+  
+  for (const file of files) {
+    try {
+      const content = await readFile(file, 'utf-8');
+      
+      // Check components
+      const componentMatches = content.match(/export\s+(?:default\s+)?function\s+([A-Z][A-Za-z0-9]+)/g);
+      if (componentMatches) {
+        for (const match of componentMatches) {
+          const nameMatch = match.match(/function\s+([A-Z][A-Za-z0-9]+)/);
+          if (nameMatch) {
+            const name = nameMatch[1];
+            if (!components.has(name)) {
+              components.set(name, []);
+            }
+            components.get(name)!.push(file);
+          }
+        }
+      }
+      
+      // Check types
+      const typeMatches = content.match(/export\s+(?:type|interface)\s+([A-Z][A-Za-z0-9]+)/g);
+      if (typeMatches) {
+        for (const match of typeMatches) {
+          const nameMatch = match.match(/(?:type|interface)\s+([A-Z][A-Za-z0-9]+)/);
+          if (nameMatch) {
+            const name = nameMatch[1];
+            if (!types.has(name)) {
+              types.set(name, []);
+            }
+            types.get(name)!.push(file);
+          }
+        }
+      }
+      
+      // Check routes
+      const routeMatches = content.match(/path:\s*["'][^"']+["']/g);
+      if (routeMatches) {
+        for (const match of routeMatches) {
+          const pathMatch = match.match(/path:\s*["']([^"']+)["']/);
+          if (pathMatch) {
+            const path = pathMatch[1];
+            if (!routes.has(path)) {
+              routes.set(path, []);
+            }
+            routes.get(path)!.push(file);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn(`Warning: Could not read file ${file}`);
+    }
   }
-} catch (error) {
-  console.log('✅ No toast import issues found');
+  
+  // Report duplicates
+  const duplicateComponents = Array.from(components.entries()).filter(([_, files]) => files.length > 1);
+  const duplicateTypes = Array.from(types.entries()).filter(([_, files]) => files.length > 1);
+  const duplicateRoutes = Array.from(routes.entries()).filter(([_, files]) => files.length > 1);
+  
+  if (duplicateComponents.length > 0) {
+    console.log('\n❌ Duplicate Components:');
+    duplicateComponents.forEach(([name, files]) => {
+      console.log(`  ${name}: ${files.join(', ')}`);
+    });
+    hasIssues = true;
+  }
+  
+  if (duplicateTypes.length > 0) {
+    console.log('\n❌ Duplicate Types:');
+    duplicateTypes.forEach(([name, files]) => {
+      console.log(`  ${name}: ${files.join(', ')}`);
+    });
+    hasIssues = true;
+  }
+  
+  if (duplicateRoutes.length > 0) {
+    console.log('\n❌ Duplicate Routes:');
+    duplicateRoutes.forEach(([name, files]) => {
+      console.log(`  ${name}: ${files.join(', ')}`);
+    });
+    hasIssues = true;
+  }
+  
+  if (!hasIssues) {
+    console.log('\n✅ No duplicates found!');
+  }
+  
+  return hasIssues;
 }
 
-if (hasIssues) {
-  console.log('\n❌ Duplicate/inconsistency issues found');
-  process.exit(1);
-} else {
-  console.log('\n✅ No duplicate/inconsistency issues found');
-  process.exit(0);
+if (require.main === module) {
+  checkDuplicates()
+    .then((hasIssues) => {
+      process.exit(hasIssues ? 1 : 0);
+    })
+    .catch(console.error);
 }
+
+export { checkDuplicates };

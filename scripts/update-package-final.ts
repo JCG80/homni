@@ -9,6 +9,19 @@ import { readFileSync, writeFileSync } from 'fs';
 const packageJsonPath = 'package.json';
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 
+// Clean up invalid dependencies first
+const invalidDeps = ['a', 'are', 'been', 'can', 'commands', 'direct', 'edits', 'environment', 
+                     'has', 'is', 'it', 'modify', 'only', 'our', 'prevent', 'provides', 
+                     'special', 'the', 'to', 'uninstall', 'use', 'ways', 'you'];
+
+invalidDeps.forEach(dep => {
+  if (packageJson.dependencies && packageJson.dependencies[dep]) {
+    delete packageJson.dependencies[dep];
+  }
+});
+
+console.log('🧹 Cleaned invalid dependencies from package.json');
+
 // Add comprehensive script collection
 const newScripts = {
   ...packageJson.scripts,
@@ -56,3 +69,4 @@ packageJson.scripts = newScripts;
 
 writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 console.log('✅ Updated package.json with comprehensive health check scripts');
+console.log('✅ Cleaned invalid dependencies from package.json');
