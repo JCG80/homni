@@ -7,6 +7,10 @@ export interface InsuranceCompany {
   customer_rating?: number | null;
   review_count?: number | null;
   is_featured?: boolean | null;
+  is_published?: boolean | null;
+  slug?: string | null;
+  website_url?: string | null;
+  sort_index?: number | null;
   created_at: string;
   updated_at: string;
 }

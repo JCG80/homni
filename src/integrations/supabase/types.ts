@@ -452,10 +452,14 @@ export type Database = {
           description: string | null
           id: string
           is_featured: boolean | null
+          is_published: boolean | null
           logo_url: string | null
           name: string
           review_count: number | null
+          slug: string | null
+          sort_index: number | null
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           created_at?: string
@@ -463,10 +467,14 @@ export type Database = {
           description?: string | null
           id?: string
           is_featured?: boolean | null
+          is_published?: boolean | null
           logo_url?: string | null
           name: string
           review_count?: number | null
+          slug?: string | null
+          sort_index?: number | null
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           created_at?: string
@@ -474,10 +482,14 @@ export type Database = {
           description?: string | null
           id?: string
           is_featured?: boolean | null
+          is_published?: boolean | null
           logo_url?: string | null
           name?: string
           review_count?: number | null
+          slug?: string | null
+          sort_index?: number | null
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }

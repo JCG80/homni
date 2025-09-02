@@ -63,7 +63,11 @@ export const AdminInsuranceCompaniesPage = () => {
     name: '',
     logo_url: '',
     description: '',
-    is_featured: false
+    is_featured: false,
+    is_published: false,
+    slug: '',
+    website_url: '',
+    sort_index: 0
   });
   
   const resetForm = () => {
@@ -71,7 +75,11 @@ export const AdminInsuranceCompaniesPage = () => {
       name: '',
       logo_url: '',
       description: '',
-      is_featured: false
+      is_featured: false,
+      is_published: false,
+      slug: '',
+      website_url: '',
+      sort_index: 0
     });
     setEditingCompany(null);
   };
@@ -83,7 +91,11 @@ export const AdminInsuranceCompaniesPage = () => {
         name: company.name,
         logo_url: company.logo_url || '',
         description: company.description || '',
-        is_featured: company.is_featured || false
+        is_featured: company.is_featured || false,
+        is_published: company.is_published || false,
+        slug: company.slug || '',
+        website_url: company.website_url || '',
+        sort_index: company.sort_index || 0
       });
     } else {
       resetForm();
@@ -103,10 +115,10 @@ export const AdminInsuranceCompaniesPage = () => {
     });
   };
   
-  const handleSwitchChange = (checked: boolean) => {
+  const handleSwitchChange = (name: string, checked: boolean) => {
     setFormData({
       ...formData,
-      is_featured: checked
+      [name]: checked
     });
   };
   
@@ -296,6 +308,40 @@ export const AdminInsuranceCompaniesPage = () => {
               </div>
               
               <div className="space-y-2">
+                <Label htmlFor="slug">Slug (URL-vennlig)</Label>
+                <Input
+                  id="slug"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleInputChange}
+                  placeholder="f.eks. gjensidige"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="website_url">Nettside</Label>
+                <Input
+                  id="website_url"
+                  name="website_url"
+                  value={formData.website_url}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="sort_index">Sortering</Label>
+                <Input
+                  id="sort_index"
+                  name="sort_index"
+                  type="number"
+                  value={formData.sort_index}
+                  onChange={handleInputChange}
+                  placeholder="0"
+                />
+              </div>
+              
+              <div className="space-y-2">
                 <Label htmlFor="description">Beskrivelse</Label>
                 <Textarea
                   id="description"
@@ -309,9 +355,18 @@ export const AdminInsuranceCompaniesPage = () => {
               
               <div className="flex items-center space-x-2">
                 <Switch
+                  id="is_published"
+                  checked={formData.is_published}
+                  onCheckedChange={(checked) => handleSwitchChange('is_published', checked)}
+                />
+                <Label htmlFor="is_published">Vis i offentlig oversikt</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Switch
                   id="is_featured"
                   checked={formData.is_featured}
-                  onCheckedChange={handleSwitchChange}
+                  onCheckedChange={(checked) => handleSwitchChange('is_featured', checked)}
                 />
                 <Label htmlFor="is_featured">Vis som anbefalt</Label>
               </div>
