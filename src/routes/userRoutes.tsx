@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/components/auth/RequireAuth';
+import { PropertyPage } from '@/pages/PropertyPage';
+import { PropertyDetailsPage } from '@/pages/PropertyDetailsPage';
 
 // User dashboard component
 const UserDashboard = () => (
@@ -17,6 +19,24 @@ export const userRoutes = [
     element={
       <RequireAuth roles={['user']}>
         <UserDashboard />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="property" 
+    path="/property" 
+    element={
+      <RequireAuth roles={['user', 'company', 'admin', 'master_admin']}>
+        <PropertyPage />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="property-details" 
+    path="/property/:id" 
+    element={
+      <RequireAuth roles={['user', 'company', 'admin', 'master_admin']}>
+        <PropertyDetailsPage />
       </RequireAuth>
     } 
   />,
