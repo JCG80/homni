@@ -44,7 +44,7 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
       return false;
     }
     
-    // Log the assignment in lead_history with slug statuses
+    // Log the assignment in lead_history with enhanced tracking
     const { error: historyError } = await supabase
       .from('lead_history')
       .insert({
@@ -52,7 +52,15 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
         assigned_to: providerId,
         method: 'auto',
         previous_status: 'new',
-        new_status: 'qualified'
+        new_status: 'qualified',
+        metadata: {
+          strategy_used: strategy,
+          assignment_timestamp: new Date().toISOString(),
+          lead_category: lead.category,
+          reasoning: strategy === 'category_match' 
+            ? `Category match: ${lead.category}` 
+            : 'Round-robin assignment'
+        }
       });
       
     if (historyError) {
