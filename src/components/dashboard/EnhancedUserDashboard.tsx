@@ -6,6 +6,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { supabase } from '@/integrations/supabase/client';
 import { LeadsOffersDashboard } from './LeadsOffersDashboard';
 import { PostAuthOnboardingWizard } from '../onboarding/PostAuthOnboardingWizard';
+import { NextRecommendedActionWidget } from './NextRecommendedActionWidget';
 import { 
   TrendingUp, 
   Clock, 
@@ -272,43 +273,10 @@ export const EnhancedUserDashboard = () => {
         </Card>
       </div>
 
-      {/* Quick Actions & Recent Activity */}
+      {/* Next Recommended Action & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5" />
-              Hurtighandlinger
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => window.location.href = '/'}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Send ny forespørsel
-            </Button>
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => window.location.href = '/leads'}
-            >
-              <Mail className="w-4 h-4 mr-2" />
-              Se alle forespørsler
-            </Button>
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => window.location.href = '/profile'}
-            >
-              <ArrowRight className="w-4 h-4 mr-2" />
-              Rediger profil
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Next Recommended Action Widget */}
+        <NextRecommendedActionWidget />
 
         {/* Recent Activity */}
         <Card className="lg:col-span-2">
