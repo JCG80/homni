@@ -3,7 +3,6 @@ import React, { ReactNode, CSSProperties } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { toast } from '@/hooks/use-toast';
 import { 
-  NavigationSection,
   RoleBasedSection,
   ServicesSection,
   LeadsSection,
@@ -81,35 +80,31 @@ export const LayoutSidebar: React.FC<LayoutSidebarProps> = ({
       animate="visible"
     >
       <div className="space-y-4 py-4 flex-grow flex flex-col">
-        {/* Main navigation */}
+        {/* Role-based navigation - Always shown */}
         <motion.div variants={sectionVariants}>
-          <NavigationSection />
+          <RoleBasedSection role={isAuthenticated && role ? role as UserRole : 'guest'} />
         </motion.div>
-        
-        {/* Role-based navigation */}
-        {isAuthenticated && role && (
-          <motion.div variants={sectionVariants}>
-            <RoleBasedSection role={role as UserRole} />
-          </motion.div>
-        )}
         
         {/* Services */}
         <motion.div variants={sectionVariants}>
           <ServicesSection />
         </motion.div>
         
-        {/* Leads section for authenticated users */}
+        {/* Additional content for authenticated users */}
         {isAuthenticated && (
-          <motion.div variants={sectionVariants}>
-            <LeadsSection />
-          </motion.div>
-        )}
-        
-        {/* Admin section */}
-        {isAuthenticated && (role === 'admin' || role === 'master_admin') && (
-          <motion.div variants={sectionVariants}>
-            <AdminSection isMasterAdmin={role === 'master_admin'} />
-          </motion.div>
+          <>
+            {/* Leads section */}
+            <motion.div variants={sectionVariants}>
+              <LeadsSection />
+            </motion.div>
+            
+            {/* Admin section */}
+            {(role === 'admin' || role === 'master_admin') && (
+              <motion.div variants={sectionVariants}>
+                <AdminSection isMasterAdmin={role === 'master_admin'} />
+              </motion.div>
+            )}
+          </>
         )}
         
         {/* Documentation section */}

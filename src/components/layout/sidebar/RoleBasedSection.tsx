@@ -14,10 +14,29 @@ export const RoleBasedSection: React.FC<RoleBasedSectionProps> = ({ role }) => {
   
   if (!navItems.length) return null;
   
+  const getSectionTitle = (role: UserRole): string => {
+    switch (role) {
+      case 'guest':
+        return 'Navigasjon';
+      case 'user':
+        return 'Min side';
+      case 'company':
+        return 'Bedrift';
+      case 'content_editor':
+        return 'Innhold';
+      case 'admin':
+        return 'Administrasjon';
+      case 'master_admin':
+        return 'System';
+      default:
+        return 'Meny';
+    }
+  };
+
   return (
     <div className="px-3 py-2">
       <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-        {role.charAt(0).toUpperCase() + role.slice(1)} Meny
+        {getSectionTitle(role)}
       </h2>
       <div className="space-y-1">
         {navItems.map((item) => {

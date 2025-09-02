@@ -1,6 +1,5 @@
 
 // Re-export all sidebar components for easier imports
-export * from './NavigationSection';
 export * from './RoleBasedSection';
 export * from './ServicesSection';
 export * from './LeadsSection';

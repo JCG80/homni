@@ -57,10 +57,8 @@ export type Role = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | '
  */
 export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', NavigationItem[]> = {
   guest: [
-    { href: '/', title: 'Forside', icon: Home },
     { href: '/sammenlign', title: 'Sammenlign', icon: Search },
     { href: '/om-oss', title: 'Om oss' },
-    { href: '/login', title: 'Logg inn', icon: Users },
   ],
 
   user: [

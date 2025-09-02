@@ -18,9 +18,10 @@ export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
   className,
   variant = 'vertical'
 }) => {
-  const { role } = useAuth();
+  const { role, isAuthenticated } = useAuth();
   const location = useLocation();
-  const navItems = getNavigation(role as UserRole);
+  const currentRole = isAuthenticated ? role : 'guest';
+  const navItems = getNavigation(currentRole as UserRole);
   
   const isActive = (href: string) => {
     // Check if the current location matches the nav item
