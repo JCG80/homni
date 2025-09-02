@@ -7,7 +7,7 @@ const UserDashboard = () => {
   const { user } = useIntegratedAuth();
   
   return (
-    <RoleDashboard requiredRole="user" module="user_dashboard">
+    <RoleDashboard requiredRole="user">
       <RoleSpecificDashboard role="user" user={user} />
     </RoleDashboard>
   );
