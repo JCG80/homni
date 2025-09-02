@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useVisitorAnalytics } from '@/lib/analytics/visitorAnalytics';
 import { UserRole } from '@/components/landing/VisitorWizard';
+import { logger } from '@/utils/logger';
 
 interface PerformanceMetrics {
   stepStartTime: number;
@@ -13,7 +14,7 @@ export const useEnhancedAnalytics = () => {
   
   const trackStepPerformance = useCallback((step: number, role: UserRole, timeSpent: number) => {
     // Track step completion time for optimization - store locally for now
-    console.log(`Step ${step} performance:`, { role, timeSpent: Math.round(timeSpent / 1000) });
+    logger.debug(`Step ${step} performance:`, { role, timeSpent: Math.round(timeSpent / 1000) });
     
     // Store performance data locally
     const performanceData = JSON.parse(localStorage.getItem('wizard_performance') || '[]');
@@ -33,7 +34,7 @@ export const useEnhancedAnalytics = () => {
   }, []);
 
   const trackFormValidationError = useCallback((step: number, field: string, error: string) => {
-    console.log(`Validation error - Step ${step}, Field: ${field}, Error: ${error}`);
+    logger.debug(`Validation error - Step ${step}, Field: ${field}, Error: ${error}`);
     // Store for analytics (could be sent to error tracking service)
   }, []);
 
