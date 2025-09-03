@@ -5,6 +5,8 @@ import { PropertyPage } from '@/pages/PropertyPage';
 import { PropertyDetailsPage } from '@/pages/PropertyDetailsPage';
 import { DIYSalesPage } from '@/pages/DIYSalesPage';
 import { AnalyticsPage } from '@/pages/AnalyticsPage';
+import { CompanyAnalyticsPage } from '@/pages/CompanyAnalyticsPage';
+import { AdminAnalyticsPage } from '@/pages/AdminAnalyticsPage';
 
 // User dashboard component
 const UserDashboard = () => (
@@ -48,6 +50,33 @@ export const userRoutes = [
     element={
       <RequireAuth roles={['user', 'company', 'admin', 'master_admin']}>
         <DIYSalesPage />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="analytics" 
+    path="/analytics" 
+    element={
+      <RequireAuth roles={['user', 'company', 'admin', 'master_admin']}>
+        <AnalyticsPage />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="company-analytics" 
+    path="/company-analytics" 
+    element={
+      <RequireAuth roles={['company', 'admin', 'master_admin']}>
+        <CompanyAnalyticsPage />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="admin-analytics" 
+    path="/admin-analytics" 
+    element={
+      <RequireAuth roles={['admin', 'master_admin']}>
+        <AdminAnalyticsPage />
       </RequireAuth>
     } 
   />,
