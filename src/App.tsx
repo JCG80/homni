@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { AuthProvider } from '@/modules/auth/hooks/useAuth';
+import { ProfileContextProvider } from './contexts/ProfileContextProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
@@ -17,10 +18,12 @@ function App() {
     >
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <SiteLayout>
-            <Shell />
-            <Toaster />
-          </SiteLayout>
+          <ProfileContextProvider>
+            <SiteLayout>
+              <Shell />
+              <Toaster />
+            </SiteLayout>
+          </ProfileContextProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>

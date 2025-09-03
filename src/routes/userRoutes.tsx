@@ -2,14 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { useFeatureFlag } from '@/hooks/useFeatureFlags';
-
-// User dashboard component
-const UserDashboard = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">User Dashboard</h1>
-    <p className="text-muted-foreground mt-2">Welcome to your user dashboard</p>
-  </div>
-);
+import { DashboardRouter } from '@/modules/dashboard/DashboardRouter';
 
 // Feature flag wrapper component
 const FeatureFlagRoute = ({ flagName, children }: { flagName: string; children: React.ReactNode }) => {
@@ -19,11 +12,11 @@ const FeatureFlagRoute = ({ flagName, children }: { flagName: string; children: 
 
 export const userRoutes = [
   <Route 
-    key="user-dashboard" 
-    path="/dashboard/user" 
+    key="dashboard" 
+    path="/dashboard" 
     element={
-      <RequireAuth roles={['user']}>
-        <UserDashboard />
+      <RequireAuth roles={['user', 'company', 'admin', 'master_admin', 'content_editor']}>
+        <DashboardRouter />
       </RequireAuth>
     } 
   />,

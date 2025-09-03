@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/modules/auth/hooks';
 import { UserRole } from '@/types/auth';
+import { ProfileSwitcher } from '@/components/profile/ProfileSwitcher';
 
 const roleIcons = {
   guest: User,
@@ -47,14 +48,13 @@ export function PersonaSwitcher({ className }: PersonaSwitcherProps) {
   const Icon = roleIcons[currentRole] || User;
   const isAdminMode = ['admin', 'master_admin'].includes(currentRole);
 
+  // Show ProfileSwitcher for admins
+  if (isAdminMode) {
+    return <ProfileSwitcher className={className} />;
+  }
+
   return (
     <div className={className}>
-      {isAdminMode && (
-        <Badge variant="destructive" className="mb-2 text-xs">
-          ADMIN-MODUS
-        </Badge>
-      )}
-      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
@@ -68,8 +68,8 @@ export function PersonaSwitcher({ className }: PersonaSwitcherProps) {
           </Button>
         </DropdownMenuTrigger>
         
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel>Aktiv persona</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="w-48 bg-background border border-border">
+          <DropdownMenuLabel>Aktiv rolle</DropdownMenuLabel>
           <DropdownMenuSeparator />
           
           <DropdownMenuItem className="flex items-center gap-2">
@@ -78,14 +78,6 @@ export function PersonaSwitcher({ className }: PersonaSwitcherProps) {
             <Badge variant="secondary" className="ml-auto text-xs">
               Aktiv
             </Badge>
-          </DropdownMenuItem>
-          
-          <DropdownMenuSeparator />
-          
-          {/* Future: Available role grants will be listed here */}
-          <DropdownMenuItem disabled className="flex items-center gap-2 text-muted-foreground">
-            <Settings className="h-4 w-4" />
-            <span>Bytt persona</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

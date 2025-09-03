@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions_log: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          session_context: Json | null
+          target_id: string
+          target_kind: string
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          session_context?: Json | null
+          target_id: string
+          target_kind: string
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          session_context?: Json | null
+          target_id?: string
+          target_kind?: string
+        }
+        Relationships: []
+      }
       admin_logs: {
         Row: {
           action: string
@@ -1574,6 +1607,41 @@ export type Database = {
         }
         Relationships: []
       }
+      user_company_roles: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          is_default: boolean | null
+          role: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          is_default?: boolean | null
+          role: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          is_default?: boolean | null
+          role?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_company_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_lead_filters: {
         Row: {
           created_at: string
@@ -1768,6 +1836,10 @@ export type Database = {
         Args: { target_date?: string }
         Returns: undefined
       }
+      clear_company_context: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_anonymous_lead_and_distribute: {
         Args: {
           p_anonymous_email: string
@@ -1834,6 +1906,10 @@ export type Database = {
         Returns: string
       }
       get_auth_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_current_company_context: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
@@ -1955,12 +2031,25 @@ export type Database = {
           updated_at: string
         }[]
       }
+      log_admin_action: {
+        Args: {
+          action_param: string
+          metadata_param?: Json
+          target_id_param: string
+          target_kind_param: string
+        }
+        Returns: string
+      }
       revoke_role: {
         Args: {
           _context?: string
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: undefined
+      }
+      set_company_context: {
+        Args: { company_uuid: string }
         Returns: undefined
       }
       track_analytics_event: {
