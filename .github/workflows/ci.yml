@@ -22,14 +22,14 @@ jobs:
         node-version: '18'
         cache: 'npm'
 
+    - name: Install dependencies
+      run: npm ci
+
     - name: Update package scripts
       run: node update-package-scripts.js
 
     - name: Clean invalid dependencies
       run: npx ts-node scripts/update-package-final.ts
-
-    - name: Install dependencies
-      run: npm ci
 
     - name: TypeScript Check
       run: npm run typecheck
@@ -72,14 +72,14 @@ jobs:
         node-version: '18'
         cache: 'npm'
 
+    - name: Install dependencies
+      run: npm ci
+
     - name: Update package scripts
       run: node update-package-scripts.js
 
     - name: Clean invalid dependencies
       run: npx ts-node scripts/update-package-final.ts
-
-    - name: Install dependencies
-      run: npm ci
 
     - name: Install Playwright
       run: npx playwright install --with-deps
