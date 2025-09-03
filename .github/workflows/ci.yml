@@ -22,11 +22,11 @@ jobs:
         node-version: '18'
         cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
-
     - name: Update package scripts
       run: node update-package-scripts.js
+
+    - name: Install dependencies
+      run: npm ci
 
     - name: Clean invalid dependencies
       run: npx ts-node scripts/update-package-final.ts
@@ -72,11 +72,11 @@ jobs:
         node-version: '18'
         cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
-
     - name: Update package scripts
       run: node update-package-scripts.js
+
+    - name: Install dependencies
+      run: npm ci
 
     - name: Clean invalid dependencies
       run: npx ts-node scripts/update-package-final.ts
