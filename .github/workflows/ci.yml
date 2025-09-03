@@ -25,6 +25,9 @@ jobs:
     - name: Update package scripts
       run: node update-package-scripts.js
 
+    - name: Clean invalid dependencies
+      run: npx ts-node scripts/update-package-final.ts
+
     - name: Install dependencies
       run: npm ci
 
@@ -71,6 +74,9 @@ jobs:
 
     - name: Update package scripts
       run: node update-package-scripts.js
+
+    - name: Clean invalid dependencies
+      run: npx ts-node scripts/update-package-final.ts
 
     - name: Install dependencies
       run: npm ci
