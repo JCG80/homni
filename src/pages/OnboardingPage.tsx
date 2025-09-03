@@ -5,13 +5,24 @@ import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { useAuth } from '@/modules/auth/hooks';
+import { useFeatureFlag } from '@/hooks/useFeatureFlags';
 
 export const OnboardingPage = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { isEnabled: onboardingEnabled } = useFeatureFlag('ENABLE_ONBOARDING_WIZARD');
   
-  // If user is already authenticated, redirect them to dashboard
+  // Redirect authenticated users to dashboard 
   if (isAuthenticated && !isLoading) {
     return <Navigate to="/dashboard" replace />;
+  }
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  // If onboarding is disabled, redirect to login
+  if (!onboardingEnabled) {
+    return <Navigate to="/login" replace />;
   }
   
   return (
