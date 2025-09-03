@@ -29,7 +29,7 @@ export interface ProfileContextActions {
 
 export type ProfileContextType = ProfileContextState & ProfileContextActions;
 
-const ProfileContextContext = createContext<ProfileContextType | null>(null);
+export const ProfileContextContext = createContext<ProfileContextType | null>(null);
 
 export const useProfileContext = () => {
   const context = useContext(ProfileContextContext);
@@ -266,4 +266,3 @@ export const useProfileContextLogic = (): ProfileContextType => {
   };
 };
 
-export { ProfileContextContext };
