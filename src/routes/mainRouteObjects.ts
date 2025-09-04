@@ -11,6 +11,8 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ de
 const PublicCompaniesDirectory = lazy(() => import('@/modules/insurance/pages/PublicCompaniesDirectory').then(m => ({ default: m.PublicCompaniesDirectory })));
 const CategoryLandingPage = lazy(() => import('@/pages/categories/CategoryLandingPage').then(m => ({ default: m.CategoryLandingPage })));
 const ThankYouPage = lazy(() => import('@/pages/ThankYouPage').then(m => ({ default: m.ThankYouPage })));
+const PropertyDashboardPage = lazy(() => import('@/pages/PropertyDashboardPage'));
+const NewPropertyPage = lazy(() => import('@/pages/NewPropertyPage'));
 
 export const mainRouteObjects: AppRoute[] = [
   {
@@ -68,5 +70,16 @@ export const mainRouteObjects: AppRoute[] = [
     element: createElement(ThankYouPage),
     roles: ['anonymous', 'user', 'company'],
     navKey: 'thank-you'
+  },
+  {
+    path: '/properties',
+    element: createElement(PropertyDashboardPage),
+    roles: ['user', 'company', 'admin', 'master_admin'],
+    navKey: 'properties'
+  },
+  {
+    path: '/properties/new',
+    element: createElement(NewPropertyPage),
+    roles: ['user', 'company', 'admin', 'master_admin']
   },
 ];

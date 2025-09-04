@@ -43,7 +43,7 @@ export const PropertiesPage = () => {
         <AddPropertyForm onSuccess={handlePropertyAdded} />
       </div>
       
-      <PropertyList properties={properties} isLoading={isLoading} />
+      <PropertyList properties={properties} isLoading={isLoading} error={null} />
     </div>
   );
 };

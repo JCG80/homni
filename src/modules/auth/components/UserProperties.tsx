@@ -41,7 +41,7 @@ export const UserProperties: React.FC = () => {
         <AddPropertyForm onSuccess={handlePropertyAdded} />
       </div>
       
-      <PropertyList properties={properties} isLoading={isLoadingProperties} />
+      <PropertyList properties={properties} isLoading={isLoadingProperties} error={null} />
       
       {properties.length > 0 && (
         <div className="mt-4 text-center">
