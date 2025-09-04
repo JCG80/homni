@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import AdminDashboardEnhanced from '@/pages/dashboard/admin/AdminDashboardEnhanced';
 import { AdminLeadDistribution } from '@/components/admin/LeadDistribution/AdminLeadDistribution';
+import { AdminTestPage } from '@/pages/AdminTestPage';
 
 // Enhanced Admin dashboard with real functionality
 const AdminDashboard = () => {
@@ -52,6 +53,12 @@ const AdminDashboard = () => {
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 inline-block"
           >
             Lead Distribution
+          </a>
+          <a 
+            href="/admin/tests" 
+            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 inline-block"
+          >
+            System Tests
           </a>
         </div>
       </div>
@@ -149,6 +156,15 @@ export const adminRoutes = [
     element={
       <RequireAuth roles={['admin', 'master_admin']}>
         <AdminLeadDistribution />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="admin-tests" 
+    path="/admin/tests" 
+    element={
+      <RequireAuth roles={['admin', 'master_admin']}>
+        <AdminTestPage />
       </RequireAuth>
     } 
   />,

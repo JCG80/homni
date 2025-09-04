@@ -160,7 +160,13 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
         postnr: formData.postalCode 
       });
 
-      handleNextStep(); // Move to success step
+      // Redirect to thank you page with params
+      const params = new URLSearchParams({
+        category: formData.service,
+        leadId: lead.id
+      });
+      window.location.href = `/takk?${params.toString()}`;
+      
       toast.success('Forespørsel sendt! Vi kontakter deg snart.');
     } catch (error) {
       logger.error('Error submitting lead', { error, formData: { ...formData, email: '[REDACTED]', phone: '[REDACTED]' } });
