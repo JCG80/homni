@@ -8,6 +8,7 @@ import { SelectServicesPage } from '@/pages/SelectServicesPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { PublicCompaniesDirectory } from '@/modules/insurance/pages/PublicCompaniesDirectory';
 import { ThankYouPage } from '@/pages/ThankYouPage';
+import { CategoryLandingPage } from '@/pages/categories/CategoryLandingPage';
 
 export const mainRoutes = [
   <Route key="home" path="/" element={<HomePage />} />,

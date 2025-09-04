@@ -25,6 +25,21 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-unused-vars": "off",
+      // Route Objects Standard enforcement
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXOpeningElement[name.name='Route']",
+          message: "Use route objects. Define routes as data (AppRoute[]) and map in AppRouter. JSX <Route> is only allowed in renderRoutes().",
+        },
+      ],
+    },
+  },
+  // Allow JSX <Route> in AppRouter only
+  {
+    files: ["src/routes/AppRouter.tsx"],
+    rules: {
+      "no-restricted-syntax": "off",
     },
   }
 );

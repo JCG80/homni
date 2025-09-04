@@ -83,10 +83,6 @@ export const useLeadsData = (companyOnly: boolean = false): UseLeadsDataReturn =
           lead_type,
           submitted_by,
           company_id,
-          customer_name,
-          customer_email,
-          customer_phone,
-          service_type,
           anonymous_email,
           session_id,
           attributed_at,
@@ -110,7 +106,10 @@ export const useLeadsData = (companyOnly: boolean = false): UseLeadsDataReturn =
         throw fetchError;
       }
 
-      setLeads(data || []);
+      setLeads((data || []).map(lead => ({
+        ...lead,
+        metadata: lead.metadata as Record<string, any> || {}
+      })));
     } catch (err) {
       console.error('Error fetching leads:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch leads');

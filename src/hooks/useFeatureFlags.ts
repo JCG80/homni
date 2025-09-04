@@ -1,84 +1,53 @@
-/**
- * Hook for accessing feature flags with role-based controls
- */
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/modules/auth/hooks';
-import { AuthService } from '@/services/authService';
+import { supabase } from '@/lib/supabaseClient';
 
-interface UseFeatureFlagsOptions {
-  flags: string[];
-  refetch?: boolean;
-}
+type FeatureFlags = Record<string, boolean>;
 
-interface UseFeatureFlagsReturn {
-  flags: Record<string, boolean>;
-  isLoading: boolean;
-  refetch: () => Promise<void>;
-  isEnabled: (flagName: string) => boolean;
-}
-
-export const useFeatureFlags = ({ 
-  flags, 
-  refetch = false 
-}: UseFeatureFlagsOptions): UseFeatureFlagsReturn => {
-  const { user, isAuthenticated } = useAuth();
-  const [flagStates, setFlagStates] = useState<Record<string, boolean>>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchFlags = async () => {
-    if (!isAuthenticated || !user) {
-      setFlagStates({});
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const flagPromises = flags.map(async (flagName) => {
-        const enabled = await AuthService.isFeatureEnabled(flagName, user.id);
-        return [flagName, enabled] as const;
-      });
-
-      const results = await Promise.all(flagPromises);
-      const newFlagStates = Object.fromEntries(results);
-      setFlagStates(newFlagStates);
-    } catch (error) {
-      console.error('Error fetching feature flags:', error);
-      setFlagStates({});
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFlags();
-  }, [user?.id, isAuthenticated, flags.join(',')]);
-
-  const isEnabled = (flagName: string): boolean => {
-    return flagStates[flagName] || false;
-  };
-
+export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
+  const flags = useFeatureFlags();
   return {
-    flags: flagStates,
-    isLoading,
-    refetch: fetchFlags,
-    isEnabled
+    isEnabled: flags[flagName] ?? fallbackValue,
+    isLoading: false
   };
 };
 
-/**
- * Hook for checking a single feature flag
- */
-export const useFeatureFlag = (flagName: string): {
-  isEnabled: boolean;
-  isLoading: boolean;
-  refetch: () => Promise<void>;
-} => {
-  const { flags, isLoading, refetch } = useFeatureFlags({ flags: [flagName] });
-  
-  return {
-    isEnabled: flags[flagName] || false,
-    isLoading,
-    refetch
-  };
+export const useFeatureFlags = (): FeatureFlags => {
+  const [flags, setFlags] = useState<FeatureFlags>({
+    'lead:autoAssign': true,
+    'admin:advancedStats': true,
+    'company:bulkActions': false,
+    'ui:newDesign': true,
+    'ui:testPages': false,
+    'debug:enabled': true,
+    'ENABLE_ONBOARDING_WIZARD': true,
+    'ENABLE_PROPERTY_MANAGEMENT': false,
+    'ENABLE_DIY_SALES': false,
+    'ENABLE_ANALYTICS_DASHBOARD': false,
+  });
+
+  useEffect(() => {
+    const fetchFlags = async () => {
+      try {
+        const { data } = await supabase
+          .from('feature_flags')
+          .select('name, is_enabled')
+          .eq('is_enabled', true);
+
+        if (data) {
+          const flagsMap = data.reduce((acc, flag) => ({
+            ...acc,
+            [flag.name]: flag.is_enabled
+          }), {} as FeatureFlags);
+          
+          setFlags(prev => ({ ...prev, ...flagsMap }));
+        }
+      } catch (error) {
+        console.warn('Failed to fetch feature flags, using defaults:', error);
+      }
+    };
+
+    fetchFlags();
+  }, []);
+
+  return flags;
 };
