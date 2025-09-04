@@ -4,7 +4,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 export interface FeatureFlag {
   id: string;
@@ -92,6 +92,7 @@ async function checkFeatureFlag(flagName: string): Promise<boolean> {
 
 /**
  * Admin function to update a feature flag
+ * Note: cache will refresh on next staleTime; callers can manually invalidate if needed.
  */
 export async function updateFeatureFlag(
   flagId: string, 
@@ -105,10 +106,6 @@ export async function updateFeatureFlag(
   if (error) {
     throw error;
   }
-
-  // Invalidate cache
-  const queryClient = useQueryClient();
-  queryClient.invalidateQueries({ queryKey: [FEATURE_FLAGS_CACHE_KEY] });
 }
 
 /**
