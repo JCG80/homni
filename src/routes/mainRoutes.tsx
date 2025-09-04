@@ -7,6 +7,7 @@ import { LoginPage } from '@/modules/auth/pages/LoginPage';
 import { SelectServicesPage } from '@/pages/SelectServicesPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { PublicCompaniesDirectory } from '@/modules/insurance/pages/PublicCompaniesDirectory';
+import { ThankYouPage } from '@/pages/ThankYouPage';
 
 export const mainRoutes = [
   <Route key="home" path="/" element={<HomePage />} />,
@@ -16,4 +17,6 @@ export const mainRoutes = [
   <Route key="dashboard" path="/dashboard" element={<DashboardPage />} />,
   <Route key="select-services" path="/select-services" element={<SelectServicesPage />} />,
   <Route key="insurance-companies" path="/forsikring/selskaper" element={<PublicCompaniesDirectory />} />,
+  <Route key="category-landing" path="/kategori/:slug" element={<CategoryLandingPage />} />,
+  <Route key="thank-you" path="/takk" element={<ThankYouPage />} />,
 ];
