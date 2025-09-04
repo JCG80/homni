@@ -61,9 +61,9 @@ export const LeadDistributionTest: React.FC = () => {
     setLoading(true);
 
     try {
-      // Test the distribution function
+      // Use the enhanced distribution function with budget management
       const { data, error } = await supabase
-        .rpc('distribute_new_lead_v2', { lead_id_param: id });
+        .rpc('distribute_new_lead_v3', { lead_id_param: id });
 
       if (error) throw error;
 
@@ -254,9 +254,11 @@ export const LeadDistributionTest: React.FC = () => {
           <strong>How this works:</strong>
           <ul className="mt-1 space-y-1">
             <li>• Creates a test lead with category "forsikring"</li>
-            <li>• Calls distribute_new_lead_v2() function</li>
-            <li>• Checks if lead was assigned to a company</li>
-            <li>• Shows assignment result and company details</li>
+            <li>• Calls distribute_new_lead_v3() function with budget management</li>
+            <li>• Checks company budget before assignment</li>
+            <li>• Deducts lead cost from company budget</li>
+            <li>• Records budget transaction</li>
+            <li>• Shows assignment result and remaining budget</li>
           </ul>
         </div>
       </CardContent>

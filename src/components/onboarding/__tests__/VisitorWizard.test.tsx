@@ -54,7 +54,8 @@ describe('VisitorWizard', () => {
     mockCreateAnonymousLead.mockResolvedValue({ 
       id: 'test-lead-id',
       distributed: true,
-      assignedTo: 'company-1'
+      assignedTo: 'company-1',
+      cost: 500
     });
   });
 

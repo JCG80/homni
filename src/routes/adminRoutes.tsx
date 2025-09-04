@@ -4,6 +4,7 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import AdminDashboardEnhanced from '@/pages/dashboard/admin/AdminDashboardEnhanced';
 import { AdminLeadDistribution } from '@/components/admin/LeadDistribution/AdminLeadDistribution';
 import { AdminTestPage } from '@/pages/AdminTestPage';
+import { AdminCompaniesPage } from '@/pages/AdminCompaniesPage';
 
 // Enhanced Admin dashboard with real functionality
 const AdminDashboard = () => {
@@ -59,6 +60,12 @@ const AdminDashboard = () => {
             className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 inline-block"
           >
             System Tests
+          </a>
+          <a 
+            href="/admin/companies" 
+            className="px-4 py-2 bg-accent text-accent-foreground rounded-md hover:bg-accent/90 inline-block"
+          >
+            Company Management
           </a>
         </div>
       </div>
@@ -165,6 +172,15 @@ export const adminRoutes = [
     element={
       <RequireAuth roles={['admin', 'master_admin']}>
         <AdminTestPage />
+      </RequireAuth>
+    } 
+  />,
+  <Route 
+    key="admin-companies" 
+    path="/admin/companies" 
+    element={
+      <RequireAuth roles={['admin', 'master_admin']}>
+        <AdminCompaniesPage />
       </RequireAuth>
     } 
   />,

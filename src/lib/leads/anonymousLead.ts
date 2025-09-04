@@ -60,9 +60,9 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
       throw new Error('Kunne ikke opprette forespørsel. Vennligst prøv igjen.');
     }
 
-    // Try to distribute the lead using the new function
+    // Try to distribute the lead using the enhanced budget-aware function
     const { data: distributionResult, error: distributionError } = await supabase.rpc(
-      'distribute_new_lead_v2',
+      'distribute_new_lead_v3',
       { lead_id_param: lead.id }
     );
 
@@ -71,10 +71,15 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
       // Lead created but not distributed - still return success
     }
     
+    // Check if distribution was successful
+    const result = distributionResult?.[0];
+    const distributed = result?.success === true;
+    
     return { 
       id: lead.id,
-      distributed: !distributionError && distributionResult?.length > 0,
-      assignedTo: distributionResult?.[0]?.company_id 
+      distributed,
+      assignedTo: result?.company_id,
+      cost: result?.assignment_cost || 0
     };
   } catch (error) {
     console.error('Error in createAnonymousLead:', error);

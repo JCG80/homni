@@ -335,6 +335,63 @@ export type Database = {
           },
         ]
       }
+      company_budget_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          lead_id: string | null
+          metadata: Json | null
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_budget_transactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_budget_transactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_insurance_types: {
         Row: {
           company_id: string
@@ -373,15 +430,22 @@ export type Database = {
       }
       company_profiles: {
         Row: {
+          auto_accept_leads: boolean | null
+          budget_alerts_enabled: boolean | null
           contact_name: string | null
           created_at: string | null
+          current_budget: number | null
+          daily_budget: number | null
           deleted_at: string | null
           email: string | null
           feature_overrides: Json
           id: string
           industry: string | null
+          lead_cost_per_unit: number | null
+          low_budget_threshold: number | null
           metadata: Json | null
           modules_access: string[] | null
+          monthly_budget: number | null
           name: string
           notification_preferences: Json
           phone: string | null
@@ -393,15 +457,22 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          auto_accept_leads?: boolean | null
+          budget_alerts_enabled?: boolean | null
           contact_name?: string | null
           created_at?: string | null
+          current_budget?: number | null
+          daily_budget?: number | null
           deleted_at?: string | null
           email?: string | null
           feature_overrides?: Json
           id?: string
           industry?: string | null
+          lead_cost_per_unit?: number | null
+          low_budget_threshold?: number | null
           metadata?: Json | null
           modules_access?: string[] | null
+          monthly_budget?: number | null
           name: string
           notification_preferences?: Json
           phone?: string | null
@@ -413,15 +484,22 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          auto_accept_leads?: boolean | null
+          budget_alerts_enabled?: boolean | null
           contact_name?: string | null
           created_at?: string | null
+          current_budget?: number | null
+          daily_budget?: number | null
           deleted_at?: string | null
           email?: string | null
           feature_overrides?: Json
           id?: string
           industry?: string | null
+          lead_cost_per_unit?: number | null
+          low_budget_threshold?: number | null
           metadata?: Json | null
           modules_access?: string[] | null
+          monthly_budget?: number | null
           name?: string
           notification_preferences?: Json
           phone?: string | null
@@ -1836,6 +1914,10 @@ export type Database = {
         Args: { target_date?: string }
         Returns: undefined
       }
+      assign_lead_with_budget: {
+        Args: { p_company_id: string; p_lead_id: string }
+        Returns: Json
+      }
       clear_company_context: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1868,6 +1950,14 @@ export type Database = {
         Returns: {
           assignment_cost: number
           company_id: string
+        }[]
+      }
+      distribute_new_lead_v3: {
+        Args: { lead_id_param: string }
+        Returns: {
+          assignment_cost: number
+          company_id: string
+          success: boolean
         }[]
       }
       ensure_user_profile: {
