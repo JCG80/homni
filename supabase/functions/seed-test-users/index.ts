@@ -1,5 +1,5 @@
 // Supabase Edge Function: seed-test-users
-// Creates/repairs standard dev users including admin@test.local with password Test1234!
+// Creates/repairs standard dev users including admin@homni.no with password Test1234!
 // Endpoint: https://kkazhcihooovsuwravhs.functions.supabase.co/seed-test-users
 
 // deno-lint-ignore-file no-explicit-any

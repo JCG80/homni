@@ -9,12 +9,12 @@ import { UserRole } from '../types/unified-types';
 
 // Test users for security validation
 const SECURITY_TEST_USERS: Record<UserRole, { email: string; password: string }> = {
-  guest: { email: 'security-guest@test.local', password: 'SecureTest1234!' },
-  user: { email: 'security-user@test.local', password: 'SecureTest1234!' },
-  company: { email: 'security-company@test.local', password: 'SecureTest1234!' },
-  content_editor: { email: 'security-editor@test.local', password: 'SecureTest1234!' },
-  admin: { email: 'security-admin@test.local', password: 'SecureTest1234!' },
-  master_admin: { email: 'security-master@test.local', password: 'SecureTest1234!' }
+  guest: { email: 'security-guest@homni.no', password: 'SecureTest1234!' },
+  user: { email: 'security-user@homni.no', password: 'SecureTest1234!' },
+  company: { email: 'security-company@homni.no', password: 'SecureTest1234!' },
+  content_editor: { email: 'security-editor@homni.no', password: 'SecureTest1234!' },
+  admin: { email: 'security-admin@homni.no', password: 'SecureTest1234!' },
+  master_admin: { email: 'security-master@homni.no', password: 'SecureTest1234!' }
 };
 
 describe('Authentication Security Validation - Phase 2', () => {
@@ -177,7 +177,7 @@ describe('Authentication Security Validation - Phase 2', () => {
   describe('Authentication Security Measures', () => {
     it('should enforce password requirements', async () => {
       const { error } = await supabase.auth.signUp({
-        email: 'weak-password@test.local',
+        email: 'weak-password@homni.no',
         password: '123', // Weak password
         options: {
           emailRedirectTo: `${window.location.origin}/`
@@ -203,7 +203,7 @@ describe('Authentication Security Validation - Phase 2', () => {
     });
 
     it('should prevent duplicate email registration', async () => {
-      const testEmail = 'duplicate-test@test.local';
+      const testEmail = 'duplicate-test@homni.no';
       
       // First registration
       await supabase.auth.signUp({

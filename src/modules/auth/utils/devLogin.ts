@@ -18,12 +18,12 @@ export interface DevLoginResult {
 
 // Make sure these match exactly what's in the database
 export const TEST_USERS: TestUser[] = [
-  { id: 'master-admin', name: 'Test Master Admin', email: 'master-admin@test.local', role: 'master_admin', password: 'Test1234!' },
-  { id: 'admin', name: 'Test Admin', email: 'admin@test.local', role: 'admin', password: 'Test1234!' },
-  { id: 'content-editor', name: 'Test Content Editor', email: 'content@test.local', role: 'content_editor', password: 'Test1234!' },
-  { id: 'company', name: 'Test Company', email: 'company@test.local', role: 'company', password: 'Test1234!' },
-  { id: 'user', name: 'Test User', email: 'user@test.local', role: 'user', password: 'Test1234!' },
-  { id: 'provider', name: 'Test Provider', email: 'provider@test.local', role: 'company', password: 'Test1234!' }
+  { id: 'master-admin', name: 'Test Master Admin', email: 'master@homni.no', role: 'master_admin', password: 'Test1234!' },
+  { id: 'admin', name: 'Test Admin', email: 'admin@homni.no', role: 'admin', password: 'Test1234!' },
+  { id: 'content-editor', name: 'Test Content Editor', email: 'content@homni.no', role: 'content_editor', password: 'Test1234!' },
+  { id: 'company', name: 'Test Company', email: 'company@homni.no', role: 'company', password: 'Test1234!' },
+  { id: 'user', name: 'Test User', email: 'user@homni.no', role: 'user', password: 'Test1234!' },
+  { id: 'provider', name: 'Test Provider', email: 'company@homni.no', role: 'company', password: 'Test1234!' }
 ];
 
 /**

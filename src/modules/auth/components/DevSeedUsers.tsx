@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const DevSeedUsers: React.FC = () => {
-  if (import.meta.env.MODE !== 'development') return null;
 
   const [loading, setLoading] = useState(false);
 

@@ -25,7 +25,7 @@ export const useAllUsers = () => {
         const { data: profiles, error: profilesError } = await supabase
           .from('user_profiles')
           .select('id, full_name, email, metadata')
-          .filter('email', 'ilike', '%@test.local');
+          .filter('email', 'ilike', '%@homni.no');
 
         if (profilesError) {
           throw new Error(`Failed to fetch profiles: ${profilesError.message}`);

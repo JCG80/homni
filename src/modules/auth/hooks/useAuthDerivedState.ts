@@ -22,10 +22,10 @@ export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthB
   // For development testing - check emails for specific test users
   if (!role && user?.email && import.meta.env.MODE === 'development') {
     const email = user.email.toLowerCase();
-    if (email === 'admin@test.local') role = 'admin';
-    if (email === 'company@test.local') role = 'company';
-    if (email === 'master-admin@test.local') role = 'master_admin';
-    if (email === 'content@test.local') role = 'content_editor';
+    if (email === 'admin@homni.no') role = 'admin';
+    if (email === 'company@homni.no') role = 'company';
+    if (email === 'master@homni.no') role = 'master_admin';
+    if (email === 'content@homni.no') role = 'content_editor';
   }
   
   // If still no role, default to user for authenticated users

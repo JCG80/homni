@@ -4,12 +4,12 @@ import { UserRole } from '../types/unified-types';
 import { normalizeRole } from '../normalizeRole';
 
 const DEV_USERS: Record<UserRole, { email: string; password: string; name: string }> = {
-  'guest': { email: 'guest@test.local', password: 'Test1234!', name: 'Guest User' },
-  'user': { email: 'user@test.local', password: 'Test1234!', name: 'Test User' },
-  'company': { email: 'company@test.local', password: 'Test1234!', name: 'Test Company' },
-  'content_editor': { email: 'content@test.local', password: 'Test1234!', name: 'Content Editor' },
-  'admin': { email: 'admin@test.local', password: 'Test1234!', name: 'Test Admin' },
-  'master_admin': { email: 'master-admin@test.local', password: 'Test1234!', name: 'Master Admin' }
+  'guest': { email: 'guest@homni.no', password: 'Test1234!', name: 'Guest User' },
+  'user': { email: 'user@homni.no', password: 'Test1234!', name: 'Test User' },
+  'company': { email: 'company@homni.no', password: 'Test1234!', name: 'Test Company' },
+  'content_editor': { email: 'content@homni.no', password: 'Test1234!', name: 'Content Editor' },
+  'admin': { email: 'admin@homni.no', password: 'Test1234!', name: 'Test Admin' },
+  'master_admin': { email: 'master@homni.no', password: 'Test1234!', name: 'Master Admin' }
 };
 
 /**

@@ -8,7 +8,7 @@ describe('Auth role determination', () => {
     const mockUserData = {
       user: {
         user_metadata: { role: 'user' },
-        email: 'user@test.local'
+        email: 'user@homni.no'
       }
     };
     
@@ -19,7 +19,7 @@ describe('Auth role determination', () => {
     const mockUserData = {
       user: {
         user_metadata: { role: 'company' },
-        email: 'company@test.local'
+        email: 'company@homni.no'
       }
     };
     
@@ -30,7 +30,7 @@ describe('Auth role determination', () => {
     const mockUserData = {
       user: {
         user_metadata: { role: 'admin' },
-        email: 'admin@test.local'
+        email: 'admin@homni.no'
       }
     };
     
@@ -41,7 +41,7 @@ describe('Auth role determination', () => {
     const mockUserData = {
       user: {
         user_metadata: { role: 'master_admin' },
-        email: 'master-admin@test.local'
+        email: 'master@homni.no'
       }
     };
     
@@ -52,7 +52,7 @@ describe('Auth role determination', () => {
     const mockUserData = {
       user: {
         user_metadata: {},
-        email: 'no-role@test.local'
+        email: 'no-role@homni.no'
       }
     };
     
@@ -61,9 +61,9 @@ describe('Auth role determination', () => {
 
   test('should recognize development test users by email', () => {
     // In development mode, these emails should map to specific roles
-    const adminUserData = { user: { email: 'admin@test.local', user_metadata: {} } };
-    const companyUserData = { user: { email: 'company@test.local', user_metadata: {} } };
-    const regularUserData = { user: { email: 'user@test.local', user_metadata: {} } };
+    const adminUserData = { user: { email: 'admin@homni.no', user_metadata: {} } };
+    const companyUserData = { user: { email: 'company@homni.no', user_metadata: {} } };
+    const regularUserData = { user: { email: 'user@homni.no', user_metadata: {} } };
     
     // We have to mock import.meta.env.MODE for these tests
     // This is a simplification that assumes development mode

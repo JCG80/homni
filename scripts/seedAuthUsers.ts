@@ -2,7 +2,7 @@
 
 /**
  * Seed Auth Users (creates auth.users with passwords) and ensure user_profiles
- * Ensures admin@test.local / Test1234! works + other standard test users
+ * Ensures admin@homni.no / Test1234! works + other standard test users
  */
 
 import { createClient } from '@supabase/supabase-js';

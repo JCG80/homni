@@ -28,11 +28,9 @@ export const LoginPage = () => {
           userType={userType}
           redirectTo={returnUrl || undefined}
         />
-        {import.meta.env.MODE === 'development' && (
-          <div className="mt-4">
-            <DevSeedUsers />
-          </div>
-        )}
+        <div className="mt-4">
+          <DevSeedUsers />
+        </div>
       </div>
     </div>
   );

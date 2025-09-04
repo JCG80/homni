@@ -13,32 +13,32 @@ export interface MockUser {
  */
 export const mockUsers: MockUser[] = [
   { 
-    email: 'user@test.local', 
+    email: 'user@homni.no', 
     role: 'user',
     name: 'Test User'
   },
   { 
-    email: 'company@test.local', 
+    email: 'company@homni.no', 
     role: 'company',
     name: 'Test Company'
   },
   { 
-    email: 'admin@test.local', 
+    email: 'admin@homni.no', 
     role: 'admin',
     name: 'Test Admin'
   },
   { 
-    email: 'master-admin@test.local', 
+    email: 'master@homni.no', 
     role: 'master_admin',
     name: 'Test Master Admin'
   },
   { 
-    email: 'content@test.local', 
+    email: 'content@homni.no', 
     role: 'content_editor',
     name: 'Test Content Editor'
   },
   { 
-    email: 'provider@test.local', 
+    email: 'company@homni.no', 
     role: 'company',  // Changed from 'provider' to 'company'
     name: 'Test Provider'
   }
