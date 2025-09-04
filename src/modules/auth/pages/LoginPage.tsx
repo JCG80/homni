@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
+import { DevSeedUsers } from '@/modules/auth/components/DevSeedUsers';
 import { useSearchParams } from 'react-router-dom';
 
 export const LoginPage = () => {
@@ -27,6 +28,11 @@ export const LoginPage = () => {
           userType={userType}
           redirectTo={returnUrl || undefined}
         />
+        {import.meta.env.MODE === 'development' && (
+          <div className="mt-4">
+            <DevSeedUsers />
+          </div>
+        )}
       </div>
     </div>
   );
