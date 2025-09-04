@@ -1863,6 +1863,13 @@ export type Database = {
           cost: number
         }[]
       }
+      distribute_new_lead_v2: {
+        Args: { lead_id_param: string }
+        Returns: {
+          assignment_cost: number
+          company_id: string
+        }[]
+      }
       ensure_user_profile: {
         Args: { p_company_id?: string; p_role?: string; p_user_id: string }
         Returns: {

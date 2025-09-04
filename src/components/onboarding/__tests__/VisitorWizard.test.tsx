@@ -51,7 +51,11 @@ vi.mock('@/hooks/useEnhancedAnalytics', () => ({
 describe('VisitorWizard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockCreateAnonymousLead.mockResolvedValue({ id: 'test-lead-id' });
+    mockCreateAnonymousLead.mockResolvedValue({ 
+      id: 'test-lead-id',
+      distributed: true,
+      assignedTo: 'company-1'
+    });
   });
 
   it('renders the wizard with initial step', () => {

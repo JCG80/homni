@@ -166,6 +166,66 @@ export const useLeadsData = (companyOnly: boolean = false): UseLeadsDataReturn =
   };
 };
 
+// Hook specifically for admin dashboard with companies
+export const useAdminFullData = () => {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch leads and companies in parallel
+      const [leadsResult, companiesResult] = await Promise.all([
+        supabase
+          .from('leads')
+          .select('*')
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('company_profiles')
+          .select('*')
+          .order('created_at', { ascending: false })
+      ]);
+
+      if (leadsResult.error) throw leadsResult.error;
+      if (companiesResult.error) throw companiesResult.error;
+
+      const transformedLeads: Lead[] = (leadsResult.data || []).map(lead => ({
+        id: lead.id,
+        title: lead.title || '',
+        description: lead.description || '',
+        category: lead.category || '',
+        status: lead.status || 'new',
+        lead_type: lead.lead_type || 'general',
+        submitted_by: lead.submitted_by,
+        company_id: lead.company_id,
+        anonymous_email: lead.anonymous_email,
+        session_id: lead.session_id,
+        attributed_at: lead.attributed_at,
+        confirmation_email_sent_at: lead.confirmation_email_sent_at,
+        created_at: lead.created_at,
+        updated_at: lead.updated_at,
+        metadata: lead.metadata as Record<string, any> || {}
+      }));
+
+      setLeads(transformedLeads);
+      setCompanies(companiesResult.data || []);
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+      toast.error('Kunne ikke hente data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return { leads, companies, loading, refetch: fetchData };
+};
+
 // Hook specifically for admin dashboard
 export const useAdminLeadsData = () => useLeadsData(false);
 
