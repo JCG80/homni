@@ -1,8 +1,3 @@
-/**
- * Enhanced Admin Dashboard Component
- * Real-time system overview and controls
- */
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +20,7 @@ interface DashboardMetrics {
   distributionSuccessRate: number;
 }
 
-export const AdminDashboard: React.FC = () => {
+export default function AdminDashboard() {
   const { leads, companies, loading, refetch } = useAdminFullData();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [distributionRunning, setDistributionRunning] = useState(false);
@@ -37,7 +32,7 @@ export const AdminDashboard: React.FC = () => {
     const totalCompanies = companies.length;
     const activeCompanies = companies.filter(company => company.status === 'active').length;
     const totalBudget = companies.reduce((sum, company) => sum + (company.current_budget || 0), 0);
-    const avgAssignmentCost = totalCompanies > 0 ? companies.reduce((sum, company) => sum + (company.lead_cost_per_unit || 500), 0) / totalCompanies : 0;
+    const avgAssignmentCost = companies.reduce((sum, company) => sum + (company.lead_cost_per_unit || 500), 0) / totalCompanies;
     const convertedLeads = leads.filter(lead => lead.status === 'converted').length;
     const conversionRate = totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0;
     const today = new Date().toISOString().split('T')[0];
@@ -102,7 +97,7 @@ export const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       refetch();
-    }, 30000);
+    }, 30000); // Refresh every 30 seconds
 
     return () => clearInterval(interval);
   }, [refetch]);
@@ -202,7 +197,7 @@ export const AdminDashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* System Overview */}
+      {/* Financial Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -291,4 +286,4 @@ export const AdminDashboard: React.FC = () => {
       </Card>
     </div>
   );
-};
+}

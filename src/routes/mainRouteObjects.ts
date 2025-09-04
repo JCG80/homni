@@ -13,6 +13,7 @@ const CategoryLandingPage = lazy(() => import('@/pages/categories/CategoryLandin
 const ThankYouPage = lazy(() => import('@/pages/ThankYouPage').then(m => ({ default: m.ThankYouPage })));
 const PropertyDashboardPage = lazy(() => import('@/pages/PropertyDashboardPage'));
 const NewPropertyPage = lazy(() => import('@/pages/NewPropertyPage'));
+const CompanyLeadDashboardPage = lazy(() => import('@/pages/CompanyLeadDashboardPage'));
 
 export const mainRouteObjects: AppRoute[] = [
   {
@@ -81,5 +82,11 @@ export const mainRouteObjects: AppRoute[] = [
     path: '/properties/new',
     element: createElement(NewPropertyPage),
     roles: ['user', 'company', 'admin', 'master_admin']
+  },
+  {
+    path: '/company/leads',
+    element: createElement(CompanyLeadDashboardPage),
+    roles: ['company'],
+    navKey: 'company-leads'
   },
 ];
