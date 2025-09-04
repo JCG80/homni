@@ -28,12 +28,12 @@ const USERS: Array<{
   display_name: string;
   company_name?: string;
 }> = [
-  { email: 'guest@homni.test', role: 'guest', display_name: 'Guest User' },
-  { email: 'user@test.local', role: 'user', display_name: 'Test User' },
-  { email: 'company@test.local', role: 'company', display_name: 'Test Company', company_name: 'Test Company AS' },
-  { email: 'content@test.local', role: 'content_editor', display_name: 'Content Editor' },
-  { email: 'admin@test.local', role: 'admin', display_name: 'Admin User' },
-  { email: 'master-admin@test.local', role: 'master_admin', display_name: 'Master Admin' },
+  { email: 'guest@homni.no', role: 'guest', display_name: 'Guest User' },
+  { email: 'user@homni.no', role: 'user', display_name: 'Test User' },
+  { email: 'company@homni.no', role: 'company', display_name: 'Test Company', company_name: 'Test Company AS' },
+  { email: 'content@homni.no', role: 'content_editor', display_name: 'Content Editor' },
+  { email: 'admin@homni.no', role: 'admin', display_name: 'Admin User' },
+  { email: 'master@homni.no', role: 'master_admin', display_name: 'Master Admin' },
 ];
 
 async function findUserByEmail(email: string) {
