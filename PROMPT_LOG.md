@@ -64,6 +64,22 @@ Dette dokumentet holder oversikt over alle AI-prompter, retningsendringer og str
 - Navigation separation: navUser (brukerflater) vs navControl (kontrollplan)
 - E2E tests: Playwright test for admin-meny synlighet i forskjellige modi
 
+## 📅 4. september 2025 – Master Prompt plan: Core scaffolding + guards
+- Formål: Operasjonalisere Master Prompt med repo-helse, UEP, seeds og modуль/flag-stubs
+- Retning: Støtter rollebasert plattform, testbarhet og feilsikker utrulling
+- Bygger på: scripts/repo-health.ts, guard-scripts, eksisterende RLS/DB-funksjoner
+- Status: Operasjonell (fase 1–2 levert)
+- Guardian-status: ✅ Godkjent
+
+Detaljer:
+- Opprettet/oppdatert:
+  - docs/prompts/universal-error-protocol.md (UEP v1.2)
+  - src/test/setup.ts (vitest setup, mocks)
+  - scripts/checkDuplicates.ts, scripts/checkFunctions.ts, scripts/seedTestUsers.ts
+  - src/lib/featureFlags.ts, src/lib/analytics.ts
+- Supabase-migrasjon: Skipped/konflikt – eksisterende policies på feature_flags; beholdt status quo
+- Neste: Koble repo:health scripts i package.json (read-only nå), rydde fake deps, utvide E2E
+
 ---
 
 ## ✍️ Mal for ny oppføring
