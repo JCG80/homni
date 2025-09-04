@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
+import { initializeAnalytics, setupPageViewTracking } from '@/lib/analytics'
+
+// Initialize analytics system
+initializeAnalytics();
 
 // Register service worker
 if ('serviceWorker' in navigator) {
@@ -16,6 +20,9 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+// Setup automatic page view tracking
+setupPageViewTracking();
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
