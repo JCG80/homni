@@ -13,12 +13,25 @@ export const DevSeedUsers: React.FC = () => {
       const { data, error } = await supabase.functions.invoke('seed-test-users', {
         body: {},
       });
-      if (error) throw error;
+
+      if (error) {
+        console.error('Seed error (invoke)', error);
+        toast.error(`Klarte ikke å opprette testbrukere: ${error.message || 'Ukjent feil'}`);
+        return;
+      }
+
+      if (data && (data as any).ok === false) {
+        const msg = (data as any).error || 'Ukjent feil fra funksjonen';
+        toast.error(`Klarte ikke å opprette testbrukere: ${msg}`);
+        console.error('Seed function response error:', data);
+        return;
+      }
+
       toast.success('Testbrukere opprettet/oppdatert. Prøv å logge inn igjen.');
       console.log('Seed result:', data);
     } catch (e: any) {
       console.error('Seed error', e);
-      toast.error('Klarte ikke å opprette testbrukere. Se konsoll for detaljer.');
+      toast.error(`Klarte ikke å opprette testbrukere. ${e?.message ? '(' + e.message + ')' : 'Se konsoll for detaljer.'}`);
     } finally {
       setLoading(false);
     }

@@ -83,51 +83,82 @@ Deno.serve(async (req: Request) => {
     }
 
     for (const u of USERS) {
-      let userId: string | undefined;
-      // Try create first
-      const createRes = await admin.auth.admin.createUser({
-        email: u.email,
-        password: PASSWORD,
-        email_confirm: true,
-        user_metadata: { role: u.role, test_user: true },
-      });
+      try {
+        let userId: string | undefined;
 
-      if (!createRes.error && createRes.data.user) {
-        userId = createRes.data.user.id;
-      } else if (createRes.error && (createRes.error as any).status === 422) {
-        // Already exists: update password + metadata
+        // Prefer checking existing first to avoid DB trigger issues
         const existing = await findUserByEmail(u.email);
-        if (!existing) throw new Error(`User exists but not retrievable: ${u.email}`);
-        const updateRes = await admin.auth.admin.updateUserById(existing.id, {
-          password: PASSWORD,
-          user_metadata: { ...(existing.user_metadata || {}), role: u.role, test_user: true },
+        if (existing) {
+          const updateRes = await admin.auth.admin.updateUserById(existing.id, {
+            password: PASSWORD,
+            user_metadata: { ...(existing.user_metadata || {}), role: u.role, test_user: true },
+          });
+          if (updateRes.error) throw updateRes.error;
+          userId = existing.id;
+        } else {
+          // Try create
+          const createRes = await admin.auth.admin.createUser({
+            email: u.email,
+            password: PASSWORD,
+            email_confirm: true,
+            user_metadata: { role: u.role, test_user: true },
+          });
+
+          if (!createRes.error && createRes.data.user) {
+            userId = createRes.data.user.id;
+          } else if (createRes.error && (createRes.error as any).status === 422) {
+            // Already exists, update instead
+            const ex = await findUserByEmail(u.email);
+            if (!ex) throw new Error(`User exists but not retrievable: ${u.email}`);
+            const updateRes = await admin.auth.admin.updateUserById(ex.id, {
+              password: PASSWORD,
+              user_metadata: { ...(ex.user_metadata || {}), role: u.role, test_user: true },
+            });
+            if (updateRes.error) throw updateRes.error;
+            userId = ex.id;
+          } else if (createRes.error) {
+            // As a final fallback, try to see if user was partially created
+            const maybe = await findUserByEmail(u.email);
+            if (maybe) {
+              const updateRes = await admin.auth.admin.updateUserById(maybe.id, {
+                password: PASSWORD,
+                user_metadata: { ...(maybe.user_metadata || {}), role: u.role, test_user: true },
+              });
+              if (updateRes.error) throw updateRes.error;
+              userId = maybe.id;
+            } else {
+              throw createRes.error;
+            }
+          }
+        }
+
+        if (!userId) throw new Error(`No user id for ${u.email}`);
+
+        // Company profile where needed
+        let companyId: string | undefined;
+        if (u.role === 'company' && u.company_name) {
+          companyId = await ensureCompanyProfile(userId, u.company_name);
+        }
+
+        // Ensure user profile via RPC to normalize role
+        const { error: rpcErr } = await admin.rpc('ensure_user_profile', {
+          p_user_id: userId,
+          p_role: u.role,
+          p_company_id: companyId || null,
         });
-        if (updateRes.error) throw updateRes.error;
-        userId = existing.id;
-      } else if (createRes.error) {
-        throw createRes.error;
+        if (rpcErr) throw rpcErr;
+
+        results.push({ email: u.email, role: u.role, id: userId, companyId });
+      } catch (userErr) {
+        console.error('seed-test-users: failure for', u.email, String(userErr));
+        results.push({ email: u.email, error: String(userErr) });
+        // Continue with next user
       }
-
-      if (!userId) throw new Error(`No user id for ${u.email}`);
-
-      // Company profile where needed
-      let companyId: string | undefined;
-      if (u.role === 'company' && u.company_name) {
-        companyId = await ensureCompanyProfile(userId, u.company_name);
-      }
-
-      // Ensure user profile via RPC to normalize role
-      const { error: rpcErr } = await admin.rpc('ensure_user_profile', {
-        p_user_id: userId,
-        p_role: u.role,
-        p_company_id: companyId || null,
-      });
-      if (rpcErr) throw rpcErr;
-
-      results.push({ email: u.email, role: u.role, id: userId, companyId });
     }
 
-    return new Response(JSON.stringify({ ok: true, results }), {
+    const hadErrors = results.some((r: any) => r && (r as any).error);
+    const payload = { ok: !hadErrors, results };
+    return new Response(JSON.stringify(payload), {
       headers: { 'Content-Type': 'application/json', ...corsHeaders(req.headers.get('origin') || undefined) },
     });
   } catch (e) {
