@@ -1,149 +1,134 @@
 #!/usr/bin/env ts-node
 
 /**
- * Seed script for creating test users in development
- * Run with: npm run seed:users
+ * Seed Test Users for Development
+ * Creates fictional users with different roles for testing
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { config } from 'dotenv';
 
-// Load environment variables
-config();
+const SUPABASE_URL = 'https://kkazhcihooovsuwravhs.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Missing required environment variables: VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+if (!SUPABASE_SERVICE_KEY) {
+  console.error('❌ SUPABASE_SERVICE_ROLE_KEY environment variable required');
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-interface TestUser {
-  email: string;
-  password: string;
-  role: string;
-  display_name: string;
-  company_name?: string;
-}
-
-const testUsers: TestUser[] = [
+const TEST_USERS = [
   {
-    email: 'guest@test.no',
-    password: 'testpassword123',
+    email: 'guest@homni.test',
     role: 'guest',
-    display_name: 'Guest User'
+    display_name: 'Guest User',
+    metadata: { test_user: true }
   },
   {
-    email: 'user@test.no',
-    password: 'testpassword123',
+    email: 'user@homni.test', 
     role: 'user',
-    display_name: 'Test Bruker'
+    display_name: 'Regular User',
+    metadata: { test_user: true }
   },
   {
-    email: 'company@test.no',
-    password: 'testpassword123',
-    role: 'company',
-    display_name: 'Bedrift Bruker',
-    company_name: 'Test Eiendom AS'
+    email: 'company@homni.test',
+    role: 'company', 
+    display_name: 'Company User',
+    company_name: 'Test Company AS',
+    metadata: { test_user: true }
   },
   {
-    email: 'editor@test.no',
-    password: 'testpassword123',
+    email: 'editor@homni.test',
     role: 'content_editor',
-    display_name: 'Innhold Editor'
+    display_name: 'Content Editor', 
+    metadata: { test_user: true }
   },
   {
-    email: 'admin@test.no',
-    password: 'testpassword123',
+    email: 'admin@homni.test',
     role: 'admin',
-    display_name: 'System Administrator'
+    display_name: 'Admin User',
+    metadata: { test_user: true }
   },
   {
-    email: 'master@test.no',
-    password: 'testpassword123',
+    email: 'master@homni.test',
     role: 'master_admin',
-    display_name: 'Master Administrator'
+    display_name: 'Master Admin',
+    metadata: { test_user: true }
   }
 ];
 
-async function createTestUser(user: TestUser) {
-  try {
-    console.log(`Creating user: ${user.email} (${user.role})`);
-
-    // Create auth user
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: user.email,
-      password: user.password,
-      email_confirm: true
-    });
-
-    if (authError) {
-      console.error(`Auth error for ${user.email}:`, authError.message);
-      return;
-    }
-
-    const userId = authData.user?.id;
-    if (!userId) {
-      console.error(`No user ID returned for ${user.email}`);
-      return;
-    }
-
-    // Create user profile
-    const { error: profileError } = await supabase
-      .from('user_profiles')
-      .upsert({
-        user_id: userId,
-        display_name: user.display_name,
-        role: user.role,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-
-    if (profileError) {
-      console.error(`Profile error for ${user.email}:`, profileError.message);
-      return;
-    }
-
-    // Create company profile if needed
-    if (user.role === 'company' && user.company_name) {
-      const { error: companyError } = await supabase
-        .from('company_profiles')
-        .upsert({
-          user_id: userId,
-          company_name: user.company_name,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-
-      if (companyError) {
-        console.error(`Company error for ${user.email}:`, companyError.message);
-        return;
-      }
-    }
-
-    console.log(`✅ Successfully created user: ${user.email}`);
-
-  } catch (error) {
-    console.error(`Unexpected error creating ${user.email}:`, error);
-  }
-}
-
 async function seedTestUsers() {
-  console.log('🌱 Seeding test users...');
+  console.log('🌱 Seeding test users...\n');
   
-  for (const user of testUsers) {
-    await createTestUser(user);
+  try {
+    for (const user of TEST_USERS) {
+      // Check if user already exists
+      const { data: existingProfile } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('display_name', user.display_name)
+        .single();
+      
+      if (existingProfile) {
+        console.log(`⏭️  User ${user.display_name} already exists`);
+        continue;
+      }
+      
+      // Create user profile (simplified for testing)
+      const userId = `test-${user.role}-${Date.now()}`;
+      
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .insert({
+          id: userId,
+          user_id: userId,
+          display_name: user.display_name,
+          role: user.role,
+          metadata: user.metadata,
+          notification_preferences: {},
+          ui_preferences: {},
+          feature_overrides: {}
+        });
+      
+      if (profileError) {
+        console.error(`❌ Failed to create profile for ${user.display_name}:`, profileError);
+        continue;
+      }
+      
+      // Create company profile if company user
+      if (user.role === 'company' && 'company_name' in user) {
+        const { error: companyError } = await supabase
+          .from('company_profiles')
+          .insert({
+            user_id: userId,
+            name: user.company_name,
+            status: 'active',
+            subscription_plan: 'free',
+            modules_access: ['leads'],
+            metadata: user.metadata,
+            notification_preferences: {},
+            ui_preferences: {},
+            feature_overrides: {}
+          });
+        
+        if (companyError) {
+          console.warn(`⚠️  Failed to create company profile for ${user.display_name}:`, companyError);
+        }
+      }
+      
+      console.log(`✅ Created test user: ${user.display_name} (${user.role})`);
+    }
+    
+    console.log('\n🎉 Test user seeding completed');
+    
+  } catch (error) {
+    console.error('❌ Error seeding test users:', error);
+    process.exit(1);
   }
-
-  console.log('\n🎉 Test user seeding completed!');
-  console.log('\nTest accounts created:');
-  testUsers.forEach(user => {
-    console.log(`  ${user.role}: ${user.email} / ${user.password}`);
-  });
 }
 
-// Run the seed function
-seedTestUsers().catch(console.error);
+if (require.main === module) {
+  seedTestUsers();
+}
+
+export default seedTestUsers;
