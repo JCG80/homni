@@ -171,16 +171,14 @@ export const EnhancedUserDashboard = () => {
 
   if (showOnboarding) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold mb-2">Velkommen til Homni!</h1>
-            <p className="text-muted-foreground">
-              La oss sette opp din konto og koble eventuelle tidligere forespørsler
-            </p>
-          </div>
-          <PostAuthOnboardingWizard onComplete={handleOnboardingComplete} />
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <p className="text-lg text-muted-foreground mb-2">Velkommen til Homni!</p>
+          <p className="text-muted-foreground">
+            La oss sette opp din konto og koble eventuelle tidligere forespørsler
+          </p>
         </div>
+        <PostAuthOnboardingWizard onComplete={handleOnboardingComplete} />
       </div>
     );
   }
@@ -203,12 +201,12 @@ export const EnhancedUserDashboard = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="space-y-6">
       {/* Welcome Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
+        <p className="text-lg text-muted-foreground">
           Velkommen tilbake, {profile?.full_name || user?.email?.split('@')[0]}!
-        </h1>
+        </p>
         <p className="text-muted-foreground">
           Her er en oversikt over dine forespørsler og aktivitet
         </p>

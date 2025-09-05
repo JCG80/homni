@@ -136,10 +136,10 @@ export const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-lg font-semibold">Admin Dashboard</p>
           <p className="text-muted-foreground">Real-time system overview and controls</p>
         </div>
         <div className="flex gap-2">

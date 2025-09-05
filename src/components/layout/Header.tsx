@@ -16,6 +16,7 @@ import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ContextSwitcher } from './ContextSwitcher';
 import { MobileNavigation } from './MobileNavigation';
+import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
 
 interface HeaderProps {
   activeTab: string;
@@ -69,6 +70,7 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
         <div className="flex items-center space-x-2 md:space-x-4">
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
+              <RoleSwitcher />
               <ContextSwitcher variant={isMobile ? 'compact' : 'full'} />
               <ProfileHeader />
             </div>

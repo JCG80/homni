@@ -18,11 +18,11 @@ export const RoleSwitcher: React.FC = () => {
 
   const currentDisplayRole = isPreviewMode ? previewRole : (actualRole as UserRole);
 
-  const handleRoleChange = (role: string) => {
-    if (role === 'reset') {
+  const handleRoleChange = (value: string) => {
+    if (value === 'reset') {
       setPreviewRole(null);
-    } else {
-      setPreviewRole(role as UserRole);
+    } else if (ALL_ROLES.includes(value as UserRole)) {
+      setPreviewRole(value as UserRole);
     }
   };
 
