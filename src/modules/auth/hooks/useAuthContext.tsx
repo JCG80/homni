@@ -37,9 +37,15 @@ interface AuthProviderProps {
 // Auth Provider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const authState = useAuthState();
-  const roleChecks = useRoleCheck();
+  const roleChecks = useRoleCheck({ role: authState.role });
   const devAuth = useDevAuth();
   const moduleAccessQuery = useModuleAccessQuery();
+  
+  console.log('[AuthProvider] Role properly connected:', {
+    authStateRole: authState.role,
+    roleChecksAdmin: roleChecks.isAdmin,
+    roleChecksMasterAdmin: roleChecks.isMasterAdmin
+  });
   
   // Add the logout function implementation
   const logout = async () => {

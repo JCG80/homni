@@ -40,14 +40,7 @@ export const useProfileContext = () => {
 };
 
 export const useProfileContextLogic = (): ProfileContextType => {
-  console.log('[useProfileContextLogic] Hook called');
-  
-  // Temporarily disable useAuth to fix hook call issues
-  // const { user, role, isAdmin, isMasterAdmin } = useAuth();
-  const user = null;
-  const role = null;
-  const isAdmin = false;
-  const isMasterAdmin = false;
+  const { user, role, isAdmin, isMasterAdmin } = useAuth();
   
   const [state, setState] = useState<ProfileContextState>({
     activeContext: null,
