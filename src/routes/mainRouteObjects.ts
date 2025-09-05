@@ -15,6 +15,12 @@ const PropertyDashboardPage = lazy(() => import('@/pages/PropertyDashboardPage')
 const NewPropertyPage = lazy(() => import('@/pages/NewPropertyPage'));
 const CompanyLeadDashboardPage = lazy(() => import('@/pages/CompanyLeadDashboardPage'));
 
+// Role-specific dashboard components
+const AdminDashboard = lazy(() => import('@/components/dashboard/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const CompanyDashboard = lazy(() => import('@/modules/dashboard/CompanyDashboard').then(m => ({ default: m.CompanyDashboard })));
+const UserDashboard = lazy(() => import('@/components/dashboard/UserDashboard'));
+const ContentEditorDashboard = lazy(() => import('@/components/dashboard/ContentEditorDashboard'));
+
 export const mainRouteObjects: AppRoute[] = [
   {
     path: '/',
@@ -88,5 +94,30 @@ export const mainRouteObjects: AppRoute[] = [
     element: createElement(CompanyLeadDashboardPage),
     roles: ['company'],
     navKey: 'company-leads'
+  },
+  // Role-specific dashboard routes
+  {
+    path: '/dashboard/admin',
+    element: createElement(AdminDashboard),
+    roles: ['admin', 'master_admin'],
+    navKey: 'admin-dashboard'
+  },
+  {
+    path: '/dashboard/company',
+    element: createElement(CompanyDashboard),
+    roles: ['company'],
+    navKey: 'company-dashboard'
+  },
+  {
+    path: '/dashboard/user', 
+    element: createElement(UserDashboard),
+    roles: ['user'],
+    navKey: 'user-dashboard'
+  },
+  {
+    path: '/dashboard/content-editor',
+    element: createElement(ContentEditorDashboard),
+    roles: ['content_editor'],
+    navKey: 'content-editor-dashboard'
   },
 ];
