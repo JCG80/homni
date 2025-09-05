@@ -19,13 +19,13 @@ export const mainRouteObjects: AppRoute[] = [
   {
     path: '/',
     element: createElement(HomePage),
-    roles: ['anonymous', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
+    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
     navKey: 'home'
   },
   {
     path: '/test',
     element: createElement(MinimalHomePage),
-    roles: ['anonymous', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
+    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
     flag: 'ui:testPages',
     navKey: 'test'
   },
@@ -39,7 +39,7 @@ export const mainRouteObjects: AppRoute[] = [
   {
     path: '/login',
     element: createElement(LoginPage),
-    roles: ['anonymous'],
+    roles: ['guest'],
     navKey: 'login'
   },
   {
@@ -51,25 +51,25 @@ export const mainRouteObjects: AppRoute[] = [
   {
     path: '/select-services',
     element: createElement(SelectServicesPage),
-    roles: ['anonymous', 'user', 'company'],
+    roles: ['guest', 'user', 'company'],
     navKey: 'select-services'
   },
   {
     path: '/forsikring/selskaper',
     element: createElement(PublicCompaniesDirectory),
-    roles: ['anonymous', 'user', 'company'],
+    roles: ['guest', 'user', 'company'],
     navKey: 'insurance-companies'
   },
   {
     path: '/kategori/:slug',
     element: createElement(CategoryLandingPage),
-    roles: ['anonymous', 'user', 'company'],
+    roles: ['guest', 'user', 'company'],
     navKey: 'category-landing'
   },
   {
     path: '/takk',
     element: createElement(ThankYouPage),
-    roles: ['anonymous', 'user', 'company'],
+    roles: ['guest', 'user', 'company'],
     navKey: 'thank-you'
   },
   {

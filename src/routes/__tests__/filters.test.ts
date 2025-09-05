@@ -13,7 +13,7 @@ describe('Route Filters', () => {
     { 
       path: '/public', 
       element: null, 
-      roles: ['anonymous', 'user', 'company'] 
+      roles: ['guest', 'user', 'company'] 
     },
     { 
       path: '/beta-feature', 
@@ -37,13 +37,13 @@ describe('Route Filters', () => {
     const userResult = applyFeatureFlags(mockRoutes, flags, 'user');
     expect(userResult.map(r => r.path)).toEqual(['/public', '/unrestricted']);
     
-    const anonymousResult = applyFeatureFlags(mockRoutes, flags, 'anonymous');
-    expect(anonymousResult.map(r => r.path)).toEqual(['/public', '/unrestricted']);
+    const guestResult = applyFeatureFlags(mockRoutes, flags, 'guest');
+    expect(guestResult.map(r => r.path)).toEqual(['/public', '/unrestricted']);
   });
 
   it('allows routes with no restrictions', () => {
     const flags = {};
-    const result = applyFeatureFlags(mockRoutes, flags, 'anonymous');
+    const result = applyFeatureFlags(mockRoutes, flags, 'guest');
     
     expect(result.find(r => r.path === '/unrestricted')).toBeDefined();
   });

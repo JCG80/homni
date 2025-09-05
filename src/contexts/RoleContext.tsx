@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
-import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/modules/auth/hooks';
 
 type Mode = 'personal' | 'professional';
 
@@ -15,8 +16,7 @@ interface RoleCtx {
 const Ctx = createContext<RoleCtx | null>(null);
 
 export const RoleProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const supabase = useSupabaseClient();
-  const user = useUser();
+  const { user } = useAuth();
   const [roles, setRoles] = useState<string[]>([]);
   const [activeMode, setActiveModeState] = useState<Mode>('personal');
   const [isLoading, setIsLoading] = useState(true);
@@ -31,11 +31,19 @@ export const RoleProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       return; 
     }
     
-    const meta: any = user.app_metadata || {};
-    const allowed = (meta.allowed_modes as string[]) || ['personal'];
-    setRoles([...(meta.roles || []), ...(allowed.includes('professional') ? ['company'] : [])]);
-    setActiveModeState((meta.active_mode as Mode) || 'personal');
-    setIsLoading(false);
+    // Get user data from Supabase auth
+    const getAuthUser = async () => {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        const meta: any = authUser.app_metadata || {};
+        const allowed = (meta.allowed_modes as string[]) || ['personal'];
+        setRoles([...(meta.roles || []), ...(allowed.includes('professional') ? ['company'] : [])]);
+        setActiveModeState((meta.active_mode as Mode) || 'personal');
+      }
+      setIsLoading(false);
+    };
+    
+    getAuthUser();
   }, [user]);
 
   const setActiveMode = useCallback(async (m: Mode) => {

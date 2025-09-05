@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-export type UserRole = 'anonymous' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
+export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
 
 export type AppRoute = {
   path: string;

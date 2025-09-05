@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAuthContext } from './useAuthContext';
 import { useRoleContext } from '@/contexts/RoleContext';
+import { useRolePreview } from '@/contexts/RolePreviewContext';
 import type { UserRole } from '@/types/auth';
 
 type Mode = 'personal' | 'professional';
@@ -51,10 +52,16 @@ interface IntegratedAuthContext {
 export const useIntegratedAuth = (): IntegratedAuthContext => {
   const authContext = useAuthContext();
   const roleContext = useRoleContext();
+  const { previewRole, isPreviewMode } = useRolePreview();
   
-  // Map modes to roles
+  // Map modes to roles with preview override
   const effectiveRole = useMemo((): UserRole | null => {
     if (!authContext.isAuthenticated) return null;
+    
+    // Preview role overrides everything for UI display
+    if (isPreviewMode && previewRole) {
+      return previewRole;
+    }
     
     // Mode-based role mapping
     if (roleContext.activeMode === 'professional') {
@@ -67,7 +74,7 @@ export const useIntegratedAuth = (): IntegratedAuthContext => {
     if (authContext.isContentEditor) return 'content_editor';
     
     return 'user';
-  }, [authContext, roleContext.activeMode]);
+  }, [authContext, roleContext.activeMode, isPreviewMode, previewRole]);
   
   // Enhanced role checks with mode awareness
   const isInPersonalMode = roleContext.activeMode === 'personal';
