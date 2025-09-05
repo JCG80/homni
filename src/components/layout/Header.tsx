@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/sheet";
 import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { ContextSwitcher } from './ContextSwitcher';
 import { MobileNavigation } from './MobileNavigation';
 import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
 
@@ -69,9 +68,8 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">
           {isAuthenticated ? (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <RoleSwitcher />
-              <ContextSwitcher variant={isMobile ? 'compact' : 'full'} />
               <ProfileHeader />
             </div>
           ) : (
