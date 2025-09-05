@@ -10,6 +10,8 @@ export const parseUserProfile = (profileData: any): Profile | null => {
   if (!profileData) return null;
 
   console.log('[parseUserProfile] Raw profile data:', profileData);
+  console.log('[parseUserProfile] Direct role field:', profileData.role);
+  console.log('[parseUserProfile] Metadata role:', profileData.metadata?.role);
 
   // Extract role - prefer direct 'role' column (newly added), fallback to metadata.role
   let role = profileData.role;
@@ -40,6 +42,7 @@ export const parseUserProfile = (profileData: any): Profile | null => {
     updated_at: profileData.updated_at
   };
 
-  console.log('[parseUserProfile] Parsed profile:', parsed);
+  console.log('[parseUserProfile] Final parsed profile:', parsed);
+  console.log('[parseUserProfile] Final role:', role);
   return parsed;
 };
