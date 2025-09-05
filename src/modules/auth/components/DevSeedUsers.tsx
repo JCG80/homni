@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 export const DevSeedUsers: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSeed = async () => {
     try {
@@ -18,15 +19,27 @@ export const DevSeedUsers: React.FC = () => {
         console.error('Seed error (invoke)', error);
         const msg = error.message || String(error);
         if (/401|jwt|authorized|unauthor/i.test(msg)) {
-          toast.error('Funksjonen krever tilgang. Forsøk igjen nå som konfigureringen er oppdatert.');
+          toast({
+            title: "Error",
+            description: "Funksjonen krever tilgang. Forsøk igjen nå som konfigureringen er oppdatert.",
+            variant: "destructive"
+          });
         } else {
-          toast.error(`Klarte ikke å opprette testbrukere: ${msg}`);
+          toast({
+            title: "Error", 
+            description: `Klarte ikke å opprette testbrukere: ${msg}`,
+            variant: "destructive"
+          });
         }
         return;
       }
 
       if (!data) {
-        toast.error('Ingen respons fra seed-funksjonen. Se konsoll.');
+        toast({
+          title: "Error",
+          description: "Ingen respons fra seed-funksjonen. Se konsoll.",
+          variant: "destructive"
+        });
         console.error('Seed function returned no data');
         return;
       }
@@ -37,16 +50,27 @@ export const DevSeedUsers: React.FC = () => {
         const failed = results.filter((r: any) => r && r.error).length;
         const succeeded = results.length - failed;
         const firstError = results.find((r: any) => r && r.error)?.error;
-        toast.error(`Noen brukere feilet (${failed}). Lyktes: ${succeeded}. ${firstError ? 'Første feil: ' + firstError : ''}`);
+        toast({
+          title: "Error",
+          description: `Noen brukere feilet (${failed}). Lyktes: ${succeeded}. ${firstError ? 'Første feil: ' + firstError : ''}`,
+          variant: "destructive"
+        });
         console.error('Seed function response error:', payload);
         return;
       }
 
-      toast.success('Testbrukere opprettet/oppdatert. Prøv å logge inn igjen.');
+      toast({
+        title: "Success", 
+        description: "Testbrukere opprettet/oppdatert. Prøv å logge inn igjen."
+      });
       console.log('Seed result:', data);
     } catch (e: any) {
       console.error('Seed error (exception)', e);
-      toast.error(`Klarte ikke å opprette testbrukere. ${e?.message ? '(' + e.message + ')' : 'Se konsoll for detaljer.'}`);
+      toast({
+        title: "Error",
+        description: `Klarte ikke å opprette testbrukere. ${e?.message ? '(' + e.message + ')' : 'Se konsoll for detaljer.'}`,
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, TrendingUp, Users, FileText, DollarSign, Clock, Target } from "lucide-react";
 import { useAdminFullData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 interface DashboardMetrics {
   totalLeads: number;
@@ -22,6 +22,7 @@ interface DashboardMetrics {
 
 export default function AdminDashboard() {
   const { leads, companies, loading, refetch } = useAdminFullData();
+  const { toast } = useToast();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [distributionRunning, setDistributionRunning] = useState(false);
 
@@ -62,7 +63,10 @@ export default function AdminDashboard() {
         .is('company_id', null);
 
       if (!unassigned?.length) {
-        toast.info('No unassigned leads to distribute');
+        toast({
+          title: "Info",
+          description: "No unassigned leads to distribute"
+        });
         return;
       }
 
@@ -78,11 +82,18 @@ export default function AdminDashboard() {
         }
       }
 
-      toast.success(`Distributed ${successCount}/${unassigned.length} leads successfully`);
+      toast({
+        title: "Success", 
+        description: `Distributed ${successCount}/${unassigned.length} leads successfully`
+      });
       await refetch();
     } catch (error) {
       console.error('Error running distribution:', error);
-      toast.error('Failed to run lead distribution');
+      toast({
+        title: "Error",
+        description: "Failed to run lead distribution",
+        variant: "destructive"
+      });
     } finally {
       setDistributionRunning(false);
     }

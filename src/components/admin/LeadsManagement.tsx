@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAdminFullData } from '@/hooks/useLeadsData';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle, XCircle, Clock, Users } from 'lucide-react';
 
 export const LeadsManagement: React.FC = () => {
   const { leads, companies, loading, refetch } = useAdminFullData();
+  const { toast } = useToast();
 
   const handleLeadAction = async (leadId: string, action: 'accept' | 'reject', companyId?: string) => {
     try {
@@ -40,11 +41,18 @@ export const LeadsManagement: React.FC = () => {
           }
         });
 
-      toast.success(`Lead ${action === 'accept' ? 'akseptert' : 'avvist'}`);
+      toast({
+        title: "Success",
+        description: `Lead ${action === 'accept' ? 'akseptert' : 'avvist'}`
+      });
       refetch();
     } catch (error) {
       console.error(`Error ${action}ing lead:`, error);
-      toast.error('Feil ved oppdatering av lead');
+      toast({
+        title: "Error",
+        description: "Feil ved oppdatering av lead",
+        variant: "destructive"
+      });
     }
   };
 

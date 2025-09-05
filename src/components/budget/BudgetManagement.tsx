@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/modules/auth/hooks';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { 
   CreditCard, 
   TrendingUp, 
@@ -44,6 +44,7 @@ interface BudgetTransaction {
 
 export const BudgetManagement: React.FC = () => {
   const { profile } = useAuth();
+  const { toast } = useToast();
   const [budgetInfo, setBudgetInfo] = useState<BudgetInfo | null>(null);
   const [transactions, setTransactions] = useState<BudgetTransaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,7 +93,11 @@ export const BudgetManagement: React.FC = () => {
 
     } catch (error) {
       console.error('Error fetching budget data:', error);
-      toast.error('Failed to load budget information');
+      toast({
+        title: "Error",
+        description: "Failed to load budget information",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -115,11 +120,18 @@ export const BudgetManagement: React.FC = () => {
       if (error) throw error;
 
       await fetchBudgetData();
-      toast.success('Budget settings updated successfully');
+      toast({
+        title: "Success", 
+        description: "Budget settings updated successfully"
+      });
 
     } catch (error) {
       console.error('Error updating budget settings:', error);
-      toast.error('Failed to update budget settings');
+      toast({
+        title: "Error",
+        description: "Failed to update budget settings",
+        variant: "destructive"
+      });
     } finally {
       setUpdating(false);
     }
@@ -127,13 +139,21 @@ export const BudgetManagement: React.FC = () => {
 
   const addBudget = async () => {
     if (!profile?.company_id || !addAmount || isNaN(Number(addAmount))) {
-      toast.error('Please enter a valid amount');
+      toast({
+        title: "Error",
+        description: "Please enter a valid amount", 
+        variant: "destructive"
+      });
       return;
     }
 
     const amount = Number(addAmount);
     if (amount <= 0) {
-      toast.error('Amount must be greater than 0');
+      toast({
+        title: "Error",
+        description: "Amount must be greater than 0",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -165,11 +185,18 @@ export const BudgetManagement: React.FC = () => {
 
       setAddAmount('');
       await fetchBudgetData();
-      toast.success(`Successfully added kr ${amount} to budget`);
+      toast({
+        title: "Success",
+        description: `Successfully added kr ${amount} to budget`
+      });
 
     } catch (error) {
       console.error('Error adding budget:', error);
-      toast.error('Failed to add budget');
+      toast({
+        title: "Error", 
+        description: "Failed to add budget",
+        variant: "destructive"
+      });
     } finally {
       setUpdating(false);
     }

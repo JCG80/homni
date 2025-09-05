@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Clock, DollarSign, TrendingUp, AlertCircle, Phone, Mail, MessageSquare } from "lucide-react";
 import { useCompanyLeadsData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from '@/hooks/use-toast';
 
 interface Lead {
   id: string;
@@ -21,6 +21,7 @@ interface Lead {
 
 export default function CompanyLeadDashboard() {
   const { leads, stats, loading, refetch, updateLeadStatus } = useCompanyLeadsData();
+  const { toast } = useToast();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [newStatus, setNewStatus] = useState<string>('');
   const [notes, setNotes] = useState('');
@@ -52,11 +53,18 @@ export default function CompanyLeadDashboard() {
 
       if (error) throw error;
 
-      toast.success('Note added successfully');
+      toast({
+        title: "Success",
+        description: "Note added successfully"
+      });
       setNotes('');
     } catch (error) {
       console.error('Failed to add note:', error);
-      toast.error('Failed to add note');
+      toast({
+        title: "Error",
+        description: "Failed to add note",
+        variant: "destructive"
+      });
     }
   };
 

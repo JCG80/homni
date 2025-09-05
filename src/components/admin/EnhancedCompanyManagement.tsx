@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Settings,
   CreditCard,
@@ -53,6 +53,7 @@ interface BudgetAdjustment {
 export const EnhancedCompanyManagement: React.FC = () => {
   const [companies, setCompanies] = useState<CompanyProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   const [selectedCompany, setSelectedCompany] = useState<CompanyProfile | null>(null);
   const [budgetAdjustment, setBudgetAdjustment] = useState<BudgetAdjustment>({
     companyId: '',
@@ -92,7 +93,11 @@ export const EnhancedCompanyManagement: React.FC = () => {
 
     } catch (error) {
       console.error('Error fetching companies:', error);
-      toast.error('Failed to load companies');
+      toast({
+        title: "Error",
+        description: "Failed to load companies",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -111,17 +116,28 @@ export const EnhancedCompanyManagement: React.FC = () => {
       if (error) throw error;
 
       await fetchCompanies();
-      toast.success(`Company ${status === 'active' ? 'activated' : 'deactivated'} successfully`);
+      toast({
+        title: "Success",
+        description: `Company ${status === 'active' ? 'activated' : 'deactivated'} successfully`
+      });
 
     } catch (error) {
       console.error('Error updating company status:', error);
-      toast.error('Failed to update company status');
+      toast({
+        title: "Error",
+        description: "Failed to update company status", 
+        variant: "destructive"
+      });
     }
   };
 
   const adjustBudget = async () => {
     if (!budgetAdjustment.companyId || !budgetAdjustment.amount || !budgetAdjustment.description) {
-      toast.error('Please fill in all fields');
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -183,11 +199,18 @@ export const EnhancedCompanyManagement: React.FC = () => {
       });
 
       await fetchCompanies();
-      toast.success('Budget adjusted successfully');
+      toast({
+        title: "Success",
+        description: "Budget adjusted successfully"
+      });
 
     } catch (error) {
       console.error('Error adjusting budget:', error);
-      toast.error('Failed to adjust budget');
+      toast({
+        title: "Error",
+        description: "Failed to adjust budget",
+        variant: "destructive"
+      });
     }
   };
 
@@ -204,11 +227,18 @@ export const EnhancedCompanyManagement: React.FC = () => {
       if (error) throw error;
 
       await fetchCompanies();
-      toast.success('Company settings updated successfully');
+      toast({
+        title: "Success",
+        description: "Company settings updated successfully"
+      });
 
     } catch (error) {
       console.error('Error updating company settings:', error);
-      toast.error('Failed to update company settings');
+      toast({
+        title: "Error",
+        description: "Failed to update company settings",
+        variant: "destructive"
+      });
     }
   };
 

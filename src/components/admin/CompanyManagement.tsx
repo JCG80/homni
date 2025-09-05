@@ -5,11 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useAdminFullData } from '@/hooks/useLeadsData';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2, Building2, DollarSign, Target, Mail, Phone } from 'lucide-react';
 
 export const CompanyManagement: React.FC = () => {
   const { companies, loading, refetch } = useAdminFullData();
+  const { toast } = useToast();
   const [updating, setUpdating] = useState<string | null>(null);
 
   const handleToggleStatus = async (companyId: string, currentStatus: string) => {
@@ -27,11 +28,18 @@ export const CompanyManagement: React.FC = () => {
 
       if (error) throw error;
 
-      toast.success(`Selskap ${newStatus === 'active' ? 'aktivert' : 'deaktivert'}`);
+      toast({
+        title: "Success",
+        description: `Selskap ${newStatus === 'active' ? 'aktivert' : 'deaktivert'}`
+      });
       refetch();
     } catch (error) {
       console.error('Error updating company status:', error);
-      toast.error('Feil ved oppdatering av selskapsstatus');
+      toast({
+        title: "Error", 
+        description: "Feil ved oppdatering av selskapsstatus",
+        variant: "destructive"
+      });
     } finally {
       setUpdating(null);
     }
