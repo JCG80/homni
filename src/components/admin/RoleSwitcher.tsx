@@ -11,6 +11,15 @@ export const RoleSwitcher: React.FC = () => {
   const { isAdmin, isMasterAdmin, role: actualRole } = useAuth();
   const { previewRole, setPreviewRole, isPreviewMode, canUsePreview } = useRolePreview();
 
+  // Debug logging
+  console.log('RoleSwitcher debug:', {
+    isAdmin,
+    isMasterAdmin,
+    actualRole,
+    canUsePreview,
+    shouldShow: canUsePreview && (isAdmin || isMasterAdmin)
+  });
+
   // Only show to admins
   if (!canUsePreview || (!isAdmin && !isMasterAdmin)) {
     return null;
