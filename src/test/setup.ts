@@ -33,7 +33,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock theme provider
-vi.mock('next-themes', () => ({
-  useTheme: () => ({ theme: 'light', setTheme: vi.fn() }),
+vi.mock('@/providers/ThemeProvider', () => ({
+  useTheme: () => ({ theme: 'light', setTheme: vi.fn(), resolvedTheme: 'light' }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
