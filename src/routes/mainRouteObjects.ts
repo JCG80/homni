@@ -39,7 +39,7 @@ export const mainRouteObjects: AppRoute[] = [
   {
     path: '/login',
     element: createElement(LoginPage),
-    roles: ['guest'],
+    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
     navKey: 'login'
   },
   {

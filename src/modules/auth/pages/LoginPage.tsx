@@ -1,13 +1,43 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { DevSeedUsers } from '@/modules/auth/components/DevSeedUsers';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/modules/auth/hooks';
+import { routeForRole } from '@/config/routeForRole';
+import { UserRole } from '@/types/auth';
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, role, isLoading } = useAuth();
   const userType = searchParams.get('type') === 'business' ? 'business' : 'private';
   const returnUrl = searchParams.get('returnUrl');
+
+  // Redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (isAuthenticated && role && !isLoading) {
+      const redirectTo = returnUrl || routeForRole(role as UserRole);
+      navigate(redirectTo, { replace: true });
+    }
+  }, [isAuthenticated, role, isLoading, returnUrl, navigate]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Sjekker innlogging...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render login form if user is already authenticated (will redirect)
+  if (isAuthenticated && role) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
