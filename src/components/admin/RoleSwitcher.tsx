@@ -14,17 +14,17 @@ export const RoleSwitcher: React.FC = () => {
   const { isAdmin, isMasterAdmin, role: actualRole } = useAuth();
   const { previewRole, setPreviewRole, isPreviewMode, canUsePreview } = useRolePreview();
 
-  // Auto-navigate when preview role changes
-  useEffect(() => {
-    if (isPreviewMode && previewRole) {
-      const targetRoute = routeForRole(previewRole);
-      navigate(targetRoute, { replace: true });
-    } else if (!isPreviewMode && actualRole) {
-      // When exiting preview mode, go back to actual role's dashboard
-      const targetRoute = routeForRole(actualRole as UserRole);
-      navigate(targetRoute, { replace: true });
-    }
-  }, [previewRole, isPreviewMode, actualRole, navigate]);
+  // Auto-navigation DISABLED temporarily to fix rendering issues
+  // useEffect(() => {
+  //   if (isPreviewMode && previewRole) {
+  //     const targetRoute = routeForRole(previewRole);
+  //     navigate(targetRoute, { replace: true });
+  //   } else if (!isPreviewMode && actualRole) {
+  //     // When exiting preview mode, go back to actual role's dashboard
+  //     const targetRoute = routeForRole(actualRole as UserRole);
+  //     navigate(targetRoute, { replace: true });
+  //   }
+  // }, [previewRole, isPreviewMode, actualRole, navigate]);
 
   // Only show to admins
   if (!canUsePreview || (!isAdmin && !isMasterAdmin)) {

@@ -19,7 +19,7 @@ const CompanyLeadDashboardPage = lazy(() => import('@/pages/CompanyLeadDashboard
 const AdminDashboard = lazy(() => import('@/components/dashboard/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const CompanyDashboard = lazy(() => import('@/modules/dashboard/CompanyDashboard').then(m => ({ default: m.CompanyDashboard })));
 const UserDashboard = lazy(() => import('@/components/dashboard/UserDashboard'));
-const ContentEditorDashboard = lazy(() => import('@/components/dashboard/ContentEditorDashboard'));
+const ContentEditorDashboard = lazy(() => import('@/modules/dashboard/ContentEditorDashboard').then(m => ({ default: m.ContentEditorDashboard })));
 
 export const mainRouteObjects: AppRoute[] = [
   {
