@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MemoryRouter, Routes } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
-import { adminRoutes } from '@/routes/adminRoutes';
+import { adminRouteObjects } from '@/routes/adminRouteObjects';
 
 // Mock useAuth to control role
 const mockAuth: any = {
@@ -36,7 +36,11 @@ describe('Admin routes comprehensive security - internal access', () => {
 
     render(
       <MemoryRouter initialEntries={["/admin/internal-access"]}>
-        <Routes>{adminRoutes}</Routes>
+        <Routes>
+          {adminRouteObjects.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        </Routes>
       </MemoryRouter>
     );
 
@@ -51,7 +55,11 @@ describe('Admin routes comprehensive security - internal access', () => {
 
     render(
       <MemoryRouter initialEntries={["/admin/internal-access"]}>
-        <Routes>{adminRoutes}</Routes>
+        <Routes>
+          {adminRouteObjects.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        </Routes>
       </MemoryRouter>
     );
 

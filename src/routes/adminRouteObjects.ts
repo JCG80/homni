@@ -3,11 +3,12 @@ import type { AppRoute } from './routeTypes';
 
 const AdminLeadsPage = lazy(() => import('@/modules/leads/pages/AdminLeadsPage').then(m => ({ default: m.AdminLeadsPage })));
 const AdminDashboard = lazy(() => import('@/components/dashboard/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
-const RoleManagementPage = lazy(() => import('@/pages/admin/RoleManagementPage').then(m => ({ default: m.default })));
-const MembersManagementPage = lazy(() => import('@/pages/admin/MembersManagementPage').then(m => ({ default: m.default })));
-const CompaniesManagementPage = lazy(() => import('@/pages/admin/CompaniesManagementPage').then(m => ({ default: m.default })));
-const SystemModulesPage = lazy(() => import('@/pages/admin/SystemModulesPage').then(m => ({ default: m.default })));
-const InternalAccessPage = lazy(() => import('@/pages/admin/InternalAccessPage').then(m => ({ default: m.default })));
+const ApiAdminPage = lazy(() => import('@/pages/admin/ApiAdminPage').then(m => ({ default: m.default })));
+const RoleManagementPage = lazy(() => import('@/modules/admin/pages/RoleManagementPage').then(m => ({ default: m.default })));
+const MembersManagementPage = lazy(() => import('@/modules/admin/pages/MembersManagementPage').then(m => ({ default: m.MembersManagementPage })));
+const CompaniesManagementPage = lazy(() => import('@/modules/admin/pages/CompaniesManagementPage').then(m => ({ default: m.default })));
+const SystemModulesPage = lazy(() => import('@/modules/system/pages/SystemModulesPage').then(m => ({ default: m.SystemModulesPage })));
+const InternalAccessPage = lazy(() => import('@/modules/admin/pages/InternalAccessPage').then(m => ({ default: m.default })));
 
 export const adminRouteObjects: AppRoute[] = [
   {
@@ -15,6 +16,12 @@ export const adminRouteObjects: AppRoute[] = [
     element: createElement(AdminDashboard),
     roles: ['admin', 'master_admin'],
     navKey: 'admin-dashboard'
+  },
+  {
+    path: '/admin/api',
+    element: createElement(ApiAdminPage),
+    roles: ['admin', 'master_admin'],
+    navKey: 'admin-api'
   },
   {
     path: '/admin/leads',

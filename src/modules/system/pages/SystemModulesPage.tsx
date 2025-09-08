@@ -79,7 +79,7 @@ export const SystemModulesPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Systemmoduler</h1>
+      <h1 className="text-2xl font-semibold mb-6">Systemmoduler</h1>
 
       {error && (
         <div className="bg-red-50 border border-red-200 p-4 rounded-md mb-6">

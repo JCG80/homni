@@ -15,7 +15,7 @@ const ApiAdminPage: React.FC = () => {
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <div className="space-y-1">
-        <h1 className="text-xl font-semibold">API & Integrasjoner</h1>
+        <h1 className="text-2xl font-semibold">API & Integrasjoner</h1>
         <p className="text-sm text-muted-foreground">
           Konfigurasjon og oversikt. Klar til bruk når API/hemmeligheter er satt.
         </p>

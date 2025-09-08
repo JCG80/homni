@@ -56,7 +56,7 @@ export function MembersManagementPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Brukeradministrasjon - Brukere</h1>
+      <h1 className="text-2xl font-semibold mb-6">Medlemsadministrasjon</h1>
       <AdminNavigation />
       
       {isLoading ? (

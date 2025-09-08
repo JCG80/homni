@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MemoryRouter, Routes } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
-import { adminRoutes } from '@/routes/adminRoutes';
+import { adminRouteObjects } from '@/routes/adminRouteObjects';
 
 // Central mockable auth state
 const mockAuth: any = {
@@ -61,7 +61,11 @@ describe('Security Regression - Admin route access by role', () => {
     for (const r of routesMatrix) {
       render(
         <MemoryRouter initialEntries={[r.path]}>
-          <Routes>{adminRoutes}</Routes>
+          <Routes>
+            {adminRouteObjects.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
         </MemoryRouter>
       );
       expect(screen.queryByText(r.label)).not.toBeInTheDocument();
@@ -79,7 +83,11 @@ describe('Security Regression - Admin route access by role', () => {
       for (const r of routesMatrix) {
         render(
           <MemoryRouter initialEntries={[r.path]}>
-            <Routes>{adminRoutes}</Routes>
+            <Routes>
+              {adminRouteObjects.map(route => (
+                <Route key={route.path} path={route.path} element={route.element} />
+              ))}
+            </Routes>
           </MemoryRouter>
         );
 
@@ -101,7 +109,11 @@ describe('Security Regression - Admin route access by role', () => {
     for (const r of masterOnly) {
       render(
         <MemoryRouter initialEntries={[r.path]}>
-          <Routes>{adminRoutes}</Routes>
+          <Routes>
+            {adminRouteObjects.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
         </MemoryRouter>
       );
       expect(screen.queryByText(r.label)).not.toBeInTheDocument();
@@ -115,7 +127,11 @@ describe('Security Regression - Admin route access by role', () => {
     for (const r of routesMatrix) {
       render(
         <MemoryRouter initialEntries={[r.path]}>
-          <Routes>{adminRoutes}</Routes>
+          <Routes>
+            {adminRouteObjects.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
         </MemoryRouter>
       );
       expect(screen.getByText(r.label)).toBeInTheDocument();
