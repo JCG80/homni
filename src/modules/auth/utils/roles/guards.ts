@@ -1,6 +1,5 @@
 
-import { UserRole } from '../../types/unified-types';
-import { ALL_ROLES } from './types';
+import { UserRole, ALL_ROLES } from '../../normalizeRole';
 
 /**
  * Type guard to check if a value is a valid UserRole

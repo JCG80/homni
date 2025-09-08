@@ -5,6 +5,43 @@
 
 export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
 
+/**
+ * All roles in the system - CANONICAL SOURCE OF TRUTH
+ */
+export const ALL_ROLES: UserRole[] = [
+  'guest',
+  'user', 
+  'company',
+  'content_editor',
+  'admin',
+  'master_admin'
+];
+
+/**
+ * Public-facing roles
+ */
+export const PUBLIC_ROLES: UserRole[] = [
+  'guest'
+];
+
+/**
+ * Roles that require authentication
+ */
+export const AUTHENTICATED_ROLES: UserRole[] = [
+  'user',
+  'company',
+  'content_editor',
+  'admin',
+  'master_admin'
+];
+
+/**
+ * Type guard to check if a string is a valid UserRole
+ */
+export function isUserRole(role: any): role is UserRole {
+  return ALL_ROLES.includes(role as UserRole);
+}
+
 const LEGACY_ROLE_MAP: Record<string, UserRole> = {
   // Legacy mappings
   'anonymous': 'guest',
@@ -73,8 +110,7 @@ export function normalizeRole(role: string | null | undefined): UserRole {
  * Checks if a role is already canonical (no mapping needed)
  */
 function isCanonicalRole(role: string): boolean {
-  const canonicalRoles: UserRole[] = ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'];
-  return canonicalRoles.includes(role as UserRole);
+  return ALL_ROLES.includes(role as UserRole);
 }
 
 /**

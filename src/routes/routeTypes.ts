@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
-export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
+export type { UserRole }; // Re-export for compatibility
 
 export type AppRoute = {
   path: string;

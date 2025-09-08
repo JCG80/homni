@@ -1,5 +1,5 @@
 import { useAuth } from '@/modules/auth/hooks';
-import { UserRole } from '@/routes/routeTypes';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 export const useCurrentRole = (): UserRole => {
   const { user, profile } = useAuth();

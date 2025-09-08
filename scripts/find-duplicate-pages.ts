@@ -1,141 +1,137 @@
 #!/usr/bin/env ts-node
 
 /**
- * Script to detect and prevent duplicate page components across the codebase
- * Follows find-before-build architecture principle
+ * Enhanced duplicate detection script
+ * Detects duplicate pages, types, and constants to prevent code duplication
  */
 
 import { glob } from 'glob';
-import path from 'path';
-import fs from 'fs';
+import * as fs from 'fs';
+import * as path from 'path';
 
-interface PageInfo {
-  path: string;
-  component: string;
-  exportName: string;
+interface DuplicateIssue {
+  type: 'page' | 'type' | 'constant';
+  name: string;
+  locations: string[];
+  severity: 'error' | 'warning';
 }
 
-async function findAllPages(): Promise<PageInfo[]> {
-  // Find all potential page files
-  const patterns = [
-    'src/pages/**/*.tsx',
-    'src/modules/**/pages/*.tsx',
-    'src/components/**/pages/*.tsx'
-  ];
-
-  const pages: PageInfo[] = [];
-
-  for (const pattern of patterns) {
-    const files = await glob(pattern);
-    
-    for (const file of files) {
-      const content = fs.readFileSync(file, 'utf-8');
-      
-      // Extract component name from filename
-      const filename = path.basename(file, '.tsx');
-      
-      // Look for export patterns
-      const exportMatches = content.match(/export\s+(const|function)\s+(\w+)/g) || [];
-      const defaultExportMatch = content.match(/export\s+default\s+(\w+)/);
-      
-      let exportName = filename;
-      if (defaultExportMatch) {
-        exportName = defaultExportMatch[1];
-      } else if (exportMatches.length > 0) {
-        const firstExport = exportMatches[0].match(/export\s+(?:const|function)\s+(\w+)/);
-        if (firstExport) {
-          exportName = firstExport[1];
-        }
-      }
-
-      pages.push({
-        path: file,
-        component: filename,
-        exportName
+async function findDuplicatePages(): Promise<DuplicateIssue[]> {
+  const issues: DuplicateIssue[] = [];
+  
+  // Find all page components
+  const pageFiles = await glob('src/**/*Page.tsx');
+  const pageNames = new Map<string, string[]>();
+  
+  pageFiles.forEach(file => {
+    const basename = path.basename(file, '.tsx');
+    if (!pageNames.has(basename)) {
+      pageNames.set(basename, []);
+    }
+    pageNames.get(basename)!.push(file);
+  });
+  
+  // Find duplicates
+  pageNames.forEach((locations, name) => {
+    if (locations.length > 1) {
+      issues.push({
+        type: 'page',
+        name,
+        locations,
+        severity: 'error'
       });
     }
-  }
-
-  return pages;
+  });
+  
+  return issues;
 }
 
-function detectDuplicates(pages: PageInfo[]): Map<string, PageInfo[]> {
-  const duplicates = new Map<string, PageInfo[]>();
+async function findDuplicateTypes(): Promise<DuplicateIssue[]> {
+  const issues: DuplicateIssue[] = [];
   
-  // Group by component name
-  const grouped = pages.reduce((acc, page) => {
-    const key = page.component.toLowerCase();
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(page);
-    return acc;
-  }, {} as Record<string, PageInfo[]>);
-
-  // Find duplicates
-  for (const [componentName, pageList] of Object.entries(grouped)) {
-    if (pageList.length > 1) {
-      duplicates.set(componentName, pageList);
+  // Patterns to look for
+  const typePatterns = [
+    { name: 'UserRole', pattern: /export type UserRole = / },
+    { name: 'ALL_ROLES', pattern: /export const ALL_ROLES/ },
+    { name: 'PUBLIC_ROLES', pattern: /export const PUBLIC_ROLES/ },
+    { name: 'AUTHENTICATED_ROLES', pattern: /export const AUTHENTICATED_ROLES/ },
+    { name: 'roleIcons', pattern: /const roleIcons = {/ },
+    { name: 'roleLabels', pattern: /const roleLabels = {/ },
+  ];
+  
+  const typeScriptFiles = await glob('src/**/*.{ts,tsx}');
+  
+  for (const pattern of typePatterns) {
+    const locations: string[] = [];
+    
+    for (const file of typeScriptFiles) {
+      const content = fs.readFileSync(file, 'utf8');
+      if (pattern.pattern.test(content)) {
+        locations.push(file);
+      }
+    }
+    
+    if (locations.length > 1) {
+      // Filter out known acceptable duplicates
+      const filteredLocations = locations.filter(loc => {
+        const content = fs.readFileSync(loc, 'utf8');
+        // Allow re-exports and legacy compatibility files
+        return !content.includes('Re-export') && !content.includes('DEPRECATED');
+      });
+      
+      if (filteredLocations.length > 1) {
+        issues.push({
+          type: 'type',
+          name: pattern.name,
+          locations: filteredLocations,
+          severity: pattern.name.includes('Role') ? 'error' : 'warning'
+        });
+      }
     }
   }
-
-  return duplicates;
-}
-
-function generateReport(duplicates: Map<string, PageInfo[]>): void {
-  console.log('\n🔍 DUPLICATE PAGE DETECTION REPORT');
-  console.log('=====================================');
   
-  if (duplicates.size === 0) {
-    console.log('✅ No duplicate pages found!');
-    return;
-  }
-
-  console.log(`❌ Found ${duplicates.size} duplicate page components:\n`);
-
-  duplicates.forEach((pages, componentName) => {
-    console.log(`📄 Component: ${componentName}`);
-    console.log(`   Duplicates found: ${pages.length}`);
-    
-    pages.forEach((page, index) => {
-      const isModular = page.path.includes('/modules/');
-      const isPlaceholder = page.path.includes('/pages/');
-      
-      let status = '';
-      if (isModular) status = '✓ Functional';
-      else if (isPlaceholder) status = '⚠️  Placeholder';
-      
-      console.log(`   ${index + 1}. ${page.path} ${status}`);
-    });
-    
-    console.log('   Recommendation: Keep functional version, delete placeholder\n');
-  });
+  return issues;
 }
 
 async function main() {
-  try {
-    console.log('🔍 Scanning for duplicate pages...');
+  console.log('🔍 Scanning for duplicate pages and types...\n');
+  
+  const [pageIssues, typeIssues] = await Promise.all([
+    findDuplicatePages(),
+    findDuplicateTypes()
+  ]);
+  
+  const allIssues = [...pageIssues, ...typeIssues];
+  
+  if (allIssues.length === 0) {
+    console.log('✅ No duplicates found!');
+    process.exit(0);
+  }
+  
+  let errorCount = 0;
+  
+  allIssues.forEach(issue => {
+    const emoji = issue.severity === 'error' ? '❌' : '⚠️';
+    const typeLabel = issue.type.toUpperCase();
     
-    const pages = await findAllPages();
-    const duplicates = detectDuplicates(pages);
+    console.log(`${emoji} DUPLICATE ${typeLabel}: ${issue.name}`);
+    issue.locations.forEach(loc => console.log(`   ${loc}`));
+    console.log();
     
-    generateReport(duplicates);
-    
-    // Exit with error code if duplicates found (for CI)
-    if (duplicates.size > 0) {
-      console.log('💡 To fix: Run this script in --fix mode or manually remove duplicates');
-      process.exit(1);
+    if (issue.severity === 'error') {
+      errorCount++;
     }
-    
-    console.log('✅ Scan complete - no issues found');
-    
-  } catch (error) {
-    console.error('❌ Error scanning for duplicates:', error);
+  });
+  
+  if (errorCount > 0) {
+    console.log(`\n💥 Found ${errorCount} critical duplicates that must be resolved.`);
     process.exit(1);
+  } else {
+    console.log(`\n⚠️ Found ${allIssues.length} warnings - consider consolidating.`);
+    process.exit(0);
   }
 }
 
-// Run if called directly
 if (require.main === module) {
-  main();
+  main().catch(console.error);
 }
-
-export { findAllPages, detectDuplicates, generateReport };

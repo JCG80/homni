@@ -5,40 +5,13 @@
 
 // Import and re-export canonical types from normalizeRole
 import type { UserRole as CanonicalUserRole } from '@/modules/auth/normalizeRole';
-import { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleLevel } from '@/modules/auth/normalizeRole';
+import { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleLevel, isUserRole as isUserRoleCanonical } from '@/modules/auth/normalizeRole';
 
 export type UserRole = CanonicalUserRole;
 export { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleLevel };
 
-/**
- * All canonical roles in the system (no legacy values)
- */
-export const ALL_ROLES: UserRole[] = [
-  'guest',
-  'user', 
-  'company',
-  'content_editor',
-  'admin',
-  'master_admin'
-];
-
-/**
- * Public-facing roles (canonical)
- */
-export const PUBLIC_ROLES: UserRole[] = [
-  'guest'
-];
-
-/**
- * Roles that require authentication (canonical)
- */
-export const AUTHENTICATED_ROLES: UserRole[] = [
-  'user',
-  'company',
-  'content_editor',
-  'admin',
-  'master_admin'
-];
+// Re-export constants from canonical source
+export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from '@/modules/auth/normalizeRole';
 
 /**
  * Unified user profile interface that matches the database schema
@@ -176,7 +149,8 @@ export interface ModuleAccess {
 
 /**
  * Type guard to check if a string is a valid UserRole
+ * @deprecated Use isUserRoleCanonical from @/modules/auth/normalizeRole instead
  */
 export function isUserRole(role: any): role is UserRole {
-  return ALL_ROLES.includes(role);
+  return isUserRoleCanonical(role);
 }

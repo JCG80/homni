@@ -1,161 +1,142 @@
-# Find-Before-Build Architecture Guide
+# Find-Before-Build Protocol
 
-This document outlines the systematic approach to prevent duplicate components, objects, and database entities in the Homni platform.
+## Identifisering av objekter og felter
 
-## Core Principle
+### 1. Systematisk søk FØRST
+Før du oppretter **nytt** objekt/felt/type:
 
-**ALWAYS SEARCH FIRST** - Before creating any new component, object, or database entity, perform a comprehensive search to ensure it doesn't already exist.
-
-## Search Strategy
-
-### 1. Code Search
 ```bash
-# Search for similar components
+# Søk i hele kodebasen
+npm run find-duplicates  # Kjører vårt script
+
+# Manuelt søk etter lignende objekter
+grep -r "ObjectNavn" src/
+grep -r "field_name" src/
+```
+
+**Analyser alle treff:**
+- Hvis **flere varianter** finnes → behold mest robuste, slett resten
+- Hvis **lignende** finnes → verifiser 100% at det dekker ditt behov
+- Hvis **ingenting** finnes → lag nytt med full DoD
+
+### 2. Single Source of Truth etablering
+
+**KRITISK:** Én kanonisk kilde per type/konsept.
+
+**Eksempel - UserRole typer:**
+```
+❌ FEIL: Flere definisjoner
+- src/types/auth.ts: UserRole + ALL_ROLES
+- src/modules/auth/utils/roles/types.ts: UserRole + ALL_ROLES  
+- src/routes/routeTypes.ts: UserRole
+
+✅ RIKTIG: Én kanonisk kilde
+- src/modules/auth/normalizeRole.ts: UserRole + ALL_ROLES (CANONICAL)
+- Andre filer: import fra canonical + re-export for kompatibilitet
+```
+
+### 3. Type Consolidation Pattern
+```typescript
+// CANONICAL SOURCE (src/modules/auth/normalizeRole.ts)
+export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
+export const ALL_ROLES: UserRole[] = ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'];
+
+// RE-EXPORT FILES (backward compatibility)
+// DEPRECATED: Use @/modules/auth/normalizeRole instead
+import { UserRole, ALL_ROLES } from '@/modules/auth/normalizeRole';
+export type { UserRole };
+export { ALL_ROLES };
+```
+
+### 4. Automatisert duplikat-deteksjon
+
+**Scripts kjøres i CI/CD:**
+```bash
+npm run find-duplicates          # Finn duplikate pages og typer
+npm run test:no-duplicates       # Stopp build hvis duplikater
+```
+
+**Pre-commit hooks:**
+- Blokkerer commits med duplikate `UserRole`, `ALL_ROLES`, `*Page.tsx`
+- Krever at nye typer ikke kolliderer med eksisterende
+
+### 5. Definition of Done (DoD) for nye objekter
+
+✅ **Søk utført** - ingen duplikat i hele repoet  
+✅ **Migrasjon + rollback** på plass (hvis DB-relatert)  
+✅ **RLS policies** sjekket (auth.uid() beskyttelse minimum)  
+✅ **Types/TS interfaces** oppdatert  
+✅ **Unit + integrasjonstester** dekker objektet  
+✅ **Dokumentasjon** (README + API/OpenAPI) oppdatert  
+✅ **CI kjører grønt** - ingen build/lint errors  
+
+### 6. Feilhåndtering & Error-Driven Development
+
+**Hvis noe mangler → ikke lag nytt, fiks eksisterende:**
+
+```typescript
+// ❌ FEIL: Lage ny type for manglende felt
+type NewUserProfile = UserProfile & { missing_field: string }
+
+// ✅ RIKTIG: Utvid eksisterende type
+interface UserProfile {
+  // ... keep existing code
+  missing_field?: string; // Add what you need
+}
+```
+
+**Crash-to-green workflow:**
+1. Build krasjer → identifiser **minste** endring for grønt bygg
+2. Patch raskt (få CI grønt)  
+3. Opprett issue for bedre løsning senere
+4. **Aldri** lag duplikat for å unngå krasj
+
+### 7. Rollback & Cleanup Strategy
+
+**Cleanup-regler:**
+- Slett filer som ikke refereres av noen
+- Merge lignende objekter med overlappende felter  
+- Konsolider duplikate konstanter (roleIcons, roleLabels, etc.)
+- Fjern dead imports og unused types
+
+**Rollback-plan:**
+- Git revert ved kritiske feil
+- Backup av slettede filer i /docs/rollback/
+- Dokumenter alle store konsolideringer i ADR-filer
+
+### 8. Team Workflow
+
+**PR Requirements:**
+- **Beskriv** hvorfor nytt objekt/felt ble laget
+- **Dokumenter** at søk er utført (ingen duplikat funnet)
+- **List** berørte moduler og potensielle breaking changes
+- **Test** at alle eksisterende funksjoner fortsatt virker
+
+**Review Checklist:**
+- [ ] Søk etter eksisterende løsninger utført?
+- [ ] Canonical source etablert/brukt?
+- [ ] Backward compatibility bevart?
+- [ ] Tests dekker nye objekter?
+- [ ] Dokumentasjon oppdatert?
+
+---
+
+## Scripts og Verktøy
+
+### find-duplicates
+Identifiserer duplikate pages, typer og konstanter:
+```bash
 npm run find-duplicates
-
-# Search for specific patterns
-grep -r "ComponentName" src/
 ```
 
-### 2. Database Search
-```sql
--- Check for similar tables
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' 
-AND table_name LIKE '%pattern%';
-
--- Check for similar columns
-SELECT table_name, column_name FROM information_schema.columns 
-WHERE column_name LIKE '%pattern%';
+### CI Integration
+Pre-commit hook setup:
+```json
+{
+  "scripts": {
+    "pre-commit": "npm run find-duplicates && npm run lint && npm run typecheck"
+  }
+}
 ```
 
-### 3. Type Search
-```bash
-# Search TypeScript interfaces
-grep -r "interface.*Name" src/
-grep -r "type.*Name" src/
-```
-
-## Decision Matrix
-
-| Found | Action | Rationale |
-|-------|--------|-----------|
-| Exact match | Use existing | Prevent duplication |
-| Similar functionality | Extend existing | Maintain consistency |
-| Placeholder/stub | Replace with functional | Improve code quality |
-| Nothing found | Create new | Fill genuine gap |
-
-## Implementation Steps
-
-### For Components
-1. **Search**: Check `src/components/`, `src/modules/`, `src/pages/`
-2. **Analyze**: Compare functionality, completeness, usage
-3. **Decision**: Keep most robust version
-4. **Clean**: Remove duplicates, update imports
-5. **Test**: Verify all references work
-
-### For Database Objects
-1. **Search**: Check migrations, types, existing tables
-2. **Analyze**: Compare schema, constraints, relationships  
-3. **Decision**: Extend existing or create new
-4. **Migrate**: Use proper migration with rollback
-5. **Verify**: Test RLS policies and data integrity
-
-### For Types/Interfaces
-1. **Search**: Check all `.ts` files for similar types
-2. **Analyze**: Compare properties, usage patterns
-3. **Decision**: Consolidate to single source of truth
-4. **Refactor**: Update all imports and references
-5. **Validate**: Ensure type safety maintained
-
-## Quality Gates
-
-### Pre-commit Checks
-- No duplicate components (automated scan)
-- No unused types/interfaces
-- No orphaned migrations
-- All imports resolve correctly
-
-### CI/CD Validation
-- Build passes without errors
-- Type checking passes
-- No duplicate database objects
-- All tests pass
-
-## Tools and Scripts
-
-### Duplicate Detection
-```bash
-# Run duplicate page scanner
-npm run find-duplicates
-
-# Check for unused exports
-npm run find-unused
-
-# Validate database consistency
-npm run validate-db
-```
-
-### Automated Cleanup
-```bash
-# Remove duplicate imports
-npm run clean-imports
-
-# Consolidate types
-npm run consolidate-types
-
-# Update migration dependencies
-npm run check-migrations
-```
-
-## Common Patterns
-
-### Admin Pages Structure
-- Functional: `src/modules/admin/pages/`
-- Routes: Reference functional versions only
-- Tests: Co-located with functional components
-
-### Database Entities
-- Types: Single canonical source in `src/types/`
-- Migrations: Forward + rollback pairs
-- RLS: Consistent auth patterns
-
-### Type Definitions
-- Canonical: `src/types/domain-canonical.ts`
-- Domain-specific: Extend canonical types
-- Avoid: Multiple similar interfaces
-
-## Rollback Strategy
-
-Every change must include rollback capability:
-
-1. **Code**: Git revert + dependency cleanup
-2. **Database**: Migration rollback scripts
-3. **Types**: Revert + re-run type generation
-4. **Routes**: Restore previous working state
-
-## Monitoring & Alerts
-
-### Warning Signs
-- Build errors from missing imports
-- Type conflicts between modules  
-- Multiple similar database tables
-- Unused exports accumulating
-
-### Response Actions
-1. Stop new development
-2. Identify root cause
-3. Apply find-before-build analysis
-4. Clean up systematically
-5. Update prevention tools
-
-## Success Metrics
-
-- ✅ Zero duplicate components detected
-- ✅ All builds pass without warnings
-- ✅ Database schema is normalized
-- ✅ Type system is consistent
-- ✅ CI/CD pipeline is green
-- ✅ No orphaned code or migrations
-
-This approach ensures the Homni platform remains maintainable, scalable, and free of technical debt from duplication.
+**Målsetting:** Null duplikater, konsistente typer, grønn build til enhver tid.

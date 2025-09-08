@@ -1,39 +1,12 @@
 
 /**
- * User role definition
+ * DEPRECATED: Use @/modules/auth/normalizeRole instead
+ * Re-export canonical types from normalizeRole.ts
  */
 
-// Import from our unified types
-import type { UserRole } from '../../types/unified-types';
+// Import from our canonical source of truth
+import { UserRole, ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES, isUserRole } from '../../normalizeRole';
 
-// All possible roles in the system
+// Re-export for backward compatibility
 export type { UserRole };
-
-// All roles (used for validation)
-export const ALL_ROLES: UserRole[] = [
-  'guest',
-  'user',
-  'company',
-  'admin',
-  'master_admin',
-  'content_editor'
-];
-
-// Public-facing roles
-export const PUBLIC_ROLES: UserRole[] = [
-  'guest'
-];
-
-// Roles that require authentication
-export const AUTHENTICATED_ROLES: UserRole[] = [
-  'user',
-  'company',
-  'admin',
-  'master_admin',
-  'content_editor'
-];
-
-// Type guard to check if a string is a valid UserRole
-export function isUserRole(role: any): role is UserRole {
-  return ALL_ROLES.includes(role as UserRole);
-}
+export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES, isUserRole };

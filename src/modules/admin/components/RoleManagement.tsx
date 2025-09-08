@@ -21,29 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Trash2, Crown, Shield, Edit3, Building2, User } from 'lucide-react';
-import { UserRole, UserProfile, ALL_ROLES } from '@/types/auth';
+import { Plus, Trash2, Shield, Crown } from 'lucide-react';
+import { UserRole, ALL_ROLES } from '@/modules/auth/normalizeRole';
+import { roleIcons, roleLabels } from '@/modules/auth/utils/shared/roleDisplay';
 import { useRoleGrants } from '@/hooks/useRoleGrants';
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';
-
-const roleIcons = {
-  guest: User,
-  user: User,
-  company: Building2,
-  content_editor: Edit3,
-  admin: Shield,
-  master_admin: Crown,
-};
-
-const roleLabels = {
-  guest: 'Gjest',
-  user: 'Bruker',
-  company: 'Bedrift',
-  content_editor: 'Innholdsredaktør',
-  admin: 'Administrator',
-  master_admin: 'Master Admin',
-};
 
 interface RoleManagementProps {
   userId: string;
