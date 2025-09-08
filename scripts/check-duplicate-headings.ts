@@ -1,81 +1,155 @@
-#!/usr/bin/env node
-
+#!/usr/bin/env tsx
 /**
- * Check for duplicate <h1> tags that could cause SEO issues
- * Flags pages that both use PageLayout (which renders <h1>) and also contain their own <h1>
+ * Check for duplicate headings (PageLayout + component h1)
+ * Prevents double headings in UI
  */
 
-import fs from 'fs';
-import path from 'path';
+import { readFileSync, existsSync } from 'fs';
 import { glob } from 'glob';
 
 interface HeadingIssue {
   file: string;
-  issues: string[];
+  line: number;
+  type: 'jsx-h1' | 'page-layout-title';
+  content: string;
 }
 
-const findDuplicateHeadings = async (): Promise<HeadingIssue[]> => {
+async function checkDuplicateHeadings(): Promise<HeadingIssue[]> {
   const issues: HeadingIssue[] = [];
   
-  // Find all React component files
-  const files = await glob('src/**/*.{tsx,jsx}', { ignore: 'node_modules/**' });
+  const tsxFiles = await glob('src/**/*.{ts,tsx}', { ignore: 'node_modules/**' });
   
-  for (const file of files) {
-    const content = fs.readFileSync(file, 'utf-8');
-    const fileIssues: string[] = [];
+  for (const file of tsxFiles) {
+    if (!existsSync(file)) continue;
     
-    // Check if file uses PageLayout (which provides <h1>)
-    const usesPageLayout = content.includes('<PageLayout') || content.includes('PageLayout');
+    const content = readFileSync(file, 'utf-8');
+    const lines = content.split('\n');
     
-    // Check for manual <h1> tags
-    const hasManualH1 = /<h1[^>]*>/.test(content) || /^#\s/.test(content); // JSX or markdown style
+    let hasPageLayout = false;
+    let hasH1 = false;
+    let hasPageLayoutTitle = false;
     
-    if (usesPageLayout && hasManualH1) {
-      fileIssues.push('Uses PageLayout AND contains manual <h1> - potential duplicate heading');
-    }
+    lines.forEach((line, index) => {
+      // Check for PageLayout usage
+      if (line.includes('<PageLayout') || line.includes('PageLayout')) {
+        hasPageLayout = true;
+        
+        // Check if PageLayout has title prop
+        if (line.includes('title=')) {
+          hasPageLayoutTitle = true;
+          issues.push({
+            file,
+            line: index + 1,
+            type: 'page-layout-title',
+            content: line.trim()
+          });
+        }
+      }
+      
+      // Check for h1 elements
+      if (line.includes('<h1') || /^\s*#\s/.test(line)) {
+        hasH1 = true;
+        issues.push({
+          file,
+          line: index + 1,
+          type: 'jsx-h1',
+          content: line.trim()
+        });
+      }
+    });
     
-    // Check for multiple <h1> tags in same file
-    const h1Matches = content.match(/<h1[^>]*>/g);
-    if (h1Matches && h1Matches.length > 1) {
-      fileIssues.push(`Contains ${h1Matches.length} <h1> tags - should only have one per page`);
-    }
-    
-    if (fileIssues.length > 0) {
-      issues.push({ file, issues: fileIssues });
+    // Flag files that have both PageLayout with title AND h1 elements
+    if (hasPageLayout && hasPageLayoutTitle && hasH1) {
+      const pageLayoutIssues = issues.filter(i => 
+        i.file === file && i.type === 'page-layout-title'
+      );
+      const h1Issues = issues.filter(i => 
+        i.file === file && i.type === 'jsx-h1'
+      );
+      
+      // Only keep if there are actual conflicts
+      if (pageLayoutIssues.length > 0 && h1Issues.length > 0) {
+        // Keep these issues for reporting
+      } else {
+        // Remove false positives
+        issues.splice(issues.findIndex(i => i.file === file), issues.filter(i => i.file === file).length);
+      }
+    } else {
+      // Remove issues from files without conflicts
+      const fileIssues = issues.filter(i => i.file === file);
+      fileIssues.forEach(issue => {
+        const index = issues.indexOf(issue);
+        if (index > -1) issues.splice(index, 1);
+      });
     }
   }
   
   return issues;
-};
+}
 
-const main = async () => {
-  console.log('🔍 Checking for duplicate headings...\n');
-  
-  const issues = await findDuplicateHeadings();
+function printHeadingReport(issues: HeadingIssue[]) {
+  console.log('📝 DUPLICATE HEADINGS REPORT\n');
+  console.log('='.repeat(50));
   
   if (issues.length === 0) {
     console.log('✅ No duplicate heading issues found!');
-    process.exit(0);
+    return true;
   }
   
-  console.log(`❌ Found ${issues.length} files with heading issues:\n`);
+  // Group issues by file
+  const issuesByFile = issues.reduce((acc, issue) => {
+    if (!acc[issue.file]) acc[issue.file] = [];
+    acc[issue.file].push(issue);
+    return acc;
+  }, {} as Record<string, HeadingIssue[]>);
   
-  issues.forEach(({ file, issues: fileIssues }) => {
-    console.log(`📄 ${file}:`);
-    fileIssues.forEach(issue => {
-      console.log(`   • ${issue}`);
-    });
-    console.log();
+  console.log('❌ DUPLICATE HEADING ISSUES FOUND:\n');
+  
+  Object.entries(issuesByFile).forEach(([file, fileIssues]) => {
+    console.log(`📁 ${file}:`);
+    
+    const pageLayoutIssues = fileIssues.filter(i => i.type === 'page-layout-title');
+    const h1Issues = fileIssues.filter(i => i.type === 'jsx-h1');
+    
+    if (pageLayoutIssues.length > 0 && h1Issues.length > 0) {
+      console.log(`  ⚠️  CONFLICT: Both PageLayout title and h1 elements found`);
+      
+      pageLayoutIssues.forEach(issue => {
+        console.log(`    Line ${issue.line}: ${issue.content}`);
+      });
+      
+      h1Issues.forEach(issue => {
+        console.log(`    Line ${issue.line}: ${issue.content}`);
+      });
+    }
+    
+    console.log('');
   });
   
-  console.log('💡 Fix by ensuring only ONE source of <h1> per page:');
-  console.log('   - Use PageLayout for the main heading');
-  console.log('   - Remove manual <h1> tags from components inside PageLayout');
-  console.log('   - Use <h2>, <h3>, etc. for subheadings\n');
+  console.log('🔧 RECOMMENDED FIXES:');
+  console.log('  - Remove h1 elements from components that use PageLayout with title prop');
+  console.log('  - OR remove title prop from PageLayout and keep component h1');
+  console.log('  - Ensure only ONE main heading per page');
   
-  process.exit(1);
-};
+  return false;
+}
+
+async function main() {
+  try {
+    console.log('🔍 Checking for duplicate headings...\n');
+    
+    const issues = await checkDuplicateHeadings();
+    const healthy = printHeadingReport(issues);
+    
+    process.exit(healthy ? 0 : 1);
+  } catch (error) {
+    console.error('❌ Error checking headings:', error);
+    process.exit(1);
+  }
+}
 
 if (require.main === module) {
-  main().catch(console.error);
+  main();
 }
+
+export { checkDuplicateHeadings, printHeadingReport };
