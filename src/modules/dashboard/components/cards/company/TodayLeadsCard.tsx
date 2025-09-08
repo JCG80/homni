@@ -1,6 +1,6 @@
 /**
- * Today's Leads Card for Company Dashboard
- * Shows new and unanswered leads for the current company
+ * Company Dashboard - Today's Leads Card
+ * Shows new and unanswered leads for the company
  */
 
 import React from 'react';
@@ -10,27 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, Phone, Mail } from 'lucide-react';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';
-
-interface Lead {
-  id: string;
-  lead_type: string;
-  description: string;
-  created_at: string;
-  status: 'new' | 'assigned' | 'contacted' | 'won' | 'lost';
-  category: string;
-}
+import { Lead } from '@/types/leads-consolidated';
 
 export const TodayLeadsCard: React.FC = () => {
   const { profile } = useAuth();
-  const companyId = profile?.company_id;
 
   const { data: leads, isLoading, error, refetch } = useDashboardData<Lead[]>({
-    queryKey: ['company-leads-today', companyId],
+    queryKey: ['today-leads', profile?.company_id],
     fetcher: async () => {
-      if (!companyId) return [];
+      if (!profile?.company_id) return [];
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -39,42 +30,34 @@ export const TodayLeadsCard: React.FC = () => {
         .from('leads')
         .select(`
           *,
-          lead_assignments(
+          lead_assignments (
+            id,
             status,
-            created_at
+            assigned_at
           )
         `)
+        .eq('company_id', profile.company_id)
         .gte('created_at', today.toISOString())
         .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;
-
-      return (data || []).map(lead => ({
-        id: lead.id,
-        lead_type: lead.lead_type,
-        description: lead.description,
-        created_at: lead.created_at,
-        status: (lead.lead_assignments?.[0]?.status || 'new') as 'new' | 'assigned' | 'contacted' | 'won' | 'lost',
-        category: lead.category
-      }));
+      return (data || []) as Lead[];
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchInterval: 60 * 1000, // 1 minute
+    refetchInterval: 5 * 60 * 1000 // 5 minutes
   });
 
   const handleTakeOwnership = async (leadId: string) => {
-    // TODO: Implement take ownership functionality
+    // Placeholder for taking ownership action
     console.log('Taking ownership of lead:', leadId);
   };
 
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'high': return 'destructive';
-      case 'medium': return 'secondary';
-      case 'low': return 'outline';
-      default: return 'outline';
-    }
+  const getUrgencyColor = (createdAt: string) => {
+    const hoursOld = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+    if (hoursOld > 24) return 'destructive';
+    if (hoursOld > 12) return 'secondary';
+    return 'default';
   };
 
   const newLeads = leads?.filter(lead => lead.status === 'new') || [];
@@ -85,42 +68,38 @@ export const TodayLeadsCard: React.FC = () => {
       title="Dagens Leads"
       isLoading={isLoading}
       error={error}
-      empty={totalLeads === 0}
-      emptyMessage="Ingen nye leads i dag"
+      empty={!totalLeads}
+      emptyMessage="Ingen leads i dag"
       metric={{
-        label: 'Nye leads',
+        label: "Nye leads",
         value: newLeads.length,
-        change: newLeads.length > 0 ? {
-          value: 25,
-          trend: 'up' as const,
-          period: 'i går'
+        change: totalLeads > newLeads.length ? {
+          value: totalLeads - newLeads.length,
+          trend: 'neutral' as const,
+          period: 'totalt'
         } : undefined
       }}
       actions={
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => refetch()}
-        >
+        <Button variant="outline" size="sm" onClick={() => refetch()}>
           Oppdater
         </Button>
       }
     >
-      {leads && (
-        <div className="space-y-3">
-          {leads.slice(0, 5).map((lead) => (
-            <div key={lead.id} className="border rounded-lg p-3 space-y-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{lead.lead_type}</span>
-                    <Badge variant="secondary">
-                      {lead.category}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3 inline mr-1" />
+      <div className="space-y-3">
+        {leads?.slice(0, 5).map((lead) => (
+          <div key={lead.id} className="flex items-start justify-between p-3 border rounded-lg">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="outline">{lead.lead_type || 'Generell'}</Badge>
+                <Badge variant="secondary">{lead.category}</Badge>
+                {lead.status === 'new' && (
+                  <Badge variant="default">Ny</Badge>
+                )}
+              </div>
+              
+              <div className="text-xs text-muted-foreground mb-2">
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
                   {formatDistanceToNow(new Date(lead.created_at), { 
                     addSuffix: true,
                     locale: nb 
@@ -128,20 +107,13 @@ export const TodayLeadsCard: React.FC = () => {
                 </div>
               </div>
 
-              {lead.location && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="w-3 h-3" />
-                  {lead.location}
-                </div>
-              )}
-
               <div className="text-sm line-clamp-2">
                 {lead.description}
               </div>
 
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-3">
-                  {lead.phone && (
+                  {lead.customer_phone && (
                     <Button variant="ghost" size="sm" className="h-8 px-2">
                       <Phone className="w-3 h-3" />
                     </Button>
@@ -150,27 +122,28 @@ export const TodayLeadsCard: React.FC = () => {
                     <Mail className="w-3 h-3" />
                   </Button>
                 </div>
+
                 {lead.status === 'new' && (
                   <Button 
+                    variant="outline" 
                     size="sm" 
                     onClick={() => handleTakeOwnership(lead.id)}
+                    className="h-8"
                   >
                     Ta eierskap
                   </Button>
                 )}
               </div>
             </div>
-          ))}
+          </div>
+        ))}
 
-          {totalLeads > 5 && (
-            <div className="pt-2 text-center">
-              <Button variant="ghost" size="sm">
-                Se alle {totalLeads} leads
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+        {leads && leads.length > 5 && (
+          <Button variant="outline" size="sm" className="w-full">
+            Se alle ({leads.length})
+          </Button>
+        )}
+      </div>
     </DashboardCard>
   );
 };
