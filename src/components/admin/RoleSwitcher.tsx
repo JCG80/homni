@@ -36,8 +36,10 @@ export const RoleSwitcher: React.FC = () => {
   const handleRoleChange = (value: string) => {
     if (value === 'reset') {
       setPreviewRole(null);
+      // Don't navigate automatically, let user choose where to go
     } else if (ALL_ROLES.includes(value as UserRole)) {
       setPreviewRole(value as UserRole);
+      // Don't navigate automatically, let user choose where to go
     }
   };
 

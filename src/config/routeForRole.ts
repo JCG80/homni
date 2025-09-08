@@ -12,9 +12,9 @@ import type { UserRole } from '@/types/auth';
 export function routeForRole(role: UserRole): string {
   switch (role) {
     case 'master_admin':
-      return '/dashboard/admin';
+      return '/admin/dashboard';
     case 'admin':
-      return '/dashboard/admin';
+      return '/admin/dashboard';
     case 'content_editor':
       return '/dashboard/content-editor';
     case 'company':
