@@ -1,7 +1,7 @@
 # ADR-003: Role Type System Consolidation
 
 ## Status
-✅ **IMPLEMENTED** - 2025-09-08
+✅ **COMPLETED** - 2025-09-08
 
 ## Context
 Multiple `UserRole` type definitions and `ALL_ROLES` constants existed across the codebase, causing:
@@ -9,6 +9,7 @@ Multiple `UserRole` type definitions and `ALL_ROLES` constants existed across th
 - Import confusion between different role sources
 - Maintenance overhead with multiple sources of truth
 - TypeScript build errors due to conflicting definitions
+- Build failures from deprecated dependencies (node-sass, you package)
 
 ## Decision
 Establish `src/modules/auth/normalizeRole.ts` as the **single source of truth** for all role-related types and constants.

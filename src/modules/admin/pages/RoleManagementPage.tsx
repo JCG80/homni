@@ -4,25 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Shield, Users, Crown, Building2, Edit3, User } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { RoleManagement } from '@/modules/admin/components/RoleManagement';
-import { UserRole } from '@/modules/auth/utils/roles/types';
-
-const roleIcons: Record<UserRole, React.ComponentType<{ className?: string }>> = {
-  guest: User,
-  user: User,
-  company: Building2,
-  content_editor: Edit3,
-  admin: Shield,
-  master_admin: Crown,
-};
-
-const roleLabels: Record<UserRole, string> = {
-  guest: 'Gjest',
-  user: 'Bruker',
-  company: 'Bedrift',
-  content_editor: 'Innholdsredaktør',
-  admin: 'Administrator',
-  master_admin: 'Master Admin',
-};
+import { UserRole } from '@/modules/auth/normalizeRole';
+import { roleIcons, roleLabels } from '@/modules/auth/utils/shared/roleDisplay';
 
 export function RoleManagementPage() {
   const { user, profile, role, isAdmin, isMasterAdmin } = useAuth();
