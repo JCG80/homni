@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { setupTestUsers } from '../utils/setupTestUsers';
-import { UserRole, normalizeRole } from '@/types/auth';
+import { UserRole, normalizeRole } from '@/modules/auth/normalizeRole';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 

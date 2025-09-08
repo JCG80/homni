@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/modules/auth/hooks';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { ProfileSwitcher } from '@/components/profile/ProfileSwitcher';
 
 const roleIcons = {

@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { HomePage } from './HomePage';
 import { routeForRole } from '@/config/routeForRole';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { logger } from '@/utils/logger';
 
 const Index: React.FC = () => {

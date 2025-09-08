@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { useAuth } from '@/modules/auth/hooks';
 
 export interface ProfileContext {

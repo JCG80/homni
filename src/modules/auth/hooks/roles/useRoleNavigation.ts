@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../useAuth';
 import { routeForRole } from '@/config/routeForRole';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 interface UseRoleNavigationOptions {
   /**

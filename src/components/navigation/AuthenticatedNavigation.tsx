@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { AdminNavigation } from './AdminNavigation';
 
 interface AuthenticatedNavigationProps {

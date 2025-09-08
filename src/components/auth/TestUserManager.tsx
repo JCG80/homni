@@ -7,7 +7,7 @@ import { TestUserWarning } from './TestUserWarning';
 import { TestUserButton } from './TestUserButton';
 import { TestInstructions } from './TestInstructions';
 import { useState } from 'react';
-import { ALL_ROLES } from '@/types/auth';
+import { ALL_ROLES } from '@/modules/auth/normalizeRole';
 
 interface TestUserManagerProps {
   onLoginClick: (role: UserRole) => Promise<void>;

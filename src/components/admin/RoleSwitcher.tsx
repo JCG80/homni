@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Eye, User, Building2, Shield, PenTool, Users, Crown } from 'lucide-react';
 import { useRolePreview } from '@/contexts/RolePreviewContext';
 import { useAuth } from '@/modules/auth/hooks';
-import { ALL_ROLES } from '@/types/auth';
+import { ALL_ROLES } from '@/modules/auth/normalizeRole';
 import { routeForRole } from '@/config/routeForRole';
-import type { UserRole } from '@/types/auth';
+import type { UserRole } from '@/modules/auth/normalizeRole';
 
 export const RoleSwitcher: React.FC = () => {
   const navigate = useNavigate();

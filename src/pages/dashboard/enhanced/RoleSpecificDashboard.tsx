@@ -16,7 +16,7 @@ import {
   Filter
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { UserRole } from '@/types/auth';
+import type { UserRole } from '@/modules/auth/normalizeRole';
 
 interface DashboardProps {
   role: UserRole;

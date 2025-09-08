@@ -11,7 +11,7 @@ import {
   PartnersSection,
   AccountSection
 } from './sidebar';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { motion } from 'framer-motion';
 
 export interface LayoutSidebarProps {

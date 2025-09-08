@@ -2,7 +2,7 @@
  * Canonical route mapping for roles - single source of truth for navigation
  * Part of the Ultimate Master 2.0 QuickLogin solution
  */
-import type { UserRole } from '@/types/auth';
+import type { UserRole } from '@/modules/auth/normalizeRole';
 
 /**
  * Get the default route for a given user role

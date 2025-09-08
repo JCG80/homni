@@ -3,7 +3,7 @@
  * Master Prompt compliant navigation for all roles
  */
 
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { 
   LayoutDashboard, 
   Users, 

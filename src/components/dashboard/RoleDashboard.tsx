@@ -9,7 +9,7 @@ import { useLazyModules } from '@/hooks/useLazyModules';
 import { cn } from '@/lib/utils';
 import { logger } from '@/utils/logger';
 import { PageLayout } from '@/components/layout/PageLayout';
-import type { UserRole } from '@/types/auth';
+import type { UserRole } from '@/modules/auth/normalizeRole';
 
 interface RoleDashboardProps {
   children: React.ReactNode;

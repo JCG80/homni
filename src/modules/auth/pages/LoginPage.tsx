@@ -5,7 +5,7 @@ import { DevSeedUsers } from '@/modules/auth/components/DevSeedUsers';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { routeForRole } from '@/config/routeForRole';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();

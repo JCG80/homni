@@ -14,14 +14,31 @@ import { Badge } from '@/components/ui/badge';
 import { getSystemModules, toggleSystemModule } from '../api/systemModules';
 import type { SystemModule } from '../types/systemTypes';
 import { toast } from '@/hooks/use-toast';
+import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
+import { useRoleProtection } from '@/modules/auth/hooks';
+import { Settings } from 'lucide-react';
 
 export const SystemModulesPage = () => {
+  // Protect the page - only master_admin can access
+  const { isAllowed, loading: roleLoading } = useRoleProtection({ 
+    allowedRoles: ['master_admin'],
+    redirectTo: '/unauthorized'
+  });
+  
   const [modules, setModules] = useState<SystemModule[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Return early if no access - useRoleProtection handles redirect
+  if (!isAllowed && !roleLoading) {
+    return null;
+  }
+
   useEffect(() => {
     async function loadModules() {
+      // Only load if user has access
+      if (!isAllowed) return;
+      
       try {
         setLoading(true);
         const modulesData = await getSystemModules();
@@ -35,7 +52,7 @@ export const SystemModulesPage = () => {
     }
 
     loadModules();
-  }, []);
+  }, [isAllowed]);
 
   const handleToggleModule = async (moduleId: string, currentActive: boolean) => {
     try {
@@ -66,24 +83,48 @@ export const SystemModulesPage = () => {
     }
   };
 
-  if (loading) {
+  if (roleLoading || loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg">Laster moduler...</p>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center gap-3 mb-8">
+          <Settings className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-3xl font-bold">System Moduler</h1>
+            <p className="text-muted-foreground">
+              Administrer systemmoduler og funksjonalitet
+            </p>
+          </div>
+        </div>
+
+        <AdminNavigation />
+
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-lg">Laster moduler...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-6">Systemmoduler</h1>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center gap-3 mb-8">
+        <Settings className="h-8 w-8 text-primary" />
+        <div>
+          <h1 className="text-3xl font-bold">System Moduler</h1>
+          <p className="text-muted-foreground">
+            Administrer systemmoduler og funksjonalitet
+          </p>
+        </div>
+      </div>
+
+      <AdminNavigation />
 
       {error && (
-        <div className="bg-red-50 border border-red-200 p-4 rounded-md mb-6">
-          <p className="text-red-700">{error}</p>
+        <div className="bg-destructive/10 border border-destructive/20 p-4 rounded-md mb-6">
+          <p className="text-destructive">{error}</p>
         </div>
       )}
 

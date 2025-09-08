@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAuthContext } from './useAuthContext';
 import { useRoleContext } from '@/contexts/RoleContext';
 import { useRolePreview } from '@/contexts/RolePreviewContext';
-import type { UserRole } from '@/types/auth';
+import type { UserRole } from '@/modules/auth/normalizeRole';
 
 type Mode = 'personal' | 'professional';
 

@@ -3,7 +3,8 @@
  */
 
 import { vi } from 'vitest';
-import type { UserProfile, AuthUser, UserRole } from '@/types/auth';
+import type { UserRole } from '@/modules/auth/normalizeRole';
+import type { UserProfile, AuthUser } from '@/types/auth';
 
 export const createMockUser = (overrides?: Partial<AuthUser>): AuthUser => ({
   id: 'test-user-id',
