@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { dedupeByKey } from '@/utils/apiHelpers';
-import type { Lead, LeadStatus } from '@/types/leads';
+import type { Lead, LeadStatus } from '@/types/leads-canonical';
 
 /**
  * Zod-validated options for secure lead querying

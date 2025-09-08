@@ -13,7 +13,7 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';
-import { Lead } from '@/types/leads-consolidated';
+import { Lead } from '@/types/leads-canonical';
 
 export const TodayLeadsCard: React.FC = () => {
   const { profile } = useAuth();

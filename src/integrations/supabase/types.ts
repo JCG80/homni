@@ -984,6 +984,9 @@ export type Database = {
           company_id: string | null
           confirmation_email_sent_at: string | null
           created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
           description: string
           id: string
           lead_type: string | null
@@ -1001,6 +1004,9 @@ export type Database = {
           company_id?: string | null
           confirmation_email_sent_at?: string | null
           created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
           description: string
           id?: string
           lead_type?: string | null
@@ -1018,6 +1024,9 @@ export type Database = {
           company_id?: string | null
           confirmation_email_sent_at?: string | null
           created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
           description?: string
           id?: string
           lead_type?: string | null

@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { useCompanyLeadsData } from '@/hooks/useLeadsData';
-import { STATUS_LABELS } from '@/types/leads-consolidated';
+import { STATUS_LABELS } from '@/types/leads-canonical';
 
 interface DashboardMetric {
   title: string;

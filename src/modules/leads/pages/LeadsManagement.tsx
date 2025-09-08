@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useCompanyLeadsData } from '@/hooks/useLeadsData';
 import { useAuth } from '@/modules/auth/hooks';
-import { Lead, LeadStatus } from '@/types/leads-consolidated';
+import { Lead, LeadStatus } from '@/types/leads-canonical';
 import { Search, Filter, Download, Eye, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 

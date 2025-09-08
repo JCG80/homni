@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { leadEngineService } from '../services/leadEngineService';
-import { Lead } from '../types/leadTypes';
+import { Lead } from '@/types/leads-canonical';
 
 export const LeadEngineInterface = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -47,10 +47,10 @@ export const LeadEngineInterface = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-lg">{lead.title}</CardTitle>
-                    <CardDescription>{lead.location}</CardDescription>
+                    <CardDescription>{lead.metadata?.location || 'Ikke angitt'}</CardDescription>
                   </div>
                   <Badge variant="secondary">
-                    {lead.leadType}
+                    {lead.lead_type || 'general'}
                   </Badge>
                 </div>
               </CardHeader>
@@ -60,10 +60,10 @@ export const LeadEngineInterface = () => {
                 </p>
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">
-                    Kr {lead.estimatedValue?.toLocaleString('no')}
+                    Kr {lead.metadata?.estimatedValue?.toLocaleString('no') || 'Ikke angitt'}
                   </span>
-                  <Badge variant={lead.priority === 'high' ? 'destructive' : 'default'}>
-                    {lead.priority} prioritet
+                  <Badge variant={lead.metadata?.priority === 'high' ? 'destructive' : 'default'}>
+                    {lead.metadata?.priority || 'medium'} prioritet
                   </Badge>
                 </div>
               </CardContent>

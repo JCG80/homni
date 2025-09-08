@@ -1,12 +1,12 @@
 
-import { Lead, isValidLeadStatus, LeadPriority, normalizeStatus, statusToPipeline } from '@/types/leads';
+import { Lead, isValidLeadStatus, LeadPriority, normalizeLeadStatus, statusToPipelineStage } from '@/types/leads-canonical';
 
 /**
  * Parse and validate raw lead data into a properly typed Lead object
  * Ensures type safety and validation of status values
  */
 export function parseLead(item: any): Lead {
-  const normalizedStatus = normalizeStatus(item.status || 'new');
+  const normalizedStatus = normalizeLeadStatus(item.status || 'new');
   
   return {
     id: item.id || '',
@@ -15,7 +15,7 @@ export function parseLead(item: any): Lead {
     category: item.category || '',
     lead_type: item.lead_type || '',
     status: normalizedStatus,
-    pipeline_stage: statusToPipeline(normalizedStatus),
+    pipeline_stage: statusToPipelineStage(normalizedStatus),
     customer_name: item.customer_name || null,
     customer_email: item.customer_email || null,
     customer_phone: item.customer_phone || null,

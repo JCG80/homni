@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { useCompanyLeadsData } from '@/hooks/useLeadsData';
-import { LeadStatus, STATUS_LABELS } from '@/types/leads-consolidated';
+import { LeadStatus, STATUS_LABELS } from '@/types/leads-canonical';
 import { toast } from 'sonner';
 
 

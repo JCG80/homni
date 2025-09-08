@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, LeadStatus } from '@/types/leads-consolidated';
+import { Lead, LeadStatus } from '@/types/leads-canonical';
 import { useAuth } from '@/modules/auth/hooks';
 import { toast } from 'sonner';
 

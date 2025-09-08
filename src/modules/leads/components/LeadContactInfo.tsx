@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Lead } from '@/types/leads';
+import { Lead } from '@/types/leads-canonical';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Phone, Mail, User, Building } from 'lucide-react';
 
