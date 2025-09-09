@@ -63,9 +63,9 @@ export async function track(
       p_session_id: sessionId,
     });
 
-    // Console log in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`📊 Analytics: ${eventType}/${eventName}`, enrichedProperties);
+    // Development logging
+    if (import.meta.env.MODE === 'development') {
+      console.debug(`📊 Analytics: ${eventType}/${eventName}`, enrichedProperties);
     }
   } catch (error) {
     console.error('Analytics tracking error:', error);

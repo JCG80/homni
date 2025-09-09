@@ -22,11 +22,6 @@ export const LoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Login
   const [searchParams] = useSearchParams();
   const returnUrl = searchParams.get('returnUrl') || redirectTo;
   
-  // Enhanced logging for debugging
-  useEffect(() => {
-    console.log("LoginForm - Props:", { redirectTo, returnUrl, userType });
-  }, [redirectTo, returnUrl, userType]);
-  
   const {
     form,
     handleSubmit,

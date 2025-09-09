@@ -8,8 +8,6 @@ import { toast } from '@/components/ui/use-toast';
  */
 export const signInWithEmail = async (email: string, password: string) => {
   try {
-    console.log(`Attempting login for: ${email}`);
-    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -29,7 +27,6 @@ export const signInWithEmail = async (email: string, password: string) => {
       return { user: null, error };
     }
     
-    console.log("Login successful:", data.user);
     return { user: data.user, error: null };
   } catch (error) {
     console.error("Unexpected sign in error:", error);

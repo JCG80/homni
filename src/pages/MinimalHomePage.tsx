@@ -4,8 +4,6 @@ import { Card } from '@/components/ui/card';
 import { TrendingDown, Users, Shield } from 'lucide-react';
 
 export const MinimalHomePage = () => {
-  console.log('MinimalHomePage rendering - testing basic functionality');
-
   return (
     <>
       <Helmet>

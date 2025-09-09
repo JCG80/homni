@@ -4,6 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
 export const DevSeedUsers: React.FC = () => {
+  // Only render in development mode
+  if (import.meta.env.MODE !== 'development') {
+    return null;
+  }
 
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -16,7 +20,6 @@ export const DevSeedUsers: React.FC = () => {
       });
 
       if (error) {
-        console.error('Seed error (invoke)', error);
         const msg = error.message || String(error);
         if (/401|jwt|authorized|unauthor/i.test(msg)) {
           toast({
@@ -40,7 +43,6 @@ export const DevSeedUsers: React.FC = () => {
           description: "Ingen respons fra seed-funksjonen. Se konsoll.",
           variant: "destructive"
         });
-        console.error('Seed function returned no data');
         return;
       }
 
@@ -55,7 +57,6 @@ export const DevSeedUsers: React.FC = () => {
           description: `Noen brukere feilet (${failed}). Lyktes: ${succeeded}. ${firstError ? 'Første feil: ' + firstError : ''}`,
           variant: "destructive"
         });
-        console.error('Seed function response error:', payload);
         return;
       }
 
@@ -63,9 +64,7 @@ export const DevSeedUsers: React.FC = () => {
         title: "Success", 
         description: "Testbrukere opprettet/oppdatert. Prøv å logge inn igjen."
       });
-      console.log('Seed result:', data);
     } catch (e: any) {
-      console.error('Seed error (exception)', e);
       toast({
         title: "Error",
         description: `Klarte ikke å opprette testbrukere. ${e?.message ? '(' + e.message + ')' : 'Se konsoll for detaljer.'}`,

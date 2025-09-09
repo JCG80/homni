@@ -26,7 +26,6 @@ export const useAuthSession = () => {
     // Initialize auth state - increased timeout for better stability
     const authTimeout = setTimeout(() => {
       if (mounted && authState.isLoading) {
-        console.info('Authentication initialization completed');
         setAuthState(prev => ({
           ...prev,
           isLoading: false,
@@ -37,7 +36,6 @@ export const useAuthSession = () => {
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(`Auth state change: ${event}`, session ? `User ID: ${session.user.id}` : 'No session');
 
       if (event === 'INITIAL_SESSION') {
         // We'll handle this in the getSession call
@@ -68,9 +66,6 @@ export const useAuthSession = () => {
               // Update user with role from profile if available
               if (profile?.role || profile?.metadata?.role) {
                 user.role = normalizeRole(profile.role || profile.metadata?.role);
-                console.log(`Role determined from profile: ${user.role}`);
-              } else {
-                console.warn('No role found in profile, using default');
               }
               
               setAuthState(prev => ({
@@ -113,7 +108,6 @@ export const useAuthSession = () => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("getSession result:", session ? `User ID: ${session.user.id}` : 'No session');
       
       if (session?.user && mounted) {
         const user: AuthUser = {
@@ -134,9 +128,6 @@ export const useAuthSession = () => {
               // Update user with role from profile if available
               if (profile?.role || profile?.metadata?.role) {
                 user.role = normalizeRole(profile.role || profile.metadata?.role);
-                console.log(`Role determined from profile: ${user.role}`);
-              } else {
-                console.warn('No role found in profile, using default');
               }
               
               setAuthState({
@@ -185,14 +176,12 @@ export const useAuthSession = () => {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       
       try {
-        console.log(`Refreshing profile for user: ${authState.user.id}`);
         const profile = await fetchProfile(authState.user.id);
         
         // Update user with role from profile if available
         const updatedUser = { ...authState.user };
         if (profile?.role || profile?.metadata?.role) {
           updatedUser.role = normalizeRole(profile.role || profile.metadata?.role);
-          console.log(`Updated role from profile refresh: ${updatedUser.role}`);
         }
         
         setAuthState(prev => ({
