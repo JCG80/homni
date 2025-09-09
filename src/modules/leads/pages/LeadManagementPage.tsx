@@ -6,7 +6,7 @@ import { CompanyLeadsPage } from './CompanyLeadsPage';
 import { UserLeadsPage } from './UserLeadsPage';
 import { Loader2 } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 
 /**
  * Lead Management Page that dynamically displays the appropriate leads page based on user role

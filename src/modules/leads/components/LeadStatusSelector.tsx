@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LeadStatus, LEAD_STATUSES, STATUS_LABELS } from '@/types/leads';
+import { LeadStatus, LEAD_STATUSES, STATUS_LABELS } from '@/types/leads-canonical';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface LeadStatusSelectorProps {

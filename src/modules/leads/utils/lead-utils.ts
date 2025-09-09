@@ -1,5 +1,5 @@
 
-import { Lead, LeadStatus } from '@/types/leads';
+import { Lead, LeadStatus } from '@/types/leads-canonical';
 import { ALLOWED_STATUS_TRANSITIONS, LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from '../constants/lead-constants';
 
 // Check if status transition is allowed

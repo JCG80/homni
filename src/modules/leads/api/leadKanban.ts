@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { LeadCounts, Lead, LeadStatus, normalizeLeadStatus } from '@/types/leads';
+import { LeadCounts, Lead, LeadStatus, normalizeLeadStatus } from '@/types/leads-canonical';
 import { fetchLeadsValidated } from './lead-query';
 
 export async function fetchLeadsForKanban(companyId?: string, userId?: string): Promise<Lead[]> {

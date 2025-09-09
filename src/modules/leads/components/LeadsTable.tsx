@@ -11,7 +11,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Lead } from '@/types/leads';
+import { Lead } from '@/types/leads-canonical';
 import { Loader2, Search, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { Badge } from '@/components/ui/badge';

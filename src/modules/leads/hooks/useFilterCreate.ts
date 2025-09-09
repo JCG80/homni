@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { userFiltersApi } from '../api/user-filters';
 import { UserLeadFilter, CreateUserFilterRequest } from '../types/user-filters';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { withRetry } from '@/utils/apiRetry';
 import { useAuth } from '@/modules/auth/hooks';
 import { UserRole } from '@/modules/auth/utils/roles/types';

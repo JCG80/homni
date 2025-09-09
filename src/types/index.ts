@@ -34,6 +34,3 @@ export type {
   AdminLog, 
   CompanyStatistics 
 } from './admin';
-
-// Export label constants for clean UI display
-export { STATUS_LABELS, PIPELINE_LABELS, LEAD_STATUSES } from './leads-canonical';

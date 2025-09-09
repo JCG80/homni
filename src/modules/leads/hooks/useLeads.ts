@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { insertLead } from '../api/lead-create';
 import { useAuth } from '@/modules/auth/hooks';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Lead } from '@/types/leads';
+import { Lead } from '@/types/leads-canonical';
 import { getLeads, getUserLeads, getCompanyLeads, getLeadById } from '../api/lead-list';
 
 export const useCreateLead = () => {

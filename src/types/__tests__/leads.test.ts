@@ -1,6 +1,6 @@
 
 import { describe, test, expect } from 'vitest';
-import { isValidLeadStatus, LEAD_STATUSES, mapDbToLeadSettings, normalizeStatus, statusToPipeline } from '../leads';
+import { isValidLeadStatus, LEAD_STATUSES, mapDbToLeadSettings, normalizeStatus, statusToPipeline } from '../leads-canonical';
 
 describe('Lead Types', () => {
   describe('LeadStatus validation', () => {

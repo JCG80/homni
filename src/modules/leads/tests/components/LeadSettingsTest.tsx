@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { fetchLeadSettings } from '../../api/leadSettings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { LeadSettings } from '../../types/lead-settings';
 
 export const LeadSettingsTest = () => {

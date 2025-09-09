@@ -24,7 +24,7 @@ vi.mock('../logger', () => ({
   },
 }));
 
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { logger } from '../logger';
 
 beforeEach(() => {

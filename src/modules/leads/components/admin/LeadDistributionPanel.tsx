@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { DistributionStrategy } from '../../strategies/strategyFactory';
 import { DistributionStrategySelector } from './DistributionStrategySelector';
 import { processUnassignedLeads } from '../../utils/processLeads';

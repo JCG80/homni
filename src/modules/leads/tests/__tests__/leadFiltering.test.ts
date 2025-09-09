@@ -1,7 +1,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { applyLeadFilters } from '../../utils/leadFiltering';
-import { LeadSettings } from '@/types/leads';
+import { LeadSettings } from '@/types/leads-canonical';
 import { makeLead } from '../factories';
 
 describe('Lead Filtering', () => {

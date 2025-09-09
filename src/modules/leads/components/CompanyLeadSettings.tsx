@@ -9,8 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
-import { LeadSettings } from '@/types/leads';
+import { toast } from "@/components/ui/use-toast";
+import { LeadSettings } from "@/types/leads-canonical";
 
 export const CompanyLeadSettings = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);

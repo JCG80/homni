@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { insertLead } from '../api/lead-create';
 import { TestActionButtons } from './components/TestActionButtons';
-import { Lead } from '@/types/leads';
+import { Lead } from '@/types/leads-canonical';
 import { createTestLead } from './utils';
 
 interface TestResult {

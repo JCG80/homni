@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 
 /**
  * Helper to unset any existing default filters

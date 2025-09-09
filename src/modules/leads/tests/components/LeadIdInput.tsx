@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { LeadStatus } from '@/types/leads';
+import { LeadStatus } from '@/types/leads-canonical';
 
 interface LeadIdInputProps {
   leadId: string;

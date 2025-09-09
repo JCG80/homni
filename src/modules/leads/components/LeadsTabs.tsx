@@ -5,7 +5,7 @@ import { LeadRow } from './LeadRow';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Lead } from '@/types/leads';
+import { Lead } from '@/types/leads-canonical';
 
 export const LeadsTabs = () => {
   const { leads, isLoading, error } = useLeadsList();

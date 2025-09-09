@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { LeadSettings } from '@/types/leads';
+import { LeadSettings } from '@/types/leads-canonical';
 import { parseLeadSettings } from '../utils/parseLeadSettings';
 
 /**

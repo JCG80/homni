@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { LeadStatusBadge } from '@/modules/leads/components/LeadStatusBadge';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { assignLeadToCompany } from '@/modules/leads/api/lead-assign';
 import { processUnassignedLeads } from '@/modules/leads/utils/processLeads';
 import { useAuth } from '@/modules/auth/hooks';

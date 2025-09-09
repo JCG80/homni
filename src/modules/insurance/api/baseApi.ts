@@ -1,6 +1,6 @@
 
 import { ApiError } from "@/utils/apiHelpers";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 // Base error handling function for insurance API operations
 export const handleInsuranceApiError = (context: string, error: any): never => {

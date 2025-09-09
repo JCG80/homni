@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
-import { LeadStatus } from "@/types/leads";
+import { toast } from "@/components/ui/use-toast";
+import { LeadStatus } from "@/types/leads-canonical";
 
 /**
  * Manually assigns a lead to a specific company

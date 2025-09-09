@@ -1,5 +1,5 @@
 
-import { LeadStatus, STATUS_LABELS } from '@/types/leads';
+import { LeadStatus, STATUS_LABELS } from '@/types/leads-canonical';
 
 interface LeadStatusBadgeProps {
   status: LeadStatus;

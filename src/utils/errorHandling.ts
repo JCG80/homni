@@ -3,7 +3,7 @@
  */
 
 import { logger } from './logger';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 
 export class AppError extends Error {
   constructor(

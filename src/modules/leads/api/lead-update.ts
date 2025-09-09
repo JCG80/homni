@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, LeadStatus, normalizeStatus, statusToPipeline } from '@/types/leads';
+import { Lead, LeadStatus, normalizeStatus, statusToPipeline } from '@/types/leads-canonical';
 import { isStatusTransitionAllowed } from '../utils/lead-utils';
 
 /**

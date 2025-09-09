@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES, normalizeStatus, statusToPipeline } from '@/types/leads';
+import { Lead, LeadFormValues, LeadStatus, LEAD_STATUSES, normalizeStatus, statusToPipeline } from '@/types/leads-canonical';
 
 // Create a new lead
 export const createLead = async (leadData: LeadFormValues, userId: string): Promise<Lead> => {

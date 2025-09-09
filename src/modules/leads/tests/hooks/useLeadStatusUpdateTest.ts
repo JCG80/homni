@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { getLeadById } from '../../api/lead-list';
 import { updateLeadStatus } from '../../api/lead-update';
-import { LeadStatus } from '@/types/leads';
-import { toast } from '@/hooks/use-toast';
+import { LeadStatus } from '@/types/leads-canonical';
+import { toast } from "@/components/ui/use-toast";
 
 export function useLeadStatusUpdateTest() {
   const { user } = useAuth();

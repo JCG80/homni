@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { toast } from '@/hooks/use-toast';
-import { LeadStatus } from '@/types/leads';
+import { toast } from "@/components/ui/use-toast";
+import { LeadStatus } from '@/types/leads-canonical';
 import { fetchLeadStatus } from '../../api/lead-fetch';
 import { updateLeadStatus } from '../../api/lead-update';
 import { isStatusTransitionAllowed } from '../../utils/lead-utils';

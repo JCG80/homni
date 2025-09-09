@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { supabase } from '@/lib/supabaseClient';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 
 const stripePromise = loadStripe(
   'pk_test_51QwDliFST83rvPWBiTZ7N52P5JIqewmrb8L4rdUskmfNEVLhjLUScQKqmVmw2JjI9qQu9ToxmiLBKO9owBv8gmFH00SOCtRbLP'

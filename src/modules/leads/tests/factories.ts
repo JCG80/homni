@@ -1,4 +1,4 @@
-import { Lead, LeadStatus, PipelineStage, statusToPipeline } from '@/types/leads';
+import { Lead, LeadStatus, PipelineStage, statusToPipeline } from '@/types/leads-canonical';
 
 export function makeLead(partial: Partial<Lead> = {}): Lead {
   const status = (partial.status ?? 'new') as LeadStatus;

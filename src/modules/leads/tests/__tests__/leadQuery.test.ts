@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchUnassignedLeads } from '../../utils/leadQuery';
 import { supabase } from '@/integrations/supabase/client';
 import { withRetry } from '@/utils/apiRetry';
-import { Lead } from '@/types/leads';
+import { Lead } from '@/types/leads-canonical';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({

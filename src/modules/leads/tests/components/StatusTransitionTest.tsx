@@ -5,7 +5,7 @@ import { StatusTransitionSelector } from './StatusTransitionSelector';
 import { TransitionTestButton } from './TransitionTestButton';
 import { TransitionTestResult } from './TransitionTestResult';
 import { useStatusTransitionTest } from '../hooks/useStatusTransitionTest';
-import { LeadStatus } from '@/types/leads';
+import { LeadStatus } from '@/types/leads-canonical';
 
 export function StatusTransitionTest() {
   const {

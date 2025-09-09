@@ -1,6 +1,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
-import { Lead, LeadStatus } from '@/types/leads';
+import { Lead, LeadStatus } from '@/types/leads-canonical';
 
 /**
  * Creates a standardized test lead for use in tests

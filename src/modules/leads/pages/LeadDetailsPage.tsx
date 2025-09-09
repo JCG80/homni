@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Calendar, User, Mail, Phone, Building } from 'lucide-react';
-import { Lead, STATUS_LABELS } from '@/types/leads';
+import { Lead, STATUS_LABELS } from '@/types/leads-canonical';
 import { fetchLeadStatus } from '../api/lead-fetch';
 import { LeadContactInfo } from '../components/LeadContactInfo';
 import { CompanyLeadActions } from '../components/CompanyLeadActions';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from "@/components/ui/use-toast";
 
 export const LeadDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

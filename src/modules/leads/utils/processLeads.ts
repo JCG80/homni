@@ -2,7 +2,7 @@
 import { DistributionStrategy } from '../strategies/strategyFactory';
 import { supabase } from "@/integrations/supabase/client";
 import { fetchLeadSettings } from '../api/leadSettings';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { getCurrentStrategy } from './getCurrentStrategy';
 import { withRetry } from '@/utils/apiRetry';
 import { fetchUnassignedLeads } from './leadQuery';

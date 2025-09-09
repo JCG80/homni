@@ -1,5 +1,5 @@
 
-import { Lead } from '@/types/leads';
+import { Lead } from '@/types/leads-canonical';
 import { fetchLeadsValidated } from './lead-query';
 
 export const listLeads = async (): Promise<Lead[]> => {

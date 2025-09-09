@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, normalizeStatus, statusToPipeline } from '@/types/leads';
+import { Lead, normalizeStatus, statusToPipeline } from '@/types/leads-canonical';
 
 /**
  * Fetch a lead by ID

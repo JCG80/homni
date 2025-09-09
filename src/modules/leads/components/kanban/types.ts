@@ -1,4 +1,4 @@
-import { LeadStatus } from '@/types/leads';
+import { LeadStatus } from '@/types/leads-canonical';
 
 export interface KanbanColumn {
   id: string;

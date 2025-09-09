@@ -1,10 +1,10 @@
 
 import { useState } from 'react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { updateLeadStatus } from '../api/lead-update';
 import { Button } from '@/components/ui/button';
 import { LEAD_STATUSES } from '../constants/lead-constants';
-import { LeadStatus } from '@/types/leads';
+import { LeadStatus } from '@/types/leads-canonical';
 
 export function LeadStatusUpdateTest() {
   const [loading, setLoading] = useState(false);

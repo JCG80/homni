@@ -1,6 +1,6 @@
 
 import { Database } from '@/integrations/supabase/types';
-import { LeadSettings } from '@/types/leads';
+import { LeadSettings } from '@/types/leads-canonical';
 
 /**
  * Parses lead settings from database format to application format

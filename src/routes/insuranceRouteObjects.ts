@@ -12,39 +12,24 @@ export const insuranceRouteObjects: AppRoute[] = [
     path: '/insurance/companies',
     element: createElement(CompanyListPage),
     roles: ['user', 'company', 'admin', 'master_admin'],
-    breadcrumbs: [
-      { label: 'Forsikring', href: '/insurance/companies' }
-    ],
     navKey: 'insurance-companies'
   },
   {
     path: '/insurance/companies/:companyId',
     element: createElement(CompanyDetailsPage), 
     roles: ['user', 'company', 'admin', 'master_admin'],
-    breadcrumbs: [
-      { label: 'Forsikring', href: '/insurance/companies' },
-      { label: 'Selskap', href: '#' }
-    ],
     navKey: 'insurance-company-details'
   },
   {
     path: '/insurance/quote',
     element: createElement(InsuranceQuotePage),
     roles: ['user', 'company', 'admin', 'master_admin'],
-    breadcrumbs: [
-      { label: 'Forsikring', href: '/insurance/companies' },
-      { label: 'Tilbud', href: '/insurance/quote' }
-    ],
     navKey: 'insurance-quote'
   },
   {
     path: '/insurance/compare',
     element: createElement(InsuranceComparisonPage),
     roles: ['user', 'company', 'admin', 'master_admin'],
-    breadcrumbs: [
-      { label: 'Forsikring', href: '/insurance/companies' },
-      { label: 'Sammenlign', href: '/insurance/compare' }
-    ],
     navKey: 'insurance-compare'
   }
 ];
