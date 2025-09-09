@@ -3,7 +3,7 @@ import { withRetry } from '@/utils/apiRetry';
 import { logger } from '@/utils/logger';
 import { measureAsync } from '@/utils/performance';
 import { useState } from 'react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 interface ApiCallOptions<T> {
   onSuccess?: (data: T) => void;

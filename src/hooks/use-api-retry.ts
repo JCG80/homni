@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { toast } from './use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 interface ApiRetryOptions<T> {
   onSuccess?: (data: T) => void;

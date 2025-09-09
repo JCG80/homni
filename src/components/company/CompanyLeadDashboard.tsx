@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Clock, DollarSign, TrendingUp, AlertCircle, Phone, Mail, MessageSquare } from "lucide-react";
 import { useCompanyLeadsData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Lead {
   id: string;

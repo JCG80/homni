@@ -6,7 +6,7 @@
 // Core domain types
 export * from './auth';
 export * from './common';
-export * from './leads';
+export * from './leads-canonical';
 export * from './marketplace';
 export * from './hooks';
 export * from './admin';
@@ -14,7 +14,7 @@ export * from './logging';
 
 // Legacy compatibility exports
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
-export type { Lead, LeadFormValues, LeadStatus, PipelineStage, CompanyProfile } from './leads';
+export type { Lead, LeadFormValues, LeadStatus, PipelineStage, CompanyProfile } from './leads-canonical';
 export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
 
 // Hook types
@@ -36,4 +36,4 @@ export type {
 } from './admin';
 
 // Export label constants for clean UI display
-export { STATUS_LABELS, PIPELINE_LABELS, LEAD_STATUSES } from './leads';
+export { STATUS_LABELS, PIPELINE_LABELS, LEAD_STATUSES } from './leads-canonical';
