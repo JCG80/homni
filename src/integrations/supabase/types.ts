@@ -2049,6 +2049,16 @@ export type Database = {
           version: string
         }[]
       }
+      get_internal_admins: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          metadata: Json
+        }[]
+      }
       get_user_effective_roles: {
         Args: { _user_id?: string }
         Returns: string[]
@@ -2133,6 +2143,10 @@ export type Database = {
       }
       is_feature_enabled: {
         Args: { flag_name: string; user_id?: string }
+        Returns: boolean
+      }
+      is_internal_admin: {
+        Args: { check_user_id?: string }
         Returns: boolean
       }
       is_master_admin: {

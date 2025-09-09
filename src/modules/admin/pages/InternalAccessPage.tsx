@@ -25,16 +25,6 @@ interface InternalAdmin {
   module_access: string[];
 }
 
-interface UserProfile {
-  id: string;
-  full_name?: string;
-  email?: string;
-  metadata: Record<string, any>;
-  accounts?: {
-    email?: string;
-  };
-}
-
 export const InternalAccessPage = () => {
   // Role protection to ensure only master admins can access this page
   const { isAllowed, loading } = useRoleProtection({ 
@@ -44,27 +34,22 @@ export const InternalAccessPage = () => {
 
   const [selectedAdmin, setSelectedAdmin] = useState<InternalAdmin | null>(null);
   
-  // Fetch internal admins
+  // Fetch internal admins using the new database function
   const { data: admins = [], isLoading, error, refetch } = useQuery({
     queryKey: ['internal-admins'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*, accounts:auth.users!inner(*)')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_internal_admins');
       
       if (error) throw error;
       
-      // Filter to only include internal admins and transform data
-      return (data as unknown as UserProfile[])
-        .filter(profile => profile.metadata?.internal_admin === true)
-        .map(profile => ({
-          id: profile.id,
-          full_name: profile.full_name || 'Ikke angitt',
-          email: profile.email || profile.accounts?.email || 'Ikke angitt',
-          is_internal_admin: true,
-          module_access: profile.metadata?.module_access || []
-        }));
+      // Transform data to match our interface
+      return (data || []).map(profile => ({
+        id: profile.id,
+        full_name: profile.full_name || 'Ikke angitt',
+        email: profile.email || 'Ikke angitt',
+        is_internal_admin: true,
+        module_access: [] // Will be loaded when needed
+      }));
     },
     enabled: isAllowed
   });
@@ -84,7 +69,6 @@ export const InternalAccessPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-6">API & Integrasjoner</h1>
       <AdminNavigation />
       
       {isLoading ? (
@@ -99,7 +83,12 @@ export const InternalAccessPage = () => {
       ) : (
         <>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Interne administratorer</h2>
+            <div>
+              <h2 className="text-2xl font-semibold">Modultilgang</h2>
+              <p className="text-muted-foreground mt-1">
+                Administrer interne administratorer og deres tilgang til systemmoduler
+              </p>
+            </div>
           </div>
           
           <div className="rounded-md border shadow-sm overflow-hidden">
@@ -124,20 +113,7 @@ export const InternalAccessPage = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {admin.is_internal_admin ? (
-                        <Badge variant="outline">Full tilgang</Badge>
-                      ) : (
-                        <div className="flex flex-wrap gap-1">
-                          {admin.module_access.map(module => (
-                            <Badge key={module} variant="secondary" className="text-xs">
-                              {module}
-                            </Badge>
-                          ))}
-                          {admin.module_access.length === 0 && (
-                            <span className="text-sm text-muted-foreground">Ingen moduler</span>
-                          )}
-                        </div>
-                      )}
+                      <Badge variant="outline">Kan konfigureres</Badge>
                     </TableCell>
                     <TableCell>
                       <Button 
