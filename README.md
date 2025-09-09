@@ -115,6 +115,41 @@ const address = await provider.reverse(59.9133, 10.7389);
 - Recharts for data visualization
 - Vitest for unit testing
 
-## Development Roadmap
+## Documentation
 
-See [DEV_NOTES.md](./DEV_NOTES.md) for current development status and roadmap.
+This README provides a quick overview. For comprehensive documentation:
+
+- **[ROADMAP.md](./docs/ROADMAP.md)** - Development roadmap and project status
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - System architecture and technical design
+- **[CODING_STANDARDS.md](./docs/CODING_STANDARDS.md)** - Code quality and development standards
+- **[roles.md](./docs/roles.md)** - User roles and permissions system
+- **[routing.md](./docs/routing.md)** - Route configuration and navigation standards
+- **[ui-ux-guidelines.md](./docs/ui-ux-guidelines.md)** - UI/UX design principles and accessibility
+- **[BRANDING.md](./docs/BRANDING.md)** - Visual identity and brand guidelines
+- **[DEV_NOTES.md](./docs/DEV_NOTES.md)** - Technical implementation details
+- **[CHANGELOG.md](./docs/CHANGELOG.md)** - Version history and release notes
+
+## Repository Structure
+
+The Homni platform follows a modular architecture with clear separation of concerns:
+
+```
+/docs/                    # 📚 Comprehensive documentation
+  ├── ROADMAP.md         # Development roadmap and status
+  ├── ARCHITECTURE.md    # System design and patterns
+  ├── CODING_STANDARDS.md # Code quality guidelines
+  ├── roles.md           # User roles and permissions
+  ├── routing.md         # Route configuration standard
+  └── ...                # Additional guides and standards
+  
+/src/
+  ├── modules/           # 🧩 Feature modules (auth, leads, content, etc.)
+  ├── components/        # 🎨 Shared UI components
+  ├── config/           # ⚙️ Application configuration
+  ├── utils/            # 🔧 Shared utilities
+  └── integrations/     # 🔗 External service integrations
+
+/supabase/
+  ├── migrations/       # 📊 Database schema changes
+  └── functions/        # ⚡ Edge functions
+```
