@@ -1938,6 +1938,10 @@ export type Database = {
         Args: { p_company_id: string; p_lead_id: string }
         Returns: Json
       }
+      check_admin_role: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
       clear_company_context: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -2070,6 +2074,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_user_role: {
+        Args: { user_id: string }
+        Returns: string
+      }
       get_user_role_level: {
         Args: { _user_id: string }
         Returns: number
@@ -2117,6 +2125,10 @@ export type Database = {
       }
       has_role_level: {
         Args: { _min_level: number; _user_id: string }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_feature_enabled: {
