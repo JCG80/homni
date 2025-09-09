@@ -12,7 +12,7 @@ interface ModulesListProps {
 export function ModulesList({ modules, userAccess, onToggleAccess }: ModulesListProps) {
   return (
     <div className="border-t pt-6">
-      <h3 className="text-lg font-medium mb-4">Module Access</h3>
+      <h3 className="text-lg font-medium mb-4">Modultilgang</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {modules.length > 0 ? (
           modules.map((module) => (
@@ -25,7 +25,7 @@ export function ModulesList({ modules, userAccess, onToggleAccess }: ModulesList
           ))
         ) : (
           <div className="col-span-2 text-center p-4 bg-gray-50 rounded">
-            No modules available
+            Ingen moduler tilgjengelig
           </div>
         )}
       </div>

@@ -12,9 +12,9 @@ export function AdminStatusToggle({ isInternalAdmin, onToggle }: AdminStatusTogg
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h3 className="text-lg font-medium">Internal Admin Status</h3>
+        <h3 className="text-lg font-medium">Intern admin-status</h3>
         <p className="text-sm text-muted-foreground">
-          Grant internal admin privileges to this user
+          Gi interne administratorrettigheter til denne brukeren
         </p>
       </div>
       <Button
@@ -24,11 +24,11 @@ export function AdminStatusToggle({ isInternalAdmin, onToggle }: AdminStatusTogg
       >
         {isInternalAdmin ? (
           <>
-            <Check className="mr-2 h-4 w-4" /> Enabled
+            <Check className="mr-2 h-4 w-4" /> Aktivert
           </>
         ) : (
           <>
-            <X className="mr-2 h-4 w-4" /> Disabled
+            <X className="mr-2 h-4 w-4" /> Deaktivert
           </>
         )}
       </Button>

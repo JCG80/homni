@@ -65,10 +65,10 @@ export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerPro
         >
           {updateAccessMutation.isPending ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Lagrer...
             </>
           ) : (
-            'Save Changes'
+            'Lagre endringer'
           )}
         </Button>
       </div>

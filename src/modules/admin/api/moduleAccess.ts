@@ -125,14 +125,13 @@ export const updateUserModuleAccess = async (
     
     // Log the admin action
     await logAdminAction(
-      adminId,
-      'update',
+      'module_access_update',
       'user',
       userId,
       {
-        action: 'module_access_update',
         moduleAccess,
-        isInternalAdmin
+        isInternalAdmin,
+        updatedBy: adminId
       }
     );
     

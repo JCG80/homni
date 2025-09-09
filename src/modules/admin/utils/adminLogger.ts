@@ -1,5 +1,5 @@
 
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '@/modules/auth/utils/roles/types';
 
 export type AdminAction = 
@@ -10,7 +10,8 @@ export type AdminAction =
   | 'access_grant'
   | 'access_revoke'
   | 'login'
-  | 'logout';
+  | 'logout'
+  | 'module_access_update';
 
 export type ResourceType = 
   | 'user'
@@ -23,24 +24,18 @@ export type ResourceType =
  * Logs administrative actions for audit purposes
  */
 export const logAdminAction = async (
-  adminId: string, 
   action: AdminAction, 
   resourceType: ResourceType,
   resourceId?: string,
   details: Record<string, any> = {}
 ): Promise<void> => {
   try {
-    // Use type assertion to handle the admin_logs table that isn't in TypeScript definitions yet
-    const { error } = await supabase
-      .from('admin_logs' as any)
-      .insert({
-        admin_id: adminId,
-        action,
-        resource_type: resourceType,
-        resource_id: resourceId,
-        details,
-        ip_address: window.location.hostname // Basic client IP tracking
-      } as any);
+    const { error } = await supabase.rpc('log_admin_action', {
+      target_kind_param: resourceType,
+      target_id_param: resourceId,
+      action_param: action,
+      metadata_param: details
+    });
     
     if (error) {
       console.error('Failed to log admin action:', error);

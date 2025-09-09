@@ -24,11 +24,11 @@ export function ModuleAccessItem({ module, hasAccess, onToggle }: ModuleAccessIt
       >
         {hasAccess ? (
           <>
-            <Check className="mr-2 h-4 w-4" /> Granted
+            <Check className="mr-2 h-4 w-4" /> Innvilget
           </>
         ) : (
           <>
-            <X className="mr-2 h-4 w-4" /> Denied
+            <X className="mr-2 h-4 w-4" /> Avslått
           </>
         )}
       </Button>

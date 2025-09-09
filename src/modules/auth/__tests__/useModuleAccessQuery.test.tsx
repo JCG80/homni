@@ -12,9 +12,13 @@ vi.mock('@/modules/auth/hooks/useAuth', () => ({
 const eqMock = vi.fn();
 const selectMock = vi.fn(() => ({ eq: eqMock }));
 const fromMock = vi.fn(() => ({ select: selectMock }));
+const rpcMock = vi.fn();
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: { from: fromMock },
+  supabase: { 
+    from: fromMock,
+    rpc: rpcMock
+  },
 }));
 
 import { useModuleAccessQuery } from '@/modules/auth/hooks/useModuleAccessQuery';
@@ -69,20 +73,29 @@ describe('useModuleAccessQuery - database validation', () => {
   });
 
   it('fetches module access with correct filter and parses correctly', async () => {
+    // Mock user_modules query
     eqMock.mockResolvedValueOnce({
       data: [
-        { system_module_id: '1', internal_admin: false },
-        { system_module_id: '2', internal_admin: true },
+        { module_id: '1' },
+        { module_id: '2' },
       ],
+      error: null,
+    });
+
+    // Mock is_internal_admin RPC
+    rpcMock.mockResolvedValueOnce({
+      data: true,
       error: null,
     });
 
     renderWithRQ(<HookProbe />);
 
     await waitFor(() => {
-      expect(fromMock).toHaveBeenCalledWith('module_access');
-      expect(selectMock).toHaveBeenCalledWith('system_module_id, internal_admin');
+      expect(fromMock).toHaveBeenCalledWith('user_modules');
+      expect(selectMock).toHaveBeenCalledWith('module_id');
       expect(eqMock).toHaveBeenCalledWith('user_id', 'test-user');
+      expect(eqMock).toHaveBeenCalledWith('is_enabled', true);
+      expect(rpcMock).toHaveBeenCalledWith('is_internal_admin', { check_user_id: 'test-user' });
       expect(screen.getByTestId('modules').textContent).toBe('["1","2"]');
       expect(screen.getByTestId('internal-admin').textContent).toBe('true');
     });
@@ -90,6 +103,7 @@ describe('useModuleAccessQuery - database validation', () => {
 
   it('handles errors by returning safe defaults', async () => {
     eqMock.mockResolvedValueOnce({ data: null, error: { message: 'boom' } });
+    rpcMock.mockResolvedValueOnce({ data: false, error: null });
 
     renderWithRQ(<HookProbe />);
 
