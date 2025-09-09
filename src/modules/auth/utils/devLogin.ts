@@ -1,6 +1,6 @@
 import { UserRole } from './roles/types';
 import { supabase } from '@/lib/supabaseClient';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 export interface TestUser {
   id: string;

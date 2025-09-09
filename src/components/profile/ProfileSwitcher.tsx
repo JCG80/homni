@@ -22,7 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useProfileContext, ProfileContext } from '@/hooks/useProfileContext';
 import { useAuth } from '@/modules/auth/hooks';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ProfileSwitcherProps {
   className?: string;

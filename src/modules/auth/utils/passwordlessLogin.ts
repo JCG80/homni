@@ -1,7 +1,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { TestUser } from '../types/types';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 export interface LoginResult {
   success: boolean;

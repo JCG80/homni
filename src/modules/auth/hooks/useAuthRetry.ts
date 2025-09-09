@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 interface AuthRetryOptions {
   maxRetries?: number;

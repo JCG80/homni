@@ -11,7 +11,7 @@ vi.mock('@/hooks/use-toast', () => ({
   toast: vi.fn(),
 }));
 
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 // Mock DOM APIs
 const mockIntersectionObserver = vi.fn();

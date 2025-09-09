@@ -1,5 +1,5 @@
 
-import { CompanyProfile } from '@/types/leads';
+import { CompanyProfile } from '@/types/leads-canonical';
 
 /**
  * Parse and validate raw company profile data into a properly typed CompanyProfile object

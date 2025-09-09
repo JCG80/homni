@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import { UserRole } from '../types/unified-types';
 import { normalizeRole } from '../normalizeRole';
 

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { loadProjectDocs, loadProjectDocById, loadProjectDocByType } from '../api/loadProjectDocs';
 import { saveProjectDoc } from '../api/saveProjectDoc';
 import { ProjectDocFormValues } from '../types/docs-types';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 export function useProjectDocs() {
   const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { handleApiError, showErrorToast, showSuccessToast } from './auth-base';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 /**
  * Sign in user with email and password

@@ -1,6 +1,6 @@
 
 import { supabase } from '@/lib/supabaseClient';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import { handleApiError, showErrorToast } from './auth-base';
 
 /**

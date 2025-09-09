@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { AuthUser, AuthState } from '../types/types';
 import { useFetchUserProfile } from './useFetchUserProfile';
 import { UserRole } from '../utils/roles/types';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 /**
  * Hook that manages the auth session state and listens for changes

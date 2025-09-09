@@ -1,6 +1,6 @@
 
 import { supabase } from '@/lib/supabaseClient';
-import { CompanyProfile } from '@/types/leads';
+import { CompanyProfile } from '@/types/leads-canonical';
 import { parseCompanyProfile } from '../utils/parseCompanyProfile';
 
 export async function loadCompanyProfiles(): Promise<CompanyProfile[]> {

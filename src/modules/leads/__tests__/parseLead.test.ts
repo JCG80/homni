@@ -1,7 +1,7 @@
 
 import { describe, test, expect } from 'vitest';
 import { parseLead } from '../utils/parseLead';
-import { LEAD_STATUSES } from '@/types/leads';
+import { LEAD_STATUSES } from '@/types/leads-canonical';
 
 describe('parseLead utility', () => {
   test('should correctly parse a valid lead object', () => {
