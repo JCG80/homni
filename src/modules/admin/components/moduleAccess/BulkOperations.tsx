@@ -39,7 +39,6 @@ export function BulkOperations({
 }: BulkOperationsProps) {
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState<string | null>(null);
-  const { toast } = { toast };
 
   const handleBulkOperation = async (
     operation: () => Promise<boolean>,

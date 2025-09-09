@@ -10,6 +10,8 @@ import { AdminStatusToggle } from './moduleAccess/AdminStatusToggle';
 import { ModulesList } from './moduleAccess/ModulesList';
 import { AccessErrorState } from './moduleAccess/AccessErrorState';
 import { AccessLoadingState } from './moduleAccess/AccessLoadingState';
+import { BulkOperations } from './moduleAccess/BulkOperations';
+import { AuditLogViewer } from './moduleAccess/AuditLogViewer';
 import { useModuleAccess } from '../hooks/useModuleAccess';
 
 export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerProps) {
@@ -19,11 +21,16 @@ export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerPro
     categorizedModules,
     userAccess,
     isInternalAdmin,
+    auditLogs,
     loading,
     error,
     toggleAccess,
     toggleInternalAdmin,
-    updateAccess
+    updateAccess,
+    bulkToggleCategory,
+    grantCoreModules,
+    grantAdminModules,
+    revokeAllModules
   } = useModuleAccess({ userId, onUpdate });
 
   // Update user access mutation
@@ -74,6 +81,15 @@ export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerPro
         onToggle={toggleInternalAdmin} 
       />
 
+      <BulkOperations
+        onGrantCore={grantCoreModules}
+        onGrantAdmin={grantAdminModules}
+        onRevokeAll={revokeAllModules}
+        onBulkToggleCategory={bulkToggleCategory}
+        categorizedModules={categorizedModules}
+        disabled={updateAccessMutation.isPending}
+      />
+
       <ModulesList
         modules={modules}
         categorizedModules={categorizedModules}
@@ -81,6 +97,11 @@ export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerPro
         onToggleAccess={toggleAccess}
         onSelectAll={handleSelectAll}
         onClearAll={handleClearAll}
+      />
+
+      <AuditLogViewer
+        auditLogs={auditLogs}
+        loading={loading}
       />
 
       <div className="space-y-4">
