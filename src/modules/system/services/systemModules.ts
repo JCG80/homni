@@ -1,22 +1,63 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { SystemModule } from '../types/systemTypes';
+import { SystemModule, UserModuleAccess } from '../types/systemTypes';
 
 /**
- * Fetch all system modules
+ * Fetch all system modules ordered by category and sort order
  */
 export async function getSystemModules(): Promise<SystemModule[]> {
   try {
     const { data, error } = await supabase
       .from('system_modules')
       .select('*')
-      .order('name');
+      .order('category, sort_order, name');
     
     if (error) throw error;
     return data || [];
   } catch (error) {
     console.error('Error fetching system modules:', error);
     return [];
+  }
+}
+
+/**
+ * Get user's modules with access status organized by category
+ */
+export async function getUserModulesWithCategory(userId?: string): Promise<UserModuleAccess[]> {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_user_modules_with_category', userId ? { user_id: userId } : {});
+    
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching user modules with category:', error);
+    return [];
+  }
+}
+
+/**
+ * Bulk check module access for multiple modules
+ */
+export async function bulkCheckModuleAccess(moduleNames: string[], userId?: string): Promise<Record<string, boolean>> {
+  try {
+    const { data, error } = await supabase
+      .rpc('bulk_check_module_access', { 
+        module_names: moduleNames,
+        ...(userId && { user_id: userId })
+      });
+    
+    if (error) throw error;
+    
+    const accessMap: Record<string, boolean> = {};
+    (data || []).forEach((item: any) => {
+      accessMap[item.module_name] = item.has_access;
+    });
+    
+    return accessMap;
+  } catch (error) {
+    console.error('Error bulk checking module access:', error);
+    return {};
   }
 }
 

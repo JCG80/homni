@@ -1,21 +1,28 @@
 
 import React, { useState } from 'react';
-import { Search, CheckSquare, Square } from 'lucide-react';
+import { Search, CheckSquare, Square, ChevronDown, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ModuleAccessItem } from './ModuleAccessItem';
 import { Module } from '../../types/types';
+import type { CategorizedModules } from '@/modules/system/types/systemTypes';
 
 interface ModulesListProps {
   modules: Module[];
+  categorizedModules: CategorizedModules;
   userAccess: string[];
   onToggleAccess: (moduleId: string) => void;
   onSelectAll: () => void;
   onClearAll: () => void;
 }
 
-export function ModulesList({ modules, userAccess, onToggleAccess, onSelectAll, onClearAll }: ModulesListProps) {
+export function ModulesList({ modules, categorizedModules, userAccess, onToggleAccess, onSelectAll, onClearAll }: ModulesListProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
+    admin: true, // Admin category open by default
+    core: true
+  });
 
   const filteredModules = modules.filter(module =>
     module.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -23,6 +30,23 @@ export function ModulesList({ modules, userAccess, onToggleAccess, onSelectAll, 
   );
 
   const allSelected = filteredModules.length > 0 && filteredModules.every(module => userAccess.includes(module.id));
+
+  const toggleCategory = (category: string) => {
+    setOpenCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
+  const getCategoryTitle = (category: string) => {
+    switch (category) {
+      case 'admin': return 'Administrasjon';
+      case 'core': return 'Kjernemodeler';
+      case 'content': return 'Innhold';
+      case 'analytics': return 'Analyser';
+      default: return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+  };
 
   return (
     <div className="border-t pt-6">
@@ -61,19 +85,62 @@ export function ModulesList({ modules, userAccess, onToggleAccess, onSelectAll, 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredModules.length > 0 ? (
-          filteredModules.map((module) => (
-            <ModuleAccessItem
-              key={module.id}
-              module={module}
-              hasAccess={userAccess.includes(module.id)}
-              onToggle={onToggleAccess}
-            />
-          ))
+      <div className="space-y-6">
+        {searchTerm ? (
+          // Show filtered results when searching
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredModules.length > 0 ? (
+              filteredModules.map((module) => (
+                <ModuleAccessItem
+                  key={module.id}
+                  module={module}
+                  hasAccess={userAccess.includes(module.id)}
+                  onToggle={onToggleAccess}
+                />
+              ))
+            ) : (
+              <div className="col-span-2 text-center p-4 bg-muted rounded">
+                Ingen moduler funnet for "{searchTerm}"
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="col-span-2 text-center p-4 bg-muted rounded">
-            {searchTerm ? 'Ingen moduler funnet' : 'Ingen moduler tilgjengelig'}
+          // Show categorized modules when not searching
+          Object.entries(categorizedModules).map(([category, categoryModules]) => (
+            <Collapsible
+              key={category}
+              open={openCategories[category]}
+              onOpenChange={() => toggleCategory(category)}
+            >
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                  <h4 className="text-base font-medium">{getCategoryTitle(category)}</h4>
+                  {openCategories[category] ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 mt-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {categoryModules.map((module) => (
+                    <ModuleAccessItem
+                      key={module.id}
+                      module={module}
+                      hasAccess={userAccess.includes(module.id)}
+                      onToggle={onToggleAccess}
+                    />
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          ))
+        )}
+        
+        {Object.keys(categorizedModules).length === 0 && (
+          <div className="text-center p-4 bg-muted rounded">
+            Ingen moduler tilgjengelig
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { 
   fetchAvailableModules, 
@@ -7,6 +7,7 @@ import {
   updateUserModuleAccess 
 } from '../api/moduleAccess';
 import { UseModuleAccessProps } from '@/types/admin';
+import type { CategorizedModules } from '@/modules/system/types/systemTypes';
 
 export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
   const { user } = useAuth();
@@ -15,6 +16,19 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
   const [isInternalAdmin, setIsInternalAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // Group modules by category for better UX
+  const categorizedModules = useMemo<CategorizedModules>(() => {
+    const grouped: CategorizedModules = {};
+    modules.forEach(module => {
+      const category = module.category || 'general';
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(module);
+    });
+    return grouped;
+  }, [modules]);
 
   // Fetch available modules and user's current access
   useEffect(() => {
@@ -84,6 +98,7 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
 
   return {
     modules,
+    categorizedModules,
     userAccess,
     isInternalAdmin,
     loading,

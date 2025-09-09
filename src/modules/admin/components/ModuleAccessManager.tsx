@@ -16,6 +16,7 @@ export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerPro
   const [reason, setReason] = useState('');
   const {
     modules,
+    categorizedModules,
     userAccess,
     isInternalAdmin,
     loading,
@@ -75,6 +76,7 @@ export function ModuleAccessManager({ userId, onUpdate }: ModuleAccessManagerPro
 
       <ModulesList
         modules={modules}
+        categorizedModules={categorizedModules}
         userAccess={userAccess}
         onToggleAccess={toggleAccess}
         onSelectAll={handleSelectAll}

@@ -1591,6 +1591,7 @@ export type Database = {
       }
       system_modules: {
         Row: {
+          category: string | null
           created_at: string | null
           dependencies: string[] | null
           description: string | null
@@ -1605,6 +1606,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          category?: string | null
           created_at?: string | null
           dependencies?: string[] | null
           description?: string | null
@@ -1619,6 +1621,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          category?: string | null
           created_at?: string | null
           dependencies?: string[] | null
           description?: string | null
@@ -1938,6 +1941,13 @@ export type Database = {
         Args: { p_company_id: string; p_lead_id: string }
         Returns: Json
       }
+      bulk_check_module_access: {
+        Args: { module_names: string[]; user_id?: string }
+        Returns: {
+          has_access: boolean
+          module_name: string
+        }[]
+      }
       check_admin_role: {
         Args: { user_id: string }
         Returns: boolean
@@ -2071,6 +2081,19 @@ export type Database = {
           name: string
           route: string
           settings: Json
+        }[]
+      }
+      get_user_modules_with_category: {
+        Args: { user_id?: string }
+        Returns: {
+          category: string
+          description: string
+          icon: string
+          id: string
+          is_enabled: boolean
+          name: string
+          route: string
+          sort_order: number
         }[]
       }
       get_user_profile: {
