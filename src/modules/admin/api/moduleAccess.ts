@@ -62,13 +62,14 @@ export const fetchUserModuleAccess = async (userId: string) => {
 };
 
 /**
- * Updates a user's module access
+ * Updates a user's module access with audit trail
  */
 export const updateUserModuleAccess = async (
   userId: string,
   adminId: string,
   moduleAccess: string[],
-  isInternalAdmin: boolean
+  isInternalAdmin: boolean,
+  reason?: string
 ) => {
   try {
     // Update internal admin status in user_profiles metadata
@@ -123,7 +124,7 @@ export const updateUserModuleAccess = async (
       if (insertError) throw insertError;
     }
     
-    // Log the admin action
+    // Enhanced audit logging
     await logAdminAction(
       'module_access_update',
       'user',
@@ -131,7 +132,10 @@ export const updateUserModuleAccess = async (
       {
         moduleAccess,
         isInternalAdmin,
-        updatedBy: adminId
+        updatedBy: adminId,
+        reason: reason || 'No reason provided',
+        timestamp: new Date().toISOString(),
+        changedModules: moduleAccess.length
       }
     );
     

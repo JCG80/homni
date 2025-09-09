@@ -59,7 +59,7 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
   };
 
   // Save changes to the database
-  const updateAccess = async () => {
+  const updateAccess = async (reason?: string) => {
     if (!user?.id) return false;
     
     try {
@@ -67,7 +67,8 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
         userId,
         user.id,
         userAccess,
-        isInternalAdmin
+        isInternalAdmin,
+        reason
       );
       
       if (success && onUpdate) {
