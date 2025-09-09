@@ -281,22 +281,9 @@ export const statusToPipeline = statusToPipelineStage;
 
 // === COMPANY/SETTINGS INTERFACES ===
 
-export interface CompanyProfile {
-  id: string;
-  user_id?: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  industry?: string;
-  contact_name?: string;
-  status?: string;
-  subscription_plan?: string;
-  modules_access?: string[];
-  tags?: string[];
-  metadata?: Record<string, any>;
-  created_at: string;
-  updated_at?: string;
-}
+// CompanyProfile moved to src/types/company.ts as canonical source
+// Re-export from canonical location
+export type { CompanyProfile } from '@/types/company';
 
 export interface LeadSettings {
   id: string;
