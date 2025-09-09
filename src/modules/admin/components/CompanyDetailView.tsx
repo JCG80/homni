@@ -8,6 +8,7 @@ import { StatisticsTab } from './companyDetails/StatisticsTab';
 import { NotesTab } from './companyDetails/NotesTab';
 import { CompanyHeader } from './companyDetails/CompanyHeader';
 import { ModuleAccessTab } from './companyDetails/ModuleAccessTab';
+import { BudgetManagementTab } from './companyDetails/BudgetManagementTab';
 import { ErrorState } from './companyDetails/ErrorState';
 import { useCompanyDetails } from '@/modules/admin/hooks/useCompanyDetails';
 
@@ -18,7 +19,7 @@ interface CompanyDetailViewProps {
 }
 
 export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailViewProps) {
-  const [activeTab, setActiveTab] = useState('purchases');
+  const [activeTab, setActiveTab] = useState('budget');
   // Initialize notes from company admin_notes if available, otherwise empty string
   const initialNotes = company.admin_notes || '';
   
@@ -50,12 +51,20 @@ export function CompanyDetailView({ company, onClose, onUpdate }: CompanyDetailV
       <CompanyHeader company={company} />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 mb-4">
+        <TabsList className="grid grid-cols-5 mb-4">
+          <TabsTrigger value="budget">Budsjett</TabsTrigger>
           <TabsTrigger value="purchases">Kjøpshistorikk</TabsTrigger>
           <TabsTrigger value="statistics">Konverteringsstatistikk</TabsTrigger>
           <TabsTrigger value="notes">Interne notater</TabsTrigger>
           <TabsTrigger value="access">Modultilgang</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="budget">
+          <BudgetManagementTab 
+            company={company}
+            onUpdate={onUpdate}
+          />
+        </TabsContent>
         
         <TabsContent value="purchases">
           <PurchasesTab 

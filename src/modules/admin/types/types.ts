@@ -31,6 +31,15 @@ export interface CompanyProfile {
   request_count?: number;
   last_active?: string;
   
+  // Budget-related fields
+  current_budget?: number;
+  daily_budget?: number;
+  monthly_budget?: number;
+  lead_cost_per_unit?: number;
+  auto_accept_leads?: boolean;
+  budget_alerts_enabled?: boolean;
+  low_budget_threshold?: number;
+  
   // Statistics fields
   leads_bought?: number;
   leads_won?: number;

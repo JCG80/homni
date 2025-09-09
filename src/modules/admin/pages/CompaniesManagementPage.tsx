@@ -8,6 +8,7 @@ import { CompanyProfile } from '../types/types';
 import { CompaniesTable } from '../components/companies/CompaniesTable';
 import { CompaniesLoading } from '../components/companies/CompaniesLoading';
 import { CompaniesError } from '../components/companies/CompaniesError';
+import { CompanySummaryCards } from '../components/companies/CompanySummaryCards';
 import { useCompanies } from '../hooks/useCompanies';
 
 export const CompaniesManagementPage = () => {
@@ -37,7 +38,6 @@ export const CompaniesManagementPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-6">Bedriftsadministrasjon</h1>
       <AdminNavigation />
       
       {isLoading ? (
@@ -45,10 +45,13 @@ export const CompaniesManagementPage = () => {
       ) : error ? (
         <CompaniesError />
       ) : (
-        <CompaniesTable 
-          companies={companies} 
-          onSelectCompany={setSelectedCompany}
-        />
+        <>
+          <CompanySummaryCards companies={companies} />
+          <CompaniesTable 
+            companies={companies} 
+            onSelectCompany={setSelectedCompany}
+          />
+        </>
       )}
       
       <Dialog open={!!selectedCompany} onOpenChange={(open) => !open && setSelectedCompany(null)}>

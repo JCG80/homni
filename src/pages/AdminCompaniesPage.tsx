@@ -1,10 +1,6 @@
-/**
- * Admin companies page wrapper
- */
-
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard';
-import { EnhancedCompanyManagement } from '@/components/admin/EnhancedCompanyManagement';
+import { CompaniesManagementPage } from '@/modules/admin/pages/CompaniesManagementPage';
 import { useAuth } from '@/modules/auth/hooks';
 import { Card, CardContent } from '@/components/ui/card';
 import { Building2 } from 'lucide-react';
@@ -31,19 +27,17 @@ export const AdminCompaniesPage: React.FC = () => {
 
   return (
     <DashboardLayout title="Company Management">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-3 mb-8">
-          <Building2 className="h-8 w-8 text-primary" />
-          <div>
-            <h1 className="text-3xl font-bold">Company Management</h1>
-            <p className="text-muted-foreground">
-              Manage companies, budgets, and lead distribution
-            </p>
-          </div>
+      <div className="flex items-center gap-3 mb-8">
+        <Building2 className="h-8 w-8 text-primary" />
+        <div>
+          <h1 className="text-3xl font-bold">Company Management</h1>
+          <p className="text-muted-foreground">
+            Manage companies, budgets, and lead distribution
+          </p>
         </div>
-
-        <EnhancedCompanyManagement />
       </div>
+
+      <CompaniesManagementPage />
     </DashboardLayout>
   );
 };
