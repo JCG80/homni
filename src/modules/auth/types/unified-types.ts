@@ -18,7 +18,7 @@ export type UserRole =
  */
 export interface UserProfile {
   id: string;
-  user_id: string;
+  user_id?: string; // Make optional to handle cases where it's the same as id
   full_name?: string;
   email?: string;
   phone?: string;
@@ -31,6 +31,7 @@ export interface UserProfile {
   role?: string; // Legacy field, use user_roles table instead
   account_type?: string; // Legacy field
   company_id?: string;
+  display_name?: string; // Add display_name field
   metadata: {
     role?: UserRole;
     company_id?: string;
@@ -44,35 +45,7 @@ export interface UserProfile {
   feature_overrides?: Record<string, any>;
 }
 
-/**
- * Company profile interface that matches the enhanced database schema
- */
-export interface CompanyProfile {
-  id: string;
-  user_id?: string;
-  name: string;
-  contact_name?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  region?: string;
-  contact_email?: string;
-  website?: string;
-  description?: string;
-  logo_url?: string;
-  industry?: string;
-  subscription_plan?: string;
-  modules_access?: string[];
-  status?: string;
-  tags?: string[];
-  created_at: string;
-  updated_at?: string;
-  deleted_at?: string;
-  metadata?: Record<string, any>;
-  notification_preferences?: Record<string, any>;
-  ui_preferences?: Record<string, any>;
-  feature_overrides?: Record<string, any>;
-}
+// CompanyProfile moved to src/types/company.ts to avoid circular dependencies
 
 /**
  * User session information

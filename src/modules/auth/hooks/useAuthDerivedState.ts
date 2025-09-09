@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
-import { AuthUser, Profile, ModuleAccess } from '../types/types';
-import { UserRole } from '../utils/roles/types';
+import { AuthUser, UserProfile, ModuleAccess } from '../types/types';
+import { UserRole, normalizeRole } from '../normalizeRole';
 
 interface AuthBaseState {
   user: AuthUser | null;
-  profile: Profile | null;
+  profile: UserProfile | null;
   module_access?: ModuleAccess[];
 }
 
@@ -17,7 +17,7 @@ export const useAuthDerivedState = ({ user, profile, module_access = [] }: AuthB
   const isAuthenticated = !!user;
 
   // Determine role - first check profile role, then user role, then use testing emails if in dev mode
-  let role: UserRole | undefined = profile?.role || user?.role;
+  let role: UserRole | undefined = normalizeRole(profile?.role || profile?.metadata?.role);
   
   // For development testing - check emails for specific test users
   if (!role && user?.email && import.meta.env.MODE === 'development') {

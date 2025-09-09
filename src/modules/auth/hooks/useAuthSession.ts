@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { AuthUser, AuthState } from '../types/types';
 import { useFetchUserProfile } from './useFetchUserProfile';
-import { UserRole } from '../utils/roles/types';
+import { UserRole, normalizeRole } from '../normalizeRole';
 import { toast } from '@/components/ui/use-toast';
 
 /**
@@ -66,9 +66,9 @@ export const useAuthSession = () => {
             
             if (mounted) {
               // Update user with role from profile if available
-              if (profile?.role) {
-                user.role = profile.role;
-                console.log(`Role determined from profile: ${profile.role}`);
+              if (profile?.role || profile?.metadata?.role) {
+                user.role = normalizeRole(profile.role || profile.metadata?.role);
+                console.log(`Role determined from profile: ${user.role}`);
               } else {
                 console.warn('No role found in profile, using default');
               }
@@ -132,9 +132,9 @@ export const useAuthSession = () => {
           .then(profile => {
             if (mounted) {
               // Update user with role from profile if available
-              if (profile?.role) {
-                user.role = profile.role;
-                console.log(`Role determined from profile: ${profile.role}`);
+              if (profile?.role || profile?.metadata?.role) {
+                user.role = normalizeRole(profile.role || profile.metadata?.role);
+                console.log(`Role determined from profile: ${user.role}`);
               } else {
                 console.warn('No role found in profile, using default');
               }
@@ -190,9 +190,9 @@ export const useAuthSession = () => {
         
         // Update user with role from profile if available
         const updatedUser = { ...authState.user };
-        if (profile?.role) {
-          updatedUser.role = profile.role;
-          console.log(`Updated role from profile refresh: ${profile.role}`);
+        if (profile?.role || profile?.metadata?.role) {
+          updatedUser.role = normalizeRole(profile.role || profile.metadata?.role);
+          console.log(`Updated role from profile refresh: ${updatedUser.role}`);
         }
         
         setAuthState(prev => ({

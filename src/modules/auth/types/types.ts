@@ -6,7 +6,7 @@
 export * from './unified-types';
 
 // Keep the legacy types for backward compatibility
-import { UserRole } from './unified-types';
+import { UserRole, UserProfile } from './unified-types';
 
 // Re-export UserRole directly for backward compatibility
 export type { UserRole };
@@ -21,23 +21,9 @@ export interface ModuleAccess {
   updated_at?: string;
 }
 
-export interface Profile {
-  id: string;
-  user_id?: string;
-  full_name?: string;
-  role: UserRole;
-  company_id?: string;
-  created_at: string;
-  metadata?: Record<string, any>;
-  email?: string;
-  phone?: string;
-  address?: string;
-  region?: string;
-  profile_picture_url?: string;
-  preferences?: Record<string, any>;
-  updated_at?: string;
-  display_name?: string;
-}
+// Profile interface removed - use UserProfile from unified-types.ts instead
+// Re-export canonical UserProfile
+export type { UserProfile as Profile } from './unified-types';
 
 export interface AuthUser {
   id: string;
@@ -48,7 +34,7 @@ export interface AuthUser {
 
 export interface AuthState {
   user: AuthUser | null;
-  profile: Profile | null;
+  profile: UserProfile | null;
   isLoading: boolean;
   error: Error | null;
 }
@@ -75,7 +61,7 @@ export interface TestUser {
 export interface AuthContextType {
   // User state
   user: AuthUser | null;
-  profile: Profile | null;
+  profile: UserProfile | null;
   
   // Status flags
   isAuthenticated: boolean;

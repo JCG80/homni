@@ -7,34 +7,17 @@
 import type { UserRole as CanonicalUserRole } from '@/modules/auth/normalizeRole';
 import { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleLevel, isUserRole as isUserRoleCanonical } from '@/modules/auth/normalizeRole';
 
+// Import UserProfile for internal use
+import type { UserProfile } from '@/modules/auth/types/unified-types';
+
 export type UserRole = CanonicalUserRole;
 export { normalizeRole, isLegacyRole, getRoleDisplayName, getRoleLevel, hasRoleLevel };
 
 // Re-export constants from canonical source
 export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from '@/modules/auth/normalizeRole';
 
-/**
- * Unified user profile interface that matches the database schema
- */
-export interface UserProfile {
-  id: string;
-  full_name?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  region?: string;
-  profile_picture_url?: string;
-  created_at: string;
-  updated_at?: string;
-  metadata: {
-    role?: UserRole;
-    company_id?: string;
-    account_type?: 'user' | 'company';
-    internal_admin?: boolean;
-    [key: string]: any;
-  };
-  preferences?: Record<string, any>;
-}
+// Re-export UserProfile for external consumers
+export type { UserProfile };
 
 /**
  * User session information
@@ -80,7 +63,7 @@ export interface DevUserProfile {
 }
 
 /**
- * Auth state interface
+ * Auth state interface - uses imported UserProfile from unified-types
  */
 export interface AuthState {
   user: AuthUser | null;

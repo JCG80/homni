@@ -11,12 +11,15 @@ export * from './hooks';
 export * from './admin';
 export * from './logging';
 
+// Company types (explicit exports to avoid conflicts)
+export type { CompanyProfile, CompanyStatistics, PurchaseRecord } from './company';
+
 // Marketplace types (explicit exports to avoid conflicts)
 export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
 
-// Legacy compatibility exports
+// Legacy compatibility exports - canonical sources
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
-export type { Lead, LeadFormValues, LeadStatus, PipelineStage, CompanyProfile } from './leads-canonical';
+export type { Lead, LeadFormValues, LeadStatus, PipelineStage } from './leads-canonical';
 
 // Hook types
 export type { 
@@ -32,6 +35,5 @@ export type {
   UseModuleAccessProps, 
   ModuleAccessManagerProps, 
   Module, 
-  AdminLog, 
-  CompanyStatistics 
+  AdminLog 
 } from './admin';
