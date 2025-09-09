@@ -2195,6 +2195,10 @@ export type Database = {
         Args: { company_uuid: string }
         Returns: undefined
       }
+      set_internal_admin_status: {
+        Args: { is_admin?: boolean; user_email: string }
+        Returns: string
+      }
       track_analytics_event: {
         Args: {
           p_event_name: string
