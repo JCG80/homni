@@ -1082,6 +1082,39 @@ export type Database = {
           },
         ]
       }
+      module_access_audit: {
+        Row: {
+          action: string
+          admin_user_id: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          module_id: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          admin_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          module_id: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          module_id?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       module_dependencies: {
         Row: {
           created_at: string
@@ -1948,6 +1981,16 @@ export type Database = {
           module_name: string
         }[]
       }
+      bulk_update_user_module_access: {
+        Args: {
+          admin_id?: string
+          enable_access: boolean
+          module_ids: string[]
+          reason?: string
+          target_user_id: string
+        }
+        Returns: undefined
+      }
       check_admin_role: {
         Args: { user_id: string }
         Returns: boolean
@@ -2069,6 +2112,10 @@ export type Database = {
           metadata: Json
         }[]
       }
+      get_role_default_modules: {
+        Args: { user_role: string }
+        Returns: string[]
+      }
       get_user_effective_roles: {
         Args: { _user_id?: string }
         Returns: string[]
@@ -2159,6 +2206,10 @@ export type Database = {
       has_role_level: {
         Args: { _min_level: number; _user_id: string }
         Returns: boolean
+      }
+      initialize_user_module_access: {
+        Args: { target_user_id: string }
+        Returns: undefined
       }
       is_admin: {
         Args: Record<PropertyKey, never>

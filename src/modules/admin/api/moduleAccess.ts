@@ -62,7 +62,59 @@ export const fetchUserModuleAccess = async (userId: string) => {
 };
 
 /**
- * Updates a user's module access with audit trail
+ * Bulk update user module access using database function
+ */
+export const bulkUpdateUserModuleAccess = async (
+  userId: string,
+  moduleIds: string[],
+  enableAccess: boolean,
+  reason?: string
+) => {
+  try {
+    const { error } = await supabase.rpc('bulk_update_user_module_access', {
+      target_user_id: userId,
+      module_ids: moduleIds,
+      enable_access: enableAccess,
+      reason
+    });
+    
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error in bulk module access update:', error);
+    return false;
+  }
+};
+
+/**
+ * Fetch module access audit logs for a user
+ */
+export const fetchModuleAccessAudit = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('module_access_audit')
+      .select(`
+        id,
+        action,
+        reason,
+        created_at,
+        admin_user_id,
+        metadata
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching audit logs:', error);
+    return [];
+  }
+};
+
+/**
+ * Updates a user's module access with audit trail (Legacy - use bulk function instead)
  */
 export const updateUserModuleAccess = async (
   userId: string,
@@ -101,43 +153,17 @@ export const updateUserModuleAccess = async (
     
     if (profileError) throw profileError;
     
-    // Delete existing user_modules for this user
-    const { error: deleteError } = await supabase
-      .from('user_modules')
-      .delete()
-      .eq('user_id', userId);
+    // Use bulk function for module updates
+    const allModules = await fetchAvailableModules();
+    const allModuleIds = allModules.map(m => m.id);
     
-    if (deleteError) throw deleteError;
+    // Revoke all modules first
+    await bulkUpdateUserModuleAccess(userId, allModuleIds, false, reason);
     
-    // Insert new module access
+    // Then grant the specified ones
     if (moduleAccess.length > 0) {
-      const moduleRecords = moduleAccess.map(moduleId => ({
-        user_id: userId,
-        module_id: moduleId,
-        is_enabled: true
-      }));
-      
-      const { error: insertError } = await supabase
-        .from('user_modules')
-        .insert(moduleRecords);
-      
-      if (insertError) throw insertError;
+      await bulkUpdateUserModuleAccess(userId, moduleAccess, true, reason);
     }
-    
-    // Enhanced audit logging
-    await logAdminAction(
-      'module_access_update',
-      'user',
-      userId,
-      {
-        moduleAccess,
-        isInternalAdmin,
-        updatedBy: adminId,
-        reason: reason || 'No reason provided',
-        timestamp: new Date().toISOString(),
-        changedModules: moduleAccess.length
-      }
-    );
     
     return true;
   } catch (error) {

@@ -4,10 +4,21 @@ import { useAuth } from '@/modules/auth/hooks';
 import { 
   fetchAvailableModules, 
   fetchUserModuleAccess, 
-  updateUserModuleAccess 
+  updateUserModuleAccess,
+  bulkUpdateUserModuleAccess,
+  fetchModuleAccessAudit
 } from '../api/moduleAccess';
 import { UseModuleAccessProps } from '@/types/admin';
 import type { CategorizedModules } from '@/modules/system/types/systemTypes';
+
+interface ModuleAuditLog {
+  id: string;
+  action: string;
+  reason?: string;
+  created_at: string;
+  admin_user_id?: string;
+  metadata?: any;
+}
 
 export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
   const { user } = useAuth();
@@ -16,43 +27,69 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
   const [isInternalAdmin, setIsInternalAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [auditLogs, setAuditLogs] = useState<ModuleAuditLog[]>([]);
 
-  // Group modules by category for better UX
+  // Group modules by category with enhanced sorting
   const categorizedModules = useMemo<CategorizedModules>(() => {
     const grouped: CategorizedModules = {};
-    modules.forEach(module => {
-      const category = module.category || 'general';
-      if (!grouped[category]) {
-        grouped[category] = [];
+    modules
+      .sort((a, b) => (a.sort_order || 999) - (b.sort_order || 999))
+      .forEach(module => {
+        const category = module.category || 'general';
+        if (!grouped[category]) {
+          grouped[category] = [];
+        }
+        grouped[category].push(module);
+      });
+    
+    // Sort categories by priority
+    const sortedGrouped: CategorizedModules = {};
+    const categoryOrder = ['admin', 'core', 'content', 'company', 'general'];
+    
+    categoryOrder.forEach(category => {
+      if (grouped[category]) {
+        sortedGrouped[category] = grouped[category];
       }
-      grouped[category].push(module);
     });
-    return grouped;
+    
+    // Add any remaining categories
+    Object.keys(grouped).forEach(category => {
+      if (!categoryOrder.includes(category)) {
+        sortedGrouped[category] = grouped[category];
+      }
+    });
+    
+    return sortedGrouped;
   }, [modules]);
 
-  // Fetch available modules and user's current access
+  // Fetch data with audit logs
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch available modules
+      const availableModules = await fetchAvailableModules();
+      setModules(availableModules);
+      
+      // Fetch user's current module access
+      const { moduleAccess, isInternalAdmin } = await fetchUserModuleAccess(userId);
+      setUserAccess(moduleAccess);
+      setIsInternalAdmin(isInternalAdmin);
+      
+      // Fetch audit logs
+      const logs = await fetchModuleAccessAudit(userId);
+      setAuditLogs(logs);
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Error in useModuleAccess:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+      setLoading(false);
+    }
+  };
+
+  // Fetch data on mount and userId change
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch available modules
-        const availableModules = await fetchAvailableModules();
-        setModules(availableModules);
-        
-        // Fetch user's current module access
-        const { moduleAccess, isInternalAdmin } = await fetchUserModuleAccess(userId);
-        setUserAccess(moduleAccess);
-        setIsInternalAdmin(isInternalAdmin);
-        
-        setLoading(false);
-      } catch (err) {
-        console.error('Error in useModuleAccess:', err);
-        setError(err instanceof Error ? err : new Error('Unknown error'));
-        setLoading(false);
-      }
-    };
-    
     fetchData();
   }, [userId]);
 
@@ -72,6 +109,60 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
     setIsInternalAdmin(prev => !prev);
   };
 
+  // Bulk operations for category-based access management
+  const bulkToggleCategory = async (category: string, enable: boolean, reason?: string) => {
+    if (!user?.id) return false;
+    
+    const categoryModules = categorizedModules[category] || [];
+    const moduleIds = categoryModules.map(m => m.id);
+    
+    try {
+      const success = await bulkUpdateUserModuleAccess(userId, moduleIds, enable, reason);
+      if (success) {
+        if (enable) {
+          setUserAccess(prev => [...new Set([...prev, ...moduleIds])]);
+        } else {
+          setUserAccess(prev => prev.filter(id => !moduleIds.includes(id)));
+        }
+        await fetchData(); // Refresh audit logs
+        if (onUpdate) onUpdate();
+      }
+      return success;
+    } catch (err) {
+      console.error('Error in bulk category toggle:', err);
+      return false;
+    }
+  };
+
+  // Grant all core modules (common operation)
+  const grantCoreModules = async (reason?: string) => {
+    return bulkToggleCategory('core', true, reason || 'Grant core module access');
+  };
+
+  // Grant all admin modules (for admin promotions)
+  const grantAdminModules = async (reason?: string) => {
+    return bulkToggleCategory('admin', true, reason || 'Grant admin module access');
+  };
+
+  // Revoke all modules (for access removal)
+  const revokeAllModules = async (reason?: string) => {
+    if (!user?.id) return false;
+    
+    try {
+      const allModuleIds = modules.map(m => m.id);
+      const success = await bulkUpdateUserModuleAccess(userId, allModuleIds, false, reason);
+      if (success) {
+        setUserAccess([]);
+        await fetchData();
+        if (onUpdate) onUpdate();
+      }
+      return success;
+    } catch (err) {
+      console.error('Error revoking all modules:', err);
+      return false;
+    }
+  };
+
   // Save changes to the database
   const updateAccess = async (reason?: string) => {
     if (!user?.id) return false;
@@ -85,8 +176,9 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
         reason
       );
       
-      if (success && onUpdate) {
-        onUpdate();
+      if (success) {
+        await fetchData(); // Refresh data including audit logs
+        if (onUpdate) onUpdate();
       }
       
       return success;
@@ -103,8 +195,14 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
     isInternalAdmin,
     loading,
     error,
+    auditLogs,
     toggleAccess,
     toggleInternalAdmin,
-    updateAccess
+    updateAccess,
+    bulkToggleCategory,
+    grantCoreModules,
+    grantAdminModules,
+    revokeAllModules,
+    refreshData: fetchData
   };
 };
