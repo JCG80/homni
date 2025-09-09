@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { mainRouteObjects } from './mainRouteObjects';
 import { adminRouteObjects } from './adminRouteObjects';
 import { companyRouteObjects } from './companyRouteObjects';
+import { insuranceRouteObjects } from './insuranceRouteObjects';
 import { applyFeatureFlags } from './filters';
 import type { AppRoute } from './routeTypes';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
@@ -63,6 +64,7 @@ export default function AppRouter() {
     ...mainRouteObjects,
     ...adminRouteObjects,
     ...companyRouteObjects,
+    ...insuranceRouteObjects,
   ];
   
   // Apply feature flags and role filtering

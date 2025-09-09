@@ -7,15 +7,16 @@
 export * from './auth';
 export * from './common';
 export * from './leads-canonical';
-export * from './marketplace';
 export * from './hooks';
 export * from './admin';
 export * from './logging';
 
+// Marketplace types (explicit exports to avoid conflicts)
+export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
+
 // Legacy compatibility exports
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
 export type { Lead, LeadFormValues, LeadStatus, PipelineStage, CompanyProfile } from './leads-canonical';
-export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
 
 // Hook types
 export type { 

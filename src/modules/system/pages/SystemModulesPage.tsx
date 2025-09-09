@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { getSystemModules, toggleSystemModule } from '../api/systemModules';
 import type { SystemModule } from '../types/systemTypes';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
 import { useRoleProtection } from '@/modules/auth/hooks';
 import { Settings } from 'lucide-react';

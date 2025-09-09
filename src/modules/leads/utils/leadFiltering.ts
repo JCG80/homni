@@ -1,6 +1,6 @@
 
-import { isValidLeadStatus } from '@/types/leads';
-import { LeadSettings } from '@/types/leads';
+import { isValidLeadStatus } from '@/types/leads-canonical';
+import { LeadSettings } from '@/types/leads-canonical';
 
 /**
  * Filters a lead based on settings criteria
