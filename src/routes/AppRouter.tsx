@@ -4,6 +4,10 @@ import { mainRouteObjects } from './mainRouteObjects';
 import { adminRouteObjects } from './adminRouteObjects';
 import { companyRouteObjects } from './companyRouteObjects';
 import { insuranceRouteObjects } from './insuranceRouteObjects';
+import { leadRouteObjects } from './leadRouteObjects';
+import { marketplaceRouteObjects } from './marketplaceRouteObjects';
+import { contentEditorRouteObjects } from './contentEditorRouteObjects';
+import { docsRouteObjects } from './docsRouteObjects';
 import { applyFeatureFlags } from './filters';
 import type { AppRoute } from './routeTypes';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
@@ -65,6 +69,10 @@ export default function AppRouter() {
     ...adminRouteObjects,
     ...companyRouteObjects,
     ...insuranceRouteObjects,
+    ...leadRouteObjects,
+    ...marketplaceRouteObjects,
+    ...contentEditorRouteObjects,
+    ...docsRouteObjects,
   ];
   
   // Apply feature flags and role filtering

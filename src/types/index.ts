@@ -17,7 +17,7 @@ export type { CompanyProfile, CompanyStatistics, PurchaseRecord } from './compan
 // Marketplace types (explicit exports to avoid conflicts)
 export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
 
-// Legacy compatibility exports - canonical sources
+// Legacy compatibility exports - canonical sources only
 export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
 export type { Lead, LeadFormValues, LeadStatus, PipelineStage } from './leads-canonical';
 
@@ -30,7 +30,7 @@ export type {
   UseRoleCheckProps 
 } from './hooks';
 
-// Admin types
+// Admin types (explicit exports to avoid conflicts)
 export type { 
   UseModuleAccessProps, 
   ModuleAccessManagerProps, 
