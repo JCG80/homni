@@ -93,33 +93,39 @@ export const SimplifiedUserDashboard: React.FC = () => {
   if (authLoading || loading) {
     console.log('[SimplifiedUserDashboard] Showing loading state');
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" />
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-muted-foreground">Laster dashboard...</p>
+          <p className="text-xs text-muted-foreground/70 mt-2">
+            Henter dine siste forespørsler
+          </p>
         </div>
       </div>
     );
   }
 
-  // Show error state if there's an error
+  // Enhanced error state with recovery options
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Card className="p-6 max-w-md">
-          <CardContent className="text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-red-600 mb-4">Kunne ikke laste dashboard</p>
-            <p className="text-sm text-muted-foreground mb-4">{error}</p>
-            <Button onClick={() => {
-              setError(null);
-              setLoading(true);
-              fetchDashboardData();
-            }}>
-              Prøv igjen
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="p-6 text-center space-y-4">
+        <h2 className="text-xl font-semibold">Kunne ikke laste dashboard</h2>
+        <p className="text-muted-foreground">{error}</p>
+        <div className="flex gap-2 justify-center">
+          <Button onClick={() => {
+            setError(null);
+            setLoading(true);
+            fetchDashboardData();
+          }} variant="outline">
+            Prøv igjen
+          </Button>
+          <Button onClick={() => window.location.reload()} variant="ghost" size="sm">
+            Oppdater siden
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Hvis problemet vedvarer, kontakt support på support@homni.no
+        </p>
       </div>
     );
   }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { User, FileText, Settings, HelpCircle } from 'lucide-react';
+import { SystemHealthCheck } from '@/components/health/SystemHealthCheck';
 
 /**
  * Minimal fallback dashboard that works even with package.json corruption
@@ -88,13 +89,19 @@ export const UserDashboardFallback: React.FC = () => {
         </div>
       </div>
 
-      {/* System Status Notice */}
-      <div className="mt-8 p-4 bg-muted rounded-lg">
-        <h3 className="font-medium mb-2">Systemstatus</h3>
-        <p className="text-sm text-muted-foreground">
-          Dashboard fungerer i fallback-modus. Noen funksjoner kan være begrenset.
-          Kontakt support hvis du opplever problemer.
-        </p>
+      {/* System Status Notice with Health Check */}
+      <div className="mt-8 grid gap-6 md:grid-cols-2">
+        <div className="p-4 bg-muted rounded-lg">
+          <h3 className="font-medium mb-2">Systemstatus</h3>
+          <p className="text-sm text-muted-foreground">
+            Dashboard fungerer i fallback-modus. Noen funksjoner kan være begrenset.
+            Kontakt support hvis du opplever problemer.
+          </p>
+        </div>
+        
+        <div className="flex justify-center md:justify-end">
+          <SystemHealthCheck />
+        </div>
       </div>
     </div>
   );
