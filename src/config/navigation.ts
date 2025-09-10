@@ -28,6 +28,8 @@ import {
   Search,
   Target,
   DollarSign,
+  TrendingUp,
+  BarChart3,
 } from 'lucide-react';
 
 export interface NavigationItem {
@@ -103,6 +105,7 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
     { href: '/admin/leads', title: 'Leads', icon: FileText },
     { href: '/admin/companies', title: 'Bedrifter', icon: Building },
     { href: '/admin/members', title: 'Medlemmer', icon: Users },
+    { href: '/admin/smart-insights', title: 'SmartStart Innsikt', icon: BarChart3 },
     { href: '/admin/system-modules', title: 'Systemmoduler', icon: Database },
     { href: '/admin/api', title: 'API & Integrasjoner', icon: Zap },
   ],
@@ -112,6 +115,7 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
     { href: '/admin/leads', title: 'Leads', icon: FileText },
     { href: '/admin/companies', title: 'Bedrifter', icon: Building },
     { href: '/admin/members', title: 'Medlemmer', icon: Users },
+    { href: '/admin/smart-insights', title: 'SmartStart Innsikt', icon: BarChart3 },
     { href: '/admin/system-modules', title: 'Systemmoduler', icon: Database },
     { href: '/admin/api', title: 'API & Integrasjoner', icon: Zap },
     { href: '/admin/roles', title: 'Rolleadministrasjon', icon: Shield },
