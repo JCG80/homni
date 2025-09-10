@@ -15,6 +15,21 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+          charts: ['recharts', 'chart.js'],
+          utils: ['lodash', 'date-fns', 'clsx']
+        }
+      }
+    },
+    target: 'esnext',
+    minify: 'terser',
+    sourcemap: mode === 'development'
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -14,6 +14,8 @@ const DebugHomePage = lazy(() => import('@/pages/DebugHomePage').then(m => ({ de
 const LoginPage = lazy(() => import('@/modules/auth/pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const SelectServicesPage = lazy(() => import('@/pages/SelectServicesPage').then(m => ({ default: m.SelectServicesPage })));
 const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const ConsolidatedAccountPage = lazy(() => import('@/pages/ConsolidatedAccountPage').then(m => ({ default: m.default })));
+const PWADashboard = lazy(() => import('@/pages/PWADashboard').then(m => ({ default: m.default })));
 const PublicCompaniesDirectory = lazy(() => import('@/modules/insurance/pages/PublicCompaniesDirectory').then(m => ({ default: m.PublicCompaniesDirectory })));
 const CategoryLandingPage = lazy(() => import('@/pages/categories/CategoryLandingPage').then(m => ({ default: m.CategoryLandingPage })));
 const ThankYouPage = lazy(() => import('@/pages/ThankYouPage').then(m => ({ default: m.ThankYouPage })));
@@ -161,6 +163,13 @@ export const mainRouteObjects: AppRoute[] = [
     path: '/settings',
     element: createElement(SettingsRedirect),
     roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
+  },
+  // PWA Dashboard
+  {
+    path: '/pwa',
+    element: createElement(PWADashboard),
+    roles: ['user', 'company', 'content_editor', 'admin', 'master_admin'],
+    navKey: 'pwa'
   },
   
   // Merge all route objects into main routes

@@ -10,6 +10,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { Shell } from '@/components/layout/Shell';
 import { useAuth } from '@/modules/auth/hooks';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
 
 const queryClient = new QueryClient();
 
@@ -18,16 +20,19 @@ const AppContent = () => {
   const canUsePreview = isAdmin || isMasterAdmin;
 
   return (
-    <RoleProvider>
-      <RolePreviewProvider canUsePreview={canUsePreview}>
-        <ProfileContextProvider>
-          <SiteLayout>
-            <Shell />
-            <Toaster />
-          </SiteLayout>
-        </ProfileContextProvider>
-      </RolePreviewProvider>
-    </RoleProvider>
+    <ErrorBoundary>
+      <ConnectionStatus />
+      <RoleProvider>
+        <RolePreviewProvider canUsePreview={canUsePreview}>
+          <ProfileContextProvider>
+            <SiteLayout>
+              <Shell />
+              <Toaster />
+            </SiteLayout>
+          </ProfileContextProvider>
+        </RolePreviewProvider>
+      </RoleProvider>
+    </ErrorBoundary>
   );
 };
 

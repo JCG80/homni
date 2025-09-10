@@ -1,38 +1,67 @@
-const CACHE_NAME = 'homni-v1';
-const STATIC_CACHE_URLS = [
+// Enhanced service worker with advanced caching and offline support
+const CACHE_NAME = 'homni-v2.0.0';
+const STATIC_CACHE = 'homni-static-v2';
+const DYNAMIC_CACHE = 'homni-dynamic-v2';
+const API_CACHE = 'homni-api-v2';
+const IMAGE_CACHE = 'homni-images-v2';
+
+// Cache size limits
+const MAX_DYNAMIC_ITEMS = 100;
+const MAX_API_ITEMS = 50;
+const MAX_IMAGE_ITEMS = 60;
+
+// Resources to cache on install
+const STATIC_ASSETS = [
   '/',
-  '/manifest.json',
-  '/favicon.ico',
+  '/offline.html',
+  '/android-chrome-192x192.png',
+  '/android-chrome-512x512.png'
 ];
 
-const DYNAMIC_CACHE_NAME = 'homni-dynamic-v1';
-const DYNAMIC_CACHE_LIMIT = 50;
+// API endpoints to cache
+const CACHEABLE_APIS = [
+  'auth/session',
+  'profiles',
+  'companies',
+  'properties'
+];
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
+  console.log('[ServiceWorker] Installing...');
+  
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches.open(STATIC_CACHE)
       .then((cache) => {
-        return cache.addAll(STATIC_CACHE_URLS);
+        console.log('[ServiceWorker] Caching app shell');
+        return cache.addAll(STATIC_ASSETS);
       })
-      .then(() => {
-        return self.skipWaiting();
+      .catch((error) => {
+        console.error('[ServiceWorker] Cache installation failed:', error);
       })
   );
+  
+  // Force activation of new service worker
+  self.skipWaiting();
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('[ServiceWorker] Activating...');
+  
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== DYNAMIC_CACHE_NAME) {
+          // Delete old cache versions
+          if (!cacheName.includes('v2')) {
+            console.log('[ServiceWorker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     }).then(() => {
+      // Claim control immediately
       return self.clients.claim();
     })
   );
