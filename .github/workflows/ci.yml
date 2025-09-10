@@ -57,6 +57,59 @@ jobs:
       with:
         fail_ci_if_error: false
 
+  api-gateway-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/api-gateway
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+      SUPABASE_JWKS_URL: https://kkazhcihooovsuwravhs.supabase.co/.well-known/jwks_public
+      HMAC_OUTBOUND_SECRET: test-secret-key
+      CORS_ALLOW_ORIGINS: https://homni.app,https://staging.homni.app
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,test]"
+      
+      - name: Run API Gateway tests
+        run: pytest -v
+      
+      - name: Export OpenAPI spec
+        run: python ../../scripts/export_openapi.py
+      
+      - name: Validate OpenAPI changes
+        run: |
+          if git diff --exit-code docs/api/openapi.yaml; then
+            echo "✅ OpenAPI spec is up to date"
+          else
+            echo "⚠️  OpenAPI spec has changed - remember to commit"
+            git diff docs/api/openapi.yaml
+          fi
+
   e2e-tests:
     runs-on: ubuntu-latest
     needs: health-check

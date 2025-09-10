@@ -14,9 +14,13 @@ info:
     
 servers:
   - url: https://kkazhcihooovsuwravhs.supabase.co/functions/v1
-    description: Production API
+    description: Production API (Supabase Functions)
   - url: http://localhost:54321/functions/v1
-    description: Local development
+    description: Local development (Supabase Functions)
+  - url: http://localhost:8080/v1
+    description: Local API Gateway
+  - url: https://api.homni.no/v1
+    description: Production API Gateway
 
 security:
   - ApiKeyAuth: []
@@ -93,7 +97,220 @@ paths:
           content:
             application/json:
               schema:
+                 $ref: '#/components/schemas/Error'
+
+  /admin/users:
+    get:
+      summary: List Users
+      description: List users with optional search filtering - Admin only
+      operationId: listUsers
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          description: Search query for user names or emails
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  count:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/Error'
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /admin/companies:
+    get:
+      summary: List Companies
+      description: List companies with optional filtering - Admin only
+      operationId: listCompanies
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by company status
+          schema:
+            type: string
+            enum: [active, inactive, pending]
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of companies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  companies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Company'
+                  count:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Admin access required
+
+  /admin/leads:
+    get:
+      summary: List Leads
+      description: List leads with optional filtering - Admin only (read-only)
+      operationId: listLeadsAdmin
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by lead status
+          schema:
+            type: string
+            enum: [new, qualified, contacted, negotiating, converted, lost, paused]
+        - name: category
+          in: query
+          description: Filter by lead category
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of leads
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  leads:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdminLead'
+                  count:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Admin access required
+
+  /webhooks/{partner}:
+    post:
+      summary: Receive Webhook
+      description: Receive and verify webhooks from external partners
+      operationId: receiveWebhook
+      tags:
+        - Webhooks
+      security: []
+      parameters:
+        - name: partner
+          in: path
+          required: true
+          description: Partner identifier
+          schema:
+            type: string
+        - name: X-Signature
+          in: header
+          required: true
+          description: HMAC signature for verification
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook received successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                  partner:
+                    type: string
+        '401':
+          description: Invalid signature
 
 components:
   securitySchemes:
@@ -185,8 +402,104 @@ components:
           type: string
           format: date-time
 
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        role:
+          type: string
+          enum: [guest, user, company, content_editor, admin, master_admin]
+        email:
+          type: string
+          format: email
+        account_type:
+          type: string
+        company_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Company:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: [active, inactive, pending]
+        industry:
+          type: string
+        current_budget:
+          type: number
+        daily_budget:
+          type: number
+        auto_accept_leads:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AdminLead:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+        company_id:
+          type: string
+          format: uuid
+        company_name:
+          type: string
+        submitted_by:
+          type: string
+          format: uuid
+        customer_email:
+          type: string
+          format: email
+        customer_name:
+          type: string
+        lead_type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
 tags:
   - name: System
     description: System health and status endpoints
   - name: Leads
     description: Lead generation and management
+  - name: Admin
+    description: Administrative endpoints requiring admin privileges
+  - name: Webhooks
+    description: Webhook endpoints for external integrations
