@@ -69,8 +69,7 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
     { href: '/property', title: 'Mine eiendommer', icon: Building },
     { href: '/sales', title: 'DIY Salg', icon: DollarSign },
     { href: '/documents', title: 'Mine dokumenter', icon: FileText },
-    { href: '/profile', title: 'Min profil', icon: User },
-    { href: '/account', title: 'Innstillinger', icon: Settings },
+    { href: '/account', title: 'Min konto', icon: User },
   ],
 
   company: [
@@ -81,7 +80,7 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
     { href: '/property/portfolio', title: 'Eiendoms Portefølje', icon: Building },
     { href: '/sales/pipeline', title: 'Salg Pipeline', icon: DollarSign },
     { href: '/pakker', title: 'Abonnementer' },
-    { href: '/account', title: 'Innstillinger', icon: Settings },
+    { href: '/account', title: 'Min konto', icon: User },
   ],
 
   content_editor: [
@@ -91,7 +90,7 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
     { href: '/cms', title: 'Innholdsstyring' },
     { href: '/cms/artikler', title: 'Artikler', icon: FileText },
     { href: '/cms/preview', title: 'Forhåndsvisning', icon: Search },
-    { href: '/account', title: 'Innstillinger', icon: Settings },
+    { href: '/account', title: 'Min konto', icon: User },
   ],
 };
 

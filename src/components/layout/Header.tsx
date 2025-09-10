@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { MobileNavigation } from './MobileNavigation';
+import { SmartHamburgerMenu } from '@/components/navigation/SmartHamburgerMenu';
 import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
 import { QuickActionsDropdown } from '@/components/navigation';
 import { CommandPalette } from '@/components/navigation/CommandPalette';
@@ -46,26 +46,8 @@ export const Header = ({ className = '' }: HeaderProps) => {
         {/* Main Navigation - Desktop */}
         <MainNavigation />
         
-        {/* Main Navigation - Mobile */}
-        <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Åpne meny</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0">
-              <div className="py-4">
-                {isAuthenticated ? (
-                  <MobileNavigation />
-                ) : (
-                  <LayoutSidebar />
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+        {/* Smart Mobile Menu */}
+        <SmartHamburgerMenu />
         
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">

@@ -1,11 +1,6 @@
 import React from 'react';
-import { MyAccountPage } from '@/pages/MyAccountPage';
-import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
+import { ConsolidatedAccountPage } from '@/pages/ConsolidatedAccountPage';
 
 export const AccountPageWrapper = () => {
-  return (
-    <RoleDashboard title="Min konto">
-      <MyAccountPage />
-    </RoleDashboard>
-  );
+  return <ConsolidatedAccountPage />;
 };
