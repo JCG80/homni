@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, FileText, Settings, Plus, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PropertyDocuments } from './PropertyDocuments';
+import { PropertyDocumentationDashboard } from './enhanced';
 import { PropertyInfo } from './PropertyInfo';
 import { useAuth } from '@/modules/auth/hooks';
 
@@ -101,7 +102,7 @@ export const PropertyDetails = ({ propertyId }: PropertyDetailsProps) => {
         </TabsContent>
 
         <TabsContent value="documents">
-          <PropertyDocuments propertyId={property.id} />
+          <PropertyDocumentationDashboard propertyId={property.id} />
         </TabsContent>
 
         <TabsContent value="maintenance">

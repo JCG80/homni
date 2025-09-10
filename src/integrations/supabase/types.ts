@@ -619,6 +619,42 @@ export type Database = {
         }
         Relationships: []
       }
+      document_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_required: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_required?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_required?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           created_at: string
@@ -1387,35 +1423,154 @@ export type Database = {
         }
         Relationships: []
       }
+      property_document_access: {
+        Row: {
+          access_level: string
+          created_at: string | null
+          document_id: string
+          expires_at: string | null
+          granted_by: string
+          granted_to: string | null
+          id: string
+        }
+        Insert: {
+          access_level: string
+          created_at?: string | null
+          document_id: string
+          expires_at?: string | null
+          granted_by: string
+          granted_to?: string | null
+          id?: string
+        }
+        Update: {
+          access_level?: string
+          created_at?: string | null
+          document_id?: string
+          expires_at?: string | null
+          granted_by?: string
+          granted_to?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_document_access_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "property_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_document_versions: {
+        Row: {
+          created_at: string | null
+          document_id: string
+          file_path: string | null
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          upload_metadata: Json | null
+          uploaded_by: string | null
+          version_number: number
+        }
+        Insert: {
+          created_at?: string | null
+          document_id: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          upload_metadata?: Json | null
+          uploaded_by?: string | null
+          version_number?: number
+        }
+        Update: {
+          created_at?: string | null
+          document_id?: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          upload_metadata?: Json | null
+          uploaded_by?: string | null
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "property_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_documents: {
         Row: {
+          category_id: string | null
           created_at: string
+          current_version: number | null
+          description: string | null
           document_type: string
+          expires_at: string | null
           file_path: string | null
+          file_size: number | null
           id: string
+          is_public: boolean | null
+          metadata: Json | null
+          mime_type: string | null
           name: string
           property_id: string
+          tags: string[] | null
+          thumbnail_path: string | null
           updated_at: string
         }
         Insert: {
+          category_id?: string | null
           created_at?: string
+          current_version?: number | null
+          description?: string | null
           document_type: string
+          expires_at?: string | null
           file_path?: string | null
+          file_size?: number | null
           id?: string
+          is_public?: boolean | null
+          metadata?: Json | null
+          mime_type?: string | null
           name: string
           property_id: string
+          tags?: string[] | null
+          thumbnail_path?: string | null
           updated_at?: string
         }
         Update: {
+          category_id?: string | null
           created_at?: string
+          current_version?: number | null
+          description?: string | null
           document_type?: string
+          expires_at?: string | null
           file_path?: string | null
+          file_size?: number | null
           id?: string
+          is_public?: boolean | null
+          metadata?: Json | null
+          mime_type?: string | null
           name?: string
           property_id?: string
+          tags?: string[] | null
+          thumbnail_path?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "property_documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "document_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "property_documents_property_id_fkey"
             columns: ["property_id"]
@@ -1462,6 +1617,71 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "property_expenses_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_maintenance_tasks: {
+        Row: {
+          actual_cost: number | null
+          assigned_to: string | null
+          category: string
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          estimated_cost: number | null
+          id: string
+          priority: string
+          property_id: string
+          recurring_frequency: string | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          category: string
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimated_cost?: number | null
+          id?: string
+          priority: string
+          property_id: string
+          recurring_frequency?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          category?: string
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimated_cost?: number | null
+          id?: string
+          priority?: string
+          property_id?: string
+          recurring_frequency?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_maintenance_tasks_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
