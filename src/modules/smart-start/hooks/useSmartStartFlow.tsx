@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useAuth } from '@/modules/auth/hooks';
+import { createSmartStartSubmission, updateSubmissionStep } from '../api/smartStartApi';
 
 interface SearchResult {
   id: string;
@@ -21,11 +23,14 @@ interface FlowData {
 }
 
 export const useSmartStartFlow = () => {
+  const { user, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchStep, setSearchStep] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [flowData, setFlowData] = useState<FlowData>({});
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const sessionIdRef = useRef<string>(crypto.randomUUID());
 
   const handleSearch = useCallback(async (query: string) => {
     setIsSearching(true);
@@ -84,8 +89,9 @@ export const useSmartStartFlow = () => {
     }
   }, [searchStep]);
 
-  const handleStepComplete = useCallback((stepData: any) => {
-    setFlowData(prev => ({ ...prev, ...stepData }));
+  const handleStepComplete = useCallback(async (stepData: any) => {
+    const updatedFlowData = { ...flowData, ...stepData };
+    setFlowData(updatedFlowData);
     
     // Track step completion
     console.log('SmartStart step complete:', {
@@ -93,12 +99,49 @@ export const useSmartStartFlow = () => {
       data: stepData,
       timestamp: Date.now()
     });
+
+    // Save to database
+    try {
+      const nextStep = searchStep + 1;
+      
+      if (!submissionId) {
+        // Create new submission
+        const { data: newSubmissionId, error } = await createSmartStartSubmission({
+          session_id: sessionIdRef.current,
+          postcode: updatedFlowData.postalCode || stepData.postalCode || '',
+          requested_services: updatedFlowData.service ? [updatedFlowData.service] : [],
+          is_company: false, // Will be determined based on user role or selection
+          search_query: searchQuery,
+          selected_category: updatedFlowData.serviceName || stepData.serviceName,
+          flow_data: updatedFlowData,
+          step_completed: nextStep,
+          email: updatedFlowData.contact?.email || stepData.email
+        });
+
+        if (error) {
+          console.error('Error creating submission:', error);
+        } else if (newSubmissionId) {
+          setSubmissionId(newSubmissionId);
+        }
+      } else {
+        // Update existing submission
+        await updateSubmissionStep(submissionId, {
+          flow_data: updatedFlowData,
+          step_completed: nextStep,
+          email: updatedFlowData.contact?.email || stepData.email,
+          postcode: updatedFlowData.postalCode || stepData.postalCode
+        });
+      }
+    } catch (error) {
+      console.error('Error saving step data:', error);
+      // Don't block the flow if database save fails
+    }
     
     // Move to next step
     if (searchStep < 4) {
       setSearchStep(searchStep + 1);
     }
-  }, [searchStep]);
+  }, [searchStep, flowData, submissionId, searchQuery]);
 
   const resetFlow = useCallback(() => {
     setSearchQuery('');
@@ -106,6 +149,8 @@ export const useSmartStartFlow = () => {
     setSearchResults([]);
     setFlowData({});
     setIsSearching(false);
+    setSubmissionId(null);
+    sessionIdRef.current = crypto.randomUUID(); // Generate new session ID
     
     // Track flow reset
     console.log('SmartStart reset:', {
@@ -145,6 +190,10 @@ export const useSmartStartFlow = () => {
     isCompleted: searchStep === 4,
     canGoNext: searchStep < 4,
     canGoPrevious: searchStep > 1,
-    progress: ((searchStep - 1) / 3) * 100
+    progress: ((searchStep - 1) / 3) * 100,
+    
+    // Session and submission info
+    sessionId: sessionIdRef.current,
+    submissionId
   };
 };

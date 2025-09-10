@@ -992,6 +992,7 @@ export type Database = {
           lead_type: string | null
           metadata: Json | null
           session_id: string | null
+          smart_start_submission_id: string | null
           status: Database["public"]["Enums"]["lead_status"]
           submitted_by: string | null
           title: string
@@ -1012,6 +1013,7 @@ export type Database = {
           lead_type?: string | null
           metadata?: Json | null
           session_id?: string | null
+          smart_start_submission_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           submitted_by?: string | null
           title: string
@@ -1032,6 +1034,7 @@ export type Database = {
           lead_type?: string | null
           metadata?: Json | null
           session_id?: string | null
+          smart_start_submission_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           submitted_by?: string | null
           title?: string
@@ -1043,6 +1046,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "company_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_smart_start_submission_id_fkey"
+            columns: ["smart_start_submission_id"]
+            isOneToOne: false
+            referencedRelation: "smart_start_submissions"
             referencedColumns: ["id"]
           },
         ]
@@ -1595,6 +1605,89 @@ export type Database = {
           },
         ]
       }
+      smart_start_submissions: {
+        Row: {
+          converted_at: string | null
+          created_at: string
+          deleted_at: string | null
+          email: string | null
+          flow_data: Json | null
+          id: string
+          ip_address: unknown | null
+          is_company: boolean
+          lead_created: boolean | null
+          lead_id: string | null
+          metadata: Json
+          postcode: string
+          property_type: string | null
+          requested_services: string[]
+          search_query: string | null
+          selected_category: string | null
+          session_id: string | null
+          source: string
+          step_completed: number
+          updated_at: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          converted_at?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          email?: string | null
+          flow_data?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          is_company?: boolean
+          lead_created?: boolean | null
+          lead_id?: string | null
+          metadata?: Json
+          postcode: string
+          property_type?: string | null
+          requested_services?: string[]
+          search_query?: string | null
+          selected_category?: string | null
+          session_id?: string | null
+          source?: string
+          step_completed?: number
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          converted_at?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          email?: string | null
+          flow_data?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          is_company?: boolean
+          lead_created?: boolean | null
+          lead_id?: string | null
+          metadata?: Json
+          postcode?: string
+          property_type?: string | null
+          requested_services?: string[]
+          search_query?: string | null
+          selected_category?: string | null
+          session_id?: string | null
+          source?: string
+          step_completed?: number
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_start_submissions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       system_health_metrics: {
         Row: {
           id: string
@@ -2010,6 +2103,21 @@ export type Database = {
           p_metadata: Json
           p_session_id: string
           p_title: string
+        }
+        Returns: string
+      }
+      create_smart_start_submission: {
+        Args: {
+          p_email?: string
+          p_flow_data?: Json
+          p_is_company?: boolean
+          p_postcode: string
+          p_requested_services: string[]
+          p_search_query?: string
+          p_selected_category?: string
+          p_session_id: string
+          p_step_completed?: number
+          p_user_id?: string
         }
         Returns: string
       }
