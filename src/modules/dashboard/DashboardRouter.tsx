@@ -7,10 +7,13 @@ import { MasterAdminDashboard } from './pages/MasterAdminDashboard';
 import { ContentEditorDashboard } from './pages/ContentEditorDashboard';
 import { useProfileContext } from '@/hooks/useProfileContext';
 import { PageLayout } from '@/components/layout/PageLayout';
+import { DashboardErrorBoundary } from '@/components/error/DashboardErrorBoundary';
 
 export function DashboardRouter() {
   const { role, isAdmin, isMasterAdmin, profile } = useAuth();
   const { activeContext } = useProfileContext();
+
+  console.log('[DashboardRouter] Current state:', { role, activeContext, profile: !!profile });
 
   // Determine which dashboard to show based on active context or role
   const getDashboardComponent = () => {
@@ -92,7 +95,9 @@ export function DashboardRouter() {
       description={getDashboardDescription()}
       showBreadcrumbs={true}
     >
-      {getDashboardComponent()}
+      <DashboardErrorBoundary>
+        {getDashboardComponent()}
+      </DashboardErrorBoundary>
     </PageLayout>
   );
 }

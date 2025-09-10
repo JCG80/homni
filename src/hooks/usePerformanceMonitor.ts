@@ -1,0 +1,31 @@
+import { useEffect, useCallback } from 'react';
+
+interface PerformanceMetrics {
+  componentName: string;
+  loadTime: number;
+  renderTime: number;
+}
+
+export const usePerformanceMonitor = (componentName: string) => {
+  const startTime = performance.now();
+  
+  const logPerformance = useCallback((metrics: Partial<PerformanceMetrics>) => {
+    if (import.meta.env.DEV) {
+      console.log(`[Performance] ${componentName}:`, {
+        componentName,
+        loadTime: performance.now() - startTime,
+        ...metrics
+      });
+    }
+  }, [componentName, startTime]);
+
+  useEffect(() => {
+    const endTime = performance.now();
+    logPerformance({ 
+      loadTime: endTime - startTime,
+      renderTime: endTime - startTime 
+    });
+  }, [logPerformance, startTime]);
+
+  return { logPerformance };
+};
