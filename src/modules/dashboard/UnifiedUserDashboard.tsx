@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/modules/auth/hooks';
 import { supabase } from '@/integrations/supabase/client';
-import { LeadsOffersDashboard } from './LeadsOffersDashboard';
-import { PostAuthOnboardingWizard } from '../onboarding/PostAuthOnboardingWizard';
-import { NextRecommendedActionWidget } from './NextRecommendedActionWidget';
+import { LeadsOffersDashboard } from '@/components/dashboard/LeadsOffersDashboard';
+import { PostAuthOnboardingWizard } from '@/components/onboarding/PostAuthOnboardingWizard';
+import { NextRecommendedActionWidget } from '@/components/dashboard/NextRecommendedActionWidget';
 import { 
   TrendingUp, 
   Clock, 
@@ -15,7 +15,9 @@ import {
   ArrowRight,
   Mail,
   Calendar,
-  Activity
+  Activity,
+  Home,
+  FileText
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
@@ -38,7 +40,7 @@ interface DashboardStats {
   recentActivity: number;
 }
 
-export const EnhancedUserDashboard = () => {
+export function UnifiedUserDashboard() {
   const { user, profile } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
@@ -203,17 +205,23 @@ export const EnhancedUserDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="mb-8">
-        <p className="text-lg text-muted-foreground">
-          Velkommen tilbake, {profile?.full_name || user?.email?.split('@')[0]}!
-        </p>
-        <p className="text-muted-foreground">
-          Her er en oversikt over dine forespørsler og aktivitet
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-lg text-muted-foreground">
+            Velkommen tilbake, {profile?.full_name || user?.email?.split('@')[0]}!
+          </p>
+          <p className="text-muted-foreground">
+            Her er en oversikt over dine forespørsler og aktivitet
+          </p>
+        </div>
+        <Button className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Ny forespørsel
+        </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -271,68 +279,104 @@ export const EnhancedUserDashboard = () => {
         </Card>
       </div>
 
-      {/* Next Recommended Action & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      {/* Main Dashboard Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Next Recommended Action Widget */}
-        <NextRecommendedActionWidget />
+        <div className="lg:col-span-1">
+          <NextRecommendedActionWidget />
+        </div>
 
         {/* Recent Activity */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Nylig aktivitet
-              </span>
-              {recentLeads.length > 0 && (
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = '/leads'}>
-                  Se alle
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {recentLeads.length === 0 ? (
-              <div className="text-center py-8">
-                <Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Ingen forespørsler ennå</p>
-                <Button className="mt-4" onClick={() => window.location.href = '/'}>
-                  Send din første forespørsel
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentLeads.map((lead) => (
-                  <div key={lead.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="text-sm font-medium truncate">{lead.title}</h4>
-                        <Badge className={`${getStatusColor(lead.status)} flex items-center gap-1 text-xs`}>
-                          {getStatusIcon(lead.status)}
-                          {lead.status === 'new' ? 'Ny' :
-                           lead.status === 'qualified' ? 'Kvalifisert' : 
-                           lead.status === 'contacted' ? 'Kontaktet' : 
-                           lead.status === 'negotiating' ? 'Forhandler' :
-                           lead.status === 'converted' ? 'Fullført' : 
-                           lead.status === 'lost' ? 'Tapt' :
-                           lead.status === 'paused' ? 'Pauset' : lead.status}
-                        </Badge>
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Nylig aktivitet
+                </span>
+                {recentLeads.length > 0 && (
+                  <Button variant="ghost" size="sm" onClick={() => window.location.href = '/leads'}>
+                    Se alle
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recentLeads.length === 0 ? (
+                <div className="text-center py-8">
+                  <Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Ingen forespørsler ennå</p>
+                  <Button className="mt-4" onClick={() => window.location.href = '/'}>
+                    Send din første forespørsel
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentLeads.map((lead) => (
+                    <div key={lead.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="text-sm font-medium truncate">{lead.title}</h4>
+                          <Badge className={`${getStatusColor(lead.status)} flex items-center gap-1 text-xs`}>
+                            {getStatusIcon(lead.status)}
+                            {lead.status === 'new' ? 'Ny' :
+                             lead.status === 'qualified' ? 'Kvalifisert' : 
+                             lead.status === 'contacted' ? 'Kontaktet' : 
+                             lead.status === 'negotiating' ? 'Forhandler' :
+                             lead.status === 'converted' ? 'Fullført' : 
+                             lead.status === 'lost' ? 'Tapt' :
+                             lead.status === 'paused' ? 'Pauset' : lead.status}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(lead.created_at), 'dd. MMM yyyy', { locale: nb })}
+                          {lead.attributed_at && (
+                            <span className="ml-2 text-blue-600">• Koblet til konto</span>
+                          )}
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(lead.created_at), 'dd. MMM yyyy', { locale: nb })}
-                        {lead.attributed_at && (
-                          <span className="ml-2 text-blue-600">• Koblet til konto</span>
-                        )}
-                      </p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
+
+      {/* Property Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Home className="h-5 w-5" />
+            Min eiendom
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Adresse</span>
+              <span className="text-sm font-medium">Ikke registrert</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Type</span>
+              <span className="text-sm font-medium">-</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Størrelse</span>
+              <span className="text-sm font-medium">-</span>
+            </div>
+          </div>
+          <div className="mt-4">
+            <Button variant="outline" size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Registrer eiendom
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Full Leads Dashboard */}
       {stats.totalLeads > 0 && (
@@ -343,4 +387,4 @@ export const EnhancedUserDashboard = () => {
       )}
     </div>
   );
-};
+}

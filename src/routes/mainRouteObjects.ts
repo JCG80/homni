@@ -1,5 +1,11 @@
 import { lazy, createElement } from 'react';
 import type { AppRoute } from './routeTypes';
+import { companyRouteObjects } from './companyRouteObjects';
+import { contentEditorRouteObjects } from './contentEditorRouteObjects';
+import { insuranceRouteObjects } from './insuranceRouteObjects';
+import { leadRouteObjects } from './leadRouteObjects';
+import { marketplaceRouteObjects } from './marketplaceRouteObjects';
+import { featureRouteObjects } from './featureRouteObjects';
 
 // Lazy load all page components
 const HomePage = lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
@@ -7,7 +13,7 @@ const MinimalHomePage = lazy(() => import('@/pages/MinimalHomePage').then(m => (
 const DebugHomePage = lazy(() => import('@/pages/DebugHomePage').then(m => ({ default: m.DebugHomePage })));
 const LoginPage = lazy(() => import('@/modules/auth/pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const SelectServicesPage = lazy(() => import('@/pages/SelectServicesPage').then(m => ({ default: m.SelectServicesPage })));
-const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })));
 const PublicCompaniesDirectory = lazy(() => import('@/modules/insurance/pages/PublicCompaniesDirectory').then(m => ({ default: m.PublicCompaniesDirectory })));
 const CategoryLandingPage = lazy(() => import('@/pages/categories/CategoryLandingPage').then(m => ({ default: m.CategoryLandingPage })));
 const ThankYouPage = lazy(() => import('@/pages/ThankYouPage').then(m => ({ default: m.ThankYouPage })));
@@ -22,11 +28,8 @@ const AccountPageWrapper = lazy(() => import('./components/AccountPageWrapper').
 // Settings redirect
 const SettingsRedirect = lazy(() => import('./components/SettingsRedirect').then(m => ({ default: m.SettingsRedirect })));
 
-// Role-specific dashboard components
-const AdminDashboard = lazy(() => import('@/components/dashboard/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
-const CompanyDashboard = lazy(() => import('@/modules/dashboard/CompanyDashboard').then(m => ({ default: m.CompanyDashboard })));
-const UserDashboard = lazy(() => import('@/components/dashboard/UserDashboard'));
-const ContentEditorDashboard = lazy(() => import('@/modules/dashboard/ContentEditorDashboard').then(m => ({ default: m.ContentEditorDashboard })));
+// Dashboard router for unified dashboard experience
+const DashboardRouter = lazy(() => import('@/modules/dashboard/DashboardRouter').then(m => ({ default: m.DashboardRouter })));
 
 export const mainRouteObjects: AppRoute[] = [
   {
@@ -57,7 +60,7 @@ export const mainRouteObjects: AppRoute[] = [
   },
   {
     path: '/dashboard',
-    element: createElement(DashboardPage),
+    element: createElement(Dashboard),
     roles: ['user', 'company', 'content_editor', 'admin', 'master_admin'],
     navKey: 'dashboard'
   },
@@ -102,30 +105,36 @@ export const mainRouteObjects: AppRoute[] = [
     roles: ['company'],
     navKey: 'company-leads'
   },
-  // Role-specific dashboard routes
+  // Role-specific dashboard routes - using DashboardRouter for unified experience
   {
     path: '/dashboard/admin',
-    element: createElement(AdminDashboard),
+    element: createElement(DashboardRouter),
     roles: ['admin', 'master_admin'],
     navKey: 'admin-dashboard'
   },
   {
     path: '/dashboard/company',
-    element: createElement(CompanyDashboard),
+    element: createElement(DashboardRouter),
     roles: ['company'],
     navKey: 'company-dashboard'
   },
   {
     path: '/dashboard/user', 
-    element: createElement(UserDashboard),
+    element: createElement(DashboardRouter),
     roles: ['user'],
     navKey: 'user-dashboard'
   },
   {
     path: '/dashboard/content-editor',
-    element: createElement(ContentEditorDashboard),
+    element: createElement(DashboardRouter),
     roles: ['content_editor'],
     navKey: 'content-editor-dashboard'
+  },
+  {
+    path: '/dashboard/master-admin',
+    element: createElement(DashboardRouter),
+    roles: ['master_admin'],
+    navKey: 'master-admin-dashboard'
   },
   // Profile and Account routes
   {
@@ -146,4 +155,12 @@ export const mainRouteObjects: AppRoute[] = [
     element: createElement(SettingsRedirect),
     roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
   },
+  
+  // Merge all route objects into main routes
+  ...companyRouteObjects,
+  ...contentEditorRouteObjects,
+  ...insuranceRouteObjects,
+  ...leadRouteObjects,
+  ...marketplaceRouteObjects,
+  ...featureRouteObjects,
 ];
