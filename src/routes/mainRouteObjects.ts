@@ -20,6 +20,7 @@ const ThankYouPage = lazy(() => import('@/pages/ThankYouPage').then(m => ({ defa
 const PropertyDashboardPage = lazy(() => import('@/pages/PropertyDashboardPage'));
 const NewPropertyPage = lazy(() => import('@/pages/NewPropertyPage'));
 const CompanyLeadDashboardPage = lazy(() => import('@/pages/CompanyLeadDashboardPage'));
+const LeadIntelligencePage = lazy(() => import('@/pages/LeadIntelligencePage'));
 
 // Auth and Account pages
 const ProfilePageWrapper = lazy(() => import('./components/ProfilePageWrapper').then(m => ({ default: m.ProfilePageWrapper })));
@@ -104,6 +105,12 @@ export const mainRouteObjects: AppRoute[] = [
     element: createElement(CompanyLeadDashboardPage),
     roles: ['company'],
     navKey: 'company-leads'
+  },
+  {
+    path: '/leads/intelligence',
+    element: createElement(LeadIntelligencePage),
+    roles: ['admin', 'master_admin', 'company'],
+    navKey: 'lead-intelligence'
   },
   // Role-specific dashboard routes - using DashboardRouter for unified experience
   {
