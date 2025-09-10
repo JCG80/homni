@@ -5,7 +5,7 @@ import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 import { EnhancedRegistrationWizard } from '@/modules/auth/components/enhanced/EnhancedRegistrationWizard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/modules/auth/hooks';
-import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -55,11 +55,13 @@ export const RegisterPage = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Navigation */}
         <div className="flex items-center justify-between mb-8">
-          <PageBreadcrumb 
-            items={[
-              { label: 'Tjenester', href: '/select-services' },
-              { label: 'Registrer deg' }
-            ]} 
+          <BreadcrumbNavigation 
+            customItems={[
+              { label: 'Forside', href: '/', isActive: false },
+              { label: 'Tjenester', href: '/select-services', isActive: false },
+              { label: 'Registrer deg', href: '', isActive: true }
+            ]}
+            showOnMobile
           />
           <Button 
             variant="ghost" 

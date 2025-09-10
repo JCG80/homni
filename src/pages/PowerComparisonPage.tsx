@@ -7,7 +7,7 @@ import { PowerComparisonForm } from '@/components/power/PowerComparisonForm';
 import { PowerComparisonResults } from '@/components/power/PowerComparisonResults';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft } from 'lucide-react';
-import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 
 export const PowerComparisonPage = () => {
   const [postnr, setPostnr] = useState('');
@@ -49,9 +49,12 @@ export const PowerComparisonPage = () => {
 
       <div className="flex-1">
         <div className="container mx-auto py-6 md:py-8 px-4">
-          <PageBreadcrumb 
-            items={[{ label: 'Strømsammenligning' }]} 
-            className="mb-6" 
+          <BreadcrumbNavigation 
+            customItems={[
+              { label: 'Forside', href: '/', isActive: false },
+              { label: 'Strømsammenligning', href: '', isActive: true }
+            ]}
+            showOnMobile
           />
           
           <div className="mb-6 md:mb-8">

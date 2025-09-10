@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useServiceLeadCreation } from '@/modules/leads/hooks/useServiceLeadCreation';
 import { useAuth } from '@/modules/auth/hooks';
 import { Loader2 } from 'lucide-react';
-import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { LoginUpgradeCTA } from '@/components/cta/LoginUpgradeCTA';
 
 export const ServiceSelectionPage: React.FC = () => {
@@ -62,9 +62,12 @@ export const ServiceSelectionPage: React.FC = () => {
   
   return (
     <div className="container mx-auto py-8 px-4">
-      <PageBreadcrumb 
-        items={[{ label: 'Velg tjenester' }]} 
-        className="mb-6" 
+      <BreadcrumbNavigation 
+        customItems={[
+          { label: 'Forside', href: '/', isActive: false },
+          { label: 'Velg tjenester', href: '', isActive: true }
+        ]}
+        showOnMobile
       />
       
       <div className="max-w-4xl mx-auto">

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
-import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { useAuth } from '@/modules/auth/hooks';
 import { useFeatureFlag } from '@/hooks/useFeatureFlags';
@@ -28,9 +28,12 @@ export const OnboardingPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <PageBreadcrumb 
-          items={[{ label: 'Kom i gang' }]} 
-          className="mb-8"
+        <BreadcrumbNavigation 
+          customItems={[
+            { label: 'Forside', href: '/', isActive: false },
+            { label: 'Kom i gang', href: '', isActive: true }
+          ]}
+          showOnMobile
         />
         
         <div className="max-w-4xl mx-auto">

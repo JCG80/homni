@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
@@ -11,9 +11,12 @@ export const UnauthorizedPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <PageBreadcrumb 
-          items={[{ label: 'Ingen tilgang' }]} 
-          className="mb-8"
+        <BreadcrumbNavigation 
+          customItems={[
+            { label: 'Forside', href: '/', isActive: false },
+            { label: 'Ingen tilgang', href: '', isActive: true }
+          ]}
+          showOnMobile
         />
         
         <div className="flex items-center justify-center min-h-[calc(100vh-12rem)]">

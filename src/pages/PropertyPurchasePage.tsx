@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Home, Calculator, FileText, Users, MessageSquare } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { LoginUpgradeCTA } from '@/components/cta/LoginUpgradeCTA';
 import { useAuth } from '@/modules/auth/hooks';
@@ -20,9 +20,12 @@ export const PropertyPurchasePage = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
-        <PageBreadcrumb 
-          items={[{ label: 'Boligkjøp' }]} 
-          className="mb-6" 
+        <BreadcrumbNavigation 
+          customItems={[
+            { label: 'Forside', href: '/', isActive: false },
+            { label: 'Boligkjøp', href: '', isActive: true }
+          ]}
+          showOnMobile
         />
         
         {/* Header */}

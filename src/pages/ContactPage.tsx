@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { PublicBreadcrumb } from '@/components/navigation/PublicBreadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { CallToAction } from '@/components/landing/CallToAction';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ export const ContactPage = () => {
 
       <div className="min-h-screen bg-background">
         <Header />
-        <PublicBreadcrumb />
+        <BreadcrumbNavigation showOnMobile />
         
         <main className="py-16">
           <div className="container mx-auto px-4">

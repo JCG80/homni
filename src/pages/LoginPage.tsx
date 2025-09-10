@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { LoginTabs } from '@/components/auth/LoginTabs';
-import { PageBreadcrumb } from '@/components/ui/page-breadcrumb';
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { GuestAccessCTA } from '@/components/cta/GuestAccessCTA';
 import { UnifiedQuickLogin } from '@/modules/auth/components/UnifiedQuickLogin';
 
@@ -63,9 +63,12 @@ export const LoginPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <PageBreadcrumb 
-          items={[{ label: 'Logg inn' }]} 
-          className="mb-8"
+        <BreadcrumbNavigation 
+          customItems={[
+            { label: 'Forside', href: '/', isActive: false },
+            { label: 'Logg inn', href: '', isActive: true }
+          ]}
+          showOnMobile
         />
         
         <div className="flex items-center justify-center min-h-[calc(100vh-12rem)]">
