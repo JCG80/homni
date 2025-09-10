@@ -5,6 +5,12 @@ import App from './App.tsx'
 import './index.css'
 import { initializeAnalytics, setupPageViewTracking } from '@/lib/analytics'
 
+// Import flow validators for development testing
+if (import.meta.env.DEV) {
+  import('./utils/testAuthFlow');
+  import('./utils/e2eFlowValidator');
+}
+
 // Initialize analytics system
 initializeAnalytics();
 
