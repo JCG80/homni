@@ -14,7 +14,7 @@ const DebugHomePage = lazy(() => import('@/pages/DebugHomePage').then(m => ({ de
 const LoginPage = lazy(() => import('@/modules/auth/pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const SelectServicesPage = lazy(() => import('@/pages/SelectServicesPage').then(m => ({ default: m.SelectServicesPage })));
 const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })));
-const ConsolidatedAccountPage = lazy(() => import('@/pages/ConsolidatedAccountPage').then(m => ({ default: m.default })));
+const ConsolidatedAccountPage = lazy(() => import('@/pages/ConsolidatedAccountPage').then(m => ({ default: m.ConsolidatedAccountPage })));
 const PWADashboard = lazy(() => import('@/pages/PWADashboard').then(m => ({ default: m.default })));
 const PublicCompaniesDirectory = lazy(() => import('@/modules/insurance/pages/PublicCompaniesDirectory').then(m => ({ default: m.PublicCompaniesDirectory })));
 const CategoryLandingPage = lazy(() => import('@/pages/categories/CategoryLandingPage').then(m => ({ default: m.CategoryLandingPage })));
