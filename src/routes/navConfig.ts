@@ -3,7 +3,7 @@
  * UPDATED: Separates user interfaces from control plan interfaces
  */
 
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 export interface NavigationItem {
   href: string;

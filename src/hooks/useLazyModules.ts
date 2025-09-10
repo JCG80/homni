@@ -1,5 +1,5 @@
 import React, { lazy, ComponentType, useCallback } from 'react';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 // Lazy load business modules
 export const LazyLeadEngine = lazy(() => 

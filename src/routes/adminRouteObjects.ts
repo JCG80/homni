@@ -1,6 +1,8 @@
-import { lazy, createElement } from 'react';
+import React, { lazy, createElement } from 'react';
+import { Navigate } from 'react-router-dom';
 import type { AppRoute } from './routeTypes';
 
+const AdminRedirect = () => createElement(Navigate, { to: "/admin/dashboard", replace: true });
 const AdminLeadsPage = lazy(() => import('@/modules/leads/pages/AdminLeadsPage').then(m => ({ default: m.AdminLeadsPage })));
 const AdminDashboard = lazy(() => import('@/components/dashboard/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const ApiAdminPage = lazy(() => import('@/pages/admin/ApiAdminPage').then(m => ({ default: m.default })));
@@ -9,8 +11,15 @@ const MembersManagementPage = lazy(() => import('@/modules/admin/pages/MembersMa
 const CompaniesManagementPage = lazy(() => import('@/modules/admin/pages/CompaniesManagementPage').then(m => ({ default: m.default })));
 const SystemModulesPage = lazy(() => import('@/modules/system/pages/SystemModulesPage').then(m => ({ default: m.SystemModulesPage })));
 const InternalAccessPage = lazy(() => import('@/modules/admin/pages/InternalAccessPage').then(m => ({ default: m.default })));
+const AdminSettingsPage = lazy(() => import('@/modules/admin/pages/AdminSettingsPage').then(m => ({ default: m.AdminSettingsPage })));
 
 export const adminRouteObjects: AppRoute[] = [
+  {
+    path: '/admin',
+    element: createElement(AdminRedirect),
+    roles: ['admin', 'master_admin'],
+    navKey: 'admin-redirect'
+  },
   {
     path: '/admin/dashboard',
     element: createElement(AdminDashboard),
@@ -58,5 +67,11 @@ export const adminRouteObjects: AppRoute[] = [
     element: createElement(InternalAccessPage),
     roles: ['master_admin'],
     navKey: 'admin-internal-access'
+  },
+  {
+    path: '/admin/settings',
+    element: createElement(AdminSettingsPage),
+    roles: ['admin', 'master_admin'],
+    navKey: 'admin-settings'
   },
 ];

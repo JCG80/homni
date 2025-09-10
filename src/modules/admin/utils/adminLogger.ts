@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 export type AdminAction = 
   | 'view'

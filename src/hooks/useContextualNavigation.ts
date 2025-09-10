@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { useNavigationContext } from './useNavigationContext';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { navUser, navControl } from '@/routes/navConfig';
 
 interface ContextualSuggestion {

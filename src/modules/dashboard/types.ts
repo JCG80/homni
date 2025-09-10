@@ -4,7 +4,7 @@
  */
 
 import { ReactNode } from 'react';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 /**
  * Base metric interface for dashboard cards

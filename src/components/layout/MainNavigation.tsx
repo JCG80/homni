@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { RoleBasedNavigation } from '@/components/navigation/RoleBasedNavigation';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 export const MainNavigation = () => {
   const { isAuthenticated, role } = useAuth();

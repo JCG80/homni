@@ -3,7 +3,7 @@
  * Consolidates navigation.ts and navigation.tsx into single source of truth
  */
 
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { LucideIcon } from 'lucide-react';
 import {
   Home,
@@ -99,9 +99,8 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
  */
 export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
   admin: [
-    { href: '/admin', title: 'Admin Dashboard', icon: LayoutDashboard },
+    { href: '/admin/dashboard', title: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/leads', title: 'Alle Leads', icon: Activity },
-    { href: '/admin/leads/distribution', title: 'Lead-distribusjon', icon: Target },
     { href: '/admin/companies', title: 'Bedrifter', icon: Building },
     { href: '/admin/members', title: 'Brukere', icon: Users },
     { href: '/admin/system-modules', title: 'System moduler', icon: Database },
@@ -109,7 +108,7 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
   ],
 
   master_admin: [
-    { href: '/admin', title: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/dashboard', title: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/companies', title: 'Bedrifter', icon: Building },
     { href: '/admin/members', title: 'Brukere', icon: Users },
     { href: '/admin/system-modules', title: 'System', icon: Database },

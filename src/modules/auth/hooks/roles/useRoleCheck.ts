@@ -1,7 +1,6 @@
 
 import { useMemo } from 'react';
-import { UserRole } from '../../types/unified-types';
-import { isUserRole } from '../../utils/roles/guards';
+import { UserRole, isUserRole } from '@/modules/auth/normalizeRole';
 import { UseRoleCheckProps } from '@/types/hooks';
 
 /**

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { RoleGrantsService, RoleGrant } from '@/services/roleGrantsService';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { useAuth } from '@/modules/auth/hooks';
 import { toast } from 'sonner';
 

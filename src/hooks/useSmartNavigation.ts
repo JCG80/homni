@@ -4,7 +4,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { useNavigationContext } from './useNavigationContext';
 import { useNavigationCache } from './useNavigationCache';
 import { getNavigation, getNextSuggestions } from '@/config/navigation';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 interface SmartNavigationHook {
   // Navigation state

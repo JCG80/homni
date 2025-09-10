@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { Users, Building, Settings, LayoutGrid, Shield, DatabaseIcon } from 'lucide-react';
 
 export const AdminNavigation: React.FC = () => {

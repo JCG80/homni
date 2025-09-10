@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { UserRole } from '@/modules/auth/utils/roles/types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { useAuth } from '@/modules/auth/hooks';
 
 interface PersonaState {

@@ -12,9 +12,9 @@ import type { UserRole } from '@/modules/auth/normalizeRole';
 export function routeForRole(role: UserRole): string {
   switch (role) {
     case 'master_admin':
-      return '/admin/dashboard';
+      return '/admin';
     case 'admin':
-      return '/admin/dashboard';
+      return '/admin';
     case 'content_editor':
       return '/dashboard/content-editor';
     case 'company':
