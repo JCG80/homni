@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MainNavigation } from './MainNavigation';
 import { useAuth } from '@/modules/auth/hooks';
 import { ProfileHeader } from './ProfileHeader';
-import { Menu } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import { 
   Sheet,
   SheetContent,
@@ -17,6 +17,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileNavigation } from './MobileNavigation';
 import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
 import { QuickActionsDropdown } from '@/components/navigation';
+import { CommandPalette } from '@/components/navigation/CommandPalette';
+import { useKeyboardShortcuts } from '@/hooks/navigation/useKeyboardShortcuts';
 
 interface HeaderProps {
   /** Allow passing through layout class names */
@@ -27,6 +29,7 @@ export const Header = ({ className = '' }: HeaderProps) => {
   const navigate = useNavigate();
   const { isAuthenticated, isAdmin, isMasterAdmin } = useAuth();
   const isMobile = useIsMobile();
+  const { isCommandPaletteOpen, setIsCommandPaletteOpen } = useKeyboardShortcuts();
   
   const goToLogin = () => {
     navigate('/login');
@@ -66,6 +69,22 @@ export const Header = ({ className = '' }: HeaderProps) => {
         
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">
+          {/* Command Palette Trigger - Desktop only */}
+          {isAuthenticated && !isMobile && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Search className="h-4 w-4" />
+              <span className="text-sm hidden lg:inline">Search</span>
+              <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
+          )}
+          
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
               <QuickActionsDropdown variant="icon" className="hidden md:flex" />
@@ -84,6 +103,14 @@ export const Header = ({ className = '' }: HeaderProps) => {
           )}
         </div>
       </div>
+
+      {/* Command Palette */}
+      {isAuthenticated && (
+        <CommandPalette 
+          open={isCommandPaletteOpen} 
+          onOpenChange={setIsCommandPaletteOpen} 
+        />
+      )}
     </header>
   );
 };

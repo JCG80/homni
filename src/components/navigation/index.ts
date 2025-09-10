@@ -11,4 +11,6 @@ export * from './ContextualNavigationPanel';
 export * from './QuickActionsDropdown';
 export * from './NavigationSuggestionsPanel';
 export * from './EnhancedBreadcrumb';
-export * from './MobileBottomNavigation';
+export * from './CommandPalette';
+export * from './SmartNavigationSuggestions';
+export * from './NavigationLoadingStates';

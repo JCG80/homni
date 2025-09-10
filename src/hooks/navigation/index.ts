@@ -17,3 +17,5 @@ export type {
 export type {
   QuickAction
 } from './useQuickActions';
+
+export { useKeyboardShortcuts } from './useKeyboardShortcuts';

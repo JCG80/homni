@@ -3,9 +3,9 @@ import { Outlet } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { QuickAccessFAB } from '@/components/mobile/QuickAccessFAB';
 import { MobileBottomNavigation, MobileNavigationGestures } from '@/components/mobile/MobileNavigation';
+import { MobileNavigationEnhancements } from '@/components/mobile/MobileNavigationEnhancements';
 import { ContextualNavigationPanel } from '@/components/navigation/ContextualNavigationPanel';
-import { EnhancedBreadcrumb, MobileBottomNavigation } from '@/components/navigation';
-import { NavigationSuggestionsPanel } from '@/components/navigation';
+import { EnhancedBreadcrumb } from '@/components/navigation';
 import { SmartNavigationSuggestions } from '@/components/navigation/SmartNavigationSuggestions';
 import { NavigationLoadingStates, RouteTransition } from '@/components/navigation/NavigationLoadingStates';
 import { useAuth } from '@/modules/auth/hooks';
@@ -48,7 +48,7 @@ export const EnhancedAppLayout: React.FC<EnhancedAppLayoutProps> = ({
       {/* Breadcrumbs - Desktop only */}
       {showBreadcrumbs && !isMobile && isAuthenticated && (
         <div className="container mx-auto px-4 py-2 border-b border-border/50">
-          <BreadcrumbNavigation />
+          <EnhancedBreadcrumb />
         </div>
       )}
 
@@ -96,16 +96,7 @@ export const EnhancedAppLayout: React.FC<EnhancedAppLayoutProps> = ({
         <>
           <MobileBottomNavigation />
           <QuickAccessFAB />
-          
-          {/* Mobile Smart Suggestions - Collapsible */}
-          {showSuggestions && (
-            <div className="fixed bottom-20 left-4 right-4 z-30">
-              <SmartNavigationSuggestions 
-                maxSuggestions={2}
-                className="bg-background/95 backdrop-blur-sm"
-              />
-            </div>
-          )}
+          <MobileNavigationEnhancements />
         </>
       )}
 
