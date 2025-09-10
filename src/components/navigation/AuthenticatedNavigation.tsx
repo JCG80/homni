@@ -8,7 +8,7 @@ import {
 import { cn } from '@/lib/utils';
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { UserRole } from '@/modules/auth/normalizeRole';
-import { AdminNavigation } from './AdminNavigation';
+
 
 interface AuthenticatedNavigationProps {
   role?: UserRole;
@@ -80,8 +80,6 @@ export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = (
         </NavLink>
       </NavigationMenuItem>
 
-      {/* Admin section with System Modules */}
-      <AdminNavigation role={role} />
     </>
   );
 };

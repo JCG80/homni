@@ -14,7 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import { getSystemModules, toggleSystemModule } from '../api/systemModules';
 import type { SystemModule } from '../types/systemTypes';
 import { toast } from '@/components/ui/use-toast';
-import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
 import { useRoleProtection } from '@/modules/auth/hooks';
 import { Settings } from 'lucide-react';
 
@@ -96,8 +95,6 @@ export const SystemModulesPage = () => {
           </div>
         </div>
 
-        <AdminNavigation />
-
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -119,8 +116,6 @@ export const SystemModulesPage = () => {
           </p>
         </div>
       </div>
-
-      <AdminNavigation />
 
       {error && (
         <div className="bg-destructive/10 border border-destructive/20 p-4 rounded-md mb-6">

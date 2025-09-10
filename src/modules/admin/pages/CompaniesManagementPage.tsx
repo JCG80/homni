@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Loader } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
 import { useRoleProtection } from '@/modules/auth/hooks';
 import { CompanyDetailView } from '../components/CompanyDetailView';
 import { CompanyProfile } from '../types/types';
@@ -38,7 +37,6 @@ export const CompaniesManagementPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <AdminNavigation />
       
       {isLoading ? (
         <CompaniesLoading />

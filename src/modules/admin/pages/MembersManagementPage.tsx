@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Loader, User } from 'lucide-react';
-import { AdminNavigation } from '@/modules/admin/components/AdminNavigation';
 import { useRoleProtection } from '@/modules/auth/hooks';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UserDetailView } from '../components/MemberDetailView';
@@ -57,7 +56,6 @@ export function MembersManagementPage() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-6">Medlemsadministrasjon</h1>
-      <AdminNavigation />
       
       {isLoading ? (
         <div className="flex justify-center my-12">
