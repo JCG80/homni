@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
-import { navUser, navControl } from '@/routes/navConfig';
+import { navUser, navControl } from '@/config/navigation';
 import { UserRole } from '@/modules/auth/normalizeRole';
 
 export const BreadcrumbNav = () => {

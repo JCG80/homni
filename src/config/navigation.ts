@@ -100,22 +100,22 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
 export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
   admin: [
     { href: '/admin/dashboard', title: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/leads', title: 'Alle Leads', icon: Activity },
+    { href: '/admin/leads', title: 'Leads', icon: FileText },
     { href: '/admin/companies', title: 'Bedrifter', icon: Building },
-    { href: '/admin/members', title: 'Brukere', icon: Users },
-    { href: '/admin/system-modules', title: 'System moduler', icon: Database },
-    { href: '/admin/settings', title: 'Innstillinger', icon: Settings },
+    { href: '/admin/members', title: 'Medlemmer', icon: Users },
+    { href: '/admin/system-modules', title: 'Systemmoduler', icon: Database },
+    { href: '/admin/api', title: 'API & Integrasjoner', icon: Zap },
   ],
 
   master_admin: [
     { href: '/admin/dashboard', title: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/leads', title: 'Leads', icon: FileText },
     { href: '/admin/companies', title: 'Bedrifter', icon: Building },
-    { href: '/admin/members', title: 'Brukere', icon: Users },
-    { href: '/admin/system-modules', title: 'System', icon: Database },
-    { href: '/admin/leads', title: 'Forespørsler', icon: Activity },
-    { href: '/admin/roles', title: 'Roller', icon: ShieldCheck },
-    { href: '/admin/internal-access', title: 'Modultilgang', icon: ShieldCheck },
-    { href: '/admin/settings', title: 'Innstillinger', icon: Settings },
+    { href: '/admin/members', title: 'Medlemmer', icon: Users },
+    { href: '/admin/system-modules', title: 'Systemmoduler', icon: Database },
+    { href: '/admin/api', title: 'API & Integrasjoner', icon: Zap },
+    { href: '/admin/roles', title: 'Rolleadministrasjon', icon: Shield },
+    { href: '/admin/internal-access', title: 'Modultilgang', icon: Shield },
   ],
 };
 

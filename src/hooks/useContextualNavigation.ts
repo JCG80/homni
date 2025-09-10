@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { useNavigationContext } from './useNavigationContext';
 import { UserRole } from '@/modules/auth/normalizeRole';
-import { navUser, navControl } from '@/routes/navConfig';
+import { navUser, navControl } from '@/config/navigation';
 
 interface ContextualSuggestion {
   id: string;
