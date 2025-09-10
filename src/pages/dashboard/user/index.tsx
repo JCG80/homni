@@ -1,13 +1,19 @@
 import React from 'react';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
-import { SimplifiedUserDashboard } from '@/components/dashboard/SimplifiedUserDashboard';
+import { UserDashboardFallback } from './UserDashboardFallback';
 
 const UserDashboard = () => {
-  return (
-    <RoleDashboard requiredRole="user">
-      <SimplifiedUserDashboard />
-    </RoleDashboard>
-  );
+  try {
+    return (
+      <RoleDashboard requiredRole="user">
+        <UserDashboardFallback />
+      </RoleDashboard>
+    );
+  } catch (error) {
+    console.error('UserDashboard error:', error);
+    // Fallback if RoleDashboard fails
+    return <UserDashboardFallback />;
+  }
 };
 
 export default UserDashboard;
