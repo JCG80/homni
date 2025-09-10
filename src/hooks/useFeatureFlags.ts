@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { DEFAULT_FEATURE_FLAGS, getDefaultFeatureFlagValue } from '@/config/featureFlags';
 
 type FeatureFlags = Record<string, boolean>;
 
@@ -12,18 +13,7 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
 };
 
 export const useFeatureFlags = (): FeatureFlags => {
-  const [flags, setFlags] = useState<FeatureFlags>({
-    'lead:autoAssign': true,
-    'admin:advancedStats': true,
-    'company:bulkActions': false,
-    'ui:newDesign': true,
-    'ui:testPages': false,
-    'debug:enabled': true,
-    'ENABLE_ONBOARDING_WIZARD': true,
-    'ENABLE_PROPERTY_MANAGEMENT': false,
-    'ENABLE_DIY_SALES': false,
-    'ENABLE_ANALYTICS_DASHBOARD': false,
-  });
+  const [flags, setFlags] = useState<FeatureFlags>(DEFAULT_FEATURE_FLAGS);
 
   useEffect(() => {
     const fetchFlags = async () => {
