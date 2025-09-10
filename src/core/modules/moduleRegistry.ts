@@ -102,6 +102,25 @@ export class ModuleRegistry {
         permissions: ['create_listings', 'manage_listings', 'view_market_data'],
         feature_flags: ['ai_descriptions', 'virtual_tours'],
       },
+      {
+        id: 'smart-start',
+        name: 'SmartStart Adaptive Homepage',
+        version: '1.0.0',
+        description: 'Adaptive search-based homepage for lead generation and onboarding',
+        business_domain: 'bytt',
+        dependencies: ['auth'],
+        routes: [
+          { path: '/', component: 'SmartStart', roles: ['guest', 'user', 'company', 'admin'] }
+        ],
+        components: [
+          { name: 'SmartStart', type: 'page', export_name: 'SmartStart' },
+          { name: 'SearchProgress', type: 'widget', export_name: 'SearchProgress' },
+          { name: 'RoleAdaptiveContent', type: 'widget', export_name: 'RoleAdaptiveContent' }
+        ],
+        services: ['lead-generation', 'onboarding'],
+        permissions: ['guest:access', 'user:access', 'company:access'],
+        feature_flags: ['ENABLE_SMART_START']
+      },
     ];
 
     for (const module of coreModules) {

@@ -15,6 +15,7 @@ export const DEFAULT_FEATURE_FLAGS = {
   ENABLE_PROPERTY_MANAGEMENT: false,
   ENABLE_DIY_SALES: false,
   ENABLE_ONBOARDING_WIZARD: false,
+  ENABLE_SMART_START: false,
   
   // Future features
   ENABLE_MARKETPLACE: false,
