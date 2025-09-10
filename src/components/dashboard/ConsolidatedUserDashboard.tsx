@@ -54,7 +54,7 @@ interface DashboardStats {
  * Combines all features from EnhancedUserDashboard and UnifiedUserDashboard
  */
 export const ConsolidatedUserDashboard: React.FC = () => {
-  const { user, profile } = useIntegratedAuth();
+  const { user, profile, isLoading } = useIntegratedAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalLeads: 0,
@@ -64,13 +64,25 @@ export const ConsolidatedUserDashboard: React.FC = () => {
   });
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  console.log('[ConsolidatedUserDashboard] Auth state:', { 
+    user: !!user, 
+    profile: !!profile, 
+    isLoading,
+    userEmail: user?.email 
+  });
 
   useEffect(() => {
-    if (user) {
+    if (user && !isLoading) {
+      console.log('[ConsolidatedUserDashboard] User ready, fetching data');
       checkOnboardingStatus();
       fetchDashboardData();
+    } else if (!user && !isLoading) {
+      console.log('[ConsolidatedUserDashboard] No user but auth finished loading');
+      setLoading(false);
     }
-  }, [user]);
+  }, [user, isLoading]);
 
   const checkOnboardingStatus = async () => {
     if (!user) return;
@@ -100,15 +112,27 @@ export const ConsolidatedUserDashboard: React.FC = () => {
   };
 
   const fetchDashboardData = async () => {
+    if (!user?.id) {
+      console.log('[ConsolidatedUserDashboard] No user ID, skipping data fetch');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Fetch user leads with stats
+      console.log('[ConsolidatedUserDashboard] Fetching dashboard data for user:', user.id);
+      
+      // Safer query construction
+      const userEmail = user.email || '';
       const { data: leads, error } = await supabase
         .from('leads')
         .select('*')
-        .or(`submitted_by.eq.${user!.id},and(anonymous_email.eq.${user!.email},submitted_by.is.null)`)
+        .or(`submitted_by.eq.${user.id},and(anonymous_email.eq.${userEmail},submitted_by.is.null)`)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[ConsolidatedUserDashboard] Database error:', error);
+        throw error;
+      }
 
       const totalLeads = leads?.length || 0;
       const pendingLeads = leads?.filter(lead => 
@@ -131,8 +155,10 @@ export const ConsolidatedUserDashboard: React.FC = () => {
 
       // Set recent leads (max 3)
       setRecentLeads(leads?.slice(0, 3) || []);
+      console.log('[ConsolidatedUserDashboard] Dashboard data loaded successfully');
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('[ConsolidatedUserDashboard] Error fetching dashboard data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -196,8 +222,40 @@ export const ConsolidatedUserDashboard: React.FC = () => {
     );
   }
 
-  if (loading) {
+  // Show loading if auth is still loading or dashboard data is loading
+  if (isLoading || loading) {
+    console.log('[ConsolidatedUserDashboard] Showing loading state');
     return <SkeletonDashboard />;
+  }
+
+  // Show error state if there's an error
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Card className="p-6 max-w-md">
+          <CardContent className="text-center">
+            <p className="text-red-600 mb-4">Kunne ikke laste dashboard</p>
+            <p className="text-sm text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => {
+              setError(null);
+              setLoading(true);
+              fetchDashboardData();
+            }}>
+              Prøv igjen
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // If no user after loading is complete, show message (shouldn't happen due to RoleDashboard protection)
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Ingen brukerinformasjon tilgjengelig</p>
+      </div>
+    );
   }
 
   return (
