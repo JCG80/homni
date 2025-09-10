@@ -103,6 +103,7 @@
     "special": "^0.0.3",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "terser": "^5.44.0",
     "the": "^1.0.2",
     "to": "^0.2.9",
     "ts-node": "^10.9.2",

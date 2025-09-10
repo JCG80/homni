@@ -1,0 +1,192 @@
+/* Accessibility styles for improved user experience */
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High contrast mode */
+.high-contrast {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --primary: 210 100% 70%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 210 40% 98%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+}
+
+.high-contrast * {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Font size variations */
+.font-size-normal {
+  font-size: 1rem;
+}
+
+.font-size-large {
+  font-size: 1.125rem;
+}
+
+.font-size-larger {
+  font-size: 1.25rem;
+}
+
+/* Focus visible enhancement */
+.focus-visible-enabled *:focus-visible {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Screen reader optimized layout */
+.screen-reader-optimized {
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.screen-reader-optimized h1,
+.screen-reader-optimized h2,
+.screen-reader-optimized h3,
+.screen-reader-optimized h4,
+.screen-reader-optimized h5,
+.screen-reader-optimized h6 {
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.screen-reader-optimized p {
+  margin-bottom: 1rem;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Touch targets for mobile */
+@media (pointer: coarse) {
+  button,
+  .button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Skip links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 8px;
+  z-index: 1000;
+  border: 2px solid hsl(var(--border));
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Landmarks and regions */
+main {
+  scroll-margin-top: 2rem;
+}
+
+/* Color contrast helpers */
+.contrast-border {
+  border: 1px solid hsl(var(--border));
+}
+
+/* Animation preferences */
+.respect-motion-preferences {
+  animation: none;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .respect-motion-preferences {
+    animation: initial;
+    transition: initial;
+  }
+}
+
+/* Keyboard navigation helpers */
+.keyboard-nav-active {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Error state accessibility */
+[aria-invalid="true"] {
+  border-color: hsl(var(--destructive));
+}
+
+/* Loading state accessibility */
+[aria-busy="true"] {
+  cursor: wait;
+}
+
+/* Disabled state accessibility */
+[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Status announcements */
+[aria-live] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Custom focus indicators for specific components */
+.card:focus-within {
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+/* High contrast borders for all interactive elements */
+.high-contrast button,
+.high-contrast .button,
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  border: 2px solid hsl(var(--foreground));
+}
+
+/* Ensure text has sufficient contrast */
+.high-contrast .text-muted-foreground {
+  color: hsl(var(--foreground));
+}

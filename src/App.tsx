@@ -1,4 +1,6 @@
 import React from 'react';
+import './index.css';
+import '@/styles/accessibility.css';
 import { Routes, Route } from 'react-router-dom';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { AuthProvider } from '@/modules/auth/hooks/useAuth';
@@ -10,8 +12,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { Shell } from '@/components/layout/Shell';
 import { useAuth } from '@/modules/auth/hooks';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
+import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
 
 const queryClient = new QueryClient();
 
@@ -38,16 +41,18 @@ const AppContent = () => {
 
 function App() {
   return (
-    <ThemeProvider
-      defaultTheme="system"
-      storageKey="vite-react-tailwind-theme"
-    >
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <AccessibilityProvider>
+      <ThemeProvider
+        defaultTheme="system"
+        storageKey="vite-react-tailwind-theme"
+      >
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </AccessibilityProvider>
   );
 }
 

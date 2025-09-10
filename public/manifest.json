@@ -1,12 +1,15 @@
 {
-  "name": "Homni",
+  "name": "Homni - Smart Hjemtjenester",
   "short_name": "Homni",
-  "description": "Hybrid platform for home services, documentation and property management",
+  "description": "Din komplette plattform for hjemtjenester, eiendomsdokumentation og DIY boligsalg",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "no",
+  "categories": ["business", "productivity", "lifestyle"],
   "icons": [
     {
       "src": "/favicon.ico",
@@ -26,45 +29,62 @@
       "purpose": "maskable any"
     }
   ],
-  "categories": ["business", "productivity", "utilities"],
   "screenshots": [
     {
       "src": "/screenshot-desktop.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Homni Dashboard på desktop"
     },
     {
       "src": "/screenshot-mobile.png", 
       "sizes": "390x844",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Homni på mobil"
     }
   ],
   "shortcuts": [
     {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Go to main dashboard",
-      "url": "/dashboard",
+      "name": "SmartStart",
+      "short_name": "SmartStart",
+      "description": "Start nytt tjenestesøk",
+      "url": "/services/smart-start",
       "icons": [
         {
-          "src": "/favicon.ico",
+          "src": "/android-chrome-192x192.png",
           "sizes": "192x192"
         }
       ]
     },
     {
-      "name": "Companies",
-      "short_name": "Bedrifter",
-      "description": "Browse partner companies",
-      "url": "/companies",
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Gå til dashboard",
+      "url": "/dashboard",
       "icons": [
         {
-          "src": "/favicon.ico",
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Min Profil",
+      "short_name": "Profil",
+      "description": "Se din profil",
+      "url": "/account",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
           "sizes": "192x192"
         }
       ]
     }
-  ]
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
