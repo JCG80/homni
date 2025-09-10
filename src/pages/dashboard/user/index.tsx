@@ -1,11 +1,11 @@
 import React from 'react';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
-import { ConsolidatedUserDashboard } from '@/components/dashboard/ConsolidatedUserDashboard';
+import { SimplifiedUserDashboard } from '@/components/dashboard/SimplifiedUserDashboard';
 
 const UserDashboard = () => {
   return (
     <RoleDashboard requiredRole="user">
-      <ConsolidatedUserDashboard />
+      <SimplifiedUserDashboard />
     </RoleDashboard>
   );
 };
