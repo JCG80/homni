@@ -33,7 +33,7 @@ export const AppLayout = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header activeTab="" handleTabChange={() => {}} />
+      <Header />
       
       <div className="flex">
         {/* Main Content Area */}

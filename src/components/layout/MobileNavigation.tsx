@@ -4,7 +4,6 @@ import { useAuth } from '@/modules/auth/hooks';
 import { getNavigation } from '@/config/navigation';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { cn } from '@/lib/utils';
-import { PersonaSwitcher } from './PersonaSwitcher';
 
 interface MobileNavigationProps {
   className?: string;
@@ -24,13 +23,6 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
 
   return (
     <div className={cn("flex flex-col space-y-1", className)}>
-      {/* Role/Persona Switcher - Only for authenticated users */}
-      {isAuthenticated && (
-        <div className="px-3 py-2 border-b border-border">
-          <PersonaSwitcher />
-        </div>
-      )}
-      
       {/* Main Navigation */}
       {navigation.length > 0 && (
         <div className="px-3 py-2">

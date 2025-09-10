@@ -57,8 +57,6 @@ export const PageLayout = ({
   return (
     <div className="flex flex-col min-h-screen">
       <Header 
-        activeTab={activeTab} 
-        handleTabChange={handleTabChange} 
         className={hideHeaderOnScroll ? (scrolled ? 'translate-y-[-100%]' : '') : ''}
       />
       

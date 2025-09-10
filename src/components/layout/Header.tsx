@@ -18,19 +18,17 @@ import { MobileNavigation } from './MobileNavigation';
 import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
 
 interface HeaderProps {
-  activeTab: string;
-  handleTabChange: (value: string) => void;
   /** Allow passing through layout class names */
   className?: string;
 }
 
-export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderProps) => {
+export const Header = ({ className = '' }: HeaderProps) => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin, isMasterAdmin } = useAuth();
   const isMobile = useIsMobile();
   
   const goToLogin = () => {
-    navigate(activeTab === 'business' ? '/login?type=business' : '/login');
+    navigate('/login');
   };
 
   return (
@@ -68,8 +66,8 @@ export const Header = ({ activeTab, handleTabChange, className = '' }: HeaderPro
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">
           {isAuthenticated ? (
-            <div className="flex items-center space-x-3">
-              <RoleSwitcher />
+            <div className="flex items-center space-x-2">
+              {(isAdmin || isMasterAdmin) && <RoleSwitcher />}
               <ProfileHeader />
             </div>
           ) : (

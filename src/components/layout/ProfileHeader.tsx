@@ -15,7 +15,8 @@ import { Settings, LogOut, User, Building2 } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from '@/modules/auth/api';
-import { PersonaSwitcher } from './PersonaSwitcher';
+import { getRoleIcon, getRoleLabel } from '@/modules/auth/utils/shared/roleDisplay';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 interface ProfileHeaderProps {
   showFullProfile?: boolean;
@@ -46,17 +47,8 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
       case 'admin': return 'bg-orange-500';
       case 'company': return 'bg-blue-500';
       case 'user': return 'bg-green-500';
+      case 'content_editor': return 'bg-purple-500';
       default: return 'bg-gray-500';
-    }
-  };
-
-  const getRoleLabel = (userRole: string) => {
-    switch (userRole) {
-      case 'master_admin': return 'Hovedadmin';
-      case 'admin': return 'Administrator';
-      case 'company': return 'Bedrift';
-      case 'user': return 'Medlem';
-      default: return 'Bruker';
     }
   };
 
@@ -66,7 +58,6 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <PersonaSwitcher />
       {showFullProfile && (
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -76,7 +67,7 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
               <User className="h-4 w-4 text-muted-foreground" />
             )}
             <Badge variant="secondary" className={getRoleColor(role || 'user')}>
-              {getRoleLabel(role || 'user')}
+              {getRoleLabel((role || 'user') as UserRole)}
             </Badge>
           </div>
           <div className="text-right">
@@ -102,9 +93,9 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{profile.full_name}</p>
               <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-              <Badge variant="outline" className="w-fit mt-1">
-                {getRoleLabel(role || 'user')}
-              </Badge>
+            <Badge variant="outline" className="w-fit mt-1">
+              {getRoleLabel(role as UserRole)}
+            </Badge>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

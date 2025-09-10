@@ -42,7 +42,7 @@ export const EnhancedAppLayout: React.FC<EnhancedAppLayoutProps> = ({
 
   return (
     <div className={cn("min-h-screen bg-background", className)}>
-      <Header activeTab="navigation" handleTabChange={() => {}} />
+      <Header />
       
       {/* Breadcrumbs - Desktop only */}
       {showBreadcrumbs && !isMobile && isAuthenticated && (

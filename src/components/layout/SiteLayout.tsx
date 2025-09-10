@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Header } from './Header';
 
 interface SiteLayoutProps {
@@ -6,18 +6,9 @@ interface SiteLayoutProps {
 }
 
 export function SiteLayout({ children }: SiteLayoutProps) {
-  const [activeTab, setActiveTab] = useState('private');
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      <Header 
-        activeTab={activeTab}
-        handleTabChange={handleTabChange}
-      />
+      <Header />
       {children}
     </div>
   );

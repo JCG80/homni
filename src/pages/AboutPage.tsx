@@ -16,7 +16,7 @@ export const AboutPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        <Header activeTab="private" handleTabChange={() => {}} />
+        <Header />
         <PublicBreadcrumb />
         
         <main className="py-16">
