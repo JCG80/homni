@@ -1,54 +1,12 @@
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { UnifiedUserDashboard } from './UnifiedUserDashboard';
-import { CompanyDashboard } from './CompanyDashboard';
-import { AdminDashboard } from './AdminDashboard';
+import { CompanyDashboard } from './pages/CompanyDashboard';
+import { AdminDashboard } from './pages/AdminDashboard';
+import { MasterAdminDashboard } from './pages/MasterAdminDashboard';
+import { ContentEditorDashboard } from './pages/ContentEditorDashboard';
 import { useProfileContext } from '@/hooks/useProfileContext';
 import { PageLayout } from '@/components/layout/PageLayout';
-
-interface ContentEditorDashboardProps {}
-
-function ContentEditorDashboard({}: ContentEditorDashboardProps) {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Innholdsdashboard
-        </h1>
-        <p className="text-muted-foreground">
-          Administrer artikler, FAQ og mediefiler.
-        </p>
-      </div>
-      
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">
-          Innholdsstyringsverktøy kommer snart...
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function MasterAdminDashboard() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Master Admin Dashboard
-        </h1>
-        <p className="text-muted-foreground">
-          Systemadministrasjon, moduler, feature flags og API-tilganger.
-        </p>
-      </div>
-      
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">
-          Master admin-funksjoner kommer snart...
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export function DashboardRouter() {
   const { role, isAdmin, isMasterAdmin, profile } = useAuth();
