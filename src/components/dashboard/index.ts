@@ -4,6 +4,9 @@ export { DashboardLayout } from './DashboardLayout';
 export { DashboardWidget } from './DashboardWidget';
 export { RoleDashboard } from './RoleDashboard';
 
+// Export consolidated user dashboard
+export { ConsolidatedUserDashboard } from './ConsolidatedUserDashboard';
+
 // Export company dashboard components
 export { LeadOverviewWidget } from './company/LeadOverviewWidget';
 export { AnalyticsSummaryWidget } from './company/AnalyticsSummaryWidget';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { UnifiedUserDashboard } from './UnifiedUserDashboard';
+import { ConsolidatedUserDashboard } from '@/components/dashboard/ConsolidatedUserDashboard';
 import { CompanyDashboard } from './pages/CompanyDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { MasterAdminDashboard } from './pages/MasterAdminDashboard';
@@ -20,7 +20,7 @@ export function DashboardRouter() {
         case 'company':
           return <CompanyDashboard />;
         case 'user':
-          return <UnifiedUserDashboard />;
+          return <ConsolidatedUserDashboard />;
         default:
           return <AdminDashboard />;
       }
@@ -29,7 +29,7 @@ export function DashboardRouter() {
     // Otherwise show dashboard based on user's actual role
     switch (role) {
       case 'user':
-        return <UnifiedUserDashboard />;
+        return <ConsolidatedUserDashboard />;
       case 'company':
         return <CompanyDashboard />;
       case 'content_editor':
@@ -39,7 +39,7 @@ export function DashboardRouter() {
       case 'master_admin':
         return <MasterAdminDashboard />;
       default:
-        return <UnifiedUserDashboard />;
+        return <ConsolidatedUserDashboard />;
     }
   };
 

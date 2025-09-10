@@ -18,7 +18,7 @@ import {
   Mail,
   Calendar,
   Activity,
-  BarChart3
+  Home
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -49,7 +49,11 @@ interface DashboardStats {
   recentActivity: number;
 }
 
-export const EnhancedUserDashboard: React.FC = () => {
+/**
+ * Consolidated User Dashboard - Single source of truth
+ * Combines all features from EnhancedUserDashboard and UnifiedUserDashboard
+ */
+export const ConsolidatedUserDashboard: React.FC = () => {
   const { user, profile } = useIntegratedAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
@@ -72,6 +76,15 @@ export const EnhancedUserDashboard: React.FC = () => {
     if (!user) return;
 
     try {
+      // Check if user has attributed leads (recently linked)
+      const { data: attributedLeads } = await supabase
+        .from('leads')
+        .select('id, attributed_at')
+        .eq('submitted_by', user.id)
+        .not('attributed_at', 'is', null)
+        .gte('attributed_at', new Date(Date.now() - 5 * 60 * 1000).toISOString());
+
+      // Check if user is newly created (within last hour)
       const { data: authUser } = await supabase.auth.getUser();
       if (authUser.user?.created_at) {
         const userCreatedAt = new Date(authUser.user.created_at);
@@ -88,6 +101,7 @@ export const EnhancedUserDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
+      // Fetch user leads with stats
       const { data: leads, error } = await supabase
         .from('leads')
         .select('*')
@@ -104,6 +118,7 @@ export const EnhancedUserDashboard: React.FC = () => {
         lead.status === 'contacted' || lead.status === 'negotiating' || lead.status === 'converted'
       ).length || 0;
       
+      // Recent activity (leads created in last 7 days)
       const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
       const recentActivity = leads?.filter(lead => new Date(lead.created_at) > weekAgo).length || 0;
 
@@ -114,6 +129,7 @@ export const EnhancedUserDashboard: React.FC = () => {
         recentActivity
       });
 
+      // Set recent leads (max 3)
       setRecentLeads(leads?.slice(0, 3) || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -124,6 +140,7 @@ export const EnhancedUserDashboard: React.FC = () => {
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    // Refresh dashboard data
     fetchDashboardData();
   };
 
@@ -156,6 +173,10 @@ export const EnhancedUserDashboard: React.FC = () => {
         return <TrendingUp className="w-4 h-4" />;
       case 'converted':
         return <CheckCircle className="w-4 h-4" />;
+      case 'lost':
+        return <Mail className="w-4 h-4" />;
+      case 'paused':
+        return <Clock className="w-4 h-4" />;
       default:
         return <Clock className="w-4 h-4" />;
     }
@@ -276,6 +297,38 @@ export const EnhancedUserDashboard: React.FC = () => {
           <NextRecommendedActionWidget />
         </div>
       </div>
+
+      {/* Property Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Home className="h-5 w-5" />
+            Min eiendom
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Adresse</span>
+              <span className="text-sm font-medium">Ikke registrert</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Type</span>
+              <span className="text-sm font-medium">-</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Størrelse</span>
+              <span className="text-sm font-medium">-</span>
+            </div>
+          </div>
+          <div className="mt-4">
+            <Button variant="outline" size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Registrer eiendom
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Recent Activity */}
       <Card>
