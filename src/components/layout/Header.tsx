@@ -16,6 +16,7 @@ import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileNavigation } from './MobileNavigation';
 import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
+import { QuickActionsDropdown } from '@/components/navigation';
 
 interface HeaderProps {
   /** Allow passing through layout class names */
@@ -67,6 +68,7 @@ export const Header = ({ className = '' }: HeaderProps) => {
         <div className="flex items-center space-x-2 md:space-x-4">
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
+              <QuickActionsDropdown variant="icon" className="hidden md:flex" />
               {(isAdmin || isMasterAdmin) && <RoleSwitcher />}
               <ProfileHeader />
             </div>
