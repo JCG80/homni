@@ -6,6 +6,7 @@ import { insuranceRouteObjects } from './insuranceRouteObjects';
 import { leadRouteObjects } from './leadRouteObjects';
 import { marketplaceRouteObjects } from './marketplaceRouteObjects';
 import { featureRouteObjects } from './featureRouteObjects';
+import { coreModuleRoutes } from './coreModuleRoutes';
 
 // Lazy load all page components
 const HomePage = lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
@@ -179,4 +180,5 @@ export const mainRouteObjects: AppRoute[] = [
   ...leadRouteObjects,
   ...marketplaceRouteObjects,
   ...featureRouteObjects,
+  ...coreModuleRoutes,
 ];
