@@ -277,8 +277,11 @@ export class EnhancedPropertyDocumentService {
         .single();
 
       if (error) throw error;
+      const normalized = data
+        ? ({ ...data, category: data.category as MaintenanceTask['category'] } as MaintenanceTask)
+        : null;
       toast.success('Vedlikeholdsoppgave opprettet');
-      return data;
+      return normalized;
     } catch (error) {
       console.error('Error creating maintenance task:', error);
       toast.error('Kunne ikke opprette vedlikeholdsoppgave');
