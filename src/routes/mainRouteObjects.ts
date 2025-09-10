@@ -15,6 +15,13 @@ const PropertyDashboardPage = lazy(() => import('@/pages/PropertyDashboardPage')
 const NewPropertyPage = lazy(() => import('@/pages/NewPropertyPage'));
 const CompanyLeadDashboardPage = lazy(() => import('@/pages/CompanyLeadDashboardPage'));
 
+// Auth and Account pages
+const ProfilePageWrapper = lazy(() => import('./components/ProfilePageWrapper').then(m => ({ default: m.ProfilePageWrapper })));
+const AccountPageWrapper = lazy(() => import('./components/AccountPageWrapper').then(m => ({ default: m.AccountPageWrapper })));
+
+// Settings redirect
+const SettingsRedirect = lazy(() => import('./components/SettingsRedirect').then(m => ({ default: m.SettingsRedirect })));
+
 // Role-specific dashboard components
 const AdminDashboard = lazy(() => import('@/components/dashboard/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const CompanyDashboard = lazy(() => import('@/modules/dashboard/CompanyDashboard').then(m => ({ default: m.CompanyDashboard })));
@@ -119,5 +126,24 @@ export const mainRouteObjects: AppRoute[] = [
     element: createElement(ContentEditorDashboard),
     roles: ['content_editor'],
     navKey: 'content-editor-dashboard'
+  },
+  // Profile and Account routes
+  {
+    path: '/profile',
+    element: createElement(ProfilePageWrapper),
+    roles: ['user', 'company', 'content_editor', 'admin', 'master_admin'],
+    navKey: 'profile'
+  },
+  {
+    path: '/account',
+    element: createElement(AccountPageWrapper),
+    roles: ['user', 'company', 'content_editor', 'admin', 'master_admin'],
+    navKey: 'account'
+  },
+  // Settings redirect to account
+  {
+    path: '/settings',
+    element: createElement(SettingsRedirect),
+    roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
   },
 ];

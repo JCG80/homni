@@ -103,7 +103,7 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
             <User className="mr-2 h-4 w-4" />
             <span>Profil</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/settings')}>
+          <DropdownMenuItem onClick={() => navigate('/account')}>
             <Settings className="mr-2 h-4 w-4" />
             <span>Innstillinger</span>
           </DropdownMenuItem>
