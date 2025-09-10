@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useProperties } from '../hooks/useProperties';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Home, DollarSign, FileText, Calendar } from 'lucide-react';
 
 export function PropertyStats() {
@@ -27,8 +29,34 @@ export function PropertyStats() {
 
   const totalProperties = properties?.length || 0;
   const totalValue = properties?.reduce((sum, p) => sum + (p.size || 0) * 50000, 0) || 0; // Estimated value
-  const documentsCount = 0; // TODO: Connect to actual documents
-  const upcomingTasks = 0; // TODO: Connect to maintenance tasks
+  
+  // Real data for documents and maintenance tasks
+  const { data: documentsData } = useQuery({
+    queryKey: ['property-documents-count'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('property_documents')
+        .select('property_id', { count: 'exact' });
+      return error ? 0 : data?.length || 0;
+    },
+    enabled: !!properties?.length
+  });
+  
+  const { data: tasksData } = useQuery({
+    queryKey: ['property-maintenance-count'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('property_maintenance_tasks')
+        .select('id', { count: 'exact' })
+        .in('status', ['pending', 'in_progress'])
+        .gte('due_date', new Date().toISOString().split('T')[0]);
+      return error ? 0 : data?.length || 0;
+    },
+    enabled: !!properties?.length
+  });
+
+  const documentsCount = documentsData || 0;
+  const upcomingTasks = tasksData || 0;
 
   const stats = [
     {
