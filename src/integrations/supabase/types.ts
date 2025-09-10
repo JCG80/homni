@@ -1863,6 +1863,7 @@ export type Database = {
           profile_picture_url: string | null
           region: string | null
           role: string | null
+          role_enum: Database["public"]["Enums"]["app_role"]
           ui_preferences: Json
           updated_at: string
           user_id: string
@@ -1885,6 +1886,7 @@ export type Database = {
           profile_picture_url?: string | null
           region?: string | null
           role?: string | null
+          role_enum?: Database["public"]["Enums"]["app_role"]
           ui_preferences?: Json
           updated_at?: string
           user_id: string
@@ -1907,6 +1909,7 @@ export type Database = {
           profile_picture_url?: string | null
           region?: string | null
           role?: string | null
+          role_enum?: Database["public"]["Enums"]["app_role"]
           ui_preferences?: Json
           updated_at?: string
           user_id?: string
@@ -2057,6 +2060,7 @@ export type Database = {
           profile_picture_url: string | null
           region: string | null
           role: string | null
+          role_enum: Database["public"]["Enums"]["app_role"]
           ui_preferences: Json
           updated_at: string
           user_id: string
