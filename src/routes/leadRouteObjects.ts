@@ -11,10 +11,26 @@ const LeadsManagement = lazy(() =>
   }))
 );
 
+const LeadKanbanPage = lazy(() => 
+  import('@/modules/leads/pages/LeadKanbanPage').then(m => ({ default: m.LeadKanbanPage }))
+);
+
 export const leadRouteObjects: AppRoute[] = [
   {
     path: '/leads',
     element: createElement(LeadsManagement),
     roles: ['admin', 'master_admin', 'company']
+  },
+  {
+    path: '/leads/kanban',
+    element: createElement(LeadKanbanPage),
+    roles: ['admin', 'master_admin', 'company'],
+    navKey: 'lead-kanban'
+  },
+  {
+    path: '/lead-kanban',
+    element: createElement(LeadKanbanPage),
+    roles: ['admin', 'master_admin', 'company'],
+    navKey: 'lead-kanban'
   }
 ];

@@ -13,7 +13,7 @@ export { AnalyticsSummaryWidget } from './company/AnalyticsSummaryWidget';
 export { QuickActionsWidget } from './company/QuickActionsWidget';
 export { TeamMembersWidget } from './company/TeamMembersWidget';
 export { TeamMemberItem } from './company/TeamMemberItem';
-export { LeadKanbanWidget } from './company/LeadKanbanWidget';
+// LeadKanbanWidget moved to modules/leads/components/kanban/LeadKanbanWidget
 export { LeadCard } from './company/LeadCard';
 export { QuickActionsBar } from './company/QuickActionsBar';
 export { SubscriptionStatusWidget } from './company/SubscriptionStatusWidget';
