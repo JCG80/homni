@@ -8,6 +8,7 @@ import { leadRouteObjects } from './leadRouteObjects';
 import { marketplaceRouteObjects } from './marketplaceRouteObjects';
 import { contentEditorRouteObjects } from './contentEditorRouteObjects';
 import { docsRouteObjects } from './docsRouteObjects';
+import { listingsRouteObjects } from './listingsRouteObjects';
 import { applyFeatureFlags } from './filters';
 import type { AppRoute } from './routeTypes';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
@@ -94,6 +95,7 @@ export default function AppRouter() {
   // Combine all route objects
   const allRoutes = [
     ...mainRouteObjects,
+    ...listingsRouteObjects,
     ...adminRouteObjects,
     ...companyRouteObjects,
     ...insuranceRouteObjects,

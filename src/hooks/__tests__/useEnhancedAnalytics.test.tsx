@@ -1,7 +1,27 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { useEnhancedAnalytics } from '../useEnhancedAnalytics';
+import { AnalyticsProvider } from '@/lib/analytics/react';
+import { BrowserRouter } from 'react-router-dom';
+
+// Mock the logger
+vi.mock('@/utils/logger', () => ({
+  logger: {
+    debug: vi.fn()
+  }
+}));
+
+// Test component wrapper with required providers
+function TestWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <BrowserRouter>
+      <AnalyticsProvider>
+        {children}
+      </AnalyticsProvider>
+    </BrowserRouter>
+  );
+}
 
 // Test component to use the hook
 function TestComponent() {
@@ -10,8 +30,8 @@ function TestComponent() {
 }
 
 describe('useEnhancedAnalytics', () => {
-  it('should not throw when used inside a component', () => {
-    expect(() => render(<TestComponent />)).not.toThrow();
+  it('should not throw when used inside a component with providers', () => {
+    expect(() => render(<TestWrapper><TestComponent /></TestWrapper>)).not.toThrow();
   });
 
   it('should return analytics functions', () => {
@@ -22,7 +42,7 @@ describe('useEnhancedAnalytics', () => {
       return null;
     }
 
-    render(<TestComponentWithReturn />);
+    render(<TestWrapper><TestComponentWithReturn /></TestWrapper>);
 
     expect(hookResult).toBeDefined();
     expect(typeof hookResult.trackEvent).toBe('function');

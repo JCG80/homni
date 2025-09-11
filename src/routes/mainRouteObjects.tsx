@@ -31,12 +31,6 @@ export const mainRouteObjects: AppRoute[] = [
     path: '/property',
     element: <Navigate to="/properties" replace />
   },
-  // Main property route
-  {
-    path: '/properties',
-    element: <Authenticated><PropertyPage /></Authenticated>,
-    roles: ['user', 'company', 'admin', 'master_admin']
-  },
   {
     path: '/dashboard',
     element: <Authenticated><Dashboard /></Authenticated>,

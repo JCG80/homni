@@ -1,117 +1,67 @@
-/**
- * Analytics System - Main Entry Point
- * Provides event tracking and performance monitoring
- */
+// Minimal, adapter-based analytics – SSR/Edge-safe
 
-export interface AnalyticsEvent {
+export type AnalyticsProps = Record<string, unknown>;
+
+export interface AnalyticsDestination {
   name: string;
-  properties?: Record<string, any>;
-  timestamp?: number;
+  init?: () => void;
+  track?: (event: string, props?: AnalyticsProps) => void;
+  page?: (path: string, title?: string) => void;
+  identify?: (userId: string, traits?: AnalyticsProps) => void;
+  flush?: () => Promise<void> | void;
 }
 
-export interface PerformanceMetric {
-  name: string;
-  value: number;
-  unit: string;
-  timestamp: number;
+const destinations: AnalyticsDestination[] = [];
+
+// Dev-konsoll som default i DEV
+if (import.meta.env.DEV && import.meta.env.VITE_ANALYTICS_CONSOLE !== 'false') {
+  destinations.push({
+    name: 'console',
+    track: (e, p) => console.log('[analytics:track]', e, p ?? {}),
+    page: (path, title) => console.log('[analytics:page]', path, title ?? ''),
+    identify: (id, traits) => console.log('[analytics:identify]', id, traits ?? {}),
+  });
 }
 
-// Simple analytics tracker
-export const analytics = {
-  track: (event: string, properties?: Record<string, any>) => {
-    if (import.meta.env.DEV) {
-      console.log('[Analytics]', event, properties);
-    }
-    // In production, this would send to analytics service
-  },
-  
-  page: (path: string, title?: string) => {
-    if (import.meta.env.DEV) {
-      console.log('[Analytics] Page View:', path, title);
-    }
-    // Track page views
-  },
-  
-  identify: (userId: string, traits?: Record<string, any>) => {
-    if (import.meta.env.DEV) {
-      console.log('[Analytics] Identify:', userId, traits);
-    }
-    // Identify user
-  }
-};
+export function registerDestination(dest: AnalyticsDestination) {
+  destinations.push(dest);
+  dest.init?.();
+}
 
-// Performance monitor
-export const PerformanceMonitor = {
-  mark: (name: string) => {
-    if (performance && performance.mark) {
-      performance.mark(name);
-    }
+export function track(event: string, props?: AnalyticsProps) {
+  for (const d of destinations) d.track?.(event, props);
+}
+
+export function page(path: string, title?: string) {
+  for (const d of destinations) d.page?.(path, title);
+}
+
+export function identify(userId: string, traits?: AnalyticsProps) {
+  for (const d of destinations) d.identify?.(userId, traits);
+}
+
+export async function flush() {
+  await Promise.allSettled(destinations.map(d => Promise.resolve(d.flush?.())));
+}
+
+// Performance helpers (try/catch)
+export const Perf = {
+  mark(name: string) {
+    try {
+      if (typeof performance !== 'undefined' && performance.mark) performance.mark(name);
+    } catch {}
   },
-  
-  measure: (name: string, startMark: string, endMark: string) => {
-    if (performance && performance.measure) {
-      performance.measure(name, startMark, endMark);
-    }
+  measure(name: string, start: string, end: string) {
+    try {
+      if (typeof performance !== 'undefined' && performance.measure) performance.measure(name, start, end);
+    } catch {}
   },
-  
-  getEntries: () => {
-    if (performance && performance.getEntriesByType) {
-      return performance.getEntriesByType('measure');
-    }
+  getEntries(): PerformanceEntry[] {
+    try {
+      if (typeof performance !== 'undefined' && performance.getEntriesByType) {
+        return performance.getEntriesByType('measure');
+      }
+    } catch {}
     return [];
-  }
-};
-
-// Track function for compatibility
-export const track = analytics.track;
-export const trackPerformance = (name: string, value: number, unit = 'ms') => {
-  if (import.meta.env.DEV) {
-    console.log('[Performance]', name, value, unit);
-  }
-};
-
-// Initialize analytics system
-export const initializeAnalytics = () => {
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] System initialized');
-  }
-  
-  // Set up error tracking
-  window.addEventListener('error', (event) => {
-    track('JavaScript Error', {
-      message: event.message,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno
-    });
-  });
-  
-  // Set up unhandled promise rejections
-  window.addEventListener('unhandledrejection', (event) => {
-    track('Unhandled Promise Rejection', {
-      reason: event.reason
-    });
-  });
-};
-
-// Set up page view tracking
-export const setupPageViewTracking = () => {
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] Page view tracking enabled');
-  }
-  
-  // Track initial page load
-  analytics.page(window.location.pathname, document.title);
-  
-  // Track route changes (for SPA)
-  let lastPath = window.location.pathname;
-  const observer = new MutationObserver(() => {
-    const currentPath = window.location.pathname;
-    if (currentPath !== lastPath) {
-      lastPath = currentPath;
-      analytics.page(currentPath, document.title);
-    }
-  });
-  
-  observer.observe(document.body, { childList: true, subtree: true });
+  },
 };
