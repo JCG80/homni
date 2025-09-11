@@ -11,6 +11,12 @@ const SystemModulesPage = lazy(() => import('@/modules/admin/pages/SystemModules
 const AdminLeadsPage = lazy(() => import('@/modules/leads/pages/AdminLeadsPage'));
 const InsightsDashboard = lazy(() => import('@/modules/smart-start-insights/pages/InsightsDashboard').then(module => ({ default: module.InsightsDashboard })));
 
+// Master Admin specific pages
+const MarketTrendsMD = lazy(() => import('@/modules/admin/pages/MarketTrendsMD').then(module => ({ default: module.MarketTrendsMD })));
+const ApiGatewayStatus = lazy(() => import('@/modules/admin/pages/ApiGatewayStatus').then(module => ({ default: module.ApiGatewayStatus })));
+const FeatureFlagsManagement = lazy(() => import('@/modules/admin/pages/FeatureFlagsManagement').then(module => ({ default: module.FeatureFlagsManagement })));
+const ModuleManagementPage = lazy(() => import('@/modules/admin/pages/ModuleManagementPage').then(module => ({ default: module.ModuleManagementPage })));
+
 export const adminRouteObjects: AppRoute[] = [
   // Main admin dashboard route
   {
@@ -127,6 +133,50 @@ export const adminRouteObjects: AppRoute[] = [
     element: (
       <RoleDashboard title="Internal Access" requiredRole={['master_admin']}>
         <InternalAccessPage />
+      </RoleDashboard>
+    ),
+    roles: ['master_admin'],
+  },
+
+  // Feature flags management (master_admin only)
+  {
+    path: '/admin/feature-flags',
+    element: (
+      <RoleDashboard title="Feature Flags" requiredRole={['master_admin']}>
+        <FeatureFlagsManagement />
+      </RoleDashboard>
+    ),
+    roles: ['master_admin'],
+  },
+
+  // Module management (master_admin only)
+  {
+    path: '/admin/modules',
+    element: (
+      <RoleDashboard title="Module Management" requiredRole={['master_admin']}>
+        <ModuleManagementPage />
+      </RoleDashboard>
+    ),
+    roles: ['master_admin'],
+  },
+
+  // Market trends analysis (master_admin only)
+  {
+    path: '/admin/market-trends',
+    element: (
+      <RoleDashboard title="Market Trends MD" requiredRole={['master_admin']}>
+        <MarketTrendsMD />
+      </RoleDashboard>
+    ),
+    roles: ['master_admin'],
+  },
+
+  // API Gateway monitoring (master_admin only)
+  {
+    path: '/admin/api-gateway',
+    element: (
+      <RoleDashboard title="API Gateway Status" requiredRole={['master_admin']}>
+        <ApiGatewayStatus />
       </RoleDashboard>
     ),
     roles: ['master_admin'],

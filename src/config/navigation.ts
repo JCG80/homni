@@ -119,6 +119,10 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
     { href: '/admin/api', title: 'API & Integrasjoner', icon: Zap },
     { href: '/admin/roles', title: 'Rolleadministrasjon', icon: Shield },
     { href: '/admin/internal-access', title: 'Modultilgang', icon: Shield },
+    { href: '/admin/feature-flags', title: 'Feature Flags', icon: Settings },
+    { href: '/admin/modules', title: 'Moduladministrasjon', icon: Database },
+    { href: '/admin/market-trends', title: 'Markedstrender', icon: TrendingUp },
+    { href: '/admin/api-gateway', title: 'API Gateway', icon: Activity },
   ],
 };
 
