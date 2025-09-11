@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/modules/auth/hooks';
+import { CreateMaintenanceTaskDialog } from '@/components/property/enhanced/CreateMaintenanceTaskDialog';
 import { 
   AlertTriangle, 
   CheckCircle, 
@@ -39,6 +40,7 @@ export function PropertyMaintenance({ propertyId }: PropertyMaintenanceProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['maintenance-tasks', propertyId, user?.id],
@@ -148,7 +150,11 @@ export function PropertyMaintenance({ propertyId }: PropertyMaintenanceProps) {
               <Wrench className="h-5 w-5" />
               Vedlikehold {propertyId ? '' : '- Alle eiendommer'}
             </CardTitle>
-            <Button size="sm" className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              className="flex items-center gap-2"
+              onClick={() => setShowCreateDialog(true)}
+            >
               <Plus className="h-4 w-4" />
               Ny oppgave
             </Button>
@@ -291,6 +297,16 @@ export function PropertyMaintenance({ propertyId }: PropertyMaintenanceProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Create Task Dialog */}
+      {propertyId && (
+        <CreateMaintenanceTaskDialog
+          propertyId={propertyId}
+          open={showCreateDialog}
+          onOpenChange={setShowCreateDialog}
+          onTaskCreated={() => setShowCreateDialog(false)}
+        />
+      )}
     </div>
   );
 }
