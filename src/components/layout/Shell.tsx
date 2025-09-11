@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { mainRouteObjects } from '@/routes/mainRouteObjects';
 import { adminRouteObjects } from '@/routes/adminRouteObjects';
+import { leadRouteObjects } from '@/routes/leadRouteObjects';
 import { docsRouteObjects } from '@/routes/docsRouteObjects';
 import { listingsRouteObjects } from '@/routes/listingsRouteObjects';
 import { applyFeatureFlags } from '@/routes/filters';
@@ -83,6 +84,7 @@ export function Shell() {
   const allRoutes = [
     ...mainRouteObjects,
     ...adminRouteObjects,
+    ...leadRouteObjects,
     ...docsRouteObjects,
     ...listingsRouteObjects,
   ];
