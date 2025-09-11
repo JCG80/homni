@@ -13,7 +13,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { abTesting, AB_TESTS } from '@/lib/abTesting/abTestingFramework';
 
-export const HomePage = () => {
+const HomePage: React.FC = () => {
   const [selectedRole, setSelectedRole] = React.useState<'private' | 'business'>('private');
   const wizardVariant = abTesting.getVariant(AB_TESTS.WIZARD_LAYOUT);
   
@@ -127,3 +127,5 @@ export const HomePage = () => {
     </>
   );
 };
+
+export default HomePage;

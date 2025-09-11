@@ -9,7 +9,7 @@ import { featureRouteObjects } from './featureRouteObjects';
 import { coreModuleRoutes } from './coreModuleRoutes';
 
 // Lazy load all page components
-const HomePage = lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
+const HomePage = lazy(() => import('@/pages/HomePage'));
 const MinimalHomePage = lazy(() => import('@/pages/MinimalHomePage').then(m => ({ default: m.MinimalHomePage })));
 const DebugHomePage = lazy(() => import('@/pages/DebugHomePage').then(m => ({ default: m.DebugHomePage })));
 const LoginPage = lazy(() => import('@/modules/auth/pages/LoginPage').then(m => ({ default: m.LoginPage })));
