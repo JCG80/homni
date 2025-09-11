@@ -18,6 +18,7 @@ export interface KanbanColumn {
 export interface LeadKanbanBoardProps {
   columns: KanbanColumn[];
   onLeadStatusChange: (leadId: string, newStatus: LeadStatus) => Promise<void>;
+  onAddLead?: () => void;
   isLoading: boolean;
   isUpdating: boolean;
 }

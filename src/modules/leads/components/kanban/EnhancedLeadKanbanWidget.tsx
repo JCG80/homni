@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DashboardWidget } from '@/components/dashboard';
 import { Badge } from '@/components/ui/badge';
@@ -6,15 +5,20 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { LeadKanbanBoard } from './LeadKanbanBoard';
 import { useKanbanBoard } from '../../hooks/useKanbanBoard';
+import { Lead } from '@/types/leads-canonical';
 
-interface LeadKanbanWidgetProps {
+interface EnhancedLeadKanbanWidgetProps {
   title?: React.ReactNode;
   className?: string;
+  filteredLeads?: Lead[];
+  onAddLead?: () => void;
 }
 
-export const LeadKanbanWidget: React.FC<LeadKanbanWidgetProps> = ({ 
+export const EnhancedLeadKanbanWidget: React.FC<EnhancedLeadKanbanWidgetProps> = ({ 
   title = "My Leads",
-  className 
+  className,
+  filteredLeads,
+  onAddLead
 }) => {
   const { 
     columns, 
@@ -23,7 +27,7 @@ export const LeadKanbanWidget: React.FC<LeadKanbanWidgetProps> = ({
     leadCounts, 
     updateLeadStatus,
     refreshLeads
-  } = useKanbanBoard();
+  } = useKanbanBoard({ filteredLeads });
   
   const handleRefresh = () => {
     refreshLeads();
@@ -48,10 +52,10 @@ export const LeadKanbanWidget: React.FC<LeadKanbanWidgetProps> = ({
           </div>
           
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">New: {leadCounts.new}</Badge>
-            <Badge variant="secondary">In Progress: {leadCounts.in_progress}</Badge>
-            <Badge variant="secondary">Won: {leadCounts.won}</Badge>
-            <Badge variant="secondary">Lost: {leadCounts.lost}</Badge>
+            <Badge variant="secondary">Nye: {leadCounts.new}</Badge>
+            <Badge variant="secondary">I gang: {leadCounts.in_progress}</Badge>
+            <Badge variant="secondary">Vunnet: {leadCounts.won}</Badge>
+            <Badge variant="secondary">Tapt: {leadCounts.lost}</Badge>
           </div>
         </div>
       }
@@ -60,10 +64,7 @@ export const LeadKanbanWidget: React.FC<LeadKanbanWidgetProps> = ({
       <LeadKanbanBoard 
         columns={columns}
         onLeadStatusChange={updateLeadStatus}
-        onAddLead={() => {
-          // Navigate to lead creation or open modal
-          console.log('Add new lead clicked');
-        }}
+        onAddLead={onAddLead}
         isLoading={isLoading}
         isUpdating={isUpdating}
       />

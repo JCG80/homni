@@ -4,8 +4,9 @@ import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus, getLeadCountsBySta
 import { KanbanColumn } from '../components/kanban/types';
 import { toast } from "@/components/ui/use-toast";
 import { UseKanbanBoardProps } from '@/types/hooks';
+import { supabase } from '@/integrations/supabase/client';
 
-export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) => {
+export const useKanbanBoard = ({ companyId, userId, filteredLeads }: UseKanbanBoardProps & { filteredLeads?: Lead[] } = {}) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -48,6 +49,27 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
 
   useEffect(() => {
     fetchBoardData();
+
+    // Set up real-time subscriptions
+    const subscription = supabase
+      .channel('leads-kanban')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'leads' 
+        }, 
+        (payload) => {
+          console.log('Real-time update:', payload);
+          // Refresh data on any change to leads table
+          fetchBoardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [fetchBoardData]);
 
   const updateLeadStatus = async (leadId: string, newStatus: LeadStatus) => {
@@ -100,7 +122,10 @@ export const useKanbanBoard = ({ companyId, userId }: UseKanbanBoardProps = {}) 
   };
 
   const columns: KanbanColumn[] = columnDefinitions.map(col => {
-    const columnLeads = getLeadsForColumn(col.id);
+    // Use filtered leads if provided, otherwise use all leads
+    const leadsToUse = filteredLeads || leads;
+    const columnLeads = leadsToUse.filter(lead => lead.pipeline_stage === col.id);
+    
     return {
       id: col.id,
       title: col.title,
