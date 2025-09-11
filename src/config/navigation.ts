@@ -66,7 +66,7 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
   user: [
     { href: '/dashboard', title: 'Dashboard', icon: LayoutDashboard },
     { href: '/leads', title: 'Forespørsler', icon: Activity },
-    { href: '/property', title: 'Mine eiendommer', icon: Building },
+    { href: '/properties', title: 'Mine eiendommer', icon: Building },
     { href: '/sales', title: 'DIY Salg', icon: DollarSign },
     { href: '/documents', title: 'Mine dokumenter', icon: FileText },
     { href: '/account', title: 'Min konto', icon: User },
@@ -77,7 +77,7 @@ export const navUser: Record<'guest' | 'user' | 'company' | 'content_editor', Na
     { href: '/leads', title: 'Forespørsler', icon: Activity },
     { href: '/leads/kanban', title: 'Kanban-tavle', icon: Kanban },
     { href: '/dashboard/analytics', title: 'Analyser', icon: BarChart },
-    { href: '/property/portfolio', title: 'Eiendoms Portefølje', icon: Building },
+    { href: '/properties/portfolio', title: 'Eiendoms Portefølje', icon: Building },
     { href: '/sales/pipeline', title: 'Salg Pipeline', icon: DollarSign },
     { href: '/pakker', title: 'Abonnementer' },
     { href: '/account', title: 'Min konto', icon: User },
@@ -276,13 +276,13 @@ export const getBreadcrumbs = (route: string, userRole: UserRole): NavigationIte
 export const businessWorkflows = {
   'bytt-flow': [
     { step: 1, href: '/leads', title: 'Finn leads', description: 'Søk og filtrer relevante kundeemner' },
-    { step: 2, href: '/property', title: 'Registrer eiendom', description: 'Dokumenter eiendomsinformasjon' },
+    { step: 2, href: '/properties', title: 'Registrer eiendom', description: 'Dokumenter eiendomsinformasjon' },
     { step: 3, href: '/sales', title: 'Opprett salg', description: 'Start DIY salgsoppsett' },
   ],
   'boligmappa-flow': [
-    { step: 1, href: '/property', title: 'Mine eiendommer', description: 'Oversikt over portefølje' },
-    { step: 2, href: '/property/documents', title: 'Dokumenter', description: 'Upload og organiser dokumenter' },
-    { step: 3, href: '/property/expenses', title: 'Utgifter', description: 'Spor og kategoriser kostnader' },
+    { step: 1, href: '/properties', title: 'Mine eiendommer', description: 'Oversikt over portefølje' },
+    { step: 2, href: '/properties/documents', title: 'Dokumenter', description: 'Upload og organiser dokumenter' },
+    { step: 3, href: '/properties/expenses', title: 'Utgifter', description: 'Spor og kategoriser kostnader' },
   ],
   'propr-flow': [
     { step: 1, href: '/sales/setup', title: 'Salgsoppsett', description: 'Konfigurer salgsparametere' },
@@ -300,12 +300,12 @@ export const getNextSuggestions = (currentRoute: string, role: UserRole): Naviga
   // Business flow suggestions
   if (currentRoute === '/leads' && ['user', 'company'].includes(role)) {
     suggestions.push(
-      { href: '/property', title: 'Registrer eiendom', icon: Building },
+      { href: '/properties', title: 'Registrer eiendom', icon: Building },
       { href: '/sales', title: 'Start salg', icon: DollarSign }
     );
   }
 
-  if (currentRoute === '/property' && ['user', 'company'].includes(role)) {
+  if (currentRoute === '/properties' && ['user', 'company'].includes(role)) {
     suggestions.push(
       { href: '/sales', title: 'Opprett salg', icon: DollarSign },
       { href: '/leads', title: 'Finn flere leads', icon: Target }
@@ -314,7 +314,7 @@ export const getNextSuggestions = (currentRoute: string, role: UserRole): Naviga
 
   if (currentRoute === '/sales' && ['user', 'company'].includes(role)) {
     suggestions.push(
-      { href: '/property', title: 'Oppdater eiendom', icon: Building },
+      { href: '/properties', title: 'Oppdater eiendom', icon: Building },
       { href: '/leads', title: 'Finn nye leads', icon: Target }
     );
   }

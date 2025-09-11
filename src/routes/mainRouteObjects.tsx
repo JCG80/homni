@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { AppRoute } from './routeTypes';
 import { Authenticated } from '@/modules/auth/components/Authenticated';
+import { Navigate } from 'react-router-dom';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));  
@@ -21,8 +22,18 @@ export const mainRouteObjects: AppRoute[] = [
     path: '/register',
     element: <RegisterPage />
   },
+  // Redirect old routes to new property routes
+  {
+    path: '/property-list',
+    element: <Navigate to="/properties" replace />
+  },
   {
     path: '/property',
+    element: <Navigate to="/properties" replace />
+  },
+  // Main property route
+  {
+    path: '/properties',
     element: <Authenticated><PropertyPage /></Authenticated>,
     roles: ['user', 'company', 'admin', 'master_admin']
   },

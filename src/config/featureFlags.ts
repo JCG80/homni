@@ -12,7 +12,7 @@ export const DEFAULT_FEATURE_FLAGS = {
   
   // Sprint 4-6 features (disabled by default during stabilization)
   ENABLE_ANALYTICS_DASHBOARD: false,
-  ENABLE_PROPERTY_MANAGEMENT: false,
+  ENABLE_PROPERTY_MANAGEMENT: true,
   ENABLE_DIY_SALES: false,
   ENABLE_ONBOARDING_WIZARD: false,
   ENABLE_SMART_START: true,
