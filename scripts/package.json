@@ -1,0 +1,7 @@
+{
+  "name": "homni-scripts",
+  "version": "1.0.0",
+  "scripts": {
+    "seed": "tsx seedTestUsers.ts"
+  }
+}
