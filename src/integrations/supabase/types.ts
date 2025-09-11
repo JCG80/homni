@@ -47,6 +47,45 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          target_id: string | null
+          target_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          target_id?: string | null
+          target_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          target_id?: string | null
+          target_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_logs: {
         Row: {
           action: string
@@ -1236,6 +1275,36 @@ export type Database = {
           name?: string
           updated_at?: string
           version?: string
+        }
+        Relationships: []
+      }
+      performance_metrics: {
+        Row: {
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_unit: string
+          metric_value: number
+          recorded_at: string | null
+          service_name: string
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_unit?: string
+          metric_value: number
+          recorded_at?: string | null
+          service_name?: string
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_unit?: string
+          metric_value?: number
+          recorded_at?: string | null
+          service_name?: string
         }
         Relationships: []
       }
@@ -2590,12 +2659,20 @@ export type Database = {
         }[]
       }
       log_admin_action: {
-        Args: {
-          action_param: string
-          metadata_param?: Json
-          target_id_param: string
-          target_kind_param: string
-        }
+        Args:
+          | {
+              action_param: string
+              metadata_param?: Json
+              target_id_param: string
+              target_kind_param: string
+            }
+          | {
+              p_action: string
+              p_new_values?: Json
+              p_old_values?: Json
+              p_target_id?: string
+              p_target_type: string
+            }
         Returns: string
       }
       revoke_role: {
