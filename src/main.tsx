@@ -1,9 +1,12 @@
 
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, HashRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
 import { initializeAnalytics, setupPageViewTracking } from '@/lib/analytics'
+
+// Environment-driven router selection
+const Router = import.meta.env.VITE_ROUTER_MODE === 'hash' ? HashRouter : BrowserRouter;
 
 // Import flow validators for development testing
 if (import.meta.env.DEV) {
@@ -31,7 +34,7 @@ if ('serviceWorker' in navigator) {
 setupPageViewTracking();
 
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
+  <Router>
     <App />
-  </BrowserRouter>
+  </Router>
 );

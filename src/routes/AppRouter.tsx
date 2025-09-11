@@ -41,9 +41,28 @@ const UnauthorizedPage = () => (
 
 // 404 not found component  
 const NotFound = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">404 - Siden ble ikke funnet</h1>
-    <p className="text-muted-foreground mt-2">Siden du leter etter eksisterer ikke.</p>
+  <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+    <div className="space-y-4">
+      <h1 className="text-4xl font-bold text-foreground">404</h1>
+      <h2 className="text-2xl font-semibold text-muted-foreground">Siden ble ikke funnet</h2>
+      <p className="text-muted-foreground max-w-md">
+        Siden du leter etter eksisterer ikke eller har blitt flyttet.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 mt-6">
+        <a 
+          href="/" 
+          className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+        >
+          Gå til forsiden
+        </a>
+        <a 
+          href="/properties" 
+          className="inline-flex items-center justify-center px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+        >
+          Mine eiendommer
+        </a>
+      </div>
+    </div>
   </div>
 );
 
@@ -63,6 +82,15 @@ export default function AppRouter() {
   const flags = useFeatureFlags();
   const role = useCurrentRole();
   
+  // Debug logging for development
+  if (import.meta.env.DEV) {
+    console.info('Router Debug:', { 
+      role, 
+      flags: Object.entries(flags).filter(([_, v]) => v).map(([k]) => k),
+      routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser'
+    });
+  }
+  
   // Combine all route objects
   const allRoutes = [
     ...mainRouteObjects,
@@ -77,6 +105,11 @@ export default function AppRouter() {
   
   // Apply feature flags and role filtering
   const filteredRoutes = applyFeatureFlags(allRoutes, flags, role);
+  
+  // Debug filtered routes in development
+  if (import.meta.env.DEV) {
+    console.info('Filtered routes:', filteredRoutes.map(r => r.path));
+  }
 
   return (
     <Suspense fallback={<RouteLoadingFallback />}>

@@ -15,6 +15,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
+import { RouterDebugInfo } from '@/components/debug/RouterDebugInfo';
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const AppContent = () => {
           <ProfileContextProvider>
             <SiteLayout>
               <Shell />
+              <RouterDebugInfo />
               <Toaster />
             </SiteLayout>
           </ProfileContextProvider>

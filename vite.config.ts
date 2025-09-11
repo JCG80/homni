@@ -5,11 +5,22 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-  },
+export default defineConfig(({ mode }) => {
+  // Auto-detect if we need hash routing (for Lovable preview or static hosting)
+  const isStaticBuild = mode === 'production' && process.env.VITE_ROUTER_MODE !== 'browser';
+  const routerMode = isStaticBuild ? 'hash' : 'browser';
+  
+  return {
+    server: {
+      host: "::",
+      port: 8080,
+    },
+    define: {
+      // Inject router mode into the app
+      'import.meta.env.VITE_ROUTER_MODE': JSON.stringify(
+        process.env.VITE_ROUTER_MODE || routerMode
+      ),
+    },
   plugins: [
     react(),
     mode === 'development' &&
@@ -68,8 +79,9 @@ export default defineConfig(({ mode }) => ({
       '@radix-ui/react-tooltip'
     ],
   },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-  }
-}));
+    test: {
+      globals: true,
+      environment: 'jsdom',
+    }
+  };
+});
