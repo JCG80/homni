@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
 import { PropertyDashboard } from '@/modules/property/components/PropertyDashboard';
 import { PropertyDocuments } from '@/modules/property/components/PropertyDocuments';
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const PropertyPage = () => {
   const [searchParams] = useSearchParams();
+  const { propertyId } = useParams<{ propertyId: string }>();
   const initialTab = searchParams.get('tab') || 'dashboard';
 
   return (
@@ -69,7 +70,7 @@ const PropertyPage = () => {
             </TabsContent>
 
             <TabsContent value="documents" className="space-y-6">
-              <PropertyDocuments />
+              <PropertyDocuments propertyId={propertyId || ''} />
             </TabsContent>
 
             <TabsContent value="maintenance" className="space-y-6">

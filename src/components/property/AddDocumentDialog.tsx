@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { enhancedPropertyDocumentService } from '@/modules/property/api/enhancedDocuments';
 import { toast } from 'sonner';
 
 interface AddDocumentDialogProps {
