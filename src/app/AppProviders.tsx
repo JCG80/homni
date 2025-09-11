@@ -10,8 +10,8 @@ import { useAuth } from '@/modules/auth/hooks';
 
 const queryClient = new QueryClient();
 
-// AuthContent component that uses auth context - placed INSIDE AuthProvider
-const AuthContent = ({ children }: { children: React.ReactNode }) => {
+// Separate component that consumes auth and provides dependent contexts
+const AuthDependentProviders = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, isMasterAdmin } = useAuth();
   const canUsePreview = isAdmin || isMasterAdmin;
 
@@ -36,9 +36,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <AnalyticsProvider>
-              <AuthContent>
+              <AuthDependentProviders>
                 {children}
-              </AuthContent>
+              </AuthDependentProviders>
             </AnalyticsProvider>
           </AuthProvider>
         </QueryClientProvider>
