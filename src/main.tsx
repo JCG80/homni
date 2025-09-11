@@ -10,6 +10,15 @@ const useHashRouter = import.meta.env.VITE_ROUTER_MODE === 'hash' ||
                       (typeof window !== 'undefined' && window.location.hostname.includes('lovableproject.com'));
 const Router = useHashRouter ? HashRouter : BrowserRouter;
 
+// Ensure non-hash paths redirect to hash-based routing on Lovable domains
+if (useHashRouter && typeof window !== 'undefined') {
+  const { hash, pathname, search } = window.location;
+  if (!hash && pathname && pathname !== '/') {
+    const newUrl = `/#${pathname}${search}`;
+    window.history.replaceState(null, '', newUrl);
+  }
+}
+
 createRoot(document.getElementById("root")!).render(
   <AppProviders>
     <Router>

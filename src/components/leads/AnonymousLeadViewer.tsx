@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -262,7 +263,7 @@ export const AnonymousLeadViewer = () => {
                   Prøv annen e-postadresse
                 </Button>
                 <Button asChild>
-                  <a href="/select-services">Send ny forespørsel</a>
+                  <Link to="/select-services">Send ny forespørsel</Link>
                 </Button>
               </div>
             </div>
@@ -279,7 +280,7 @@ export const AnonymousLeadViewer = () => {
                 Hvis du ikke har sendt noen forespørsler ennå, kan du starte her:
               </p>
               <Button variant="outline" asChild>
-                <a href="/select-services">Send din første forespørsel</a>
+                <Link to="/select-services">Send din første forespørsel</Link>
               </Button>
             </CardContent>
           </Card>
