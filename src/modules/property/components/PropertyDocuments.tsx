@@ -1,39 +1,57 @@
-import React from 'react';
-import { FileText, Upload } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { enhancedPropertyDocumentService } from '@/modules/property/api/enhancedDocuments';
+import { DocumentGrid } from '@/components/property/enhanced/DocumentGrid';
+import { DocumentUploadDialog } from '@/components/property/enhanced/DocumentUploadDialog';
+import { Plus } from 'lucide-react';
 
-export const PropertyDocuments: React.FC = () => {
+interface PropertyDocumentsProps {
+  propertyId: string;
+}
+
+export const PropertyDocuments: React.FC<PropertyDocumentsProps> = ({ propertyId }) => {
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+
+  const { data: documents = [], isLoading, refetch } = useQuery({
+    queryKey: ['property-documents', propertyId],
+    queryFn: () => enhancedPropertyDocumentService.getPropertyDocuments(propertyId),
+    enabled: !!propertyId,
+  });
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-semibold">Dokumenter</h2>
-        <p className="text-muted-foreground">
-          Last opp og organiser alle viktige dokumenter for dine eiendommer
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-semibold">Dokumenter</h2>
+          <p className="text-muted-foreground">
+            Last opp og organiser alle viktige dokumenter for eiendommen
+          </p>
+        </div>
+        <Button onClick={() => setUploadDialogOpen(true)} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Last opp dokument
+        </Button>
       </div>
 
-      {/* Upload Area */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-              <FileText className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">Ingen dokumenter ennå</h3>
-              <p className="text-muted-foreground">
-                Last opp dokumenter som skjøter, forsikringer, garantier og mer
-              </p>
-            </div>
-            <Button className="gap-2">
-              <Upload className="h-4 w-4" />
-              Last opp dokument
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Documents Grid */}
+      <DocumentGrid 
+        documents={documents} 
+        isLoading={isLoading} 
+        onRefetch={refetch}
+      />
+
+      {/* Upload Dialog */}
+      <DocumentUploadDialog
+        propertyId={propertyId}
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        onUploadComplete={() => {
+          refetch();
+          setUploadDialogOpen(false);
+        }}
+      />
     </div>
   );
 };

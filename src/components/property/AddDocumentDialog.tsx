@@ -40,19 +40,32 @@ export const AddDocumentDialog = ({ propertyId, open, onOpenChange }: AddDocumen
   });
 
   const addDocumentMutation = useMutation({
-    mutationFn: async (documentData: DocumentForm) => {
-      const { data, error } = await supabase
-        .from('property_documents')
-        .insert({
-          property_id: propertyId,
-          name: documentData.name,
-          document_type: documentData.document_type
-        })
-        .select()
-        .single();
+    mutationFn: async (documentData: DocumentForm & { file?: File }) => {
+      if (documentData.file) {
+        // Use enhanced service for file upload
+        return await enhancedPropertyDocumentService.uploadDocument(
+          propertyId,
+          documentData.file,
+          {
+            name: documentData.name,
+            category_id: documentData.document_type
+          }
+        );
+      } else {
+        // Fallback for metadata-only documents
+        const { data, error } = await supabase
+          .from('property_documents')
+          .insert({
+            property_id: propertyId,
+            name: documentData.name,
+            document_type: documentData.document_type
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['property-documents', propertyId] });
