@@ -1,4 +1,4 @@
-
+import { eventBus } from '@/lib/events/EventBus';
 import { supabase } from '@/integrations/supabase/client';
 import { Lead, LeadStatus, normalizeStatus, statusToPipeline } from '@/types/leads-canonical';
 import { isStatusTransitionAllowed } from '../utils/lead-utils';
@@ -40,6 +40,15 @@ export const updateLeadStatus = async (leadId: string, newStatus: LeadStatus): P
   
   if (error) throw new Error(`Failed to update lead status: ${error.message}`);
   
+  // Emit lead.status_changed
+  eventBus.emit('lead.status_changed', {
+    leadId,
+    oldStatus: currentStatus,
+    newStatus: newStatus,
+    byUserId: null,
+    timestamp: new Date().toISOString(),
+  });
+  
   // Transform the response to match our Lead interface
   const normalizedStatus = normalizeStatus(data.status);
   return {
@@ -65,6 +74,13 @@ export const assignLeadToCompany = async (leadId: string, companyId: string): Pr
     .single();
   
   if (error) throw error;
+
+  // Emit lead.assigned
+  eventBus.emit('lead.assigned', {
+    leadId,
+    companyId,
+    timestamp: new Date().toISOString(),
+  });
   
   // Transform the response to match our Lead interface
   const normalizedStatus = normalizeStatus(data.status);

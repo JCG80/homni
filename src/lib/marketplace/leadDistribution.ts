@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import { eventBus } from '@/lib/events/EventBus';
 
 export interface LeadDistributionOptions {
   leadId: string;
@@ -113,6 +114,14 @@ export async function processNewLeadDistribution(leadId: string) {
 
     if (result.success) {
       toast.success(`Lead distributed to buyer for NOK ${result.cost}`);
+      // Emit lead.assigned event
+      eventBus.emit('lead.assigned', {
+        leadId,
+        companyId: result.buyerId || result.assignmentId, // buyer account or provider id
+        assignmentId: result.assignmentId,
+        cost: result.cost,
+        timestamp: new Date().toISOString(),
+      });
     } else {
       console.warn('Lead distribution failed:', result.error);
     }

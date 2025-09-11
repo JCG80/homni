@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import { eventBus } from '@/lib/events/EventBus';
 
 interface AnonymousLeadData {
   title: string;
@@ -60,6 +61,15 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
       throw new Error('Kunne ikke opprette forespørsel. Vennligst prøv igjen.');
     }
 
+    // Emit lead.created event
+    eventBus.emit('lead.created', {
+      leadId: lead.id,
+      source: 'anonymous',
+      category: leadData.category,
+      userId: null,
+      timestamp: new Date().toISOString()
+    });
+
     // Try to distribute the lead using the enhanced budget-aware function
     const { data: distributionResult, error: distributionError } = await supabase.rpc(
       'distribute_new_lead_v3',
@@ -74,6 +84,16 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
     // Check if distribution was successful
     const result = distributionResult?.[0];
     const distributed = result?.success === true;
+
+    // Emit lead.assigned if distribution succeeded
+    if (distributed && result?.company_id) {
+      eventBus.emit('lead.assigned', {
+        leadId: lead.id,
+        companyId: result.company_id,
+        cost: result?.assignment_cost || 0,
+        timestamp: new Date().toISOString()
+      });
+    }
     
     return { 
       id: lead.id,
