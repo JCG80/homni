@@ -3,7 +3,7 @@ import type { AppRoute } from './routeTypes';
 
 // Lazy-loaded feature pages behind feature flags
 const PropertyPage = lazy(() => import('@/pages/PropertyPage'));
-const PropertyDetailsPage = lazy(() => import('@/pages/PropertyDetailsPage').then(m => ({ default: m.PropertyDetailsPage })));
+const PropertyDetailsPage = lazy(() => import('@/modules/property/pages/PropertyDetailsPage').then(m => ({ default: m.PropertyDetailsPage })));
 const DIYSalesPage = lazy(() => import('@/pages/DIYSalesPage').then(m => ({ default: m.DIYSalesPage })));
 const AnalyticsPage = lazy(() => import('@/pages/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
 const CompanyAnalyticsPage = lazy(() => import('@/pages/CompanyAnalyticsPage').then(m => ({ default: m.CompanyAnalyticsPage })));

@@ -35,6 +35,9 @@ const SettingsRedirect = lazy(() => import('./components/SettingsRedirect').then
 // Dashboard router for unified dashboard experience
 const DashboardRouter = lazy(() => import('@/modules/dashboard/DashboardRouter').then(m => ({ default: m.DashboardRouter })));
 
+// Property details (enhanced module page)
+const PropertyDetailsModulePage = lazy(() => import('@/modules/property/pages/PropertyDetailsPage').then(m => ({ default: m.PropertyDetailsPage })));
+
 export const mainRouteObjects: AppRoute[] = [
   {
     path: '/',
@@ -96,12 +99,21 @@ export const mainRouteObjects: AppRoute[] = [
     path: '/properties',
     element: createElement(PropertyDashboardPage),
     roles: ['user', 'company', 'admin', 'master_admin'],
+    flag: 'ENABLE_PROPERTY_MANAGEMENT',
     navKey: 'properties'
   },
   {
     path: '/properties/new',
     element: createElement(NewPropertyPage),
-    roles: ['user', 'company', 'admin', 'master_admin']
+    roles: ['user', 'company', 'admin', 'master_admin'],
+    flag: 'ENABLE_PROPERTY_MANAGEMENT'
+  },
+  {
+    path: '/properties/:propertyId',
+    element: createElement(PropertyDetailsModulePage),
+    roles: ['user', 'company', 'admin', 'master_admin'],
+    flag: 'ENABLE_PROPERTY_MANAGEMENT',
+    navKey: 'property-details'
   },
   {
     path: '/company/leads',

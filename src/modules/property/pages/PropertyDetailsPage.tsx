@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePropertyDetails } from '../hooks/usePropertyDetails';
 import { PropertyHeader } from '../components/PropertyHeader';
@@ -11,9 +12,10 @@ import { PropertyExpensesTab } from '../components/tabs/PropertyExpensesTab';
 import { PropertyDocumentsTab } from '../components/tabs/PropertyDocumentsTab';
 
 export const PropertyDetailsPage = () => {
-  const { propertyId } = useParams<{ propertyId: string }>();
+  const { propertyId, id } = useParams<{ propertyId?: string; id?: string }>();
   const [activeTab, setActiveTab] = useState('overview');
-  const { property, expenses, documents, isLoading } = usePropertyDetails(propertyId);
+  const effectiveId = propertyId || id;
+  const { property, expenses, documents, isLoading } = usePropertyDetails(effectiveId);
 
   if (isLoading) {
     return <PropertyLoadingState />;
@@ -25,6 +27,11 @@ export const PropertyDetailsPage = () => {
 
   return (
     <div className="max-w-screen-xl mx-auto p-4 sm:p-6">
+      <Helmet>
+        <title>{`${property.name} – Eiendomsdetaljer`}</title>
+        <meta name="description" content={`Administrer detaljer, dokumenter og utgifter for ${property.name}.`} />
+        <link rel="canonical" href={`/properties/${property.id}`} />
+      </Helmet>
       <PropertyHeader property={property} />
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
