@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Shell } from '@/components/layout/Shell';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
-import { RouterDebugInfo } from '@/components/debug/RouterDebugInfo';
+
 import { usePageViews } from '@/lib/analytics/react';
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
       <ConnectionStatus />
       <SiteLayout>
         <Shell />
-        <RouterDebugInfo />
+        
         <Toaster />
       </SiteLayout>
     </ErrorBoundary>
