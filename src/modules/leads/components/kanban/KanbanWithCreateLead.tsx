@@ -8,6 +8,7 @@ import { LeadSearchFilters } from '../LeadSearchFilters';
 import { CreateLeadModal } from '../CreateLeadModal';
 import { useKanbanBoard } from '../../hooks/useKanbanBoard';
 import { useLeadFilters } from '../../hooks/useLeadFilters';
+import { EnhancedLeadFilters } from '../../types/enhanced-lead-filters';
 
 export const KanbanWithCreateLead: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -74,13 +75,13 @@ export const KanbanWithCreateLead: React.FC = () => {
         <CardContent>
           {showFilters && (
             <div className="mb-6">
-              <LeadSearchFilters 
-                filters={filters}
-                onFiltersChange={setFilters}
-                onReset={resetFilters}
-                totalCount={totalCount}
-                filteredCount={filteredCount}
-              />
+          <LeadSearchFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            onReset={resetFilters}
+            totalCount={totalCount}
+            filteredCount={filteredCount}
+          />
             </div>
           )}
           

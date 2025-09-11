@@ -1,14 +1,14 @@
 import { useState, useMemo } from 'react';
 import { Lead, LeadStatus } from '@/types/leads-canonical';
 
-interface LeadFilters {
+interface BasicLeadFilters {
   search: string;
   status: LeadStatus | 'all';
   category: string | 'all';
   dateRange: '7days' | '30days' | '90days' | 'all';
 }
 
-const DEFAULT_FILTERS: LeadFilters = {
+const DEFAULT_FILTERS: BasicLeadFilters = {
   search: '',
   status: 'all',
   category: 'all',
@@ -16,12 +16,12 @@ const DEFAULT_FILTERS: LeadFilters = {
 };
 
 export const useLeadFilters = (leads: Lead[]) => {
-  const [filters, setFilters] = useState<LeadFilters>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<BasicLeadFilters>(DEFAULT_FILTERS);
 
   const filteredLeads = useMemo(() => {
     let filtered = [...leads];
 
-    // Search filter
+    // Search filter - enhanced with more fields
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       filtered = filtered.filter(lead =>
@@ -29,7 +29,10 @@ export const useLeadFilters = (leads: Lead[]) => {
         lead.description?.toLowerCase().includes(searchLower) ||
         lead.customer_name?.toLowerCase().includes(searchLower) ||
         lead.customer_email?.toLowerCase().includes(searchLower) ||
-        lead.category?.toLowerCase().includes(searchLower)
+        lead.customer_phone?.toLowerCase().includes(searchLower) ||
+        lead.category?.toLowerCase().includes(searchLower) ||
+        lead.anonymous_email?.toLowerCase().includes(searchLower) ||
+        (lead.metadata && JSON.stringify(lead.metadata).toLowerCase().includes(searchLower))
       );
     }
 
@@ -43,10 +46,10 @@ export const useLeadFilters = (leads: Lead[]) => {
       filtered = filtered.filter(lead => lead.category === filters.category);
     }
 
-    // Date range filter
+    // Basic date range filter (only support predefined ranges)
     if (filters.dateRange !== 'all') {
       const now = new Date();
-      const cutoffDate = new Date();
+      let cutoffDate = new Date();
       
       switch (filters.dateRange) {
         case '7days':

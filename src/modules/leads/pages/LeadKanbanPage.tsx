@@ -17,13 +17,13 @@ export const LeadKanbanPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
   const { leads, refreshLeads } = useKanbanBoard();
-  const { 
-    filters, 
-    setFilters, 
-    resetFilters, 
+  const {
+    filters,
+    setFilters,
+    resetFilters,
     filteredLeads,
-    totalCount, 
-    filteredCount 
+    totalCount,
+    filteredCount
   } = useLeadFilters(leads);
 
   const handleLeadCreated = () => {
@@ -72,13 +72,13 @@ export const LeadKanbanPage: React.FC = () => {
           </div>
 
           {/* Search and Filters */}
-          <LeadSearchFilters
-            filters={filters}
-            onFiltersChange={setFilters}
-            onReset={resetFilters}
-            totalCount={totalCount}
-            filteredCount={filteredCount}
-          />
+        <LeadSearchFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          onReset={resetFilters}
+          totalCount={totalCount}
+          filteredCount={filteredCount}
+        />
 
           {/* Enhanced Kanban Widget */}
           <EnhancedLeadKanbanWidget
