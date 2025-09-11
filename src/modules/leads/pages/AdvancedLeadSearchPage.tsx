@@ -6,7 +6,7 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
 import { useKanbanBoard } from '../hooks/useKanbanBoard';
 import { AdvancedLeadSearch } from '../components/filters/AdvancedLeadSearch';
-import { CreateLeadModal } from '../components/CreateLeadModal';
+import SimpleCreateModal from '../components/SimpleCreateModal';
 import { EnhancedLeadKanbanWidget } from '../components/kanban/EnhancedLeadKanbanWidget';
 import { EnhancedLeadFilters, DEFAULT_ENHANCED_FILTERS } from '../types/enhanced-lead-filters';
 import { Lead } from '@/types/leads-canonical';
@@ -172,7 +172,9 @@ export const AdvancedLeadSearchPage: React.FC = () => {
             filteredLeads={filteredLeads}
           />
 
-          <CreateLeadModal
+          <SimpleCreateModal
+            open={showCreateModal}
+            onOpenChange={setShowCreateModal}
             onLeadCreated={handleLeadCreated}
           />
         </div>
