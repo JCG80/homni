@@ -2,11 +2,6 @@ import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { mainRouteObjects } from '@/routes/mainRouteObjects';
 import { adminRouteObjects } from '@/routes/adminRouteObjects';
-import { companyRouteObjects } from '@/routes/companyRouteObjects';
-import { insuranceRouteObjects } from '@/routes/insuranceRouteObjects';
-import { leadRouteObjects } from '@/routes/leadRouteObjects';
-import { marketplaceRouteObjects } from '@/routes/marketplaceRouteObjects';
-import { contentEditorRouteObjects } from '@/routes/contentEditorRouteObjects';
 import { docsRouteObjects } from '@/routes/docsRouteObjects';
 import { listingsRouteObjects } from '@/routes/listingsRouteObjects';
 import { applyFeatureFlags } from '@/routes/filters';
@@ -85,17 +80,11 @@ export function Shell() {
     });
   }
   
-  // Combine all route objects
   const allRoutes = [
     ...mainRouteObjects,
-    ...listingsRouteObjects,
     ...adminRouteObjects,
-    ...companyRouteObjects,
-    ...insuranceRouteObjects,
-    ...leadRouteObjects,
-    ...marketplaceRouteObjects,
-    ...contentEditorRouteObjects,
     ...docsRouteObjects,
+    ...listingsRouteObjects,
   ];
   
   // Apply feature flags and role filtering
