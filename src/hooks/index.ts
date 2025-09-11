@@ -1,6 +1,6 @@
 // Export all hooks
 export * from './use-mobile';
-// useToast is now exported from @/components/ui/use-toast - follow shadcn standard
+export * from './use-toast'; // Updated to use new hooks location
 export * from './usePersonaSwitch';
 export * from './useNavigationContext';
 export * from './usePWA';

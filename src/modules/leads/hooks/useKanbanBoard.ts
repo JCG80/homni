@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Lead, LeadStatus, PipelineStage, normalizeStatus, statusToPipeline, PIPELINE_LABELS, LeadCounts } from '@/types/leads-canonical';
 import { fetchLeads, updateLeadStatus as apiUpdateLeadStatus, getLeadCountsByStatus } from '../api/leadKanban';
 import { KanbanColumn } from '../components/kanban/types';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { UseKanbanBoardProps } from '@/types/hooks';
 import { supabase } from '@/integrations/supabase/client';
 
