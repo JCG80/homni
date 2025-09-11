@@ -6,7 +6,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { Property } from '../types/propertyTypes';
-import { supabase } from '@/integrations/supabase/client';
+import { 
+  getUserProperties, 
+  createProperty as createPropertyApi, 
+  updateProperty as updatePropertyApi, 
+  deleteProperty as deletePropertyApi 
+} from '../api/properties';
 
 export interface UsePropertyReturn {
   properties: Property[] | null;
@@ -35,24 +40,8 @@ export const useProperty = (): UsePropertyReturn => {
       setLoading(true);
       setError(null);
 
-      // For now, return mock data since we haven't set up the database table yet
-      const mockProperties: Property[] = [
-        {
-          id: 'prop-1',
-          user_id: user.id,
-          name: 'Min Leilighet',
-          type: 'apartment',
-          address: 'Storgata 15, Oslo',
-          size: 85,
-          purchase_date: '2020-06-15',
-          current_value: 5200000,
-          description: 'Fin leilighet i sentrum med balkong og heis.',
-          created_at: '2020-06-15T10:00:00Z',
-          updated_at: '2024-01-15T10:00:00Z'
-        }
-      ];
-
-      setProperties(mockProperties);
+      const data = await getUserProperties();
+      setProperties(data);
     } catch (err) {
       console.error('Error fetching properties:', err);
       setError('Kunne ikke laste eiendommer');
@@ -72,24 +61,21 @@ export const useProperty = (): UsePropertyReturn => {
     }
 
     try {
-      // Mock creation for now
-      const newProperty: Property = {
-        id: `prop-${Date.now()}`,
+      const propertyToCreate = {
+        ...propertyData,
         user_id: user.id,
         name: propertyData.name || 'Ny Eiendom',
-        type: propertyData.type || 'apartment',
-        address: propertyData.address || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        ...propertyData
-      };
+        type: propertyData.type || 'apartment'
+      } as Omit<Property, 'id' | 'created_at' | 'updated_at'>;
 
-      // Add to current properties
-      if (properties) {
-        setProperties([...properties, newProperty]);
-      } else {
-        setProperties([newProperty]);
+      const newProperty = await createPropertyApi(propertyToCreate);
+      
+      if (!newProperty) {
+        throw new Error('Kunne ikke opprette eiendom');
       }
+
+      // Refresh properties to get the latest data
+      await fetchProperties();
 
       return newProperty;
     } catch (err) {
@@ -100,15 +86,14 @@ export const useProperty = (): UsePropertyReturn => {
 
   const updateProperty = async (id: string, updates: Partial<Property>) => {
     try {
-      // Mock update for now
-      if (properties) {
-        const updatedProperties = properties.map(prop =>
-          prop.id === id 
-            ? { ...prop, ...updates, updated_at: new Date().toISOString() }
-            : prop
-        );
-        setProperties(updatedProperties);
+      const updatedProperty = await updatePropertyApi(id, updates);
+      
+      if (!updatedProperty) {
+        throw new Error('Kunne ikke oppdatere eiendom');
       }
+
+      // Refresh properties to get the latest data
+      await fetchProperties();
     } catch (err) {
       console.error('Error updating property:', err);
       throw new Error('Kunne ikke oppdatere eiendom');
@@ -117,11 +102,14 @@ export const useProperty = (): UsePropertyReturn => {
 
   const deleteProperty = async (id: string) => {
     try {
-      // Mock deletion for now
-      if (properties) {
-        const filteredProperties = properties.filter(prop => prop.id !== id);
-        setProperties(filteredProperties);
+      const success = await deletePropertyApi(id);
+      
+      if (!success) {
+        throw new Error('Kunne ikke slette eiendom');
       }
+
+      // Refresh properties to get the latest data
+      await fetchProperties();
     } catch (err) {
       console.error('Error deleting property:', err);
       throw new Error('Kunne ikke slette eiendom');

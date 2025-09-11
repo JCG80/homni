@@ -1391,10 +1391,13 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
+          current_value: number | null
+          description: string | null
           id: string
           name: string
           purchase_date: string | null
           size: number | null
+          status: string | null
           type: string
           updated_at: string
           user_id: string
@@ -1402,10 +1405,13 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string
+          current_value?: number | null
+          description?: string | null
           id?: string
           name: string
           purchase_date?: string | null
           size?: number | null
+          status?: string | null
           type: string
           updated_at?: string
           user_id: string
@@ -1413,10 +1419,13 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string
+          current_value?: number | null
+          description?: string | null
           id?: string
           name?: string
           purchase_date?: string | null
           size?: number | null
+          status?: string | null
           type?: string
           updated_at?: string
           user_id?: string

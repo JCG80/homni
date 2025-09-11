@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Property, PropertyType } from '../types/propertyTypes';
+import { Property, PropertyType, PropertyStatus } from '../types/propertyTypes';
 import { showSuccessToast, handlePropertyApiError } from './base';
 
 /**
@@ -21,7 +21,8 @@ export const getUserProperties = async (): Promise<Property[]> => {
     // Ensure we're returning properly typed data
     return data?.map(item => ({
       ...item,
-      type: item.type as PropertyType
+      type: item.type as PropertyType,
+      status: item.status as PropertyStatus
     })) || [];
   } catch (error) {
     console.error("Unexpected error fetching properties:", error);
@@ -45,7 +46,11 @@ export const getPropertyById = async (id: string): Promise<Property | null> => {
       return null;
     }
     
-    return data ? { ...data, type: data.type as PropertyType } : null;
+    return data ? { 
+      ...data, 
+      type: data.type as PropertyType,
+      status: data.status as PropertyStatus 
+    } : null;
   } catch (error) {
     console.error("Unexpected error fetching property:", error);
     return null;
@@ -73,7 +78,11 @@ export const createProperty = async (property: Omit<Property, 'id' | 'created_at
       `${property.name} ble lagt til i din portefølje.`
     );
     
-    return { ...data, type: data.type as PropertyType };
+    return { 
+      ...data, 
+      type: data.type as PropertyType,
+      status: data.status as PropertyStatus 
+    };
   } catch (error) {
     handlePropertyApiError(error, "opprette eiendom");
     return null;
@@ -102,7 +111,11 @@ export const updateProperty = async (id: string, updates: Partial<Property>): Pr
       "Eiendommen ble oppdatert."
     );
     
-    return { ...data, type: data.type as PropertyType };
+    return { 
+      ...data, 
+      type: data.type as PropertyType,
+      status: data.status as PropertyStatus 
+    };
   } catch (error) {
     handlePropertyApiError(error, "oppdatere eiendom");
     return null;
