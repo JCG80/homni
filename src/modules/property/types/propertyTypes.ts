@@ -1,14 +1,39 @@
 
-export type PropertyType = 'house' | 'cabin' | 'rental' | 'foreign';
+export type PropertyType = 
+  | 'apartment' 
+  | 'house' 
+  | 'townhouse' 
+  | 'cabin' 
+  | 'commercial' 
+  | 'land';
+
+export type PropertyStatus = 
+  | 'owned' 
+  | 'rented' 
+  | 'for_sale' 
+  | 'sold' 
+  | 'under_renovation';
+
+export interface PropertyAddress {
+  street: string;
+  city: string;
+  zip_code: string;
+  municipality: string;
+  county: string;
+  country: string;
+}
 
 export interface Property {
   id: string;
   user_id: string;
   name: string;
   type: PropertyType;
-  address?: string;
-  size?: number;
+  status?: PropertyStatus;
+  address?: string; // Keep as string for backwards compatibility
+  size?: number; // Keep as size for backwards compatibility
   purchase_date?: string;
+  current_value?: number;
+  description?: string;
   created_at: string;
   updated_at: string;
 }
