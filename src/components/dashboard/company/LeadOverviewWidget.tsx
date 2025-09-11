@@ -51,7 +51,7 @@ export const LeadOverviewWidget: React.FC = () => {
         
         <div className="flex justify-between items-center">
           <Button variant="outline" asChild>
-            <Link to="/dashboard/leads/kanban">
+            <Link to="/leads/kanban">
               View Kanban <Calendar className="ml-2 h-4 w-4" />
             </Link>
           </Button>
