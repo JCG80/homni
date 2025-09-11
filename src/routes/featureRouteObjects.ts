@@ -2,7 +2,7 @@ import { lazy, createElement } from 'react';
 import type { AppRoute } from './routeTypes';
 
 // Lazy-loaded feature pages behind feature flags
-const PropertyPage = lazy(() => import('@/pages/PropertyPage').then(m => ({ default: m.PropertyPage })));
+const PropertyPage = lazy(() => import('@/pages/PropertyPage'));
 const PropertyDetailsPage = lazy(() => import('@/pages/PropertyDetailsPage').then(m => ({ default: m.PropertyDetailsPage })));
 const DIYSalesPage = lazy(() => import('@/pages/DIYSalesPage').then(m => ({ default: m.DIYSalesPage })));
 const AnalyticsPage = lazy(() => import('@/pages/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));

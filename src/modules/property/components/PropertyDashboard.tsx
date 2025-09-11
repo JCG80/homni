@@ -9,12 +9,21 @@ import { CreatePropertyDialog } from './CreatePropertyDialog';
 import { PropertyCard } from './PropertyCard';
 import { MaintenanceAlerts } from './MaintenanceAlerts';
 import { DocumentStatus } from './DocumentStatus';
-import { PropertyStats as PropertyStatsType } from '../types/property';
+import { Property } from '../types/propertyTypes';
+
+interface PropertyStats {
+  totalProperties: number;
+  totalValue: number;
+  pendingTasks: number;
+  overdueTasks: number;
+  documentsCount: number;
+  maintenanceCosts: number;
+}
 
 export const PropertyDashboard: React.FC = () => {
   const { properties, loading, error, refreshProperties } = useProperty();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [stats, setStats] = useState<PropertyStatsType>({
+  const [stats, setStats] = useState<PropertyStats>({
     totalProperties: 0,
     totalValue: 0,
     pendingTasks: 0,
@@ -26,9 +35,9 @@ export const PropertyDashboard: React.FC = () => {
   useEffect(() => {
     if (properties) {
       // Calculate stats from properties data
-      const calculatedStats: PropertyStatsType = {
+      const calculatedStats: PropertyStats = {
         totalProperties: properties.length,
-        totalValue: properties.reduce((sum, p) => sum + (p.current_value || p.purchase_price || 0), 0),
+        totalValue: properties.reduce((sum, p) => sum + ((p.current_value || 0)), 0),
         pendingTasks: Math.floor(Math.random() * 10), // Mock data - replace with actual API
         overdueTasks: Math.floor(Math.random() * 3),
         documentsCount: Math.floor(Math.random() * 25),

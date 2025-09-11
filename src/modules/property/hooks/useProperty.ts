@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { Property, PropertyResponse } from '../types/property';
+import { Property } from '../types/propertyTypes';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UsePropertyReturn {
@@ -42,22 +42,9 @@ export const useProperty = (): UsePropertyReturn => {
           user_id: user.id,
           name: 'Min Leilighet',
           type: 'apartment',
-          status: 'owned',
-          address: {
-            street: 'Storgata 15',
-            city: 'Oslo',
-            zip_code: '0155',
-            municipality: 'Oslo',
-            county: 'Viken',
-            country: 'Norge'
-          },
-          size_sqm: 85,
-          rooms: 3,
-          bedrooms: 2,
-          bathrooms: 1,
-          year_built: 1995,
+          address: 'Storgata 15, Oslo',
+          size: 85,
           purchase_date: '2020-06-15',
-          purchase_price: 4500000,
           current_value: 5200000,
           description: 'Fin leilighet i sentrum med balkong og heis.',
           created_at: '2020-06-15T10:00:00Z',
@@ -91,15 +78,7 @@ export const useProperty = (): UsePropertyReturn => {
         user_id: user.id,
         name: propertyData.name || 'Ny Eiendom',
         type: propertyData.type || 'apartment',
-        status: propertyData.status || 'owned',
-        address: propertyData.address || {
-          street: '',
-          city: '',
-          zip_code: '',
-          municipality: '',
-          county: '',
-          country: 'Norge'
-        },
+        address: propertyData.address || '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         ...propertyData

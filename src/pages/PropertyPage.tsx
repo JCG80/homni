@@ -8,7 +8,7 @@ import { PropertyMaintenance } from '@/modules/property/components/PropertyMaint
 import { PropertySettings } from '@/modules/property/components/PropertySettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export const PropertyPage = () => {
+const PropertyPage = () => {
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'dashboard';
 
@@ -85,3 +85,5 @@ export const PropertyPage = () => {
     </div>
   );
 };
+
+export default PropertyPage;
