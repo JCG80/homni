@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import { UserPlus, Mail, Lock } from 'lucide-react';
 import { useLinkAnonymousLeads } from '@/hooks/useLinkAnonymousLeads';
+import { logger } from '@/utils/logger';
 
 interface LightRegistrationFlowProps {
   email: string;
@@ -70,7 +71,7 @@ export const LightRegistrationFlow = ({
           });
 
         if (profileError) {
-          console.error('Profile creation error:', profileError);
+          logger.error('Profile creation error:', {}, profileError);
         }
 
         // Associate lead with user if leadId provided
@@ -88,7 +89,7 @@ export const LightRegistrationFlow = ({
             toast.success(`${linkedCount} tidligere forespørsel${linkedCount > 1 ? 'er' : ''} er nå knyttet til din konto!`);
           }
         } catch (error) {
-          console.warn('Could not link anonymous leads:', error);
+          logger.warn('Could not link anonymous leads:', {}, error);
           // Don't fail the registration for this
         }
 

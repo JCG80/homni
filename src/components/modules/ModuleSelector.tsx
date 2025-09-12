@@ -16,6 +16,7 @@ import { moduleRegistry } from '@/modules/system/ModuleRegistry';
 import { toggleUserModule, getCoreModulesForRole, getOptionalModulesForRole } from '@/modules/system/ModuleInitializer';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 interface ModuleSelectorProps {
   onModuleToggle?: (moduleId: string, enabled: boolean) => void;
@@ -62,7 +63,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({
         });
       }
     } catch (error) {
-      console.error('Error toggling module:', error);
+      logger.error('Error toggling module:', {}, error);
       toast({
         title: 'Error',
         description: 'An unexpected error occurred.',

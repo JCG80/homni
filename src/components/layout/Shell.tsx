@@ -16,6 +16,7 @@ import { isLovablePreviewHost } from '@/lib/env/hosts';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
 import { RouterDiagnostics } from '@/components/router/RouterDiagnostics';
 import { RouterEmergencyFallback } from '@/components/debug/RouterEmergencyFallback';
+import { logger } from '@/utils/logger';
 
 // Loading fallback component
 const RouteLoadingFallback = () => (
@@ -62,7 +63,7 @@ const UnauthorizedPage = () => {
   // If user has high-level access, redirect them away from unauthorized page
   useEffect(() => {
     if (!isLoading && isAuthenticated && (role === 'admin' || role === 'master_admin')) {
-      console.error('[UnauthorizedPage] High-level user detected, redirecting to home');
+      logger.error('[UnauthorizedPage] High-level user detected, redirecting to home');
       navigate('/', { replace: true });
     }
   }, [isLoading, isAuthenticated, role, navigate]);
@@ -118,7 +119,7 @@ export function Shell() {
   
   // EMERGENCY: Enhanced debugging for route filtering
   if (import.meta.env.DEV || isLovablePreviewHost()) {
-    console.error('[EMERGENCY SHELL] Debug info:', { 
+    logger.error('[EMERGENCY SHELL] Debug info:', { 
       role, 
       flags: Object.entries(flags).filter(([_, v]) => v).map(([k]) => k),
       routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser',
@@ -135,7 +136,7 @@ export function Shell() {
   try {
     filteredRoutes = applyFeatureFlags(allRoutes, flags, role);
   } catch (error) {
-    console.error('Route filtering failed:', error);
+    logger.error('Route filtering failed:', {}, error);
     // Fallback to basic routes if filtering fails
     filteredRoutes = mainRouteObjects.filter(route => !route.flag && (!route.roles || route.roles.includes('guest')));
   }
@@ -157,7 +158,7 @@ export function Shell() {
   
   // EMERGENCY: Enhanced debugging for filtered routes
   if (import.meta.env.DEV || isLovablePreviewHost()) {
-    console.error('[EMERGENCY SHELL] Filtered routes debug:', {
+    logger.error('[EMERGENCY SHELL] Filtered routes debug:', {
       filteredRoutesCount: filteredRoutes.length,
       safeRoutesCount: safeRoutes.length,
       used: filteredRoutes.length > 0 ? 'filtered' : 'safe',
@@ -170,7 +171,7 @@ export function Shell() {
 
   // EMERGENCY: Use emergency fallback only if no routes at all
   if (!routes || selectedRoutes.length === 0) {
-    console.error('[EMERGENCY SHELL] No routes available!', {
+    logger.error('[EMERGENCY SHELL] No routes available!', {
       routes: !!routes,
       filteredRoutesLength: filteredRoutes.length,
       safeRoutesLength: safeRoutes.length,

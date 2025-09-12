@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { enhancedPropertyDocumentService } from '@/modules/property/api/enhancedDocuments';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 interface AddDocumentDialogProps {
   propertyId: string;
@@ -76,7 +77,7 @@ export const AddDocumentDialog = ({ propertyId, open, onOpenChange }: AddDocumen
     },
     onError: (error) => {
       toast.error('Kunne ikke legge til dokument');
-      console.error('Error adding document:', error);
+      logger.error('Error adding document:', {}, error);
     }
   });
 

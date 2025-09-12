@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { logger } from '@/utils/logger';
 import { 
   Building2, 
   FileText, 
@@ -144,7 +145,7 @@ export const ModuleIntegrationHub = () => {
       
       setActiveWorkflows(available);
     } catch (error) {
-      console.error('Failed to load workflows:', error);
+      logger.error('Failed to load workflows:', {}, error);
       toast.error('Kunne ikke laste arbeidsflyter');
     } finally {
       setLoading(false);
@@ -169,7 +170,7 @@ export const ModuleIntegrationHub = () => {
           toast.info('Arbeidsflyt kommer snart!');
       }
     } catch (error) {
-      console.error('Failed to execute workflow:', error);
+      logger.error('Failed to execute workflow:', {}, error);
       toast.error('Kunne ikke starte arbeidsflyt');
     }
   };

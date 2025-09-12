@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { logger } from '@/utils/logger';
 import { 
   Dialog,
   DialogContent,
@@ -91,7 +92,7 @@ export const MaintenanceTaskList = ({ propertyId, tasks, onTaskUpdate }: Mainten
       setShowCreateDialog(false);
       onTaskUpdate();
     } catch (error) {
-      console.error('Error creating task:', error);
+      logger.error('Error creating task:', {}, error);
     }
   };
 
@@ -105,7 +106,7 @@ export const MaintenanceTaskList = ({ propertyId, tasks, onTaskUpdate }: Mainten
       await enhancedPropertyDocumentService.updateMaintenanceTask(taskId, updates);
       onTaskUpdate();
     } catch (error) {
-      console.error('Error updating task:', error);
+      logger.error('Error updating task:', {}, error);
     }
   };
 

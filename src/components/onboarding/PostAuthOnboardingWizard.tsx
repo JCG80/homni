@@ -8,6 +8,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { useLinkAnonymousLeads } from '@/hooks/useLinkAnonymousLeads';
 import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface PostAuthOnboardingWizardProps {
   onComplete: () => void;
@@ -62,7 +63,7 @@ export const PostAuthOnboardingWizard = ({ onComplete }: PostAuthOnboardingWizar
       setCompletedSteps(prev => [...prev, 1]);
       setTimeout(() => setCurrentStep(2), 1000);
     } catch (error) {
-      console.error('Error linking leads:', error);
+      logger.error('Error linking leads:', {}, error);
       setCompletedSteps(prev => [...prev, 1]);
       setTimeout(() => setCurrentStep(2), 1000);
     }

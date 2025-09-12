@@ -12,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { Upload, X, FileText, Image, FileIcon, CheckCircle2 } from 'lucide-react';
 import { enhancedPropertyDocumentService } from '@/modules/property/api/enhancedDocuments';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 interface DocumentUploadDialogProps {
   propertyId: string;
@@ -171,7 +172,7 @@ export const DocumentUploadDialog = ({
 
       onUploadComplete();
     } catch (error) {
-      console.error('Upload error:', error);
+      logger.error('Upload error:', {}, error);
       toast.error('Noen filer kunne ikke lastes opp');
     }
   };

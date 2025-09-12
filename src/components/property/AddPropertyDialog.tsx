@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/modules/auth/hooks';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 interface AddPropertyDialogProps {
   open: boolean;
@@ -72,7 +73,7 @@ export const AddPropertyDialog = ({ open, onOpenChange }: AddPropertyDialogProps
     },
     onError: (error) => {
       toast.error('Kunne ikke legge til eiendom');
-      console.error('Error adding property:', error);
+      logger.error('Error adding property:', {}, error);
     }
   });
 

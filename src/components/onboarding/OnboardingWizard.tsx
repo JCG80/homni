@@ -10,6 +10,7 @@ import { CompletionStep } from './steps/CompletionStep';
 import { useAuth } from '@/modules/auth/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 export type UserType = 'user' | 'company';
 
@@ -94,7 +95,7 @@ export const OnboardingWizard = () => {
         navigate(`/dashboard/${userType}`);
       }, 1500);
     } catch (error) {
-      console.error('Error completing onboarding:', error);
+      logger.error('Error completing onboarding:', {}, error);
       toast({
         title: "Registration error",
         description: "There was an error completing your registration. Please try again.",

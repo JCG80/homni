@@ -13,6 +13,7 @@ import { enhancedPropertyDocumentService } from '@/modules/property/api/enhanced
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
+import { logger } from '@/utils/logger';
 
 interface CreateMaintenanceTaskDialogProps {
   propertyId: string;
@@ -92,7 +93,7 @@ export const CreateMaintenanceTaskDialog = ({
       onOpenChange(false);
     },
     onError: (error) => {
-      console.error('Error creating task:', error);
+      logger.error('Error creating task:', {}, error);
       toast.error('Kunne ikke opprette vedlikeholdsoppgave');
     }
   });

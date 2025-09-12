@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { useAuthState } from '@/modules/auth/hooks/useAuthState';
 import { moduleRegistry } from '@/modules/system/ModuleRegistry';
 import { getOptionalModulesForRole, toggleUserModule } from '@/modules/system/ModuleInitializer';
+import { logger } from '@/utils/logger';
 import { toast } from '@/components/ui/use-toast';
 import { useModuleAwareDashboard } from '@/hooks/useModuleAwareDashboard';
 import { useNavigate } from 'react-router-dom';
@@ -133,7 +134,7 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
       
       onComplete?.();
     } catch (error) {
-      console.error('Error applying modules:', error);
+      logger.error('Error applying modules:', {}, error);
       toast({
         title: 'Setup Error',
         description: 'Some modules could not be enabled. You can configure them later.',
