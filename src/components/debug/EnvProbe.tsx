@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 interface EnvInfo {
   href: string;
@@ -34,7 +35,7 @@ export function EnvProbe() {
           timestamp: new Date().toLocaleTimeString()
         });
       } catch (error) {
-        console.warn('EnvProbe error:', error);
+        logger.warn('EnvProbe error', { error });
       }
     };
 

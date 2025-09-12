@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { errorTracker } from '@/lib/production/ErrorTracker'
+import { logger } from '@/utils/logger'
 
 interface Props {
   children: ReactNode
@@ -33,7 +34,7 @@ export class ProductionErrorBoundary extends Component<Props, State> {
     // Track error in production monitoring
     errorTracker.trackReactError(error, errorInfo)
     
-    console.error('Production Error Boundary caught an error:', error, errorInfo)
+    logger.error('Production Error Boundary caught an error', { error, errorInfo })
   }
 
   handleRetry = () => {

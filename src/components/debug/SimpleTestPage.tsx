@@ -4,13 +4,14 @@
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
+import { logger } from '@/utils/logger';
 
 export const SimpleTestPage = () => {
   const { user, isAuthenticated, role: authRole } = useAuth();
   const currentRole = useCurrentRole();
 
   React.useEffect(() => {
-    console.error('[SIMPLE TEST PAGE] Mounted!', {
+    logger.error('[SIMPLE TEST PAGE] Mounted!', {
       user: user?.email,
       isAuthenticated,
       authRole,

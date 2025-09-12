@@ -3,6 +3,8 @@
  * Utility for performing automatic retries of API operations with enhanced error handling
  */
 
+import { logger } from './logger';
+
 type RetryOptions = {
   maxAttempts: number;
   delayMs: number;
@@ -54,7 +56,7 @@ export async function withRetry<T>(
     try {
       // Log the attempt number if it's not the first attempt
       if (attempt > 1) {
-        console.log(`Attempt ${attempt}/${config.maxAttempts}`);
+        logger.info(`Retry attempt ${attempt}/${config.maxAttempts}`);
       }
       
       return await fn();
@@ -62,7 +64,7 @@ export async function withRetry<T>(
       lastError = error;
       
       // Log the error
-      console.error(`Attempt ${attempt} failed:`, error);
+      logger.error(`Attempt ${attempt} failed`, { error });
       
       if (attempt < config.maxAttempts && shouldRetry(error, config.retryableErrors)) {
         const delay = config.delayMs * Math.pow(config.backoffFactor, attempt - 1);
@@ -71,13 +73,13 @@ export async function withRetry<T>(
           config.onRetry(attempt, error);
         }
         
-        console.log(`Retrying in ${delay}ms...`);
+        logger.info(`Retrying in ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       } else if (!shouldRetry(error, config.retryableErrors)) {
-        console.log('Error not retryable, giving up');
+        logger.info('Error not retryable, giving up');
         throw lastError;
       } else {
-        console.log(`All ${config.maxAttempts} attempts failed, giving up`);
+        logger.info(`All ${config.maxAttempts} attempts failed, giving up`);
         throw lastError;
       }
     }

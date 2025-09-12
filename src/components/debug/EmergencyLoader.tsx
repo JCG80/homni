@@ -2,12 +2,13 @@
  * Emergency loader to test if React is working at all
  */
 import React from 'react';
+import { logger } from '@/utils/logger';
 
 export const EmergencyLoader = () => {
   React.useEffect(() => {
-    console.error('[EMERGENCY] EmergencyLoader mounted!');
-    console.error('[EMERGENCY] Location:', window.location.href);
-    console.error('[EMERGENCY] Router mode should be hash');
+    logger.error('[EMERGENCY] EmergencyLoader mounted!');
+    logger.error('[EMERGENCY] Location:', { location: window.location.href });
+    logger.error('[EMERGENCY] Router mode should be hash');
   }, []);
 
   return (

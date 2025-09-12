@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 export function UpdateAppButton() {
   const handleUpdate = async () => {
@@ -20,7 +21,7 @@ export function UpdateAppButton() {
       // Force reload
       window.location.reload();
     } catch (error) {
-      console.warn('Cache clearing failed:', error);
+      logger.warn('Cache clearing failed', { error });
       window.location.reload();
     }
   };

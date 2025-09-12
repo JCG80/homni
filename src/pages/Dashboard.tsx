@@ -5,6 +5,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { Loader2 } from 'lucide-react';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/modules/auth/normalizeRole';
+import { logger } from '@/utils/logger';
 
 export const Dashboard: React.FC = () => {
   const { isLoading, role, isAuthenticated, user } = useAuth();
@@ -12,7 +13,7 @@ export const Dashboard: React.FC = () => {
   
   // Enhanced logging for debugging
   useEffect(() => {
-    console.log("Dashboard - Authentication state:", { 
+    logger.info("Dashboard - Authentication state", { 
       isAuthenticated, 
       role, 
       isLoading, 
@@ -39,7 +40,7 @@ export const Dashboard: React.FC = () => {
   
   // If user is not authenticated, send them to login
   if (!isAuthenticated) {
-    console.log("Dashboard - Redirecting to login: Not authenticated");
+    logger.info("Dashboard - Redirecting to login: Not authenticated");
     // Store current location to return after login
     const returnPath = encodeURIComponent('/dashboard');
     return <Navigate to={`/login?returnUrl=${returnPath}`} replace />;
@@ -47,13 +48,13 @@ export const Dashboard: React.FC = () => {
   
   // If user is authenticated but lacks role, send them to login
   if (!role) {
-    console.log("Dashboard - Redirecting to login: Missing role");
+    logger.info("Dashboard - Redirecting to login: Missing role");
     return <Navigate to="/login" replace />;
   }
   
   // If the user has a role, send them to their role-based dashboard
   const dashboardPath = routeForRole(role as UserRole);
-  console.log(`Dashboard - Redirecting to role-specific dashboard: ${dashboardPath}`);
+  logger.info("Dashboard - Redirecting to role-specific dashboard", { dashboardPath });
   
   return <Navigate to={dashboardPath} replace />;
 };

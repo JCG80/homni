@@ -162,7 +162,7 @@ export const LightRegistrationFlow = ({
           });
 
         if (profileError) {
-          console.error('Profile creation error:', profileError);
+          logger.error('Profile creation error', { error: profileError });
         }
 
         // Associate lead with user
@@ -180,7 +180,7 @@ export const LightRegistrationFlow = ({
             toast.success(`${linkedCount} tidligere forespørsel${linkedCount > 1 ? 'er' : ''} er nå knyttet til din konto!`);
           }
         } catch (error) {
-          console.warn('Could not link anonymous leads:', error);
+          logger.warn('Could not link anonymous leads', { error });
           // Don't fail the login for this
         }
 
