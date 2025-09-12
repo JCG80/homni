@@ -6,7 +6,7 @@ import { toast } from "@/components/ui/use-toast";
 import { DistributionStrategy } from '../../strategies/strategyFactory';
 import { DistributionStrategySelector } from './DistributionStrategySelector';
 import { processUnassignedLeads } from '../../utils/processLeads';
-import { LeadSettingsForm } from './LeadSettingsForm';
+import { LeadSettingsForm } from '../LeadSettingsForm';
 
 interface LeadDistributionPanelProps {
   currentStrategy: DistributionStrategy | null;
@@ -88,11 +88,8 @@ export const LeadDistributionPanel = ({
           </section>
           
           <div className="border-t pt-4">
-            <LeadSettingsForm
-              initialSettings={settings}
-              currentStrategy={currentStrategy}
-              isLoading={isLoading}
-            />
+            {/* Use the modern LeadSettingsForm component */}
+            <LeadSettingsForm />
           </div>
           
           <div className="border-t pt-4">

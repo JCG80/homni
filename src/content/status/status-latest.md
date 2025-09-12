@@ -36,8 +36,8 @@
 - ✅ MenuItem-props: Standardisert i navigation config
 
 ### **Duplikater & Cleanup Status**
-- 🔧 RoleToggle-varianter: 3 funnet → konsolidering pågår
-- 🔧 LeadForm-komponenter: 2 varianter → single source etablert
+- ✅ RoleToggle-varianter: Ryddet opp - fjernet placeholder RoleSwitch
+- ✅ LeadForm-komponenter: Konsolidert - fjernet duplikat LeadSettingsForm  
 - ✅ File casing: 0 TS1261-feil registrert
 - 🔄 Bundle size: 180KB gzipped → mål: <200KB (✅ oppnådd)
 
@@ -128,10 +128,10 @@
 ## 🔒 **TECHNICAL DEBT**
 
 ### **High Priority**
-- Duplicate component cleanup (RoleToggle, LeadForm variants)
-- File casing standardization (TS1261 errors)
-- Centralized error handling patterns
-- API response type standardization
+- ✅ Duplicate component cleanup (RoleToggle, LeadForm variants) - COMPLETED
+- 🔧 File casing standardization (TS1261 errors) - 0 errors found
+- 🔧 Centralized error handling patterns
+- 🔧 API response type standardization
 
 ### **Medium Priority**
 - Bundle size optimization (target: <200KB gzipped)
