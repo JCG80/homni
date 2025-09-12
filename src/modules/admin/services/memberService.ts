@@ -1,6 +1,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface UserProfileData {
   id: string;
@@ -51,7 +52,7 @@ export const resetPassword = async (email: string): Promise<void> => {
       description: 'E-post for tilbakestilling av passord er sendt.',
     });
   } catch (error) {
-    console.error('Failed to send password reset:', error);
+    logger.error('Failed to send password reset', { email }, error instanceof Error ? error : undefined);
     toast({
       title: 'Feil',
       description: 'Kunne ikke sende e-post for tilbakestilling av passord.',
@@ -70,7 +71,7 @@ export const sendUsername = async (email: string): Promise<void> => {
       description: `En e-post med brukernavnet er sendt til ${email}.`,
     });
   } catch (error) {
-    console.error('Failed to send username:', error);
+    logger.error('Failed to send username', { email }, error instanceof Error ? error : undefined);
     toast({
       title: 'Feil',
       description: 'Kunne ikke sende e-post med brukernavn.',

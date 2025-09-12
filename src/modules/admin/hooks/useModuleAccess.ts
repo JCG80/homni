@@ -10,6 +10,7 @@ import {
 } from '../api/moduleAccess';
 import { UseModuleAccessProps } from '@/types/admin';
 import type { CategorizedModules } from '@/modules/system/types/systemTypes';
+import { logger } from '@/utils/logger';
 
 interface ModuleAuditLog {
   id: string;
@@ -82,7 +83,7 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
       
       setLoading(false);
     } catch (err) {
-      console.error('Error in useModuleAccess:', err);
+      logger.error('Error in useModuleAccess', { userId, error: err }, err instanceof Error ? err : undefined);
       setError(err instanceof Error ? err : new Error('Unknown error'));
       setLoading(false);
     }
@@ -129,7 +130,7 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
       }
       return success;
     } catch (err) {
-      console.error('Error in bulk category toggle:', err);
+      logger.error('Error in bulk category toggle', { userId, category, enable, moduleIds }, err instanceof Error ? err : undefined);
       return false;
     }
   };
@@ -158,7 +159,7 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
       }
       return success;
     } catch (err) {
-      console.error('Error revoking all modules:', err);
+      logger.error('Error revoking all modules', { userId, reason }, err instanceof Error ? err : undefined);
       return false;
     }
   };
@@ -183,7 +184,7 @@ export const useModuleAccess = ({ userId, onUpdate }: UseModuleAccessProps) => {
       
       return success;
     } catch (err) {
-      console.error('Error updating module access:', err);
+      logger.error('Error updating module access', { userId, userAccess, isInternalAdmin, reason }, err instanceof Error ? err : undefined);
       return false;
     }
   };

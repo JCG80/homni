@@ -25,6 +25,7 @@ import {
   ToggleRight
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 interface CreateFlagData {
   name: string;
@@ -78,7 +79,7 @@ export const FeatureFlagsManagement: React.FC = () => {
         description: `Feature flag has been ${!currentState ? 'enabled' : 'disabled'}`,
       });
     } catch (err) {
-      console.error('Error updating feature flag:', err);
+      logger.error('Error updating feature flag', { flagId, currentState }, err instanceof Error ? err : undefined);
       toast({
         title: "Update failed",
         description: "There was an error updating the feature flag",
@@ -127,7 +128,7 @@ export const FeatureFlagsManagement: React.FC = () => {
         target_roles: []
       });
     } catch (err) {
-      console.error('Error creating feature flag:', err);
+      logger.error('Error creating feature flag', { flagName: newFlag.name }, err instanceof Error ? err : undefined);
       toast({
         title: "Creation failed",
         description: "There was an error creating the feature flag",
@@ -156,7 +157,7 @@ export const FeatureFlagsManagement: React.FC = () => {
         description: `Feature flag "${flagName}" has been deleted`,
       });
     } catch (err) {
-      console.error('Error deleting feature flag:', err);
+      logger.error('Error deleting feature flag', { flagId, flagName }, err instanceof Error ? err : undefined);
       toast({
         title: "Deletion failed",
         description: "There was an error deleting the feature flag",

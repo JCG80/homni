@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../utils/roles/types';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { logger } from '@/utils/logger';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -62,7 +63,8 @@ export const ProtectedRoute = ({
       }
       
       // Debug logging for authorization issues
-      console.log('[ProtectedRoute] Authorization check:', {
+      logger.debug('ProtectedRoute authorization check', {
+        component: 'ProtectedRoute',
         isAuthenticated,
         role,
         allowedRoles,
@@ -74,7 +76,11 @@ export const ProtectedRoute = ({
       // PRIORITY: Check module access first (handles public modules for guest users)
       if (module) {
         const hasModuleAccess = canAccessModule(module);
-        console.log('[ProtectedRoute] Module access check:', { module, hasModuleAccess });
+        logger.debug('ProtectedRoute module access check', { 
+          component: 'ProtectedRoute',
+          module, 
+          hasModuleAccess 
+        });
         setIsAllowed(hasModuleAccess);
         setIsCheckingPermission(false);
         return;
@@ -82,7 +88,10 @@ export const ProtectedRoute = ({
       
       // If not authenticated and no module specified, redirect to login
       if (!isAuthenticated) {
-        console.log('[ProtectedRoute] Not authenticated, denying access');
+        logger.info('ProtectedRoute denying access - not authenticated', {
+          component: 'ProtectedRoute',
+          pathname: location.pathname
+        });
         setIsAllowed(false);
         setIsCheckingPermission(false);
         return;
@@ -90,7 +99,11 @@ export const ProtectedRoute = ({
       
       // CRITICAL FIX: If user is authenticated but role is still undefined/null, wait a bit more
       if (isAuthenticated && (!role || role === null || role === undefined)) {
-        console.log('[ProtectedRoute] Auth OK but role not ready, retrying...');
+        logger.debug('ProtectedRoute waiting for role to be ready', {
+          component: 'ProtectedRoute',
+          isAuthenticated,
+          role
+        });
         // Don't set isAllowed yet, keep checking
         setTimeout(() => {
           // Re-trigger this effect after a short delay
@@ -101,7 +114,10 @@ export const ProtectedRoute = ({
       
       // If any authenticated user is allowed, allow access
       if (allowAnyAuthenticated && isAuthenticated && role) {
-        console.log('[ProtectedRoute] Any authenticated user allowed');
+        logger.debug('ProtectedRoute allowing any authenticated user', {
+          component: 'ProtectedRoute',
+          role
+        });
         setIsAllowed(true);
         setIsCheckingPermission(false);
         return;
@@ -110,7 +126,8 @@ export const ProtectedRoute = ({
       // If specific roles are required, check if the user has one of them
       if (allowedRoles.length > 0 && role) {
         const hasRequiredRole = allowedRoles.some(r => hasRole(r));
-        console.log('[ProtectedRoute] Role check:', { 
+        logger.debug('ProtectedRoute role check', { 
+          component: 'ProtectedRoute',
           role, 
           allowedRoles, 
           hasRequiredRole,
@@ -123,10 +140,17 @@ export const ProtectedRoute = ({
       
       // By default, allow access if we reach this point and user is authenticated with a role
       if (isAuthenticated && role) {
-        console.log('[ProtectedRoute] Default allow for authenticated user with role');
+        logger.debug('ProtectedRoute default allow for authenticated user', {
+          component: 'ProtectedRoute',
+          role
+        });
         setIsAllowed(true);
       } else {
-        console.log('[ProtectedRoute] Default deny');
+        logger.debug('ProtectedRoute default deny', {
+          component: 'ProtectedRoute',
+          isAuthenticated,
+          role
+        });
         setIsAllowed(false);
       }
       setIsCheckingPermission(false);
@@ -149,7 +173,10 @@ export const ProtectedRoute = ({
   
   // If auth check is complete but user is not authenticated, redirect to login with return URL
   if (!isLoading && !isCheckingPermission && !isAuthenticated) {
-    console.log("ProtectedRoute - Redirecting to login");
+    logger.info('ProtectedRoute redirecting to login', {
+      component: 'ProtectedRoute',
+      pathname: location.pathname
+    });
     toast({
       title: "Pålogging kreves",
       description: "Du må logge inn for å se denne siden",
@@ -162,7 +189,13 @@ export const ProtectedRoute = ({
 
   // If auth check is complete but user is not allowed, redirect to unauthorized
   if (!isLoading && !isCheckingPermission && isAuthenticated && isAllowed === false) {
-    console.log("ProtectedRoute - Access denied, redirecting to unauthorized");
+    logger.warn('ProtectedRoute access denied', {
+      component: 'ProtectedRoute',
+      pathname: location.pathname,
+      role,
+      allowedRoles,
+      module
+    });
     toast({
       title: "Ingen tilgang",
       description: "Du har ikke tilgang til denne siden",
@@ -177,6 +210,10 @@ export const ProtectedRoute = ({
   }
   
   // User is authenticated and allowed to access this route
-  console.log("ProtectedRoute - Access granted, rendering children");
+  logger.debug('ProtectedRoute access granted', {
+    component: 'ProtectedRoute',
+    pathname: location.pathname,
+    role
+  });
   return <>{children}</>;
 };

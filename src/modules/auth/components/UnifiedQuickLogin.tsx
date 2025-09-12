@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
+import { logger } from '@/utils/logger';
 
 export interface UnifiedQuickLoginProps {
   redirectTo?: string;
@@ -36,12 +37,19 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
   
   useEffect(() => {
     // Debug info
-    console.log('UnifiedQuickLogin mounted with redirectTo:', redirectTo);
+    logger.debug('UnifiedQuickLogin mounted', {
+      component: 'UnifiedQuickLogin',
+      redirectTo
+    });
   }, [redirectTo]);
   
   const handleLogin = async (role: UserRole) => {
     try {
-      console.log(`Attempting quick login as ${role}`);
+      logger.info('Attempting quick login', {
+        component: 'UnifiedQuickLogin',
+        action: 'quick_login',
+        role
+      });
       setIsLoading(role);
       
       const success = await setupTestUsers(role);
@@ -54,10 +62,14 @@ export const UnifiedQuickLogin = ({ redirectTo, onSuccess, showHeader = true }: 
         
         // Don't manually navigate - let the auth state change handle it
         // The LoginPage useEffect will automatically redirect based on the new role
-        console.log(`Login successful for ${role}, waiting for automatic redirect...`);
+        logger.info('Login successful, waiting for automatic redirect', {
+          component: 'UnifiedQuickLogin',
+          action: 'login_success',
+          role
+        });
       }
     } catch (error) {
-      console.error('Failed to login with test user:', error);
+      logger.error('Failed to login with test user', { role }, error instanceof Error ? error : undefined);
       toast({
         title: 'Login Failed',
         description: `Could not login as ${role}. Please try again.`,

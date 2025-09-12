@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/utils/logger';
 
 export interface FeatureFlag {
   id: string;
@@ -119,7 +120,7 @@ export const featureFlagsService = {
     });
 
     if (error) {
-      console.error(`Error checking feature flag ${flagName}:`, error);
+      logger.error('Error checking feature flag', { flagName }, error);
       return false;
     }
 

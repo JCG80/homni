@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '@/modules/auth/normalizeRole';
+import { logger } from '@/utils/logger';
 
 export type AdminAction = 
   | 'view'
@@ -38,10 +39,10 @@ export const logAdminAction = async (
     });
     
     if (error) {
-      console.error('Failed to log admin action:', error);
+      logger.error('Failed to log admin action', { action, resourceType, resourceId }, error);
     }
   } catch (err) {
-    console.error('Error logging admin action:', err);
+    logger.error('Error logging admin action', { action, resourceType, resourceId }, err instanceof Error ? err : undefined);
   }
 };
 
@@ -72,7 +73,7 @@ export const getAdminLogs = async (
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error('Error fetching admin logs:', error);
+    logger.error('Error fetching admin logs', { adminId, isAdmin, limit, offset }, error instanceof Error ? error : undefined);
     return [];
   }
 };

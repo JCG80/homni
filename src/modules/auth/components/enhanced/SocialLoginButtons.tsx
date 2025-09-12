@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Chrome, Apple, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface SocialLoginButtonsProps {
   userType: 'private' | 'business';
@@ -31,7 +32,7 @@ export const SocialLoginButtons = ({
 
       if (error) throw error;
     } catch (error) {
-      console.error('Google auth error:', error);
+      logger.error('Google auth error', { userType, mode }, error instanceof Error ? error : undefined);
       toast({
         title: "Autentiseringsfeil",
         description: "Kunne ikke logge inn med Google. Prøv igjen.",
@@ -53,7 +54,7 @@ export const SocialLoginButtons = ({
 
       if (error) throw error;
     } catch (error) {
-      console.error('Apple auth error:', error);
+      logger.error('Apple auth error', { userType, mode }, error instanceof Error ? error : undefined);
       toast({
         title: "Autentiseringsfeil", 
         description: "Apple Sign-In er ikke tilgjengelig for øyeblikket.",

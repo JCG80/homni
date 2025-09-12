@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { setupTestUsers } from '../utils/setupTestUsers';
 import { Loader2 } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 interface AuthWrapperProps {
   children: React.ReactNode;
@@ -35,7 +36,10 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
     const timeoutId = setTimeout(() => {
       // If still loading after timeout, let the app render anyway
       if (isLoading) {
-        console.warn('Auth initialization taking too long, rendering app anyway');
+        logger.warn('Auth initialization taking too long, rendering app anyway', {
+          component: 'AuthWrapper',
+          timeoutMs: 5000
+        });
         setShowLoading(false);
       }
     }, 5000); // 5 second timeout

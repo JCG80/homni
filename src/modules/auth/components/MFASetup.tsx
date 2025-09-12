@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { setupMFA, verifyMFA } from '../api';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 export const MFASetup = () => {
   const [step, setStep] = useState<'initial' | 'setup' | 'verify' | 'success'>('initial');
@@ -47,7 +48,10 @@ export const MFASetup = () => {
         }
       }
     } catch (error) {
-      console.error('Error setting up MFA:', error);
+      logger.error('Error setting up MFA', {
+        component: 'MFASetup',
+        action: 'setup'
+      }, error instanceof Error ? error : undefined);
       toast({
         title: 'Error',
         description: 'An unexpected error occurred.',
@@ -80,7 +84,12 @@ export const MFASetup = () => {
         });
       }
     } catch (error) {
-      console.error('Error verifying MFA:', error);
+      logger.error('Error verifying MFA', {
+        component: 'MFASetup',
+        action: 'verify',
+        factorId,
+        challengeId
+      }, error instanceof Error ? error : undefined);
       toast({
         title: 'Error',
         description: 'An unexpected error occurred during verification.',
