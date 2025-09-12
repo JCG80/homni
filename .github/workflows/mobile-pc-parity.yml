@@ -1,0 +1,154 @@
+name: Mobile/PC Parity Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  environment-validation:
+    runs-on: ubuntu-latest
+    name: Environment & CORS Validation
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Check environment variables
+        run: node scripts/checkEnvAndCors.mjs
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+  repository-health:
+    runs-on: ubuntu-latest
+    name: Repository Health Check
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Repository health check
+        run: node scripts/repo-health.mjs
+        
+      - name: TypeScript compilation check
+        run: npx tsc --noEmit
+
+  build-validation:
+    runs-on: ubuntu-latest
+    name: Build & Preview Validation
+    needs: [environment-validation, repository-health]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_ROUTER_MODE: browser
+          
+      - name: Build hash router version
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_ROUTER_MODE: hash
+
+  e2e-parity-tests:
+    runs-on: ubuntu-latest
+    name: E2E Mobile/PC Parity Tests
+    needs: build-validation
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+        
+      - name: Build application
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          
+      - name: Start preview server
+        run: npm run preview &
+        
+      - name: Wait for server
+        run: npx wait-on http://localhost:4173
+        
+      - name: Run E2E parity tests
+        run: npx playwright test e2e-tests/mobile-pc-parity.spec.ts
+        
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-parity-results
+          path: test-results/
+          retention-days: 30
+
+  security-audit:
+    runs-on: ubuntu-latest
+    name: Security & Dependencies Audit
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Security audit
+        run: npm audit --audit-level=moderate
+        
+      - name: Check for unused dependencies
+        run: npx depcheck --skip-missing
+        continue-on-error: true

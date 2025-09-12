@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Routes, Route, useRoutes } from 'react-router-dom';
+import { useRoutes, type RouteObject } from 'react-router-dom';
 import { mainRouteObjects } from '@/routes/mainRouteObjects';
 import { adminRouteObjects } from '@/routes/adminRouteObjects';
 import { leadRouteObjects } from '@/routes/leadRouteObjects';
@@ -59,16 +59,29 @@ const UnauthorizedPage = () => (
   </div>
 );
 
-function renderRoutes(list: AppRoute[]) {
-  return list.map(r =>
-    r.children?.length ? (
-      <Route key={r.path} path={r.path} element={r.element}>
-        {renderRoutes(r.children)}
-      </Route>
-    ) : (
-      <Route key={r.path} path={r.path} element={r.element} />
-    )
-  );
+// Convert route objects to React Router format, handling type compatibility
+function convertToRouteObjects(routes: AppRoute[]): RouteObject[] {
+  return routes.map(route => {
+    // Handle index routes specially
+    if (route.index) {
+      return {
+        index: true,
+        element: route.element,
+      } as RouteObject;
+    }
+    
+    // Regular routes
+    const routeObject: RouteObject = {
+      path: route.path,
+      element: route.element,
+    };
+    
+    if (route.children && route.children.length > 0) {
+      routeObject.children = convertToRouteObjects(route.children);
+    }
+    
+    return routeObject;
+  });
 }
 
 export function Shell() {
@@ -103,16 +116,20 @@ export function Shell() {
     console.info('Filtered routes:', filteredRoutes.map(r => r.path));
   }
 
+  // Convert to React Router compatible format
+  const routeElements: RouteObject[] = [
+    ...convertToRouteObjects(filteredRoutes),
+    // Error routes - always available
+    { path: '/unauthorized', element: <UnauthorizedPage /> },
+    { path: '*', element: <NotFound /> }
+  ];
+
+  const routes = useRoutes(routeElements);
+
   return (
     <RouteErrorBoundary>
       <Suspense fallback={<RouteLoadingFallback />}>
-        <Routes>
-          {renderRoutes(filteredRoutes)}
-          
-          {/* Error routes */}
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {routes}
       </Suspense>
       
       {/* Router diagnostics for development */}
