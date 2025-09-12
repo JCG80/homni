@@ -6,7 +6,20 @@
  */
 
 import { spawn } from 'child_process';
-import { readFileSync } from 'fs';
+import { existsSync } from 'fs';
+
+const VALIDATION_SCRIPTS = [
+  {
+    name: 'Repository Health Check',
+    script: 'scripts/repo-health.mjs',
+    description: 'Validates routing standards and code structure'
+  },
+  {
+    name: 'Environment & CORS Check',
+    script: 'scripts/checkEnvAndCors.mjs', 
+    description: 'Validates environment variables and Supabase connectivity'
+  }
+];
 
 function runCommand(command, args = []) {
   return new Promise((resolve, reject) => {
@@ -25,70 +38,46 @@ function runCommand(command, args = []) {
   });
 }
 
-async function checkPackageScripts() {
-  console.log('📦 Checking package.json scripts...');
+async function runValidationSteps() {
+  console.log('🚀 Running pre-deployment validation pipeline...\n');
   
-  try {
-    const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
-    const scripts = packageJson.scripts || {};
+  for (const validation of VALIDATION_SCRIPTS) {
+    console.log(`▶️ ${validation.name}...`);
+    console.log(`📝 ${validation.description}`);
+    console.log('-'.repeat(60));
     
-    const requiredScripts = [
-      'check:env',
-      'check:health',
-      'build',
-      'preview'
-    ];
-    
-    const missingScripts = requiredScripts.filter(script => !scripts[script]);
-    
-    if (missingScripts.length > 0) {
-      console.warn('⚠️ Missing package.json scripts:', missingScripts.join(', '));
-      console.log('Add these to package.json scripts:');
-      console.log('"check:env": "node scripts/checkEnvAndCors.mjs"');
-      console.log('"check:health": "node scripts/repo-health.mjs"');
-    } else {
-      console.log('✅ All required scripts present');
+    if (!existsSync(validation.script)) {
+      console.error(`❌ Validation script not found: ${validation.script}`);
+      process.exit(1);
     }
-  } catch (error) {
-    console.warn('⚠️ Could not read package.json:', error.message);
+    
+    try {
+      await runCommand('node', [validation.script]);
+      console.log(`✅ ${validation.name} passed\n`);
+    } catch (error) {
+      console.error(`❌ ${validation.name} failed:`, error.message);
+      process.exit(1);
+    }
   }
 }
 
-async function runValidationSteps() {
-  const steps = [
-    {
-      name: 'Environment & CORS Check',
-      command: 'node',
-      args: ['scripts/checkEnvAndCors.mjs']
-    },
-    {
-      name: 'Repository Health Check', 
-      command: 'node',
-      args: ['scripts/repo-health.mjs']
-    },
-    {
-      name: 'TypeScript Check',
-      command: 'npx',
-      args: ['tsc', '--noEmit']
-    },
-    {
-      name: 'Build Test',
-      command: 'npm',
-      args: ['run', 'build']
-    }
-  ];
+async function runBuildValidation() {
+  console.log('🏗️ Running build validation...');
   
-  console.log('🚀 Running pre-deployment validation...\n');
-  
-  for (const step of steps) {
-    console.log(`▶️ ${step.name}...`);
-    try {
-      await runCommand(step.command, step.args);
-      console.log(`✅ ${step.name} passed\n`);
-    } catch (error) {
-      console.error(`❌ ${step.name} failed:`, error.message);
-      process.exit(1);
-    }
+  try {
+    // TypeScript check
+    console.log('📝 TypeScript type checking...');
+    await runCommand('npx', ['tsc', '--noEmit']);
+    console.log('✅ TypeScript check passed');
+    
+    // Build test
+    console.log('🔨 Build test...');
+    await runCommand('npm', ['run', 'build']);
+    console.log('✅ Build test passed');
+    
+  } catch (error) {
+    console.error('❌ Build validation failed:', error.message);
+    process.exit(1);
   }
 }
 
@@ -96,23 +85,34 @@ async function main() {
   try {
     console.log('🔍 Pre-deployment validation starting...\n');
     
-    await checkPackageScripts();
-    console.log();
-    
+    // Step 1: Code quality and structure validation
     await runValidationSteps();
+    
+    // Step 2: Build and type validation  
+    await runBuildValidation();
     
     console.log('🎉 All pre-deployment checks passed!');
     console.log('✅ Ready for deployment');
     
-    // Show deployment reminder
-    console.log('\n📋 Deployment Reminders:');
+    // Show deployment reminders
+    console.log('\n📋 Deployment Checklist:');
+    console.log('- ✅ Code quality validated');
+    console.log('- ✅ Environment configuration checked');  
+    console.log('- ✅ Build process verified');
+    console.log('- ✅ Router configuration validated');
+    console.log('');
+    console.log('💡 Next Steps:');
     console.log('- Verify hosting platform rewrites are configured');
-    console.log('- Check VITE_ROUTER_MODE matches deployment type');
     console.log('- Test deep links after deployment');
-    console.log('- Monitor for any CORS issues in production');
+    console.log('- Monitor for any runtime issues');
     
   } catch (error) {
     console.error('\n💥 Pre-deployment validation failed:', error.message);
+    console.log('\n🛠️ Troubleshooting:');
+    console.log('- Check individual validation scripts for detailed errors');
+    console.log('- Ensure all environment variables are set');
+    console.log('- Verify code follows routing standards');
+    console.log('- Run scripts individually: node scripts/repo-health.mjs');
     process.exit(1);
   }
 }

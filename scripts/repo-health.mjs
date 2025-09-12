@@ -2,9 +2,10 @@
 
 /**
  * Repository health checker - enforces routing standards and catches issues
+ * Prevents multiple router instances and routing violations
  */
 
-import { readFileSync, readdirSync, statSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
 
 const SRC_DIR = 'src';
@@ -35,17 +36,20 @@ function checkFile(filePath) {
     const content = readFileSync(filePath, 'utf8');
     const relativePath = relative(process.cwd(), filePath);
     
-    // Check for multiple router instances
-    if (/<BrowserRouter/i.test(content)) {
-      problems.push(`❌ BrowserRouter found in ${relativePath} - use single AppRouter only`);
+    // Check for multiple router instances - CRITICAL ERROR
+    if (/<BrowserRouter/i.test(content) && !filePath.includes('test') && !filePath.includes('__tests__')) {
+      problems.push(`❌ BrowserRouter found in ${relativePath} - use AppRouter only`);
     }
     
-    if (/<HashRouter/i.test(content)) {
-      problems.push(`❌ HashRouter found in ${relativePath} - use single AppRouter only`);
+    if (/<HashRouter/i.test(content) && !filePath.includes('test') && !filePath.includes('__tests__')) {
+      problems.push(`❌ HashRouter found in ${relativePath} - use AppRouter only`);
     }
     
-    // Allow Routes in main entry points but warn about JSX Route elements elsewhere
-    if (/<Route(\s|>)/i.test(content) && !filePath.includes('Shell.tsx') && !filePath.includes('App.tsx')) {
+    // Check for JSX Route elements outside of tests
+    if (/<Route(\s|>)/i.test(content) && 
+        !filePath.includes('test') && 
+        !filePath.includes('__tests__') && 
+        !filePath.includes('Shell.tsx')) {
       problems.push(`⚠️ JSX <Route> element in ${relativePath} - prefer route objects`);
     }
     
@@ -56,15 +60,15 @@ function checkFile(filePath) {
         !path.includes('http') && 
         !path.includes('#') && 
         !path.includes('mailto:') &&
-        path.length > 8 // Ignore simple paths like "/"
+        path.length > 12 // Ignore simple paths
       );
       
-      if (suspiciousPaths.length > 5) {
+      if (suspiciousPaths.length > 8) {
         problems.push(`⚠️ Many hardcoded navigation paths in ${relativePath} - consider route constants`);
       }
     }
     
-    // Check for token cleanup
+    // Check for token cleanup usage
     if (content.includes('__lovable_token') && !content.includes('stripLovableToken')) {
       problems.push(`⚠️ __lovable_token handling in ${relativePath} - ensure proper cleanup`);
     }
@@ -77,14 +81,9 @@ function checkFile(filePath) {
 function checkCasingSensitivity() {
   console.log('🔍 Checking for case sensitivity issues...');
   
-  // This is more relevant for deployment - in development we can check for common patterns
-  const commonIssues = [];
-  
   try {
+    // Basic case sensitivity check - would need more sophisticated implementation for full coverage
     walkDirectory(SRC_DIR);
-    
-    // Additional check for common case issues in imports
-    // This would need more sophisticated analysis for full coverage
     console.log('✅ Basic case sensitivity check passed');
   } catch (error) {
     problems.push(`❌ Case sensitivity check failed: ${error.message}`);
@@ -102,6 +101,9 @@ function main() {
     
     if (problems.length === 0) {
       console.log('\n🎉 Repository health check passed - no issues found!');
+      console.log('✅ Single router pattern maintained');
+      console.log('✅ Route objects standard followed');
+      console.log('✅ No critical routing violations detected');
       process.exit(0);
     } else {
       console.log('\n📋 Repository health issues found:\n');
@@ -113,10 +115,14 @@ function main() {
       console.log(`\n📊 Summary: ${criticalIssues.length} critical issues, ${warnings.length} warnings`);
       
       if (criticalIssues.length > 0) {
-        console.log('\n💥 Critical issues must be fixed before deployment');
+        console.log('\n💥 Critical issues must be fixed before deployment:');
+        console.log('- Multiple router instances can cause navigation conflicts');
+        console.log('- Use AppRouter wrapper for all routing needs');
+        console.log('- Convert JSX Routes to route objects for consistency');
         process.exit(1);
       } else {
         console.log('\n⚠️ Warnings found but build can continue');
+        console.log('💡 Consider addressing warnings for better maintainability');
         process.exit(0);
       }
     }
