@@ -140,9 +140,15 @@ export function Shell() {
     filteredRoutes = mainRouteObjects.filter(route => !route.flag && (!route.roles || route.roles.includes('guest')));
   }
   
+  // Safe defaults: always-available routes
+  const safeRoutes: AppRoute[] = mainRouteObjects.filter(r => r.alwaysAvailable);
+  
+  // Prefer filtered routes; if empty, fall back to safe routes
+  const selectedRoutes: AppRoute[] = filteredRoutes.length > 0 ? filteredRoutes : safeRoutes;
+  
   // Convert to React Router compatible format
   const routeElements: RouteObject[] = [
-    ...convertToRouteObjects(filteredRoutes),
+    ...convertToRouteObjects(selectedRoutes),
     // Error routes - always available
     { path: '/unauthorized', element: <UnauthorizedPage /> },
     { path: '/emergency', element: <RouterEmergencyFallback /> },
@@ -153,18 +159,21 @@ export function Shell() {
   if (import.meta.env.DEV || isLovablePreviewHost()) {
     console.error('[EMERGENCY SHELL] Filtered routes debug:', {
       filteredRoutesCount: filteredRoutes.length,
-      availableRoutes: filteredRoutes.map(r => ({ path: r.path, roles: r.roles, flag: r.flag })).slice(0, 10),
+      safeRoutesCount: safeRoutes.length,
+      used: filteredRoutes.length > 0 ? 'filtered' : 'safe',
+      availableRoutes: selectedRoutes.map(r => ({ path: r.path, roles: r.roles, flag: r.flag })).slice(0, 10),
       routeElementsCount: routeElements.length
     });
   }
 
   const routes = useRoutes(routeElements);
 
-  // EMERGENCY: Always show emergency fallback if no routes
-  if (!routes || filteredRoutes.length === 0) {
+  // EMERGENCY: Use emergency fallback only if no routes at all
+  if (!routes || selectedRoutes.length === 0) {
     console.error('[EMERGENCY SHELL] No routes available!', {
       routes: !!routes,
       filteredRoutesLength: filteredRoutes.length,
+      safeRoutesLength: safeRoutes.length,
       allRoutesLength: allRoutes.length
     });
     return <RouterEmergencyFallback />;

@@ -12,4 +12,6 @@ export type AppRoute = {
   roles?: UserRole[];
   flag?: string; // feature flag key
   navKey?: string; // optional: ties to nav/menu
+  // availability
+  alwaysAvailable?: boolean; // never filtered by flags/roles
 };

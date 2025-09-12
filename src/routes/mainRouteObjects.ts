@@ -48,13 +48,15 @@ export const mainRouteObjects: AppRoute[] = [
     path: '/test-simple',
     element: createElement(SimpleTestPage),
     roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
-    navKey: 'test-simple'
+    navKey: 'test-simple',
+    alwaysAvailable: true
   },
   {
     path: '/',
     element: createElement(HomePage),
     roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
-    navKey: 'home'
+    navKey: 'home',
+    alwaysAvailable: true
   },
   {
     path: '/test',
@@ -74,7 +76,8 @@ export const mainRouteObjects: AppRoute[] = [
     path: '/login',
     element: createElement(LoginPage),
     roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
-    navKey: 'login'
+    navKey: 'login',
+    alwaysAvailable: true
   },
   // Note: /signin and /auth redirects handled at nginx/netlify level via _redirects
   {
