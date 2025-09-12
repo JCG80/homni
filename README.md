@@ -115,6 +115,34 @@ const address = await provider.reverse(59.9133, 10.7389);
 - Recharts for data visualization
 - Vitest for unit testing
 
+## Mobile/PC Parity Guardrails
+
+The platform includes comprehensive Mobile/PC Parity validation to ensure seamless cross-device experiences:
+
+### Validation Commands
+```bash
+# Environment & CORS validation
+npm run check:env
+
+# Repository health check
+npm run check:health
+
+# Complete pre-deployment validation
+npm run check:deploy
+
+# Mobile/PC parity E2E tests
+npm run test:e2e:parity
+```
+
+### Key Features
+- **Token Cleanup**: Automatic removal of development tokens from URLs
+- **Unified Routing**: Consistent navigation across desktop and mobile
+- **Service Worker Management**: Self-healing PWA components in preview mode
+- **E2E Testing**: Automated mobile/desktop parity validation
+- **CI/CD Integration**: Validation on every deployment
+
+For detailed implementation guide, see [Mobile/PC Parity Documentation](docs/MOBILE_PC_PARITY_IMPLEMENTATION.md).
+
 ## Documentation
 
 This README provides a quick overview. For comprehensive documentation:
