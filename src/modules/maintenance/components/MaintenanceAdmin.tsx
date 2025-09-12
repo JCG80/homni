@@ -11,6 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trash2, Edit, Plus, Clock, Home } from 'lucide-react';
 import { toast } from 'sonner';
+// i18n support to be added later
+import { WithFeatureFlag } from '@/modules/feature_flags/components/FeatureFlagProvider';
 import { listTasks, createTask, updateTask, deleteTask, type MaintenanceTask } from '../api';
 
 const seasons = ['Vinter', 'Vår', 'Sommer', 'Høst'];
@@ -20,11 +22,13 @@ const priorities = ['Høy', 'Middels', 'Lav'];
 const TaskForm = ({
   task,
   onClose,
-  onSave
+  onSave,
+  t
 }: {
   task?: MaintenanceTask | null;
   onClose: () => void;
   onSave: (task: Partial<MaintenanceTask>) => void;
+  t: any;
 }) => {
   const [formData, setFormData] = useState({
     title: task?.title || '',
@@ -73,7 +77,7 @@ const TaskForm = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <Label htmlFor="title">Tittel *</Label>
+          <Label htmlFor="title">{t('maintenance.labels.title')} *</Label>
           <Input
             id="title"
             value={formData.title}
@@ -84,7 +88,7 @@ const TaskForm = ({
         </div>
         
         <div className="col-span-2">
-          <Label htmlFor="description">Beskrivelse *</Label>
+          <Label htmlFor="description">{t('maintenance.labels.description')} *</Label>
           <Textarea
             id="description"
             value={formData.description}
@@ -109,7 +113,7 @@ const TaskForm = ({
                   seasons: toggleArrayItem(prev.seasons, season)
                 }))}
               >
-                {season}
+                {t(`maintenance.seasons.${season}`)}
               </Button>
             ))}
           </div>
@@ -129,14 +133,14 @@ const TaskForm = ({
                   property_types: toggleArrayItem(prev.property_types, type)
                 }))}
               >
-                {type}
+                {t(`maintenance.property_types.${type}`)}
               </Button>
             ))}
           </div>
         </div>
 
         <div>
-          <Label htmlFor="frequency">Frekvens (måneder) *</Label>
+          <Label htmlFor="frequency">{t('maintenance.labels.frequency')} *</Label>
           <Input
             id="frequency"
             type="number"
@@ -150,20 +154,25 @@ const TaskForm = ({
 
         <div>
           <Label htmlFor="priority">Prioritet *</Label>
-          <Select value={formData.priority} onValueChange={(value: 'Høy' | 'Middels' | 'Lav') => setFormData(prev => ({ ...prev, priority: value }))}>
+          <Select 
+            value={formData.priority} 
+            onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value as 'Høy' | 'Middels' | 'Lav' }))}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {priorities.map((priority) => (
-                <SelectItem key={priority} value={priority}>{priority}</SelectItem>
+                <SelectItem key={priority} value={priority}>
+                  {t(`maintenance.priority.${priority}`)}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="estimated_time">Estimert tid</Label>
+          <Label htmlFor="estimated_time">{t('maintenance.labels.estimated_time')}</Label>
           <Input
             id="estimated_time"
             value={formData.estimated_time}
@@ -173,7 +182,7 @@ const TaskForm = ({
         </div>
 
         <div>
-          <Label htmlFor="cost_estimate">Estimert kostnad (NOK)</Label>
+          <Label htmlFor="cost_estimate">{t('maintenance.labels.cost_estimate')} (NOK)</Label>
           <Input
             id="cost_estimate"
             type="number"
@@ -187,10 +196,10 @@ const TaskForm = ({
 
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onClose}>
-          Avbryt
+          {t('actions.cancel')}
         </Button>
         <Button type="submit">
-          {task ? 'Oppdater' : 'Opprett'}
+          {task ? t('actions.edit') : t('maintenance.actions.add_task')}
         </Button>
       </div>
     </form>
@@ -198,6 +207,7 @@ const TaskForm = ({
 };
 
 export const MaintenanceAdmin = () => {
+  // Temporary hardcoded strings - i18n to be added later
   const queryClient = useQueryClient();
   const [editDialog, setEditDialog] = useState<{ open: boolean; task: MaintenanceTask | null }>({ open: false, task: null });
   const [createDialog, setCreateDialog] = useState(false);
@@ -213,7 +223,7 @@ export const MaintenanceAdmin = () => {
     mutationFn: createTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-tasks-admin'] });
-      toast.success('Vedlikeholdsoppgave opprettet');
+      toast.success(t('maintenance.messages.task_created'));
       setCreateDialog(false);
     },
     onError: (error) => {
@@ -228,7 +238,7 @@ export const MaintenanceAdmin = () => {
       updateTask(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-tasks-admin'] });
-      toast.success('Oppgave oppdatert');
+      toast.success(t('maintenance.messages.task_updated'));
       setEditDialog({ open: false, task: null });
     },
     onError: (error) => {
@@ -242,7 +252,7 @@ export const MaintenanceAdmin = () => {
     mutationFn: deleteTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-tasks-admin'] });
-      toast.success('Oppgave slettet');
+      toast.success(t('maintenance.messages.task_deleted'));
     },
     onError: (error) => {
       console.error('Error deleting task:', error);
@@ -276,111 +286,113 @@ export const MaintenanceAdmin = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Vedlikeholdsadministrasjon</h1>
-          <p className="text-muted-foreground">
-            Administrer master vedlikeholdsoppgaver for alle brukere
-          </p>
+    <WithFeatureFlag flagName="ENABLE_MAINTENANCE_ADMIN" fallbackValue={true}>
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">{t('maintenance.admin')}</h1>
+            <p className="text-muted-foreground">
+              Administrer master vedlikeholdsoppgaver for alle brukere
+            </p>
+          </div>
+          <Button onClick={() => setCreateDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t('maintenance.actions.add_task')}
+          </Button>
         </div>
-        <Button onClick={() => setCreateDialog(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Ny oppgave
-        </Button>
+
+        {/* Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Totale oppgaver</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{tasks.length}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('maintenance.priority.Høy')} prioritet</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-destructive">{tasksByPriority['Høy'].length}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('maintenance.priority.Middels')} prioritet</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{tasksByPriority['Middels'].length}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('maintenance.priority.Lav')} prioritet</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{tasksByPriority['Lav'].length}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tasks Tabs */}
+        <Tabs defaultValue="all" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="all">Alle oppgaver ({tasks.length})</TabsTrigger>
+            <TabsTrigger value="high">{t('maintenance.priority.Høy')} prioritet ({tasksByPriority['Høy'].length})</TabsTrigger>
+            <TabsTrigger value="medium">{t('maintenance.priority.Middels')} ({tasksByPriority['Middels'].length})</TabsTrigger>
+            <TabsTrigger value="low">{t('maintenance.priority.Lav')} ({tasksByPriority['Lav'].length})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all">
+            <TasksGrid tasks={tasks} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} t={t} />
+          </TabsContent>
+
+          <TabsContent value="high">
+            <TasksGrid tasks={tasksByPriority['Høy']} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} t={t} />
+          </TabsContent>
+
+          <TabsContent value="medium">
+            <TasksGrid tasks={tasksByPriority['Middels']} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} t={t} />
+          </TabsContent>
+
+          <TabsContent value="low">
+            <TasksGrid tasks={tasksByPriority['Lav']} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} t={t} />
+          </TabsContent>
+        </Tabs>
+
+        {/* Create Dialog */}
+        <Dialog open={createDialog} onOpenChange={setCreateDialog}>
+          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{t('maintenance.actions.add_task')}</DialogTitle>
+              <DialogDescription>
+                Legg til en ny master vedlikeholdsoppgave som vil være tilgjengelig for alle brukere.
+              </DialogDescription>
+            </DialogHeader>
+            <TaskForm onClose={() => setCreateDialog(false)} onSave={handleCreateTask} t={t} />
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Dialog */}
+        <Dialog open={editDialog.open} onOpenChange={(open) => setEditDialog({ open, task: editDialog.task })}>
+          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{t('maintenance.actions.edit_task')}</DialogTitle>
+              <DialogDescription>
+                Oppdater oppgavens detaljer. Endringer påvirker alle brukere.
+              </DialogDescription>
+            </DialogHeader>
+            <TaskForm task={editDialog.task} onClose={() => setEditDialog({ open: false, task: null })} onSave={handleUpdateTask} t={t} />
+          </DialogContent>
+        </Dialog>
       </div>
-
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Totale oppgaver</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{tasks.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Høy prioritet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">{tasksByPriority['Høy'].length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Middels prioritet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{tasksByPriority['Middels'].length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lav prioritet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{tasksByPriority['Lav'].length}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tasks Tabs */}
-      <Tabs defaultValue="all" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="all">Alle oppgaver ({tasks.length})</TabsTrigger>
-          <TabsTrigger value="high">Høy prioritet ({tasksByPriority['Høy'].length})</TabsTrigger>
-          <TabsTrigger value="medium">Middels ({tasksByPriority['Middels'].length})</TabsTrigger>
-          <TabsTrigger value="low">Lav ({tasksByPriority['Lav'].length})</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all">
-          <TasksGrid tasks={tasks} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} />
-        </TabsContent>
-
-        <TabsContent value="high">
-          <TasksGrid tasks={tasksByPriority['Høy']} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} />
-        </TabsContent>
-
-        <TabsContent value="medium">
-          <TasksGrid tasks={tasksByPriority['Middels']} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} />
-        </TabsContent>
-
-        <TabsContent value="low">
-          <TasksGrid tasks={tasksByPriority['Lav']} onEdit={(task) => setEditDialog({ open: true, task })} onDelete={handleDeleteTask} isLoading={isLoading} />
-        </TabsContent>
-      </Tabs>
-
-      {/* Create Dialog */}
-      <Dialog open={createDialog} onOpenChange={setCreateDialog}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Opprett ny vedlikeholdsoppgave</DialogTitle>
-            <DialogDescription>
-              Legg til en ny master vedlikeholdsoppgave som vil være tilgjengelig for alle brukere.
-            </DialogDescription>
-          </DialogHeader>
-          <TaskForm onClose={() => setCreateDialog(false)} onSave={handleCreateTask} />
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Dialog */}
-      <Dialog open={editDialog.open} onOpenChange={(open) => setEditDialog({ open, task: editDialog.task })}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Rediger vedlikeholdsoppgave</DialogTitle>
-            <DialogDescription>
-              Oppdater oppgavens detaljer. Endringer påvirker alle brukere.
-            </DialogDescription>
-          </DialogHeader>
-          <TaskForm task={editDialog.task} onClose={() => setEditDialog({ open: false, task: null })} onSave={handleUpdateTask} />
-        </DialogContent>
-      </Dialog>
-    </div>
+    </WithFeatureFlag>
   );
 };
 
@@ -389,18 +401,20 @@ const TasksGrid = ({
   tasks, 
   onEdit, 
   onDelete, 
-  isLoading 
+  isLoading,
+  t
 }: { 
   tasks: MaintenanceTask[]; 
   onEdit: (task: MaintenanceTask) => void; 
   onDelete: (task: MaintenanceTask) => void;
   isLoading: boolean;
+  t: any;
 }) => {
   if (isLoading) {
     return (
       <div className="text-center py-8">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Laster oppgaver...</p>
+        <p className="text-muted-foreground">{t('maintenance.messages.loading_tasks')}</p>
       </div>
     );
   }
@@ -428,7 +442,7 @@ const TasksGrid = ({
                 <CardDescription className="line-clamp-2">{task.description}</CardDescription>
               </div>
               <Badge variant={task.priority === 'Høy' ? 'destructive' : task.priority === 'Middels' ? 'default' : 'secondary'}>
-                {task.priority}
+                {t(`maintenance.priority.${task.priority}`)}
               </Badge>
             </div>
           </CardHeader>
@@ -440,12 +454,12 @@ const TasksGrid = ({
               </div>
               {task.estimated_time && (
                 <div className="text-sm text-muted-foreground">
-                  Estimert tid: {task.estimated_time}
+                  {t('maintenance.labels.estimated_time')}: {task.estimated_time}
                 </div>
               )}
               {task.cost_estimate && (
                 <div className="text-sm text-muted-foreground">
-                  Estimert kostnad: {task.cost_estimate} NOK
+                  {t('maintenance.labels.cost_estimate')}: {task.cost_estimate} NOK
                 </div>
               )}
             </div>
@@ -456,7 +470,7 @@ const TasksGrid = ({
                 <div className="flex flex-wrap gap-1 mt-1">
                   {task.seasons.map((season) => (
                     <Badge key={season} variant="outline" className="text-xs">
-                      {season}
+                      {t(`maintenance.seasons.${season}`)}
                     </Badge>
                   ))}
                 </div>
@@ -466,7 +480,7 @@ const TasksGrid = ({
                 <div className="flex flex-wrap gap-1 mt-1">
                   {task.property_types.map((type) => (
                     <Badge key={type} variant="outline" className="text-xs">
-                      {type}
+                      {t(`maintenance.property_types.${type}`)}
                     </Badge>
                   ))}
                 </div>
@@ -477,7 +491,7 @@ const TasksGrid = ({
               <Button variant="outline" size="sm" onClick={() => onEdit(task)}>
                 <Edit className="h-4 w-4" />
               </Button>
-              <Button variant="destructive" size="sm" onClick={() => onDelete(task)}>
+              <Button variant="outline" size="sm" onClick={() => onDelete(task)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>

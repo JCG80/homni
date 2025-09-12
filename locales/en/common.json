@@ -32,6 +32,58 @@
     "min_length": "Minimum {{count}} characters",
     "max_length": "Maximum {{count}} characters"
   },
+  "maintenance": {
+    "title": "Maintenance",
+    "dashboard": "Maintenance Dashboard",
+    "admin": "Manage Maintenance",
+    "tasks": "Tasks",
+    "due_tasks": "Due Tasks",
+    "completed_tasks": "Completed Tasks",
+    "seasons": {
+      "Vinter": "Winter",
+      "Vår": "Spring",
+      "Sommer": "Summer", 
+      "Høst": "Fall"
+    },
+    "priority": {
+      "Høy": "High",
+      "Middels": "Medium",
+      "Lav": "Low"
+    },
+    "property_types": {
+      "Enebolig": "Single Family Home",
+      "Rekkehus": "Townhouse",
+      "Leilighet": "Apartment",
+      "Tomannsbolig": "Duplex",
+      "Fritidsbolig": "Vacation Home"
+    },
+    "actions": {
+      "mark_complete": "Mark Complete",
+      "add_task": "Add Task",
+      "edit_task": "Edit Task", 
+      "delete_task": "Delete Task",
+      "add_note": "Add Note"
+    },
+    "labels": {
+      "title": "Title",
+      "description": "Description",
+      "frequency": "Frequency (months)",
+      "estimated_time": "Estimated Time",
+      "cost_estimate": "Cost Estimate",
+      "note": "Note",
+      "completed_at": "Completed",
+      "last_completed": "Last Completed"
+    },
+    "messages": {
+      "no_due_tasks": "No due tasks for this season",
+      "task_completed": "Task marked as complete",
+      "task_created": "Task created",
+      "task_updated": "Task updated", 
+      "task_deleted": "Task deleted",
+      "loading_tasks": "Loading tasks...",
+      "error_loading": "Error loading tasks"
+    }
+  },
   "common": {
     "yes": "Yes",
     "no": "No",

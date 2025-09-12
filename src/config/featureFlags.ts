@@ -17,6 +17,10 @@ export const DEFAULT_FEATURE_FLAGS = {
   ENABLE_ONBOARDING_WIZARD: false,
   ENABLE_SMART_START: true,
   
+  // Maintenance module
+  ENABLE_MAINTENANCE_DASHBOARD: true,
+  ENABLE_MAINTENANCE_ADMIN: true,
+  
   // Future features
   ENABLE_MARKETPLACE: false,
   ENABLE_ADVANCED_REPORTING: false,

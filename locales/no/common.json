@@ -32,6 +32,58 @@
     "min_length": "Minimum {{count}} tegn",
     "max_length": "Maksimum {{count}} tegn"
   },
+  "maintenance": {
+    "title": "Vedlikehold",
+    "dashboard": "Vedlikeholdsdashboard",
+    "admin": "Administrer vedlikehold",
+    "tasks": "Oppgaver",
+    "due_tasks": "Forfallende oppgaver",
+    "completed_tasks": "Fullførte oppgaver",
+    "seasons": {
+      "Vinter": "Vinter",
+      "Vår": "Vår", 
+      "Sommer": "Sommer",
+      "Høst": "Høst"
+    },
+    "priority": {
+      "Høy": "Høy",
+      "Middels": "Middels",
+      "Lav": "Lav"
+    },
+    "property_types": {
+      "Enebolig": "Enebolig",
+      "Rekkehus": "Rekkehus",
+      "Leilighet": "Leilighet",
+      "Tomannsbolig": "Tomannsbolig",
+      "Fritidsbolig": "Fritidsbolig"
+    },
+    "actions": {
+      "mark_complete": "Marker som fullført",
+      "add_task": "Legg til oppgave",
+      "edit_task": "Rediger oppgave",
+      "delete_task": "Slett oppgave",
+      "add_note": "Legg til notat"
+    },
+    "labels": {
+      "title": "Tittel",
+      "description": "Beskrivelse",
+      "frequency": "Frekvens (måneder)",
+      "estimated_time": "Estimert tid",
+      "cost_estimate": "Kostnadsestimat",
+      "note": "Notat",
+      "completed_at": "Fullført",
+      "last_completed": "Sist fullført"
+    },
+    "messages": {
+      "no_due_tasks": "Ingen forfallende oppgaver for denne sesongen",
+      "task_completed": "Oppgave markert som fullført",
+      "task_created": "Oppgave opprettet",
+      "task_updated": "Oppgave oppdatert",
+      "task_deleted": "Oppgave slettet",
+      "loading_tasks": "Laster oppgaver...",
+      "error_loading": "Feil ved lasting av oppgaver"
+    }
+  },
   "common": {
     "yes": "Ja",
     "no": "Nei",
