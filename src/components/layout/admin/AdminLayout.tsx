@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { AdminHeader } from './AdminHeader';
 import { AdminSidebar } from './AdminSidebar';
+import { AdminBreadcrumbs } from './AdminBreadcrumbs';
 import { useAuth } from '@/modules/auth/hooks';
 import { Navigate } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ export const AdminLayout: React.FC = () => {
           <AdminHeader />
           <main className="flex-1 p-6">
             <div className="max-w-7xl mx-auto">
+              <AdminBreadcrumbs />
               <Outlet />
             </div>
           </main>

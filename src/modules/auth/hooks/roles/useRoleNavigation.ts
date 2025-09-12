@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../useAuth';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/modules/auth/normalizeRole';
+import { logger } from '@/utils/logger';
 
 interface UseRoleNavigationOptions {
   /**
@@ -33,31 +34,31 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
    */
   const redirectToDashboard = () => {
     if (!isAuthenticated) {
-      console.log("[useRoleNavigation] Not redirecting - user not authenticated");
+      logger.info('Not redirecting - user not authenticated');
       return;
     }
 
     if (!role) {
-      console.warn("[useRoleNavigation] Cannot redirect - no role available", { isAuthenticated, role });
+      logger.warn('Cannot redirect - no role available', { isAuthenticated, role });
       return;
     }
 
-    console.log("[useRoleNavigation] Redirecting with role:", role);
+    logger.info('Redirecting with role', { role });
 
     try {
       // If a specific redirect path is provided, use it
       if (redirectPath) {
-        console.log(`[useRoleNavigation] Using specified redirect path: ${redirectPath}`);
+        logger.info('Using specified redirect path', { redirectPath });
         navigate(redirectPath, { replace: true });
         return;
       }
       
       // Directly navigate to the role-specific dashboard if role is available
       const dashboardPath = routeForRole(role as UserRole);
-      console.log(`[useRoleNavigation] Navigating to role dashboard: ${dashboardPath}`);
+      logger.info('Navigating to role dashboard', { dashboardPath });
       navigate(dashboardPath, { replace: true });
     } catch (error) {
-      console.error("[useRoleNavigation] Navigation error:", error);
+      logger.error('Navigation error', { error });
       // Fallback to generic dashboard
       navigate('/dashboard', { replace: true });
     }
@@ -68,7 +69,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
    */
   const redirectToLogin = (returnPath?: string) => {
     const returnUrl = returnPath || window.location.pathname;
-    console.log(`[useRoleNavigation] Redirecting to login with return URL: ${returnUrl}`);
+    logger.info('Redirecting to login with return URL', { returnUrl });
     navigate(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
   };
 
@@ -78,12 +79,12 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
   const goToDashboard = (specificRole?: string) => {
     const targetRole = specificRole || role;
     if (!targetRole) {
-      console.log("[useRoleNavigation] No role specified, using main dashboard");
+      logger.info('No role specified, using main dashboard');
       navigate('/dashboard');
       return;
     }
     
-    console.log(`[useRoleNavigation] goToDashboard called for role: ${targetRole}`);
+    logger.info('goToDashboard called', { targetRole });
     navigate(routeForRole(targetRole as UserRole));
   };
 
@@ -94,7 +95,7 @@ export const useRoleNavigation = (options: UseRoleNavigationOptions = {}) => {
     }
 
     if (isAuthenticated && role) {
-      console.log(`[useRoleNavigation] Auto-redirect triggered with role: ${role}`);
+      logger.info('Auto-redirect triggered', { role });
       
       // Add slight delay to prevent redirect loops
       const redirectTimeout = setTimeout(() => {

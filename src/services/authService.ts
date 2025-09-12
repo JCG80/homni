@@ -3,6 +3,7 @@
  */
 import { supabase } from '@/integrations/supabase/client';
 import { UserRole, UserProfile, UserRoleAssignment } from '@/modules/auth/types/unified-types';
+import { logger } from '@/utils/logger';
 
 export class AuthService {
   /**
@@ -19,7 +20,7 @@ export class AuthService {
       if (error) throw error;
       return (data || []) as UserRoleAssignment[];
     } catch (error) {
-      console.error('Error fetching user roles:', error);
+      logger.error('Error fetching user roles', { error });
       return [];
     }
   }
@@ -35,7 +36,7 @@ export class AuthService {
       if (error) throw error;
       return (data as UserRole) || 'user';
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      logger.error('Error fetching user role', { error });
       return 'user';
     }
   }
@@ -54,7 +55,7 @@ export class AuthService {
       if (error) throw error;
       return data || false;
     } catch (error) {
-      console.error('Error checking role:', error);
+      logger.error('Error checking role', { error });
       return false;
     }
   }
@@ -73,7 +74,7 @@ export class AuthService {
       if (error) throw error;
       return data || false;
     } catch (error) {
-      console.error('Error checking role level:', error);
+      logger.error('Error checking role level', { error });
       return false;
     }
   }
@@ -89,7 +90,7 @@ export class AuthService {
       if (error) throw error;
       return data || 0;
     } catch (error) {
-      console.error('Error fetching user role level:', error);
+      logger.error('Error fetching user role level', { error });
       return 0;
     }
   }
@@ -109,7 +110,7 @@ export class AuthService {
       if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Error assigning role:', error);
+      logger.error('Error assigning role', { error });
       return false;
     }
   }
@@ -128,7 +129,7 @@ export class AuthService {
       if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Error removing role:', error);
+      logger.error('Error removing role', { error });
       return false;
     }
   }
@@ -147,7 +148,7 @@ export class AuthService {
       if (error) throw error;
       return data as UserProfile;
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      logger.error('Error fetching user profile', { error });
       return null;
     }
   }
@@ -168,7 +169,7 @@ export class AuthService {
       if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      logger.error('Error updating user profile', { error });
       return false;
     }
   }
@@ -187,7 +188,7 @@ export class AuthService {
       if (error) throw error;
       return data || false;
     } catch (error) {
-      console.error('Error checking feature flag:', error);
+      logger.error('Error checking feature flag', { error });
       return false;
     }
   }
@@ -205,7 +206,7 @@ export class AuthService {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error fetching user modules:', error);
+      logger.error('Error fetching user modules', { error });
       return [];
     }
   }
@@ -224,7 +225,7 @@ export class AuthService {
       if (error) throw error;
       return data || false;
     } catch (error) {
-      console.error('Error checking module access:', error);
+      logger.error('Error checking module access', { error });
       return false;
     }
   }
@@ -248,7 +249,7 @@ export class AuthService {
       if (error) throw error;
       return data as UserProfile;
     } catch (error) {
-      console.error('Error ensuring user profile:', error);
+      logger.error('Error ensuring user profile', { error });
       return null;
     }
   }

@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '@/modules/auth/utils/roles/types';
+import { logger } from '@/utils/logger';
 
 export interface RoleGrant {
   id: string;
@@ -24,10 +25,10 @@ export class RoleGrantsService {
     try {
       // For now, return empty array until database is set up
       // This will be implemented when the role_grants table is created
-      console.log('getUserRoleGrants called for:', userId);
+      logger.info('getUserRoleGrants called', { userId });
       return [];
     } catch (error) {
-      console.error('Failed to fetch user role grants:', error);
+      logger.error('Failed to fetch user role grants', { error });
       return [];
     }
   }
@@ -43,9 +44,9 @@ export class RoleGrantsService {
   ): Promise<void> {
     try {
       // For now, just log the action until database is set up
-      console.info(`Role granted: ${role} to user ${userId}${context ? ` in context ${JSON.stringify(context)}` : ''}`);
+      logger.info('Role granted', { role, userId, context });
     } catch (error) {
-      console.error('Failed to grant role:', error);
+      logger.error('Failed to grant role', { error });
       throw error;
     }
   }
@@ -60,9 +61,9 @@ export class RoleGrantsService {
   ): Promise<void> {
     try {
       // For now, just log the action until database is set up
-      console.info(`Role revoked: ${role} from user ${userId}${context ? ` in context ${JSON.stringify(context)}` : ''}`);
+      logger.info('Role revoked', { role, userId, context });
     } catch (error) {
-      console.error('Failed to revoke role:', error);
+      logger.error('Failed to revoke role', { error });
       throw error;
     }
   }
@@ -79,7 +80,7 @@ export class RoleGrantsService {
       // For now, return false until database is set up
       return false;
     } catch (error) {
-      console.error('Failed to check role grant:', error);
+      logger.error('Failed to check role grant', { error });
       return false;
     }
   }
@@ -93,7 +94,7 @@ export class RoleGrantsService {
       const effectiveRoles = await this.getUserEffectiveRoles(userId);
       return effectiveRoles.includes('master_admin');
     } catch (error) {
-      console.error('Failed to check master admin status:', error);
+      logger.error('Failed to check master admin status', { error });
       return false;
     }
   }
@@ -106,7 +107,7 @@ export class RoleGrantsService {
       // For now, return empty array until database is set up
       return [];
     } catch (error) {
-      console.error('Failed to fetch effective roles:', error);
+      logger.error('Failed to fetch effective roles', { error });
       return [];
     }
   }

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../useAuth';
 import { UserRole } from '../../utils/roles/types';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { logger } from '@/utils/logger';
 
 interface UseRoleProtectionOptions {
   /**
@@ -62,37 +63,36 @@ export const useRoleProtection = ({
     }
 
     // Log the access check for debugging
-    console.log('Role protection check:', 
-      { isAuthenticated, role, path: location.pathname, allowedRoles, allowAnyAuthenticated, module });
+    logger.info('Role protection check', { isAuthenticated, role, path: location.pathname, allowedRoles, allowAnyAuthenticated, module });
 
     // If not authenticated, access is denied
     if (!isAuthenticated) {
-      console.log('Access denied: Not authenticated');
+      logger.info('Access denied: Not authenticated');
       redirect('/login');
       return false;
     }
 
     // If module is specified, check module access
     if (module && !canAccessModule(module)) {
-      console.log(`Access denied: No access to module "${module}"`);
+      logger.info('Access denied: No access to module', { module });
       return false;
     }
 
     // If allowAnyAuthenticated is true, allow access to any authenticated user
     if (allowAnyAuthenticated) {
-      console.log('Access granted: Any authenticated user allowed');
+      logger.info('Access granted: Any authenticated user allowed');
       return true;
     }
 
     // If no specific roles are required, allow access
     if (!allowedRoles.length) {
-      console.log('Access granted: No specific roles required');
+      logger.info('Access granted: No specific roles required');
       return true;
     }
 
     // Special case: master_admin has access to everything
     if (role === 'master_admin') {
-      console.log('Access granted: User is master_admin');
+      logger.info('Access granted: User is master_admin');
       return true;
     }
 
@@ -100,11 +100,11 @@ export const useRoleProtection = ({
     const hasAllowedRole = role ? allowedRoles.includes(role as UserRole) : false;
     
     if (!hasAllowedRole) {
-      console.log('Access denied: Role not allowed', { role, allowedRoles });
+      logger.info('Access denied: Role not allowed', { role, allowedRoles });
       return false;
     }
 
-    console.log('Access granted: User has allowed role', { role });
+    logger.info('Access granted: User has allowed role', { role });
     return true;
   }, [isAuthenticated, role, isLoading, allowedRoles, allowAnyAuthenticated, module, location.pathname, canAccessModule, redirect]);
 
