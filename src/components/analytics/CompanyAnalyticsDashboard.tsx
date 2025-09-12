@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CompanyMetrics, LeadSource, RegionalData, RevenueData, PipelineData } from '@/types/company';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Building2, TrendingUp, Users, DollarSign, Target, Clock, Award } from 'lucide-react';
@@ -9,7 +8,7 @@ import { analyticsService } from '@/lib/analytics/analyticsService';
 import { useAuth } from '@/modules/auth/hooks';
 import { logger } from '@/utils/logger';
 
-interface CompanyMetrics {
+interface LocalCompanyMetrics {
   totalLeads: number;
   convertedLeads: number;
   conversionRate: number;
@@ -20,24 +19,37 @@ interface CompanyMetrics {
   activeUsers: number;
 }
 
-interface LeadSource {
+interface LocalLeadSource {
   name: string;
   count: number;
   value: number;
   conversionRate: number;
 }
 
-interface RegionalData {
+interface LocalRegionalData {
   region: string;
   leads: number;
   revenue: number;
   conversionRate: number;
 }
 
+interface LocalRevenueData {
+  month: string;
+  revenue: number;
+  leads: number;
+  conversions: number;
+}
+
+interface LocalPipelineData {
+  stage: string;
+  count: number;
+  value: number;
+}
+
 export const CompanyAnalyticsDashboard = () => {
   const { profile } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [metrics, setMetrics] = useState<CompanyMetrics>({
+  const [metrics, setMetrics] = useState<LocalCompanyMetrics>({
     totalLeads: 0,
     convertedLeads: 0,
     conversionRate: 0,
@@ -48,10 +60,10 @@ export const CompanyAnalyticsDashboard = () => {
     activeUsers: 0,
   });
   
-  const [leadSources, setLeadSources] = useState<LeadSource[]>([]);
-  const [regionalData, setRegionalData] = useState<RegionalData[]>([]);
-  const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
-  const [pipelineData, setPipelineData] = useState<PipelineData[]>([]);
+  const [leadSources, setLeadSources] = useState<LocalLeadSource[]>([]);
+  const [regionalData, setRegionalData] = useState<LocalRegionalData[]>([]);
+  const [revenueData, setRevenueData] = useState<LocalRevenueData[]>([]);
+  const [pipelineData, setPipelineData] = useState<LocalPipelineData[]>([]);
 
   useEffect(() => {
     if (profile?.company_id) {
@@ -76,7 +88,7 @@ export const CompanyAnalyticsDashboard = () => {
       ], dateRange);
 
       // Generate realistic company data
-      const companyMetrics: CompanyMetrics = {
+      const companyMetrics: LocalCompanyMetrics = {
         totalLeads: 1247,
         convertedLeads: 186,
         conversionRate: 14.9,
@@ -87,7 +99,7 @@ export const CompanyAnalyticsDashboard = () => {
         activeUsers: 89,
       };
 
-      const sources: LeadSource[] = [
+      const sources: LocalLeadSource[] = [
         { name: 'Google Ads', count: 342, value: 97480, conversionRate: 18.4 },
         { name: 'Facebook', count: 298, value: 84940, conversionRate: 15.8 },
         { name: 'Organic Search', count: 267, value: 76095, conversionRate: 22.1 },
@@ -95,7 +107,7 @@ export const CompanyAnalyticsDashboard = () => {
         { name: 'Direct', count: 151, value: 43035, conversionRate: 19.2 },
       ];
 
-      const regions: RegionalData[] = [
+      const regions: LocalRegionalData[] = [
         { region: 'Oslo', leads: 387, revenue: 165420, conversionRate: 16.8 },
         { region: 'Bergen', leads: 298, revenue: 127260, conversionRate: 15.2 },
         { region: 'Trondheim', leads: 234, revenue: 99990, conversionRate: 14.1 },
