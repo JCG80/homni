@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { X } from 'lucide-react';
 
 interface NetworkStatus {
   supabaseConnection: 'checking' | 'connected' | 'failed';
@@ -15,6 +16,25 @@ export function NetworkDiagnostics() {
     apiEndpoints: {},
     authStatus: 'checking'
   });
+  
+  const [isVisible, setIsVisible] = useState(() => {
+    return localStorage.getItem('debug-network-visible') !== 'false';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('debug-network-visible', String(isVisible));
+  }, [isVisible]);
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'debug-network-visible') {
+        setIsVisible(e.newValue !== 'false');
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   useEffect(() => {
     const runDiagnostics = async () => {
@@ -58,7 +78,7 @@ export function NetworkDiagnostics() {
     runDiagnostics();
   }, []);
 
-  if (!import.meta.env.DEV) return null;
+  if (!import.meta.env.DEV || !isVisible) return null;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -76,7 +96,16 @@ export function NetworkDiagnostics() {
 
   return (
     <div className="fixed bottom-4 left-4 z-50 max-w-sm p-4 bg-background border rounded-lg shadow-lg text-xs font-mono">
-      <h3 className="font-bold text-sm mb-2">🌐 Network Status</h3>
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-bold text-sm">🌐 Network Status</h3>
+        <button 
+          onClick={() => setIsVisible(false)}
+          className="p-1 hover:bg-muted rounded transition-colors"
+          aria-label="Close network diagnostics"
+        >
+          <X size={12} />
+        </button>
+      </div>
       
       <div className="space-y-2">
         <div className="flex justify-between">

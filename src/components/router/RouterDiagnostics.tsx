@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
 import { getHostEnvironment, isLovablePreviewHost } from '@/lib/env/hosts';
+import { X } from 'lucide-react';
 
 export function RouterDiagnostics() {
   const location = useLocation();
@@ -10,9 +11,28 @@ export function RouterDiagnostics() {
   const flags = useFeatureFlags();
   const role = useCurrentRole();
   const hostEnv = getHostEnvironment();
+  
+  const [isVisible, setIsVisible] = useState(() => {
+    return localStorage.getItem('debug-router-visible') !== 'false';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('debug-router-visible', String(isVisible));
+  }, [isVisible]);
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'debug-router-visible') {
+        setIsVisible(e.newValue !== 'false');
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Show in dev or preview mode for easy debugging
-  if (!import.meta.env.DEV && hostEnv !== 'preview') return null;
+  if ((!import.meta.env.DEV && hostEnv !== 'preview') || !isVisible) return null;
 
   const routerInfo = {
     mode: import.meta.env.VITE_ROUTER_MODE || 'browser',
@@ -35,7 +55,16 @@ export function RouterDiagnostics() {
 
   return (
     <div className="fixed top-4 right-4 z-50 max-w-md p-4 bg-background border rounded-lg shadow-lg text-xs font-mono">
-      <h3 className="font-bold text-sm mb-2">🧭 Router Debug</h3>
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-bold text-sm">🧭 Router Debug</h3>
+        <button 
+          onClick={() => setIsVisible(false)}
+          className="p-1 hover:bg-muted rounded transition-colors"
+          aria-label="Close router diagnostics"
+        >
+          <X size={12} />
+        </button>
+      </div>
       
       <div className="space-y-2">
         <div>

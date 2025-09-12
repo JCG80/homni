@@ -1,16 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
 import { useLocation } from 'react-router-dom';
+import { X } from 'lucide-react';
 
 export function AppDiagnostics() {
   const { user, profile, isLoading } = useAuth();
   const flags = useFeatureFlags();
   const role = useCurrentRole();
   const location = useLocation();
+  
+  const [isVisible, setIsVisible] = useState(() => {
+    return localStorage.getItem('debug-app-visible') !== 'false';
+  });
 
-  if (!import.meta.env.DEV) return null;
+  useEffect(() => {
+    localStorage.setItem('debug-app-visible', String(isVisible));
+  }, [isVisible]);
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'debug-app-visible') {
+        setIsVisible(e.newValue !== 'false');
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  if (!import.meta.env.DEV || !isVisible) return null;
 
   const diagnostics = {
     environment: {
@@ -41,7 +61,16 @@ export function AppDiagnostics() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-md p-4 bg-background border rounded-lg shadow-lg text-xs font-mono">
-      <h3 className="font-bold text-sm mb-2">🔍 App Diagnostics</h3>
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-bold text-sm">🔍 App Diagnostics</h3>
+        <button 
+          onClick={() => setIsVisible(false)}
+          className="p-1 hover:bg-muted rounded transition-colors"
+          aria-label="Close diagnostics"
+        >
+          <X size={12} />
+        </button>
+      </div>
       
       <div className="space-y-2">
         <details>

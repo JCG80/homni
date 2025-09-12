@@ -10,7 +10,7 @@ import { stripLovableToken, hasLovableToken } from '@/app/stripToken';
 import { performDevCleanup } from '@/pwa/cleanup';
 import { AppDiagnostics } from '@/components/debug/AppDiagnostics';
 import { NetworkDiagnostics } from '@/components/debug/NetworkDiagnostics';
-import { RouterDiagnostics } from '@/components/router/RouterDiagnostics';
+import { DebugToggle } from '@/components/debug/DebugToggle';
 import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
 
 import { usePageViews } from '@/lib/analytics/react';
@@ -50,9 +50,9 @@ function App() {
         <Shell />
         
         <Toaster />
+        <DebugToggle />
         <AppDiagnostics />
         <NetworkDiagnostics />
-        <RouterDiagnostics />
       </SiteLayout>
     </ErrorBoundary>
   );
