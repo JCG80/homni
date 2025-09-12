@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
-import { getBreadcrumbs } from '@/config/navigation';
+import { getBreadcrumbs } from '@/config/navigation-consolidated';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import {
   Breadcrumb,

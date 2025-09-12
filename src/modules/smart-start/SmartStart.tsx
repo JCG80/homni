@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/modules/auth/hooks';
 import { useFeatureFlag } from '@/hooks/useFeatureFlags';
 import { useLazyModules } from '@/hooks/useLazyModules';
-import { getNavigation } from '@/config/navigation';
+import { getNavigation } from '@/config/navigation-consolidated';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { SearchProgress } from './components/SearchProgress';
 import { RoleAdaptiveContent } from './components/RoleAdaptiveContent';

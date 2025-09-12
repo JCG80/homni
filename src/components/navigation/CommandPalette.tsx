@@ -4,7 +4,7 @@ import { Search, Hash, ArrowRight, Clock, Star } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
-import { getNavigation } from '@/config/navigation';
+import { getNavigation } from '@/config/navigation-consolidated';
 import { useNavigationContext } from '@/hooks/useNavigationContext';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { cn } from '@/lib/utils';

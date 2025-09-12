@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/modules/auth/hooks';
-import { navControl } from '@/config/navigation';
+import { getNavigation } from '@/config/navigation-consolidated';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Home } from 'lucide-react';

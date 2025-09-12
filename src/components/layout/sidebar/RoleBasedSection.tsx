@@ -3,7 +3,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/modules/auth/normalizeRole';
-import { getNavigation } from '@/config/navigation';
+import { getNavigation } from '@/config/navigation-consolidated';
 
 interface RoleBasedSectionProps {
   role: UserRole;
@@ -55,7 +55,7 @@ export const RoleBasedSection: React.FC<RoleBasedSectionProps> = ({ role }) => {
                 )
               }
             >
-              {Icon && <Icon size={16} />}
+              {Icon && typeof Icon === 'function' && <Icon size={16} />}
               <span>{item.title}</span>
             </NavLink>
           );

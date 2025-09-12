@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
-import { getNavigation, getNextSuggestions } from '@/config/navigation';
+import { getNavigation, getNextSuggestions } from '@/config/navigation-consolidated';
 import { useNavigationPreferences } from './useNavigationPreferences';
 import { UserRole } from '@/modules/auth/normalizeRole';
 

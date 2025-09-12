@@ -7,7 +7,7 @@
 import { useMemo } from 'react';
 import { useCurrentRole } from './useCurrentRole';
 import { useFeatureFlags } from './useFeatureFlags';
-import { getUnifiedNavigation, filterNavigation, type UnifiedNavConfig } from '@/config/unifiedNavigation';
+import { getUnifiedNavigation, filterNavigation, type UnifiedNavConfig } from '@/config/navigation-consolidated';
 import { getModulesForRole } from '@/modules/system/ModuleRegistry';
 
 interface UseUnifiedNavigationReturn {

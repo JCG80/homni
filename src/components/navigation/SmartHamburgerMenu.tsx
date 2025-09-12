@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Menu, X, ChevronRight, Star, Clock, User, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
-import { getNavigation } from '@/config/navigation';
+import { getNavigation } from '@/config/navigation-consolidated';
 import { useNavigationPreferences, useQuickActions } from '@/hooks/navigation';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/modules/auth/normalizeRole';

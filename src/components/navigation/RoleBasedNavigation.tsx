@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { getNavigation } from '@/config/navigation';
+import { getNavigation } from '@/config/navigation-consolidated';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,14 +12,14 @@ import { Badge } from '@/components/ui/badge';
 import { useNavigationPreferences, useQuickActions } from '@/hooks/navigation';
 import { Star, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { NavItem } from '@/config/unifiedNavigation';
+import type { NavigationItem } from '@/types/consolidated-types';
 
 interface RoleBasedNavigationProps {
   className?: string;
   variant?: 'vertical' | 'horizontal';
   showBadges?: boolean;
   showFavoriteButtons?: boolean;
-  items?: NavItem[]; // Allow passing custom items
+  items?: NavigationItem[]; // Allow passing custom items
 }
 
 export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
@@ -39,13 +39,8 @@ export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
   // Use provided items or fall back to legacy navigation
   const navItems = items || getNavigation(currentRole as UserRole);
   
-  // Convert NavItem[] to legacy format if needed
-  const navigationItems = items ? items.map(item => ({
-    href: item.href,
-    title: item.title,
-    icon: item.icon,
-    badge: item.badge
-  })) : navItems;
+  // Navigation items to render (already in correct format)
+  const navigationItems = navItems;
   
   // Get notification counts for navigation items
   const getNotificationCount = (href: string) => {
@@ -104,7 +99,7 @@ export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
                       "relative"
                     )}
                   >
-                    {Icon && <Icon className="mr-2 h-4 w-4" />}
+                    {Icon && typeof Icon === 'function' && <Icon className="mr-2 h-4 w-4" />}
                     {item.title}
                     {showBadges && notificationCount > 0 && (
                       <Badge
@@ -151,7 +146,7 @@ export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
                 )}
                 
                 <div className="flex items-center flex-1 relative z-10">
-                  {Icon && (
+                  {Icon && typeof Icon === 'function' && (
                     <Icon className={cn(
                       "mr-2 h-4 w-4",
                       active ? "text-primary-foreground" : "text-muted-foreground"

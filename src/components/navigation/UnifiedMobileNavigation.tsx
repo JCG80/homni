@@ -65,7 +65,7 @@ export const UnifiedMobileNavigation: React.FC<UnifiedMobileNavigationProps> = (
                     : "text-foreground hover:text-foreground hover:bg-accent"
                 )}
               >
-                {Icon && (
+                {Icon && typeof Icon === 'function' && (
                   <Icon className={cn(
                     "mr-3 h-5 w-5",
                     active ? "text-primary-foreground" : "text-muted-foreground"
@@ -124,7 +124,7 @@ export const UnifiedMobileNavigation: React.FC<UnifiedMobileNavigationProps> = (
                     onClick={handleItemClick}
                     className="flex items-center px-4 py-3 rounded-md text-sm transition-all text-muted-foreground hover:text-foreground hover:bg-accent"
                   >
-                    {Icon && <Icon className="mr-3 h-4 w-4" />}
+                    {Icon && typeof Icon === 'function' && <Icon className="mr-3 h-4 w-4" />}
                     <span>{action.title}</span>
                   </Link>
                 </motion.div>

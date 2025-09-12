@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { navControl } from '@/config/navigation';
+import { navControl } from '@/config/navigation-consolidated';
 import { UserRole } from '@/modules/auth/normalizeRole';
 
 interface AdminSectionProps {
