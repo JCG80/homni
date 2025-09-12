@@ -25,6 +25,10 @@ const AdvancedLeadSearchPage = lazy(() =>
   import('@/modules/leads/pages/AdvancedLeadSearchPage').then(m => ({ default: m.AdvancedLeadSearchPage }))
 );
 
+const LeadIntegrationPage = lazy(() => 
+  import('@/modules/leads/pages/LeadIntegrationPage').then(m => ({ default: m.LeadIntegrationPage }))
+);
+
 export const leadRouteObjects: AppRoute[] = [
   {
     path: '/leads',
@@ -48,6 +52,12 @@ export const leadRouteObjects: AppRoute[] = [
     element: <AdvancedLeadSearchPage />,
     roles: ['admin', 'master_admin', 'company'],
     navKey: 'advanced-lead-search'
+  },
+  {
+    path: '/leads/integration',
+    element: <LeadIntegrationPage />,
+    roles: ['admin', 'master_admin'],
+    navKey: 'lead-integration'
   },
   {
     path: '/lead-kanban',

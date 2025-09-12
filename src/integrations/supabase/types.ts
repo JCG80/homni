@@ -727,6 +727,39 @@ export type Database = {
         }
         Relationships: []
       }
+      import_logs: {
+        Row: {
+          completed_at: string
+          created_at: string
+          failed_records: number
+          id: string
+          import_type: string
+          successful_records: number
+          total_records: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          failed_records?: number
+          id?: string
+          import_type: string
+          successful_records?: number
+          total_records?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          failed_records?: number
+          id?: string
+          import_type?: string
+          successful_records?: number
+          total_records?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       insurance_companies: {
         Row: {
           created_at: string
@@ -2384,6 +2417,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      webhook_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          lead_id: string | null
+          payload: Json
+          processed_at: string
+          source: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          payload: Json
+          processed_at?: string
+          source: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          payload?: Json
+          processed_at?: string
+          source?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_logs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
