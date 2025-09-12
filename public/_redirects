@@ -3,5 +3,5 @@
 /auth /login 301!
 /auth/login /login 301!
 
-# SPA fallback - must be last
+# SPA fallback - must be last to enable client-side routing
 /* /index.html 200

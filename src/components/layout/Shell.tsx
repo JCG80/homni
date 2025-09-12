@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useRoutes } from 'react-router-dom';
 import { mainRouteObjects } from '@/routes/mainRouteObjects';
 import { adminRouteObjects } from '@/routes/adminRouteObjects';
 import { leadRouteObjects } from '@/routes/leadRouteObjects';
@@ -80,7 +80,9 @@ export function Shell() {
     console.info('Router Debug:', { 
       role, 
       flags: Object.entries(flags).filter(([_, v]) => v).map(([k]) => k),
-      routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser'
+      routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser',
+      pathname: window.location.pathname,
+      baseUrl: import.meta.env.BASE_URL || '/'
     });
   }
   
