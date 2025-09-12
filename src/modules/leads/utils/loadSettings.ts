@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { DistributionStrategy } from '../strategies/strategyFactory';
+import { logger } from '@/utils/logger';
 
 export type LeadSettings = Database['public']['Tables']['lead_settings']['Row'];
 
@@ -19,13 +20,19 @@ export async function loadSettings(): Promise<LeadSettings | null> {
       .single();
 
     if (error) {
-      console.error('Error loading lead settings:', error);
+      logger.error('Error loading lead settings', {
+        module: 'loadSettings',
+        action: 'loadSettings'
+      }, error);
       return null;
     }
 
     return data;
   } catch (err) {
-    console.error('Unexpected error in loadSettings:', err);
+    logger.error('Unexpected error in loadSettings', {
+      module: 'loadSettings',
+      action: 'loadSettings'
+    }, err);
     return null;
   }
 }
@@ -38,14 +45,3 @@ export async function getCurrentStrategyFromSettings(): Promise<DistributionStra
   const settings = await loadSettings();
   return settings?.strategy as DistributionStrategy || 'category_match';
 }
-
-// Example usage:
-// import { loadSettings } from '@/modules/leads/utils/loadSettings';
-//
-// loadSettings()
-//   .then((settings) => {
-//     console.log('Lead settings:', settings);
-//   })
-//   .catch((err) => {
-//     console.error('Error loading settings:', err);
-//   });

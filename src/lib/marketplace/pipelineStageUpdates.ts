@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 export type PipelineStage = 'new' | 'in_progress' | 'won' | 'lost';
 
@@ -58,7 +59,13 @@ export async function updatePipelineStage(options: StageUpdateOptions): Promise<
     // Check if transition is valid (except for admins who can override)
     const validTransitions = VALID_TRANSITIONS[currentStage] || [];
     if (!validTransitions.includes(newStage)) {
-      console.warn(`Invalid stage transition from ${currentStage} to ${newStage}`);
+      logger.warn('Invalid stage transition attempted', {
+        module: 'pipelineStageUpdates',
+        action: 'validateTransition',
+        currentStage,
+        newStage,
+        assignmentId
+      });
       // Still allow the transition but log a warning
     }
 
@@ -107,7 +114,12 @@ export async function updatePipelineStage(options: StageUpdateOptions): Promise<
     return { success: true };
 
   } catch (error: any) {
-    console.error('Failed to update pipeline stage:', error);
+    logger.error('Failed to update pipeline stage', {
+      module: 'pipelineStageUpdates',
+      action: 'updatePipelineStage',
+      assignmentId: options.assignmentId,
+      newStage: options.newStage
+    }, error);
     return {
       success: false,
       error: error.message || 'Failed to update stage'
@@ -188,7 +200,11 @@ export async function getPipelineStats(buyerId: string, dateRange?: { from: Date
         (stats['won'].count / (stats['won'].count + stats['lost'].count)) * 100 : 0
     };
   } catch (error: any) {
-    console.error('Failed to get pipeline stats:', error);
+    logger.error('Failed to get pipeline stats', {
+      module: 'pipelineStageUpdates',
+      action: 'getPipelineStats',
+      buyerId
+    }, error);
     throw error;
   }
 }
@@ -204,14 +220,20 @@ async function createStageHistoryRecord(options: {
 }) {
   try {
     // Skip history creation for now since table doesn't exist in types yet
-    console.log('Stage change history:', {
+    logger.debug('Stage change history skipped (table not implemented)', {
+      module: 'pipelineStageUpdates',
+      action: 'createStageHistoryRecord',
       assignmentId: options.assignmentId,
       fromStage: options.fromStage,
       toStage: options.toStage,
       notes: options.notes
     });
   } catch (error) {
-    console.error('Error creating stage history:', error);
+    logger.error('Error creating stage history', {
+      module: 'pipelineStageUpdates',
+      action: 'createStageHistoryRecord',
+      assignmentId: options.assignmentId
+    }, error);
   }
 }
 
@@ -221,10 +243,18 @@ async function createStageHistoryRecord(options: {
 export async function getStageHistory(assignmentId: string) {
   try {
     // Return empty array for now since table doesn't exist in types yet
-    console.log('Getting stage history for assignment:', assignmentId);
+    logger.debug('Getting stage history (table not implemented)', {
+      module: 'pipelineStageUpdates',
+      action: 'getStageHistory',
+      assignmentId
+    });
     return [];
   } catch (error: any) {
-    console.error('Failed to get stage history:', error);
+    logger.error('Failed to get stage history', {
+      module: 'pipelineStageUpdates',
+      action: 'getStageHistory',
+      assignmentId
+    }, error);
     throw error;
   }
 }
@@ -257,7 +287,12 @@ export async function canUpdateAssignment(assignmentId: string, userId: string):
 
     return assignment?.buyer_id === userProfile.company_id;
   } catch (error) {
-    console.error('Error checking assignment permissions:', error);
+    logger.error('Error checking assignment permissions', {
+      module: 'pipelineStageUpdates',
+      action: 'canUpdateAssignment',
+      assignmentId,
+      userId
+    }, error);
     return false;
   }
 }

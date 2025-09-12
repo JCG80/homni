@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { DistributionStrategy } from "../strategies/strategyFactory";
+import { logger } from '@/utils/logger';
 
 /**
  * Gets the current lead distribution strategy from settings
@@ -24,13 +25,21 @@ export async function getCurrentStrategy(companyId?: string): Promise<Distributi
     const { data, error } = await query.limit(1).maybeSingle();
     
     if (error) {
-      console.error('Error fetching lead distribution strategy:', error);
+      logger.error('Error fetching lead distribution strategy', {
+        module: 'getCurrentStrategy',
+        action: 'getCurrentStrategy',
+        companyId
+      }, error);
       return 'category_match'; // Default fallback
     }
     
     return data?.strategy as DistributionStrategy || 'category_match';
   } catch (err) {
-    console.error('Unexpected error in getCurrentStrategy:', err);
+    logger.error('Unexpected error in getCurrentStrategy', {
+      module: 'getCurrentStrategy',
+      action: 'getCurrentStrategy',
+      companyId
+    }, err);
     return 'category_match'; // Default fallback on error
   }
 }
@@ -56,13 +65,23 @@ export async function updateDistributionStrategy(
       });
     
     if (error) {
-      console.error('Error updating distribution strategy:', error);
+      logger.error('Error updating distribution strategy', {
+        module: 'getCurrentStrategy',
+        action: 'updateDistributionStrategy',
+        strategy,
+        companyId
+      }, error);
       return false;
     }
     
     return true;
   } catch (err) {
-    console.error('Unexpected error in updateDistributionStrategy:', err);
+    logger.error('Unexpected error in updateDistributionStrategy', {
+      module: 'getCurrentStrategy',
+      action: 'updateDistributionStrategy',
+      strategy,
+      companyId
+    }, err);
     return false;
   }
 }

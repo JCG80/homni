@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { distributeLeadToProvider, DistributionStrategy } from '../strategies/strategyFactory';
 import { withRetry } from '@/utils/apiRetry';
+import { logger } from '@/utils/logger';
 // Removed emoji mapping - DB now enforces slug statuses only
 // import { mapToEmojiStatus } from '@/types/leads';
 
@@ -20,12 +21,22 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
         maxAttempts: 3,
         delayMs: 500,
         backoffFactor: 1.5,
-        onRetry: (attempt) => console.log(`Retrying provider selection for lead ${lead.id} (attempt ${attempt})`)
+        onRetry: (attempt) => logger.info('Retrying provider selection for lead', {
+          module: 'leadAssignment',
+          action: 'assignLeadToProvider',
+          leadId: lead.id,
+          attempt
+        })
       }
     );
     
     if (!providerId) {
-      console.log(`No provider found for lead ${lead.id} with category ${lead.category}`);
+      logger.warn('No provider found for lead', {
+        module: 'leadAssignment',
+        action: 'assignLeadToProvider',
+        leadId: lead.id,
+        category: lead.category
+      });
       return false;
     }
     
@@ -40,7 +51,11 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
       .eq('id', lead.id);
     
     if (updateError) {
-      console.error(`Error assigning lead ${lead.id}:`, updateError);
+      logger.error('Error assigning lead', {
+        module: 'leadAssignment',
+        action: 'assignLeadToProvider',
+        leadId: lead.id
+      }, updateError);
       return false;
     }
     
@@ -64,13 +79,21 @@ export async function assignLeadToProvider(lead: any, strategy: DistributionStra
       });
       
     if (historyError) {
-      console.error(`Error logging lead history for ${lead.id}:`, historyError);
+      logger.error('Error logging lead history', {
+        module: 'leadAssignment',
+        action: 'assignLeadToProvider',
+        leadId: lead.id
+      }, historyError);
       // We still consider the assignment successful even if history logging fails
     }
     
     return true;
   } catch (error) {
-    console.error(`Error processing lead ${lead.id}:`, error);
+    logger.error('Error processing lead', {
+      module: 'leadAssignment',
+      action: 'assignLeadToProvider',
+      leadId: lead.id
+    }, error);
     return false;
   }
 }

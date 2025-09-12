@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { logger } from '@/utils/logger';
 
 export const ContentAdminPage: React.FC = () => {
   const [content, setContent] = useState<Content[]>([]);
@@ -31,10 +32,19 @@ export const ContentAdminPage: React.FC = () => {
         const data = await loadAllContent();
         return data;
       } catch (error) {
-        console.error('Error loading content:', error);
+        logger.error('Error loading content', {
+          module: 'ContentAdminPage',
+          action: 'fetchContent',
+          retryCount
+        }, error);
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Retrying content load (${retryCount}/${maxRetries})...`);
+          logger.info('Retrying content load', {
+            module: 'ContentAdminPage',
+            action: 'fetchContent',
+            retryCount,
+            maxRetries
+          });
           await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           return attemptFetch();
         }
@@ -48,7 +58,10 @@ export const ContentAdminPage: React.FC = () => {
       const contentData = await attemptFetch();
       setContent(contentData);
     } catch (err) {
-      console.error('Failed to load content:', err);
+      logger.error('Failed to load content', {
+        module: 'ContentAdminPage',
+        action: 'fetchContent'
+      }, err);
       setError('Kunne ikke laste innhold. Vennligst prøv igjen senere.');
       toast({
         title: 'Feil ved lasting',
@@ -75,10 +88,20 @@ export const ContentAdminPage: React.FC = () => {
         const success = await deleteContent(id);
         return success;
       } catch (error) {
-        console.error('Error deleting content:', error);
+        logger.error('Error deleting content', {
+          module: 'ContentAdminPage',
+          action: 'handleDelete',
+          contentId: id,
+          retryCount
+        }, error);
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Retrying delete (${retryCount}/${maxRetries})...`);
+          logger.info('Retrying delete', {
+            module: 'ContentAdminPage',
+            action: 'handleDelete',
+            retryCount,
+            maxRetries
+          });
           await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           return attemptDelete();
         }
@@ -103,7 +126,11 @@ export const ContentAdminPage: React.FC = () => {
         });
       }
     } catch (err) {
-      console.error('Failed to delete content:', err);
+      logger.error('Failed to delete content', {
+        module: 'ContentAdminPage',
+        action: 'handleDelete',
+        contentId: id
+      }, err);
       toast({
         title: 'Feil ved sletting',
         description: 'Kunne ikke slette innholdet. Vennligst prøv igjen senere.',

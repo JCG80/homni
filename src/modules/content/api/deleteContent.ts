@@ -1,5 +1,6 @@
 
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 /**
  * Delete content by ID
@@ -11,7 +12,11 @@ export async function deleteContent(id: string): Promise<boolean> {
     .eq('id', id) as any; // Using type assertion to bypass TypeScript errors until types are updated
   
   if (error) {
-    console.error('Error deleting content:', error);
+    logger.error('Error deleting content', {
+      module: 'deleteContent',
+      action: 'deleteContent',
+      contentId: id
+    }, error);
     return false;
   }
   

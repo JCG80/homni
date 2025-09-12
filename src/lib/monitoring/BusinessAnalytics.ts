@@ -5,6 +5,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { track } from '@/lib/analytics';
+import { logger } from '@/utils/logger';
 
 export interface LeadConversionFunnel {
   visitors: number;
@@ -96,7 +97,11 @@ class BusinessAnalyticsCollector {
 
       return funnel;
     } catch (error) {
-      console.error('Failed to track lead conversion funnel:', error);
+      logger.error('Failed to track lead conversion funnel', {
+        module: 'BusinessAnalytics',
+        action: 'trackLeadConversionFunnel',
+        dateRange
+      }, error);
       throw error;
     }
   }
@@ -151,7 +156,11 @@ class BusinessAnalyticsCollector {
 
       return metrics;
     } catch (error) {
-      console.error('Failed to track property portfolio metrics:', error);
+      logger.error('Failed to track property portfolio metrics', {
+        module: 'BusinessAnalytics',
+        action: 'trackPropertyPortfolioMetrics',
+        userId
+      }, error);
       throw error;
     }
   }
@@ -212,7 +221,11 @@ class BusinessAnalyticsCollector {
 
       return metrics;
     } catch (error) {
-      console.error('Failed to track revenue metrics:', error);
+      logger.error('Failed to track revenue metrics', {
+        module: 'BusinessAnalytics',
+        action: 'trackRevenueMetrics',
+        dateRange
+      }, error);
       throw error;
     }
   }
@@ -258,7 +271,11 @@ class BusinessAnalyticsCollector {
 
       return journey;
     } catch (error) {
-      console.error('Failed to track customer journey:', error);
+      logger.error('Failed to track customer journey', {
+        module: 'BusinessAnalytics',
+        action: 'trackCustomerJourney',
+        userId
+      }, error);
       throw error;
     }
   }
@@ -283,7 +300,13 @@ class BusinessAnalyticsCollector {
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Failed to track A/B test metrics:', error);
+      logger.error('Failed to track A/B test metrics', {
+        module: 'BusinessAnalytics',
+        action: 'trackABTestMetrics',
+        testName,
+        variant,
+        outcome
+      }, error);
     }
   }
 
@@ -298,7 +321,11 @@ class BusinessAnalyticsCollector {
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.warn('Failed to store funnel metrics:', error);
+      logger.warn('Failed to store funnel metrics', {
+        module: 'BusinessAnalytics',
+        action: 'storeFunnelMetrics',
+        dateRange
+      }, error);
     }
   }
 
@@ -312,7 +339,11 @@ class BusinessAnalyticsCollector {
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.warn('Failed to store portfolio metrics:', error);
+      logger.warn('Failed to store portfolio metrics', {
+        module: 'BusinessAnalytics',
+        action: 'storePortfolioMetrics',
+        userId
+      }, error);
     }
   }
 
@@ -326,7 +357,11 @@ class BusinessAnalyticsCollector {
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.warn('Failed to store revenue metrics:', error);
+      logger.warn('Failed to store revenue metrics', {
+        module: 'BusinessAnalytics',
+        action: 'storeRevenueMetrics',
+        dateRange
+      }, error);
     }
   }
 
