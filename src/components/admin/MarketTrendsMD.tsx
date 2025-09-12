@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -327,36 +328,36 @@ export const MarketTrendsMD: React.FC = () => {
                 <div className="space-y-2">
                   <h4 className="font-semibold">API Dokumentasjon</h4>
                   <ul className="space-y-1">
-                    <li><a href="/api-docs" className="text-blue-600 hover:underline">OpenAPI Specification</a></li>
+                    <li><Link to="/api-docs" className="text-blue-600 hover:underline">OpenAPI Specification</Link></li>
                     <li><a href="https://documenter.getpostman.com/view/homni" className="text-blue-600 hover:underline">Postman Collection</a></li>
-                    <li><a href="/docs/auth" className="text-blue-600 hover:underline">Authentication Guide</a></li>
+                    <li><Link to="/docs/auth" className="text-blue-600 hover:underline">Authentication Guide</Link></li>
                   </ul>
                 </div>
                 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Utviklerdokumentasjon</h4>
                   <ul className="space-y-1">
-                    <li><a href="/docs/setup" className="text-blue-600 hover:underline">Setup Guide</a></li>
-                    <li><a href="/docs/contributing" className="text-blue-600 hover:underline">Contributing Guidelines</a></li>
-                    <li><a href="/docs/standards" className="text-blue-600 hover:underline">Code Standards</a></li>
+                    <li><Link to="/docs/setup" className="text-blue-600 hover:underline">Setup Guide</Link></li>
+                    <li><Link to="/docs/contributing" className="text-blue-600 hover:underline">Contributing Guidelines</Link></li>
+                    <li><Link to="/docs/standards" className="text-blue-600 hover:underline">Code Standards</Link></li>
                   </ul>
                 </div>
 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Deployment</h4>
                   <ul className="space-y-1">
-                    <li><a href="/admin/cicd" className="text-blue-600 hover:underline">CI/CD Pipeline</a></li>
-                    <li><a href="/admin/environment" className="text-blue-600 hover:underline">Environment Config</a></li>
-                    <li><a href="/admin/monitoring" className="text-blue-600 hover:underline">Monitoring Setup</a></li>
+                    <li><Link to="/admin/cicd" className="text-blue-600 hover:underline">CI/CD Pipeline</Link></li>
+                    <li><Link to="/admin/environment" className="text-blue-600 hover:underline">Environment Config</Link></li>
+                    <li><Link to="/admin/monitoring" className="text-blue-600 hover:underline">Monitoring Setup</Link></li>
                   </ul>
                 </div>
 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Troubleshooting</h4>
                   <ul className="space-y-1">
-                    <li><a href="/help/issues" className="text-blue-600 hover:underline">Common Issues</a></li>
-                    <li><a href="/help/debug" className="text-blue-600 hover:underline">Debug Guide</a></li>
-                    <li><a href="/help/performance" className="text-blue-600 hover:underline">Performance Tips</a></li>
+                    <li><Link to="/help/issues" className="text-blue-600 hover:underline">Common Issues</Link></li>
+                    <li><Link to="/help/debug" className="text-blue-600 hover:underline">Debug Guide</Link></li>
+                    <li><Link to="/help/performance" className="text-blue-600 hover:underline">Performance Tips</Link></li>
                   </ul>
                 </div>
               </div>

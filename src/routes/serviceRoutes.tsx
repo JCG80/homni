@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import type { AppRoute } from './routeTypes';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 
 // Services page component
@@ -10,14 +10,15 @@ const ServicesPage = () => (
   </div>
 );
 
-export const serviceRoutes = [
-  <Route 
-    key="services" 
-    path="/services" 
-    element={
+export const servicesRouteObjects: AppRoute[] = [
+  {
+    path: '/services',
+    element: (
       <RequireAuth>
         <ServicesPage />
       </RequireAuth>
-    } 
-  />,
+    ),
+    roles: ['user', 'company', 'content_editor', 'admin', 'master_admin'],
+    navKey: 'services'
+  }
 ];

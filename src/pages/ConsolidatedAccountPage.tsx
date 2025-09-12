@@ -141,15 +141,15 @@ export const ConsolidatedAccountPage = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-4">
-                <a href="/partners/mortgage" className="flex items-center gap-1 text-primary hover:underline">
+                <Link to="/partners/mortgage" className="flex items-center gap-1 text-primary hover:underline">
                   <Home className="h-4 w-4" /> Boliglånspartner
-                </a>
-                <a href="/partners/insurance" className="flex items-center gap-1 text-primary hover:underline">
+                </Link>
+                <Link to="/partners/insurance" className="flex items-center gap-1 text-primary hover:underline">
                   <Bell className="h-4 w-4" /> Forsikringspartner
-                </a>
-                <a href="/partners/energy" className="flex items-center gap-1 text-primary hover:underline">
+                </Link>
+                <Link to="/partners/energy" className="flex items-center gap-1 text-primary hover:underline">
                   <Mail className="h-4 w-4" /> Energi-partner
-                </a>
+                </Link>
               </div>
             </CardContent>
           </Card>

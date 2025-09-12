@@ -42,20 +42,20 @@ export const PowerComparisonFooter = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Om oss</h3>
             <ul className="space-y-2">
-              <li><a href="/about" className="text-muted-foreground hover:text-primary">Om HomniPower</a></li>
-              <li><a href="/how-it-works" className="text-muted-foreground hover:text-primary">Hvordan vi sammenligner</a></li>
-              <li><a href="/partners" className="text-muted-foreground hover:text-primary">Våre partnere</a></li>
-              <li><a href="/contact" className="text-muted-foreground hover:text-primary">Kontakt oss</a></li>
+              <li><Link to="/about" className="text-muted-foreground hover:text-primary">Om HomniPower</Link></li>
+              <li><Link to="/how-it-works" className="text-muted-foreground hover:text-primary">Hvordan vi sammenligner</Link></li>
+              <li><Link to="/partners" className="text-muted-foreground hover:text-primary">Våre partnere</Link></li>
+              <li><Link to="/contact" className="text-muted-foreground hover:text-primary">Kontakt oss</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="font-semibold text-lg mb-4">Nyttige lenker</h3>
             <ul className="space-y-2">
-              <li><a href="/privacy" className="text-muted-foreground hover:text-primary">Personvern</a></li>
-              <li><a href="/terms" className="text-muted-foreground hover:text-primary">Vilkår og betingelser</a></li>
-              <li><a href="/cookies" className="text-muted-foreground hover:text-primary">Cookies</a></li>
-              <li><a href="/faq" className="text-muted-foreground hover:text-primary">FAQ</a></li>
+              <li><Link to="/privacy" className="text-muted-foreground hover:text-primary">Personvern</Link></li>
+              <li><Link to="/terms" className="text-muted-foreground hover:text-primary">Vilkår og betingelser</Link></li>
+              <li><Link to="/cookies" className="text-muted-foreground hover:text-primary">Cookies</Link></li>
+              <li><Link to="/faq" className="text-muted-foreground hover:text-primary">FAQ</Link></li>
             </ul>
           </div>
         </div>

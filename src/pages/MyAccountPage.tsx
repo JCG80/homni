@@ -10,6 +10,8 @@ import { OffersCard } from '@/components/account/OffersCard';
 import { MessagesCard } from '@/components/account/MessagesCard';
 import { NewsletterSignup } from '@/components/account/NewsletterSignup';
 
+import { Link } from 'react-router-dom';
+
 export const MyAccountPage = () => {
   const { profile } = useAuth();
   const userName = profile?.full_name || 'bruker';
@@ -19,7 +21,7 @@ export const MyAccountPage = () => {
       <header className="mb-10">
         <h1 className="text-3xl font-medium text-foreground flex items-center gap-2">
           <User className="h-6 w-6 text-primary" />
-          Hei, <span className="text-gradient font-semibold">{userName}</span>! 
+          Hei, <span className="text-gradient font-semibold">{userName}</span>!
           <span className="text-muted-foreground text-lg font-normal ml-1">Hva ønsker du å gjøre i dag?</span>
         </h1>
       </header>
@@ -55,15 +57,15 @@ export const MyAccountPage = () => {
             Våre samarbeidspartnere
           </h2>
           <div className="flex flex-wrap gap-4">
-            <a href="/partners/mortgage" className="flex items-center gap-1 text-primary hover:underline">
+            <Link to="/partners/mortgage" className="flex items-center gap-1 text-primary hover:underline">
               <Home className="h-4 w-4" /> Boliglånspartner
-            </a>
-            <a href="/partners/insurance" className="flex items-center gap-1 text-primary hover:underline">
+            </Link>
+            <Link to="/partners/insurance" className="flex items-center gap-1 text-primary hover:underline">
               <Bell className="h-4 w-4" /> Forsikringspartner
-            </a>
-            <a href="/partners/energy" className="flex items-center gap-1 text-primary hover:underline">
+            </Link>
+            <Link to="/partners/energy" className="flex items-center gap-1 text-primary hover:underline">
               <Mail className="h-4 w-4" /> Energi-partner
-            </a>
+            </Link>
           </div>
         </div>
       </div>
