@@ -5,6 +5,7 @@ import { adminRouteObjects } from '@/routes/adminRouteObjects';
 import { leadRouteObjects } from '@/routes/leadRouteObjects';
 import { docsRouteObjects } from '@/routes/docsRouteObjects';
 import { listingsRouteObjects } from '@/routes/listingsRouteObjects';
+import { maintenanceRouteObjects } from '@/routes/maintenanceRouteObjects';
 import { applyFeatureFlags } from '@/routes/filters';
 import type { AppRoute } from '@/routes/routeTypes';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
@@ -87,6 +88,7 @@ export function Shell() {
     ...leadRouteObjects,
     ...docsRouteObjects,
     ...listingsRouteObjects,
+    ...maintenanceRouteObjects,
   ];
   
   // Apply feature flags and role filtering

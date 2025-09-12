@@ -43,29 +43,29 @@ export function getCurrentSeason(d = new Date()): 'Vinter'|'Vår'|'Sommer'|'Høs
 
 export async function listTasks(): Promise<MaintenanceTask[]> { 
   const { data, error } = await supabase
-    .from('maintenance_tasks')
+    .from('maintenance_tasks' as any)
     .select('*')
     .order('priority', { ascending: false })
     .order('title');
   
   if (error) throw error; 
-  return data as MaintenanceTask[]; 
+  return (data || []) as unknown as MaintenanceTask[]; 
 }
 
 export async function listDueTasksForCurrentSeason(userId: string): Promise<DueTask[]> {
   const season = getCurrentSeason();
-  const { data, error } = await supabase.rpc('maint_due_tasks', { 
+  const { data, error } = await supabase.rpc('maint_due_tasks' as any, { 
     p_user: userId, 
     p_season: season 
   });
   
   if (error) throw error; 
-  return (data || []).filter((x: any) => x.is_due);
+  return Array.isArray(data) ? data.filter((x: any) => x.is_due) : [];
 }
 
 export async function markCompleted(taskId: string, userId: string, note?: string): Promise<void> {
   const { error } = await supabase
-    .from('user_task_log')
+    .from('user_task_log' as any)
     .insert({ 
       task_id: taskId, 
       user_id: userId, 
@@ -77,41 +77,41 @@ export async function markCompleted(taskId: string, userId: string, note?: strin
 
 export async function getUserCompletions(userId: string): Promise<UserTaskCompletion[]> {
   const { data, error } = await supabase
-    .from('user_task_log')
+    .from('user_task_log' as any)
     .select('*')
     .eq('user_id', userId)
     .order('completed_at', { ascending: false });
     
   if (error) throw error;
-  return data as UserTaskCompletion[];
+  return (data || []) as unknown as UserTaskCompletion[];
 }
 
 export async function createTask(task: Partial<MaintenanceTask>): Promise<MaintenanceTask> {
   const { data, error } = await supabase
-    .from('maintenance_tasks')
+    .from('maintenance_tasks' as any)
     .insert(task)
     .select()
     .single();
     
   if (error) throw error;
-  return data as MaintenanceTask;
+  return data as unknown as MaintenanceTask;
 }
 
 export async function updateTask(id: string, updates: Partial<MaintenanceTask>): Promise<MaintenanceTask> {
   const { data, error } = await supabase
-    .from('maintenance_tasks')
+    .from('maintenance_tasks' as any)
     .update(updates)
     .eq('id', id)
     .select()
     .single();
     
   if (error) throw error;
-  return data as MaintenanceTask;
+  return data as unknown as MaintenanceTask;
 }
 
 export async function deleteTask(id: string): Promise<void> {
   const { error } = await supabase
-    .from('maintenance_tasks')
+    .from('maintenance_tasks' as any)
     .delete()
     .eq('id', id);
     

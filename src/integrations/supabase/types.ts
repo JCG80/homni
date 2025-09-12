@@ -1210,6 +1210,51 @@ export type Database = {
           },
         ]
       }
+      maintenance_tasks: {
+        Row: {
+          cost_estimate: number | null
+          created_at: string
+          description: string
+          estimated_time: unknown | null
+          frequency_months: number
+          id: string
+          priority: string
+          property_types: string[]
+          seasons: string[]
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          cost_estimate?: number | null
+          created_at?: string
+          description: string
+          estimated_time?: unknown | null
+          frequency_months: number
+          id?: string
+          priority: string
+          property_types: string[]
+          seasons: string[]
+          title: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          cost_estimate?: number | null
+          created_at?: string
+          description?: string
+          estimated_time?: unknown | null
+          frequency_months?: number
+          id?: string
+          priority?: string
+          property_types?: string[]
+          seasons?: string[]
+          title?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       module_access: {
         Row: {
           created_at: string | null
@@ -2511,6 +2556,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_task_log: {
+        Row: {
+          completed_at: string
+          id: string
+          note: string | null
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          note?: string | null
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          note?: string | null
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_task_log_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_logs: {
         Row: {
           created_at: string
@@ -2554,7 +2631,13 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      maintenance_export_v: {
+        Row: {
+          tasks: Json | null
+          version: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       aggregate_user_daily_activity: {
@@ -2871,6 +2954,18 @@ export type Database = {
               p_target_type: string
             }
         Returns: string
+      }
+      maint_due_tasks: {
+        Args: { p_season: string; p_user: string }
+        Returns: {
+          description: string
+          frequency_months: number
+          is_due: boolean
+          last_completed: string
+          priority: string
+          task_id: string
+          title: string
+        }[]
       }
       revoke_role: {
         Args: {
