@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { handleApiError, showErrorToast, showSuccessToast } from './auth-base';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 /**
  * Sign in user with email and password
@@ -14,7 +15,7 @@ export const signInWithEmail = async (email: string, password: string) => {
     });
     
     if (error) {
-      console.error("Sign in error:", error);
+      logger.error("Sign in error:", error);
       // Use toast to provide feedback about authentication errors
       if (error.message.includes('Invalid login credentials')) {
         showErrorToast(
@@ -29,7 +30,7 @@ export const signInWithEmail = async (email: string, password: string) => {
     
     return { user: data.user, error: null };
   } catch (error) {
-    console.error("Unexpected sign in error:", error);
+    logger.error("Unexpected sign in error:", error);
     showErrorToast(
       "Teknisk feil",
       "En uventet feil oppstod ved pålogging. Vennligst prøv igjen senere."
@@ -49,7 +50,7 @@ export const signUpWithEmail = async (email: string, password: string) => {
     });
     
     if (error) {
-      console.error("Sign up error:", error);
+      logger.error("Sign up error:", error);
       // Use toast to provide feedback about registration errors
       if (error.message.includes('email address is already registered')) {
         showErrorToast(
@@ -72,7 +73,7 @@ export const signUpWithEmail = async (email: string, password: string) => {
     
     return { user: data.user, error: null };
   } catch (error) {
-    console.error("Unexpected sign up error:", error);
+    logger.error("Unexpected sign up error:", error);
     showErrorToast(
       "Teknisk feil",
       "En uventet feil oppstod ved registrering. Vennligst prøv igjen senere."
@@ -97,7 +98,7 @@ export const signOut = async (): Promise<{ error: Error | null }> => {
     
     return { error };
   } catch (error) {
-    console.error("Unexpected sign out error:", error);
+    logger.error("Unexpected sign out error:", error);
     return { error: error instanceof Error ? error : new Error('Unknown error during sign out') };
   }
 };

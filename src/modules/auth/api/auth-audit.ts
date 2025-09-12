@@ -1,5 +1,6 @@
 
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 /**
  * Helper to get audit logs (requires Supabase Pro)
@@ -22,7 +23,7 @@ export const getAuditLogs = async (userId?: string, limit = 100) => {
     
     return { logs: mockLogs, error: null };
   } catch (error) {
-    console.error("Unexpected error fetching audit logs:", error);
+    logger.error("Unexpected error fetching audit logs:", error);
     return { logs: null, error };
   }
 };

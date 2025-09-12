@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 import { Loader, FileText } from 'lucide-react';
 import { CompanyProfile } from '../../types/types';
 
@@ -39,7 +40,7 @@ export function NotesTab({ company, notes, setNotes, isLoading, onUpdate }: Note
       
       onUpdate();
     } catch (error) {
-      console.error('Failed to save notes:', error);
+      logger.error('Failed to save notes:', error);
       toast({
         title: 'Feil',
         description: 'Kunne ikke lagre notater.',

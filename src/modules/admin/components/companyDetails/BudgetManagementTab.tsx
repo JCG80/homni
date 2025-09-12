@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 import { CompanyProfile } from '../../types/types';
 import { CreditCard, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 
@@ -100,7 +101,7 @@ export function BudgetManagementTab({ company, onUpdate }: BudgetManagementTabPr
       });
 
     } catch (error) {
-      console.error('Error adjusting budget:', error);
+      logger.error('Error adjusting budget:', error);
       toast({
         title: "Error",
         description: "Failed to adjust budget",
@@ -130,7 +131,7 @@ export function BudgetManagementTab({ company, onUpdate }: BudgetManagementTabPr
       });
 
     } catch (error) {
-      console.error('Error updating company settings:', error);
+      logger.error('Error updating company settings:', error);
       toast({
         title: "Error",
         description: "Failed to update company settings",

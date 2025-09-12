@@ -1,30 +1,20 @@
-export interface NavigationItem {
-  id: string;
-  title: string;
-  href: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  description?: string;
-  badge?: {
-    count?: number;
-    variant?: 'default' | 'destructive' | 'outline' | 'secondary';
-  };
-  children?: NavigationItem[];
-}
+/**
+ * Navigation types - Re-exports from consolidated types
+ * @deprecated Use @/types/navigation-consolidated directly
+ */
 
-export interface NavigationSection {
-  id: string;
-  title: string;
-  items: NavigationItem[];
-}
-
-export interface NavigationPreferences {
-  favoriteRoutes: string[];
-  recentRoutes: string[];
-  hiddenItems: string[];
-  customOrder?: string[];
-}
-
-export interface QuickAction extends NavigationItem {
-  color?: string;
-  priority?: number;
-}
+export type {
+  NavigationItem,
+  NavigationSection, 
+  NavigationPreferences,
+  QuickAction,
+  EnhancedNavigationItem,
+  NavigationConfig,
+  UnifiedNavConfig,
+  NavigationSuggestion,
+  ContextualNavigationState,
+  MobileNavigationProps,
+  RoleBasedNavigationProps,
+  NavigationCache,
+  SmartNavigationHook
+} from '@/types/navigation-consolidated';

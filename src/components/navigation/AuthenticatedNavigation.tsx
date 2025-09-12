@@ -8,12 +8,7 @@ import {
 import { cn } from '@/lib/utils';
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { UserRole } from '@/modules/auth/normalizeRole';
-
-
-interface AuthenticatedNavigationProps {
-  role?: UserRole;
-  isAuthenticated: boolean;
-}
+import { AuthenticatedNavigationProps } from '@/types/navigation-consolidated';
 
 export const AuthenticatedNavigation: React.FC<AuthenticatedNavigationProps> = ({ 
   isAuthenticated,

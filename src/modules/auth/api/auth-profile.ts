@@ -5,6 +5,7 @@ import { toast } from '@/components/ui/use-toast';
 import { parseUserProfile } from '../utils/parseUserProfile';
 import { UserRole } from '../utils/roles';
 import { handleApiError, showErrorToast, showSuccessToast } from './auth-base';
+import { logger } from '@/utils/logger';
 
 /**
  * Get user profile by user ID
@@ -19,18 +20,18 @@ export const getProfile = async (userId: string): Promise<Profile | null> => {
       .maybeSingle();
     
     if (error) {
-      console.error("Error fetching user profile:", error);
+      logger.error("Error fetching user profile:", error);
       return null;
     }
     
     if (!data) {
-      console.warn("No profile found for user ID:", userId);
+      logger.warn("No profile found for user ID", { userId });
       return null;
     }
     
     return parseUserProfile(data);
   } catch (error) {
-    console.error("Unexpected error fetching user profile:", error);
+    logger.error("Unexpected error fetching user profile:", error);
     return null;
   }
 };
@@ -53,7 +54,7 @@ export const createProfile = async (profile: Partial<Profile> & { id: string }):
       .single();
     
     if (error) {
-      console.error("Error creating profile:", error);
+      logger.error("Error creating profile:", error);
       showErrorToast(
         "Profilfeil",
         "Kunne ikke opprette brukerprofil. Vennligst prøv igjen senere."
@@ -63,7 +64,7 @@ export const createProfile = async (profile: Partial<Profile> & { id: string }):
     
     return parseUserProfile(data);
   } catch (error) {
-    console.error("Unexpected error creating profile:", error);
+    logger.error("Unexpected error creating profile:", error);
     return null;
   }
 };
@@ -81,7 +82,7 @@ export const updateProfile = async (profileData: Partial<Profile> & { id: string
       .single();
     
     if (error) {
-      console.error("Error updating profile:", error);
+      logger.error("Error updating profile:", error);
       showErrorToast(
         "Oppdateringsfeil",
         "Kunne ikke oppdatere brukerprofil. Vennligst prøv igjen senere."
@@ -91,7 +92,7 @@ export const updateProfile = async (profileData: Partial<Profile> & { id: string
     
     return parseUserProfile(data);
   } catch (error) {
-    console.error("Unexpected error updating profile:", error);
+    logger.error("Unexpected error updating profile:", error);
     return null;
   }
 };
@@ -123,7 +124,7 @@ export const updateUserRole = async (userId: string, role: UserRole): Promise<bo
       .eq('id', userId);
     
     if (error) {
-      console.error("Error updating user role:", error);
+      logger.error("Error updating user role:", error);
       showErrorToast(
         "Rolleendringsfeil",
         "Kunne ikke oppdatere brukerrolle."
@@ -138,7 +139,7 @@ export const updateUserRole = async (userId: string, role: UserRole): Promise<bo
     
     return true;
   } catch (error) {
-    console.error("Unexpected error updating user role:", error);
+    logger.error("Unexpected error updating user role:", error);
     return false;
   }
 };

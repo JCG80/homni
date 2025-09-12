@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { handleApiError, showErrorToast } from './auth-base';
+import { logger } from '@/utils/logger';
 
 /**
  * Set up multi-factor authentication for a user
@@ -14,7 +15,7 @@ export const setupMFA = async () => {
     });
     
     if (error) {
-      console.error("MFA enrollment error:", error);
+      logger.error("MFA enrollment error:", error);
       showErrorToast(
         "MFA-oppsettsfeil",
         "Kunde ikke starte MFA-oppsett. Vennligst prøv igjen senere."
@@ -29,7 +30,7 @@ export const setupMFA = async () => {
       error: null 
     };
   } catch (error) {
-    console.error("Unexpected MFA setup error:", error);
+    logger.error("Unexpected MFA setup error:", error);
     return { factorId: null, qr: null, uri: null, error };
   }
 };
@@ -46,7 +47,7 @@ export const verifyMFA = async (factorId: string, challengeId: string, verificat
     });
     
     if (error) {
-      console.error("MFA verification error:", error);
+      logger.error("MFA verification error:", error);
       showErrorToast(
         "MFA-verifiseringsfeil",
         "Ugyldig kode. Vennligst prøv igjen."
@@ -62,7 +63,7 @@ export const verifyMFA = async (factorId: string, challengeId: string, verificat
     });
     
     if (verifyResult.error) {
-      console.error("MFA code verification error:", verifyResult.error);
+      logger.error("MFA code verification error:", verifyResult.error);
       showErrorToast(
         "MFA-verifiseringsfeil",
         "Ugyldig kode. Vennligst prøv igjen."
@@ -74,7 +75,7 @@ export const verifyMFA = async (factorId: string, challengeId: string, verificat
     // The .verify() method doesn't return a "verified" property directly
     return { verified: !!verifyResult.data, error: null };
   } catch (error) {
-    console.error("Unexpected MFA verification error:", error);
+    logger.error("Unexpected MFA verification error:", error);
     return { verified: false, error };
   }
 };

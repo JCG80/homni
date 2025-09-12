@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Key, Mail } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 interface CompanyActionsProps {
   email?: string;
@@ -22,7 +23,7 @@ export function CompanyActions({ email }: CompanyActionsProps) {
         description: 'E-post for tilbakestilling av passord er sendt.',
       });
     } catch (error) {
-      console.error('Failed to send password reset:', error);
+      logger.error('Failed to send password reset:', error);
       toast({
         title: 'Feil',
         description: 'Kunne ikke sende e-post for tilbakestilling av passord.',
@@ -41,7 +42,7 @@ export function CompanyActions({ email }: CompanyActionsProps) {
         description: `En e-post med påloggingsdetaljer er sendt til ${email}.`,
       });
     } catch (error) {
-      console.error('Failed to send login details:', error);
+      logger.error('Failed to send login details:', error);
       toast({
         title: 'Feil',
         description: 'Kunne ikke sende e-post med påloggingsdetaljer.',
