@@ -6,22 +6,26 @@ interface AppRouterProps {
   children: React.ReactNode;
 }
 
-// Centralized router wrapper with preview-safe defaults
+// EMERGENCY: Force HashRouter for all preview environments
 export function AppRouter({ children }: AppRouterProps) {
+  // Emergency detection
   const isLovableHost = isLovablePreviewHost();
-  const envMode = import.meta.env.VITE_ROUTER_MODE as string | undefined;
-  // Force hash mode for Lovable preview or when explicitly set
-  const useHash = envMode === 'hash' || isLovableHost;
-  const R: any = useHash ? HashRouter : BrowserRouter;
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isPreview = hostname.includes('lovable') || hostname.includes('sandbox');
+  
+  // Force hash router in any preview-like environment
+  const forceHash = isLovableHost || isPreview || import.meta.env.VITE_ROUTER_MODE === 'hash';
+  const R: any = forceHash ? HashRouter : BrowserRouter;
 
-  // Enhanced diagnostics for preview debugging
-  console.info('[Router] Configuration:', {
-    hostname: typeof window !== 'undefined' ? window.location.hostname : '(ssr)',
+  // EMERGENCY: Enhanced diagnostics 
+  console.error('[EMERGENCY ROUTER] Configuration:', {
+    hostname,
     isLovableHost,
-    envMode: envMode || '(unset)',
-    useHash,
-    mode: useHash ? 'hash' : 'browser',
-    VITE_ROUTER_MODE: import.meta.env.VITE_ROUTER_MODE
+    isPreview,
+    forceHash,
+    mode: forceHash ? 'HASH_FORCED' : 'browser',
+    routerType: R === HashRouter ? 'HashRouter' : 'BrowserRouter',
+    location: typeof window !== 'undefined' ? window.location.href : '(ssr)'
   });
 
   return <R basename={import.meta.env.BASE_URL || '/'}>{children}</R>;

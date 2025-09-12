@@ -152,8 +152,13 @@ export function Shell() {
 
   const routes = useRoutes(routeElements);
 
-  // Emergency fallback if no routes are rendered and we're in a problematic state
-  if (!routes && filteredRoutes.length === 0) {
+  // EMERGENCY: Always show emergency fallback if no routes
+  if (!routes || filteredRoutes.length === 0) {
+    console.error('[EMERGENCY SHELL] No routes available!', {
+      routes: !!routes,
+      filteredRoutesLength: filteredRoutes.length,
+      allRoutesLength: allRoutes.length
+    });
     return <RouterEmergencyFallback />;
   }
 
