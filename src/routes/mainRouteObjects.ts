@@ -66,17 +66,7 @@ export const mainRouteObjects: AppRoute[] = [
     roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
     navKey: 'login'
   },
-  // Aliases redirecting to canonical /login
-  {
-    path: '/signin',
-    element: createElement(Navigate, { to: '/login', replace: true }),
-    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin']
-  },
-  {
-    path: '/auth',
-    element: createElement(Navigate, { to: '/login', replace: true }),
-    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin']
-  },
+  // Note: /signin and /auth redirects handled at nginx/netlify level via _redirects
   {
     path: '/dashboard',
     element: createElement(Dashboard),

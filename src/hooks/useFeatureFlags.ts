@@ -5,11 +5,37 @@ import { DEFAULT_FEATURE_FLAGS, getDefaultFeatureFlagValue } from '@/config/feat
 type FeatureFlags = Record<string, boolean>;
 
 export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
-  const flags = useFeatureFlags();
-  return {
-    isEnabled: flags[flagName] ?? fallbackValue,
-    isLoading: false
-  };
+  const [isEnabled, setIsEnabled] = useState(fallbackValue);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkFlag = async () => {
+      try {
+        // First check database
+        const { data } = await supabase
+          .from('feature_flags')
+          .select('is_enabled')
+          .eq('name', flagName)
+          .single();
+
+        if (data) {
+          setIsEnabled(data.is_enabled);
+        } else {
+          // Fallback to config file
+          setIsEnabled(getDefaultFeatureFlagValue(flagName));
+        }
+      } catch (error) {
+        // Fallback to config file on error
+        setIsEnabled(getDefaultFeatureFlagValue(flagName));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkFlag();
+  }, [flagName, fallbackValue]);
+
+  return { isEnabled, isLoading };
 };
 
 export const useFeatureFlags = (): FeatureFlags => {
@@ -20,8 +46,7 @@ export const useFeatureFlags = (): FeatureFlags => {
       try {
         const { data } = await supabase
           .from('feature_flags')
-          .select('name, is_enabled')
-          .eq('is_enabled', true);
+          .select('name, is_enabled');
 
         if (data) {
           const flagsMap = data.reduce((acc, flag) => ({
@@ -29,10 +54,12 @@ export const useFeatureFlags = (): FeatureFlags => {
             [flag.name]: flag.is_enabled
           }), {} as FeatureFlags);
           
-          setFlags(prev => ({ ...prev, ...flagsMap }));
+          // Merge with defaults to ensure all flags have values
+          setFlags({ ...DEFAULT_FEATURE_FLAGS, ...flagsMap });
         }
       } catch (error) {
         console.warn('Failed to fetch feature flags, using defaults:', error);
+        setFlags(DEFAULT_FEATURE_FLAGS);
       }
     };
 

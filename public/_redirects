@@ -1,0 +1,7 @@
+# Netlify redirects for route consolidation
+/signin /login 301!
+/auth /login 301!
+/auth/login /login 301!
+
+# SPA fallback - must be last
+/* /index.html 200
