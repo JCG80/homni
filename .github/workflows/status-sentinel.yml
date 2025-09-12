@@ -45,48 +45,97 @@ jobs:
           
           echo "requires_update=$REQUIRES_UPDATE" >> $GITHUB_OUTPUT
 
-      - name: Verify NOW.md updated when required
+      - name: Verify status documentation updated when required
         if: steps.core_changes.outputs.requires_update == 'true'
         run: |
-          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -qx "docs/status/NOW.md"; then
-            echo "::error ::Core system changes detected but docs/status/NOW.md not updated."
+          # Check if either the new status source or legacy NOW.md was updated
+          UPDATED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          
+          if echo "$UPDATED_FILES" | grep -q "src/content/status/status-latest.md"; then
+            echo "✅ New status source file updated: src/content/status/status-latest.md"
+          elif echo "$UPDATED_FILES" | grep -q "docs/status/NOW.md"; then
+            echo "✅ Legacy status file updated: docs/status/NOW.md"
+          else
+            echo "::error ::Core system changes detected but no status documentation updated."
             echo "::error ::The following changes require status documentation:"
             cat changed.txt | grep -E '^src/|^supabase/|^docs/(roles|data-models|architecture)' || true
-            echo "::error ::Please update docs/status/NOW.md to reflect current system state."
+            echo "::error ::Please update either:"
+            echo "::error ::  - src/content/status/status-latest.md (preferred)"
+            echo "::error ::  - docs/status/NOW.md (legacy)"
             exit 1
           fi
 
-      - name: Validate NOW.md content freshness
+      - name: Validate status documentation freshness
         if: steps.core_changes.outputs.requires_update == 'true'
         run: |
-          # Check if NOW.md was modified recently (within last 24 hours of PR)
-          LAST_MODIFIED=$(git log -1 --format="%ai" -- docs/status/NOW.md)
-          TWENTY_FOUR_HOURS_AGO=$(date -d "24 hours ago" --iso-8601=seconds)
-          
-          if [[ "$LAST_MODIFIED" < "$TWENTY_FOUR_HOURS_AGO" ]]; then
-            echo "::warning ::NOW.md last modified: $LAST_MODIFIED"
-            echo "::warning ::This seems outdated for current PR changes"
-          fi
-
-      - name: Check required sections in NOW.md
-        if: steps.core_changes.outputs.requires_update == 'true'
-        run: |
-          if [ -f "docs/status/NOW.md" ]; then
-            # Verify key sections exist
-            if ! grep -q "## 🎯 \*\*CORE FEATURES" docs/status/NOW.md; then
-              echo "::warning ::NOW.md missing CORE FEATURES section"
-            fi
-            if ! grep -q "## 🚧 \*\*IN PROGRESS" docs/status/NOW.md; then
-              echo "::warning ::NOW.md missing IN PROGRESS section"  
-            fi
-            if ! grep -q "## 🔒 \*\*TECHNICAL DEBT" docs/status/NOW.md; then
-              echo "::warning ::NOW.md missing TECHNICAL DEBT section"
-            fi
-            echo "✅ NOW.md structure validation complete"
+          # Check which status file exists and validate it
+          if [ -f "src/content/status/status-latest.md" ]; then
+            STATUS_FILE="src/content/status/status-latest.md"
+            echo "Using new status source: $STATUS_FILE"
+          elif [ -f "docs/status/NOW.md" ]; then
+            STATUS_FILE="docs/status/NOW.md"
+            echo "Using legacy status file: $STATUS_FILE"
           else
-            echo "::error ::docs/status/NOW.md file not found"
+            echo "::error ::No status documentation found"
             exit 1
           fi
+          
+          # Check if status file was modified recently (within last 24 hours of PR)
+          LAST_MODIFIED=$(git log -1 --format="%ai" -- "$STATUS_FILE" 2>/dev/null || echo "")
+          
+          if [ -n "$LAST_MODIFIED" ]; then
+            TWENTY_FOUR_HOURS_AGO=$(date -d "24 hours ago" --iso-8601=seconds)
+            if [[ "$LAST_MODIFIED" < "$TWENTY_FOUR_HOURS_AGO" ]]; then
+              echo "::warning ::$STATUS_FILE last modified: $LAST_MODIFIED"
+              echo "::warning ::This seems outdated for current PR changes"
+            fi
+          fi
+
+      - name: Check required sections in status documentation
+        if: steps.core_changes.outputs.requires_update == 'true'
+        run: |
+          # Determine which status file to validate
+          if [ -f "src/content/status/status-latest.md" ]; then
+            STATUS_FILE="src/content/status/status-latest.md"
+            echo "Validating new status format: $STATUS_FILE"
+            
+            # Check for required sections in new format
+            if ! grep -q "📍 \*\*NÅVÆRENDE FASE-STATUS\*\*\|CORE FEATURES" "$STATUS_FILE"; then
+              echo "::warning ::$STATUS_FILE missing CORE FEATURES section"
+            fi
+            if ! grep -q "🔄 \*\*IN PROGRESS\*\*\|IN PROGRESS" "$STATUS_FILE"; then
+              echo "::warning ::$STATUS_FILE missing IN PROGRESS section"
+            fi
+            if ! grep -q "🛠️ \*\*TYPESCRIPT & TEKNISK GJELD\*\*\|TECHNICAL DEBT" "$STATUS_FILE"; then
+              echo "::warning ::$STATUS_FILE missing TECHNICAL DEBT section"
+            fi
+            
+            # Validate structure using validation script if available
+            if [ -f "scripts/status-validation.ts" ] && command -v npx &> /dev/null; then
+              echo "Running automated validation..."
+              npx tsx scripts/status-validation.ts || echo "::warning ::Status validation script failed"
+            fi
+            
+          elif [ -f "docs/status/NOW.md" ]; then
+            STATUS_FILE="docs/status/NOW.md"
+            echo "Validating legacy status format: $STATUS_FILE"
+            
+            # Check for required sections in legacy format
+            if ! grep -q "## 🎯 \*\*CORE FEATURES\|CORE FEATURES" "$STATUS_FILE"; then
+              echo "::warning ::$STATUS_FILE missing CORE FEATURES section"
+            fi
+            if ! grep -q "## 🚧 \*\*IN PROGRESS\|IN PROGRESS" "$STATUS_FILE"; then
+              echo "::warning ::$STATUS_FILE missing IN PROGRESS section"
+            fi
+            if ! grep -q "## 🔒 \*\*TECHNICAL DEBT\|TECHNICAL DEBT" "$STATUS_FILE"; then
+              echo "::warning ::$STATUS_FILE missing TECHNICAL DEBT section"
+            fi
+          else
+            echo "::error ::No status documentation file found"
+            exit 1
+          fi
+          
+          echo "✅ Status documentation structure validation complete"
 
       - name: Status Sentinel Summary
         if: always()
@@ -95,10 +144,16 @@ jobs:
           echo "========================="
           if [ "${{ steps.core_changes.outputs.requires_update }}" == "true" ]; then
             echo "🎯 Core changes detected - Status update required"
-            if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "docs/status/NOW.md"; then
-              echo "✅ NOW.md updated in this PR"
+            
+            # Check which status file was updated
+            UPDATED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD || echo "")
+            
+            if echo "$UPDATED_FILES" | grep -q "src/content/status/status-latest.md"; then
+              echo "✅ New status source updated: src/content/status/status-latest.md"
+            elif echo "$UPDATED_FILES" | grep -q "docs/status/NOW.md"; then
+              echo "✅ Legacy status file updated: docs/status/NOW.md"
             else
-              echo "❌ NOW.md update missing"
+              echo "❌ No status documentation updated"
             fi
           else
             echo "ℹ️  No core changes detected - Status update optional"
