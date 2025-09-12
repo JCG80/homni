@@ -1,61 +1,15 @@
 /**
- * PHASE 1: Unified Navigation Hook
- * Integrates navigation with modules, feature flags, and role permissions
+ * LEGACY COMPATIBILITY: Unified Navigation Hook
+ * Now delegates to the enhanced module-aware navigation system
  * Part of Ultimate Master 2.0 implementation
  */
 
 import { useMemo } from 'react';
-import { useCurrentRole } from './useCurrentRole';
-import { useFeatureFlags } from './useFeatureFlags';
-import { getUnifiedNavigation, filterNavigation, type UnifiedNavConfig } from '@/config/navigation-consolidated';
-import { getModulesForRole } from '@/modules/system/ModuleRegistry';
+import { useModuleNavigation } from './useModuleNavigation';
+import type { UnifiedNavConfig } from '@/types/consolidated-types';
 
-interface UseUnifiedNavigationReturn {
-  navigation: UnifiedNavConfig;
-  isLoading: boolean;
-  availableModules: string[];
-  enabledFlags: Record<string, boolean>;
-}
-
-/**
- * Hook to get unified navigation configuration
- * Automatically filters based on role, modules, and feature flags
- */
-export function useUnifiedNavigation(): UseUnifiedNavigationReturn {
-  const role = useCurrentRole();
-  const flags = useFeatureFlags();
-  
-  // Get available modules for the current role
-  const availableModules = useMemo(() => {
-    if (!role) return [];
-    return getModulesForRole(role).map(module => module.id);
-  }, [role]);
-
-  // Generate navigation configuration
-  const navigation = useMemo(() => {
-    if (!role) {
-      return {
-        primary: [],
-        secondary: [],
-        quickActions: [],
-        mobile: []
-      };
-    }
-
-    // Get base navigation for role
-    const baseNavigation = getUnifiedNavigation(role);
-    
-    // Filter based on available modules and feature flags
-    return filterNavigation(baseNavigation, availableModules, flags);
-  }, [role, availableModules, flags]);
-
-  return {
-    navigation,
-    isLoading: !role, // Loading if role not yet determined
-    availableModules,
-    enabledFlags: flags
-  };
-}
+// Re-export the enhanced hook for backward compatibility
+export const useUnifiedNavigation = useModuleNavigation;
 
 /**
  * Hook to get navigation items for a specific section
