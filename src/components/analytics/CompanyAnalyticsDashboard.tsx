@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CompanyMetrics, LeadSource, RegionalData, RevenueData, PipelineData } from '@/types/company';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Building2, TrendingUp, Users, DollarSign, Target, Clock, Award } from 'lucide-react';
@@ -49,8 +50,8 @@ export const CompanyAnalyticsDashboard = () => {
   
   const [leadSources, setLeadSources] = useState<LeadSource[]>([]);
   const [regionalData, setRegionalData] = useState<RegionalData[]>([]);
-  const [revenueData, setRevenueData] = useState<any[]>([]);
-  const [pipelineData, setPipelineData] = useState<any[]>([]);
+  const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
+  const [pipelineData, setPipelineData] = useState<PipelineData[]>([]);
 
   useEffect(() => {
     if (profile?.company_id) {

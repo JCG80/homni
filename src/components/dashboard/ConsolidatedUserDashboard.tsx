@@ -103,19 +103,19 @@ export const ConsolidatedUserDashboard: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Error checking onboarding status:', error);
+      // Error checking onboarding status
     }
   };
 
   const fetchDashboardData = async () => {
     if (!user?.id) {
-      console.log('[ConsolidatedUserDashboard] No user ID, skipping data fetch');
+      // No user ID, skipping data fetch
       setLoading(false);
       return;
     }
 
     try {
-      console.log('[ConsolidatedUserDashboard] Fetching dashboard data for user:', user.id);
+      // Fetching dashboard data
       
       // Safer query construction
       const userEmail = user.email || '';
@@ -126,7 +126,7 @@ export const ConsolidatedUserDashboard: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('[ConsolidatedUserDashboard] Database error:', error);
+        // Database error occurred
         throw error;
       }
 
@@ -151,9 +151,9 @@ export const ConsolidatedUserDashboard: React.FC = () => {
 
       // Set recent leads (max 3)
       setRecentLeads(leads?.slice(0, 3) || []);
-      console.log('[ConsolidatedUserDashboard] Dashboard data loaded successfully');
+      // Dashboard data loaded successfully
     } catch (error) {
-      console.error('[ConsolidatedUserDashboard] Error fetching dashboard data:', error);
+      // Error fetching dashboard data
       setError(error instanceof Error ? error.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -220,7 +220,7 @@ export const ConsolidatedUserDashboard: React.FC = () => {
 
   // Show loading if auth is still loading or dashboard data is loading
   if (isLoading || loading) {
-    console.log('[ConsolidatedUserDashboard] Showing loading state');
+    // Showing loading state
     return <SkeletonDashboard />;
   }
 

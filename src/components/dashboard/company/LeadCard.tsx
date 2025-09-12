@@ -36,7 +36,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead }) => {
   
   const handleCardClick = () => {
     // This would open a detailed view of the lead
-    console.log(`Lead details for ${lead.id}`);
+    // Lead details logged
   };
   
   return (

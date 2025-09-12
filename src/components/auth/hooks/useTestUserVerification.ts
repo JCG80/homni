@@ -24,7 +24,7 @@ const verifyTestUsers = async (): Promise<string[]> => {
     
     return missingUsers;
   } catch (err) {
-    console.error('Error verifying test users:', err);
+    // Error verifying test users
     return TEST_USERS.map(user => user.email);
   }
 };
@@ -43,7 +43,7 @@ export const useTestUserVerification = () => {
           const missing = await verifyTestUsers();
           setMissingUsers(missing);
         } catch (err) {
-          console.error('Error verifying test users:', err);
+          // Error verifying test users in cleanup
         } finally {
           setIsVerifying(false);
         }

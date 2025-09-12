@@ -155,7 +155,7 @@ export const AdminAnalyticsDashboard = () => {
         systemAlerts: systemAlerts.filter(alert => !alert.resolved),
       };
       
-      console.log('Report data:', reportData);
+      // Report data processed
       // Simulate report download
       alert('Platform analytics report is being generated and will be emailed to you shortly.');
       

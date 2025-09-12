@@ -23,19 +23,15 @@ export const SimplifiedUserDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('[SimplifiedUserDashboard] Auth state:', { 
-    user: !!user, 
-    authLoading,
-    userEmail: user?.email 
-  });
+  // Debug info removed for cleaner console
 
   useEffect(() => {
     if (!authLoading) {
       if (user?.id) {
-        console.log('[SimplifiedUserDashboard] User ready, fetching data');
+        // User ready, fetching data
         fetchDashboardData();
       } else {
-        console.log('[SimplifiedUserDashboard] No user found');
+        // No user found
         setLoading(false);
       }
     }
@@ -43,13 +39,13 @@ export const SimplifiedUserDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     if (!user?.id) {
-      console.log('[SimplifiedUserDashboard] No user ID, skipping data fetch');
+      // No user ID, skipping data fetch
       setLoading(false);
       return;
     }
 
     try {
-      console.log('[SimplifiedUserDashboard] Fetching dashboard data for user:', user.id);
+      // Fetching dashboard data for user
       
       const userEmail = user.email || '';
       const { data: leads, error } = await supabase
@@ -59,7 +55,7 @@ export const SimplifiedUserDashboard: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('[SimplifiedUserDashboard] Database error:', error);
+        // Database error occurred
         throw error;
       }
 
@@ -80,9 +76,9 @@ export const SimplifiedUserDashboard: React.FC = () => {
         conversionRate,
       });
 
-      console.log('[SimplifiedUserDashboard] Dashboard data loaded successfully');
+      // Dashboard data loaded successfully
     } catch (error) {
-      console.error('[SimplifiedUserDashboard] Error fetching dashboard data:', error);
+      // Error fetching dashboard data
       setError(error instanceof Error ? error.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -91,7 +87,7 @@ export const SimplifiedUserDashboard: React.FC = () => {
 
   // Show loading if auth or data is still loading
   if (authLoading || loading) {
-    console.log('[SimplifiedUserDashboard] Showing loading state');
+    // Showing loading state
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">

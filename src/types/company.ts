@@ -82,3 +82,38 @@ export interface PurchaseRecord {
   status: string;
   purchase_date: string;
 }
+
+/**
+ * Analytics interfaces for company dashboard
+ */
+export interface CompanyMetrics {
+  totalLeads: number;
+  revenue: number;
+  customerAcquisitionCost: number;
+  responseTime: number;
+  activeUsers: number;
+}
+
+export interface LeadSource {
+  name: string;
+  count: number;
+  conversion_rate: number;
+}
+
+export interface RegionalData {
+  region: string;
+  leads: number;
+  revenue: number;
+}
+
+export interface RevenueData {
+  month: string;
+  revenue: number;
+  target: number;
+}
+
+export interface PipelineData {
+  stage: string;
+  count: number;
+  value: number;
+}

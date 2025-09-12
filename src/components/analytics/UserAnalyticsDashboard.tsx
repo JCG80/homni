@@ -97,7 +97,7 @@ export const UserAnalyticsDashboard: React.FC = () => {
 
       setAnalytics(mockAnalytics);
     } catch (error) {
-      console.error('Error fetching user analytics:', error);
+      // Error fetching user analytics
     } finally {
       setLoading(false);
     }
