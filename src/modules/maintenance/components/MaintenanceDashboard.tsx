@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Calendar, CheckCircle, Clock, Wrench, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthState } from '@/modules/auth/hooks/useAuthState';
-// i18n support to be added later
+import { useI18n } from '@/lib/i18n';
 import { WithFeatureFlag } from '@/modules/feature_flags/components/FeatureFlagProvider';
 import { listDueTasksForCurrentSeason, markCompleted, getUserCompletions, getCurrentSeason, type DueTask, type UserTaskCompletion } from '../api';
 import { format } from 'date-fns';
@@ -29,7 +29,7 @@ const priorityIcons = {
 
 export const MaintenanceDashboard = () => {
   const { user } = useAuthState();
-  // Temporary hardcoded strings - i18n to be added later
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [completionDialog, setCompletionDialog] = useState<{ open: boolean; task: DueTask | null }>({ open: false, task: null });
   const [completionNote, setCompletionNote] = useState('');

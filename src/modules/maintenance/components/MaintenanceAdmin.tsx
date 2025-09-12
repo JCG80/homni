@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trash2, Edit, Plus, Clock, Home } from 'lucide-react';
 import { toast } from 'sonner';
-// i18n support to be added later
+import { useI18n } from '@/lib/i18n';
 import { WithFeatureFlag } from '@/modules/feature_flags/components/FeatureFlagProvider';
 import { listTasks, createTask, updateTask, deleteTask, type MaintenanceTask } from '../api';
 
@@ -77,7 +77,7 @@ const TaskForm = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <Label htmlFor="title">{t('maintenance.labels.title')} *</Label>
+          <Label htmlFor="title">Tittel *</Label>
           <Input
             id="title"
             value={formData.title}
@@ -88,7 +88,7 @@ const TaskForm = ({
         </div>
         
         <div className="col-span-2">
-          <Label htmlFor="description">{t('maintenance.labels.description')} *</Label>
+          <Label htmlFor="description">Beskrivelse *</Label>
           <Textarea
             id="description"
             value={formData.description}
@@ -113,7 +113,7 @@ const TaskForm = ({
                   seasons: toggleArrayItem(prev.seasons, season)
                 }))}
               >
-                {t(`maintenance.seasons.${season}`)}
+                {season}
               </Button>
             ))}
           </div>
@@ -133,14 +133,14 @@ const TaskForm = ({
                   property_types: toggleArrayItem(prev.property_types, type)
                 }))}
               >
-                {t(`maintenance.property_types.${type}`)}
+                {type}
               </Button>
             ))}
           </div>
         </div>
 
         <div>
-          <Label htmlFor="frequency">{t('maintenance.labels.frequency')} *</Label>
+          <Label htmlFor="frequency">Frekvens (måneder) *</Label>
           <Input
             id="frequency"
             type="number"
@@ -172,7 +172,7 @@ const TaskForm = ({
         </div>
 
         <div>
-          <Label htmlFor="estimated_time">{t('maintenance.labels.estimated_time')}</Label>
+          <Label htmlFor="estimated_time">Estimert tid</Label>
           <Input
             id="estimated_time"
             value={formData.estimated_time}
@@ -182,7 +182,7 @@ const TaskForm = ({
         </div>
 
         <div>
-          <Label htmlFor="cost_estimate">{t('maintenance.labels.cost_estimate')} (NOK)</Label>
+          <Label htmlFor="cost_estimate">Kostnadsestimat (NOK)</Label>
           <Input
             id="cost_estimate"
             type="number"
@@ -196,10 +196,10 @@ const TaskForm = ({
 
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onClose}>
-          {t('actions.cancel')}
+          Avbryt
         </Button>
         <Button type="submit">
-          {task ? t('actions.edit') : t('maintenance.actions.add_task')}
+          {task ? 'Rediger' : 'Legg til oppgave'}
         </Button>
       </div>
     </form>
@@ -207,7 +207,7 @@ const TaskForm = ({
 };
 
 export const MaintenanceAdmin = () => {
-  // Temporary hardcoded strings - i18n to be added later
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [editDialog, setEditDialog] = useState<{ open: boolean; task: MaintenanceTask | null }>({ open: false, task: null });
   const [createDialog, setCreateDialog] = useState(false);
