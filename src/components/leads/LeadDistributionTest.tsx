@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PlayCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 export const LeadDistributionTest: React.FC = () => {
   const [testResult, setTestResult] = useState<any>(null);
@@ -43,7 +44,7 @@ export const LeadDistributionTest: React.FC = () => {
       toast.success('Test lead created successfully');
       return data.id;
     } catch (error) {
-      console.error('Error creating test lead:', error);
+      logger.error('Error creating test lead:', error);
       toast.error('Failed to create test lead');
       throw error;
     } finally {
@@ -103,7 +104,7 @@ export const LeadDistributionTest: React.FC = () => {
       );
 
     } catch (error) {
-      console.error('Distribution test failed:', error);
+      logger.error('Distribution test failed:', error);
       setTestResult({
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
@@ -138,7 +139,7 @@ export const LeadDistributionTest: React.FC = () => {
       setTestResult(null);
       toast.success('Test lead cleaned up');
     } catch (error) {
-      console.error('Error cleaning up test lead:', error);
+      logger.error('Error cleaning up test lead:', error);
       toast.error('Failed to cleanup test lead');
     }
   };

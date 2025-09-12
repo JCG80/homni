@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
+import { logger } from '@/utils/logger';
 
 interface Insight {
   id: string;
@@ -71,7 +72,7 @@ export const CrossModuleInsights: React.FC = () => {
       setModuleData(mockData);
       setInsights(generatedInsights);
     } catch (error) {
-      console.error('Error fetching cross-module data:', error);
+      logger.error('Error fetching cross-module data:', error);
     } finally {
       setLoading(false);
     }

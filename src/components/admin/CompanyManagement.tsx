@@ -7,6 +7,7 @@ import { useAdminFullData } from '@/hooks/useLeadsData';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Building2, DollarSign, Target, Mail, Phone } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 export const CompanyManagement: React.FC = () => {
   const { companies, loading, refetch } = useAdminFullData();
@@ -34,7 +35,7 @@ export const CompanyManagement: React.FC = () => {
       });
       refetch();
     } catch (error) {
-      console.error('Error updating company status:', error);
+      logger.error('Error updating company status:', error);
       toast({
         title: "Error", 
         description: "Feil ved oppdatering av selskapsstatus",

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 import { LightRegistrationFlow } from '@/components/landing/LightRegistrationFlow';
 
 interface AnonymousLead {
@@ -55,7 +56,7 @@ export const AnonymousLeadViewer = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error searching leads:', error);
+        logger.error('Error searching leads:', error);
         toast.error('Feil ved søk etter forespørsler');
         return;
       }
@@ -68,7 +69,7 @@ export const AnonymousLeadViewer = () => {
         toast.success(`Fant ${data.length} forespørsel${data.length > 1 ? 'er' : ''}`);
       }
     } catch (error) {
-      console.error('Error searching leads:', error);
+      logger.error('Error searching leads:', error);
       toast.error('Feil ved søk etter forespørsler');
     } finally {
       setIsSearching(false);

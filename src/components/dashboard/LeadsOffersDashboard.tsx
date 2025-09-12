@@ -7,6 +7,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { Mail, Phone, Clock, CheckCircle, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
+import { logger } from '@/utils/logger';
 
 interface Lead {
   id: string;
@@ -40,7 +41,7 @@ export const LeadsOffersDashboard = () => {
       if (error) throw error;
       setLeads(data || []);
     } catch (error) {
-      console.error('Error fetching leads:', error);
+      logger.error('Error fetching leads:', error);
     } finally {
       setLoading(false);
     }

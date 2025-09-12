@@ -1,6 +1,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { logAdminAction } from '../utils/adminLogger';
+import { logger } from '@/utils/logger';
 
 /**
  * Fetches all available system modules
@@ -16,7 +17,7 @@ export const fetchAvailableModules = async () => {
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error('Error fetching available modules:', error);
+    logger.error('Error fetching available modules:', error);
     return [];
   }
 };
@@ -56,7 +57,7 @@ export const fetchUserModuleAccess = async (userId: string) => {
       isInternalAdmin
     };
   } catch (error) {
-    console.error('Error fetching user module access:', error);
+    logger.error('Error fetching user module access:', error);
     return { moduleAccess: [], isInternalAdmin: false };
   }
 };
@@ -81,7 +82,7 @@ export const bulkUpdateUserModuleAccess = async (
     if (error) throw error;
     return true;
   } catch (error) {
-    console.error('Error in bulk module access update:', error);
+    logger.error('Error in bulk module access update:', error);
     return false;
   }
 };
@@ -108,7 +109,7 @@ export const fetchModuleAccessAudit = async (userId: string) => {
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error('Error fetching audit logs:', error);
+    logger.error('Error fetching audit logs:', error);
     return [];
   }
 };
@@ -167,7 +168,7 @@ export const updateUserModuleAccess = async (
     
     return true;
   } catch (error) {
-    console.error('Error updating user module access:', error);
+    logger.error('Error updating user module access:', error);
     return false;
   }
 };

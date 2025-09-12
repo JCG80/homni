@@ -11,6 +11,7 @@ import { AlertCircle, TrendingUp, Users, FileText, DollarSign, Clock, Target } f
 import { useAdminFullData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface DashboardMetrics {
   totalLeads: number;
@@ -83,7 +84,7 @@ export const AdminDashboard: React.FC = () => {
           });
           if (data?.[0]?.success) successCount++;
         } catch (error) {
-          console.error('Distribution failed for lead:', lead.id, error);
+          logger.error('Distribution failed for lead:', { leadId: lead.id, error });
         }
       }
 
@@ -93,7 +94,7 @@ export const AdminDashboard: React.FC = () => {
       });
       await refetch();
     } catch (error) {
-      console.error('Error running distribution:', error);
+      logger.error('Error running distribution:', error);
       toast({
         title: "Error", 
         description: "Failed to run lead distribution",
