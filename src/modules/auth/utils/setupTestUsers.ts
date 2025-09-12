@@ -143,6 +143,22 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
 
       // Short delay for profile to propagate
       await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Initialize user modules based on role
+      try {
+        console.log('[setupTestUsers] Initializing user modules...');
+        const { initializeUserModules } = await import('@/modules/system/ModuleInitializer');
+        const moduleInitSuccess = await initializeUserModules(user.id, normalizedRole);
+        
+        if (moduleInitSuccess) {
+          console.log('[setupTestUsers] User modules initialized successfully');
+        } else {
+          console.warn('[setupTestUsers] Module initialization failed, continuing anyway');
+        }
+      } catch (moduleError) {
+        console.warn('[setupTestUsers] Module initialization error:', moduleError);
+        // Continue anyway - user is authenticated
+      }
 
       toast({
         title: 'Login Successful',
