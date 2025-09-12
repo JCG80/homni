@@ -1,39 +1,45 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import React from 'react';
 
-// Mock Supabase
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    auth: {
-      getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
-      signUp: vi.fn(),
-      signIn: vi.fn(),
-      signOut: vi.fn(),
-      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
-    },
-    from: vi.fn(() => ({
-      select: vi.fn(() => Promise.resolve({ data: [], error: null })),
-      insert: vi.fn(() => Promise.resolve({ data: [], error: null })),
-      update: vi.fn(() => Promise.resolve({ data: [], error: null })),
-      delete: vi.fn(() => Promise.resolve({ data: [], error: null })),
-    })),
-    rpc: vi.fn(() => Promise.resolve({ data: true, error: null })),
-  }
-}));
+// Mock IntersectionObserver
+(global as any).IntersectionObserver = class IntersectionObserver {
+  observe = vi.fn()
+  disconnect = vi.fn()
+  unobserve = vi.fn()
+};
 
-// Mock router
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => vi.fn(),
-    useLocation: () => ({ pathname: '/' }),
-    useParams: () => ({}),
-  };
+// Mock ResizeObserver  
+(global as any).ResizeObserver = class ResizeObserver {
+  observe = vi.fn()
+  disconnect = vi.fn()
+  unobserve = vi.fn()
+};
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });
 
-// Mock theme provider
-vi.mock('@/providers/ThemeProvider', () => ({
-  useTheme: () => ({ theme: 'light', setTheme: vi.fn(), resolvedTheme: 'light' }),
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+// Mock scrollIntoView
+Element.prototype.scrollIntoView = vi.fn();
+
+// Mock react-window for performance tests
+vi.mock('react-window', () => ({
+  FixedSizeList: vi.fn(({ children, itemCount, itemData }: any) => {
+    const items = Array.from({ length: Math.min(itemCount, 5) }).map((_, index) =>
+      children({ index, style: {}, data: itemData })
+    );
+    return React.createElement('div', { 'data-testid': 'virtualized-list' }, items);
+  })
 }));
