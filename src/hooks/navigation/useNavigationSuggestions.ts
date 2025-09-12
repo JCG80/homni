@@ -42,7 +42,7 @@ export const useNavigationSuggestions = () => {
         text: 'Neste steg',
         variant: 'default' as const
       },
-      icon: item.icon
+      icon: (typeof item.icon === 'function' ? (item.icon as any) : undefined)
     }));
   }, [location.pathname, currentRole]);
 
@@ -65,7 +65,7 @@ export const useNavigationSuggestions = () => {
           text: 'Favoritt',
           variant: 'secondary' as const
         },
-        icon: navItem.icon
+        icon: (typeof navItem.icon === 'function' ? (navItem.icon as any) : undefined)
       };
     }).filter(Boolean) as NavigationSuggestion[];
   }, [preferences.favoriteRoutes, currentRole]);

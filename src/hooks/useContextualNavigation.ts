@@ -218,15 +218,13 @@ export function useContextualNavigation() {
         });
       }
       
-      const userNav = navUser[userRole] || [];
-      const controlNav = navControl[userRole] || [];
-      
-      [...userNav, ...controlNav].slice(0, 2).forEach((navItem, index) => {
+      const combinedNav = getNavigation(userRole as UserRole).slice(0, 2);
+      combinedNav.forEach((navItem, index) => {
         if (navItem.href !== '/dashboard' && !navItem.href.includes('/dashboard/')) {
           suggestions.push({
             id: `nav-${navItem.href}`,
-            title: `Gå til ${navItem.label}`,
-            description: `Utforsk ${navItem.label.toLowerCase()}`,
+            title: `Gå til ${navItem.title}`,
+            description: `Utforsk ${navItem.title.toLowerCase()}`,
             action: () => navigate(navItem.href),
             priority: index === 0 ? 'high' : 'medium',
             category: 'navigation',

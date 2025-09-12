@@ -114,7 +114,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                      <item.icon className="mr-2 h-4 w-4" />
+                      {typeof item.icon === 'function' 
+                        ? React.createElement(item.icon as any, { className: 'mr-2 h-4 w-4' })
+                        : <Hash className="mr-2 h-4 w-4" />
+                      }
                       <div className="flex flex-col flex-1 overflow-hidden">
                         <span className="font-medium">{item.title}</span>
                         <span className="text-xs text-muted-foreground truncate">

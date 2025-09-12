@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/modules/auth/hooks';
-import { getNavigation } from '@/config/navigation-consolidated';
+import { navControl } from '@/config/navigation-consolidated';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Home } from 'lucide-react';
@@ -51,7 +51,7 @@ export const AdminSidebar: React.FC = () => {
                   )
                 }
               >
-                {IconComponent && <IconComponent className="h-4 w-4" />}
+                {IconComponent && typeof IconComponent === 'function' && <IconComponent className="h-4 w-4" />}
                 <span>{item.title}</span>
               </NavLink>
             );

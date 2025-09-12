@@ -126,7 +126,7 @@ export const EnhancedBreadcrumb: React.FC<EnhancedBreadcrumbProps> = ({
                     <BreadcrumbItem>
                       {isLast ? (
                         <BreadcrumbPage className="flex items-center gap-2">
-                          {Icon && <Icon className="h-4 w-4" />}
+                           {Icon && typeof Icon === 'function' && <Icon className="h-4 w-4" />}
                           <span>{breadcrumb.title}</span>
                         </BreadcrumbPage>
                       ) : isEllipsis ? (
@@ -137,7 +137,7 @@ export const EnhancedBreadcrumb: React.FC<EnhancedBreadcrumbProps> = ({
                             to={breadcrumb.href}
                             className="flex items-center gap-2 hover:text-primary transition-colors"
                           >
-                            {Icon && <Icon className="h-4 w-4" />}
+                            {Icon && typeof Icon === 'function' && <Icon className="h-4 w-4" />}
                             <span>{breadcrumb.title}</span>
                           </Link>
                         </BreadcrumbLink>

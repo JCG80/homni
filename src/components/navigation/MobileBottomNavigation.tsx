@@ -67,12 +67,12 @@ export const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.1 }}
               >
-                {Icon && (
-                  <Icon className={cn(
-                    'h-5 w-5 mb-1',
-                    active && 'text-primary'
-                  )} />
-                )}
+                 {Icon && typeof Icon === 'function' && (
+                   <Icon className={cn(
+                     'h-5 w-5 mb-1',
+                     active && 'text-primary'
+                   )} />
+                 )}
                 
                 {notificationCount > 0 && (
                   <Badge

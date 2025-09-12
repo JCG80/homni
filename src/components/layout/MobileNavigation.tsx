@@ -45,7 +45,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ className })
                       : "text-muted-foreground hover:text-foreground hover:bg-accent"
                   )}
                 >
-                  {Icon && <Icon className="mr-2 h-4 w-4" />}
+                  {Icon && typeof Icon === 'function' && <Icon className="mr-2 h-4 w-4" />}
                   <span>{item.title}</span>
                   {item.badge && (
                     <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">

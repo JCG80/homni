@@ -34,7 +34,7 @@ export const AdminSection: React.FC<AdminSectionProps> = ({ isMasterAdmin }) => 
                 )
               }
             >
-              {IconComponent && <IconComponent size={16} />}
+              {IconComponent && typeof IconComponent === 'function' && <IconComponent size={16} />}
               <span>{item.title}</span>
             </NavLink>
           );

@@ -58,7 +58,7 @@ export const SimplifiedLayoutSidebar: React.FC<SimplifiedLayoutSidebarProps> = (
               )}
             >
               <div className="flex items-center gap-3">
-                {Icon && <Icon className="h-4 w-4" />}
+                {Icon && typeof Icon === 'function' && <Icon className="h-4 w-4" />}
                 <span>{item.title}</span>
               </div>
               

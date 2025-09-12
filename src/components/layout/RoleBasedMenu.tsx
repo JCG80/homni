@@ -24,7 +24,7 @@ export const RoleBasedMenu: React.FC<RoleBasedMenuProps> = ({ role }) => {
           <SidebarNavLink 
             key={item.href} 
             to={item.href} 
-            icon={Icon}
+            icon={typeof Icon === 'function' ? Icon : undefined}
             end={item.href === '/'}
           >
             {item.title}

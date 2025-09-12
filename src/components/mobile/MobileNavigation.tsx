@@ -73,7 +73,7 @@ export const MobileBottomNavigation = () => {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {item.icon && <item.icon className="h-5 w-5" />}
+              {item.icon && typeof item.icon === 'function' && React.createElement(item.icon as any, { className: 'h-5 w-5' })}
               <span className="truncate max-w-12">{item.title}</span>
               {item.badge && (
                 <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full px-1 min-w-4 h-4 flex items-center justify-center">
