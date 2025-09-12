@@ -40,7 +40,16 @@ const DashboardRouter = lazy(() => import('@/modules/dashboard/DashboardRouter')
 // Property details (enhanced module page)
 const PropertyDetailsModulePage = lazy(() => import('@/modules/property/pages/PropertyDetailsPage').then(m => ({ default: m.PropertyDetailsPage })));
 
+const SimpleTestPage = lazy(() => import('@/components/debug/SimpleTestPage').then(m => ({ default: m.SimpleTestPage })));
+
 export const mainRouteObjects: AppRoute[] = [
+  // EMERGENCY: Add simple test route at the top
+  {
+    path: '/test-simple',
+    element: createElement(SimpleTestPage),
+    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
+    navKey: 'test-simple'
+  },
   {
     path: '/',
     element: createElement(HomePage),

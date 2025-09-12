@@ -12,6 +12,7 @@ import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { isLovablePreviewHost } from '@/lib/env/hosts';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
 import { RouterDiagnostics } from '@/components/router/RouterDiagnostics';
 import { RouterEmergencyFallback } from '@/components/debug/RouterEmergencyFallback';
@@ -61,8 +62,8 @@ const UnauthorizedPage = () => {
   // If user has high-level access, redirect them away from unauthorized page
   useEffect(() => {
     if (!isLoading && isAuthenticated && (role === 'admin' || role === 'master_admin')) {
-      console.log('[UnauthorizedPage] High-level user detected, redirecting to dashboard');
-      navigate('/dashboard', { replace: true });
+      console.error('[UnauthorizedPage] High-level user detected, redirecting to home');
+      navigate('/', { replace: true });
     }
   }, [isLoading, isAuthenticated, role, navigate]);
   
@@ -106,17 +107,6 @@ export function Shell() {
   const flags = useFeatureFlags();
   const role = useCurrentRole();
   
-  // Debug logging for development
-  if (import.meta.env.DEV) {
-    console.info('Router Debug:', { 
-      role, 
-      flags: Object.entries(flags).filter(([_, v]) => v).map(([k]) => k),
-      routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser',
-      pathname: window.location.pathname,
-      baseUrl: import.meta.env.BASE_URL || '/'
-    });
-  }
-  
   const allRoutes = [
     ...mainRouteObjects,
     ...adminRouteObjects,
@@ -125,6 +115,20 @@ export function Shell() {
     ...listingsRouteObjects,
     ...maintenanceRouteObjects,
   ];
+  
+  // EMERGENCY: Enhanced debugging for route filtering
+  if (import.meta.env.DEV || isLovablePreviewHost()) {
+    console.error('[EMERGENCY SHELL] Debug info:', { 
+      role, 
+      flags: Object.entries(flags).filter(([_, v]) => v).map(([k]) => k),
+      routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser',
+      pathname: window.location.pathname,
+      hash: window.location.hash,
+      baseUrl: import.meta.env.BASE_URL || '/',
+      allRoutesCount: allRoutes.length,
+      mainRoutesCount: mainRouteObjects.length
+    });
+  }
   
   // Apply feature flags and role filtering with error handling
   let filteredRoutes: AppRoute[] = [];
@@ -136,11 +140,6 @@ export function Shell() {
     filteredRoutes = mainRouteObjects.filter(route => !route.flag && (!route.roles || route.roles.includes('guest')));
   }
   
-  // Debug filtered routes in development
-  if (import.meta.env.DEV) {
-    console.info('Filtered routes:', filteredRoutes.map(r => r.path));
-  }
-
   // Convert to React Router compatible format
   const routeElements: RouteObject[] = [
     ...convertToRouteObjects(filteredRoutes),
@@ -149,6 +148,15 @@ export function Shell() {
     { path: '/emergency', element: <RouterEmergencyFallback /> },
     { path: '*', element: <NotFound /> }
   ];
+  
+  // EMERGENCY: Enhanced debugging for filtered routes
+  if (import.meta.env.DEV || isLovablePreviewHost()) {
+    console.error('[EMERGENCY SHELL] Filtered routes debug:', {
+      filteredRoutesCount: filteredRoutes.length,
+      availableRoutes: filteredRoutes.map(r => ({ path: r.path, roles: r.roles, flag: r.flag })).slice(0, 10),
+      routeElementsCount: routeElements.length
+    });
+  }
 
   const routes = useRoutes(routeElements);
 
