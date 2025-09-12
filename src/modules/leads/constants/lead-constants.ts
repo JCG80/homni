@@ -4,11 +4,22 @@ import { LEAD_STATUSES } from '../types/types';
 export { LEAD_STATUSES };
 
 export const LEAD_CATEGORIES = [
-  'bolig',
-  'hytter',
-  'næring',
-  'rehabilitering',
-  'annet'
+  'elektriker',
+  'rørlegger', 
+  'maler',
+  'snekker',
+  'bygge',
+  'tak',
+  'isolasjon',
+  'hage',
+  'renhold',
+  'forsikring',
+  'sikkerhet',
+  'it',
+  'transport',
+  'juridisk',
+  'økonomi',
+  'bolig'
 ] as const;
 
 export type LeadCategory = typeof LEAD_CATEGORIES[number];
