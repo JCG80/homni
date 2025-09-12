@@ -17,13 +17,13 @@ export const PowerComparisonFooter = () => {
               Sammenlign strømavtaler fra de ledende leverandørene i Norge. Spar penger og velg den avtalen som passer best for deg.
             </p>
             <div className="flex space-x-4 pt-2">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://facebook.com/homni" className="text-muted-foreground hover:text-primary transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://instagram.com/homni" className="text-muted-foreground hover:text-primary transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://twitter.com/homni" className="text-muted-foreground hover:text-primary transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
@@ -42,20 +42,20 @@ export const PowerComparisonFooter = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Om oss</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Om HomniPower</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Hvordan vi sammenligner</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Våre partnere</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Kontakt oss</a></li>
+              <li><a href="/about" className="text-muted-foreground hover:text-primary">Om HomniPower</a></li>
+              <li><a href="/how-it-works" className="text-muted-foreground hover:text-primary">Hvordan vi sammenligner</a></li>
+              <li><a href="/partners" className="text-muted-foreground hover:text-primary">Våre partnere</a></li>
+              <li><a href="/contact" className="text-muted-foreground hover:text-primary">Kontakt oss</a></li>
             </ul>
           </div>
           
           <div>
             <h3 className="font-semibold text-lg mb-4">Nyttige lenker</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Personvern</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Vilkår og betingelser</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Cookies</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">FAQ</a></li>
+              <li><a href="/privacy" className="text-muted-foreground hover:text-primary">Personvern</a></li>
+              <li><a href="/terms" className="text-muted-foreground hover:text-primary">Vilkår og betingelser</a></li>
+              <li><a href="/cookies" className="text-muted-foreground hover:text-primary">Cookies</a></li>
+              <li><a href="/faq" className="text-muted-foreground hover:text-primary">FAQ</a></li>
             </ul>
           </div>
         </div>

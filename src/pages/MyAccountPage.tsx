@@ -55,13 +55,13 @@ export const MyAccountPage = () => {
             Våre samarbeidspartnere
           </h2>
           <div className="flex flex-wrap gap-4">
-            <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+            <a href="/partners/mortgage" className="flex items-center gap-1 text-primary hover:underline">
               <Home className="h-4 w-4" /> Boliglånspartner
             </a>
-            <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+            <a href="/partners/insurance" className="flex items-center gap-1 text-primary hover:underline">
               <Bell className="h-4 w-4" /> Forsikringspartner
             </a>
-            <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+            <a href="/partners/energy" className="flex items-center gap-1 text-primary hover:underline">
               <Mail className="h-4 w-4" /> Energi-partner
             </a>
           </div>

@@ -327,36 +327,36 @@ export const MarketTrendsMD: React.FC = () => {
                 <div className="space-y-2">
                   <h4 className="font-semibold">API Dokumentasjon</h4>
                   <ul className="space-y-1">
-                    <li><a href="/docs/api/openapi.yaml" className="text-blue-600 hover:underline">OpenAPI Specification</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Postman Collection</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Authentication Guide</a></li>
+                    <li><a href="/api-docs" className="text-blue-600 hover:underline">OpenAPI Specification</a></li>
+                    <li><a href="https://documenter.getpostman.com/view/homni" className="text-blue-600 hover:underline">Postman Collection</a></li>
+                    <li><a href="/docs/auth" className="text-blue-600 hover:underline">Authentication Guide</a></li>
                   </ul>
                 </div>
                 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Utviklerdokumentasjon</h4>
                   <ul className="space-y-1">
-                    <li><a href="#" className="text-blue-600 hover:underline">Setup Guide</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Contributing Guidelines</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Code Standards</a></li>
+                    <li><a href="/docs/setup" className="text-blue-600 hover:underline">Setup Guide</a></li>
+                    <li><a href="/docs/contributing" className="text-blue-600 hover:underline">Contributing Guidelines</a></li>
+                    <li><a href="/docs/standards" className="text-blue-600 hover:underline">Code Standards</a></li>
                   </ul>
                 </div>
 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Deployment</h4>
                   <ul className="space-y-1">
-                    <li><a href="#" className="text-blue-600 hover:underline">CI/CD Pipeline</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Environment Config</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Monitoring Setup</a></li>
+                    <li><a href="/admin/cicd" className="text-blue-600 hover:underline">CI/CD Pipeline</a></li>
+                    <li><a href="/admin/environment" className="text-blue-600 hover:underline">Environment Config</a></li>
+                    <li><a href="/admin/monitoring" className="text-blue-600 hover:underline">Monitoring Setup</a></li>
                   </ul>
                 </div>
 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Troubleshooting</h4>
                   <ul className="space-y-1">
-                    <li><a href="#" className="text-blue-600 hover:underline">Common Issues</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Debug Guide</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Performance Tips</a></li>
+                    <li><a href="/help/issues" className="text-blue-600 hover:underline">Common Issues</a></li>
+                    <li><a href="/help/debug" className="text-blue-600 hover:underline">Debug Guide</a></li>
+                    <li><a href="/help/performance" className="text-blue-600 hover:underline">Performance Tips</a></li>
                   </ul>
                 </div>
               </div>

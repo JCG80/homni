@@ -116,7 +116,7 @@ export const ContactStep = ({
           <div className="flex items-start gap-2 mb-4">
             <input type="checkbox" className="mt-1" />
             <label className="text-sm">
-              Jeg godkjenner at Bytt.no behandler mine opplysninger som beskrevet i <a href="#" className="text-blue-600 hover:underline">vilkårene</a> for bruk av denne tjenesten.
+              Jeg godkjenner at Bytt.no behandler mine opplysninger som beskrevet i <a href="/terms" className="text-blue-600 hover:underline">vilkårene</a> for bruk av denne tjenesten.
             </label>
           </div>
 
