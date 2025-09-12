@@ -17,7 +17,7 @@ export function RequireAuth({ children, roles, fallbackPath = '/login' }: Requir
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
+    return <Navigate to={fallbackPath} state={{ from: location.pathname }} replace />;
   }
 
   if (roles && roles.length > 0 && role && !roles.includes(role)) {

@@ -19,6 +19,8 @@ import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
 import { QuickActionsDropdown } from '@/components/navigation';
 import { CommandPalette } from '@/components/navigation/CommandPalette';
 import { useKeyboardShortcuts } from '@/hooks/navigation/useKeyboardShortcuts';
+import { UpdateAppButton } from '@/components/debug/UpdateAppButton';
+import { EnvProbe } from '@/components/debug/EnvProbe';
 
 interface HeaderProps {
   /** Allow passing through layout class names */
@@ -70,7 +72,12 @@ export const Header = ({ className = '' }: HeaderProps) => {
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
               <QuickActionsDropdown variant="icon" className="hidden md:flex" />
-              {(isAdmin || isMasterAdmin) && <RoleSwitcher />}
+              {(isAdmin || isMasterAdmin) && (
+                <>
+                  <RoleSwitcher />
+                  <UpdateAppButton />
+                </>
+              )}
               <ProfileHeader />
             </div>
           ) : (
@@ -93,6 +100,9 @@ export const Header = ({ className = '' }: HeaderProps) => {
           onOpenChange={setIsCommandPaletteOpen} 
         />
       )}
+
+      {/* Environment Probe - Admin only */}
+      {(isAdmin || isMasterAdmin) && <EnvProbe />}
     </header>
   );
 };
