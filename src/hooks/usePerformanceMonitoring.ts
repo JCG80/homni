@@ -1,18 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
+import { PerformanceMetrics } from '@/types/metrics';
 import { logger } from '@/utils/logger';
-
-interface PerformanceMetrics {
-  pageLoadTime: number;
-  firstContentfulPaint: number;
-  largestContentfulPaint: number;
-  cumulativeLayoutShift: number;
-  firstInputDelay: number;
-  navigationTime: number;
-  cacheHitRate: number;
-  apiResponseTimes: Record<string, number>;
-  bundleSize: number;
-}
 
 interface PerformanceConfig {
   enableMetrics: boolean;

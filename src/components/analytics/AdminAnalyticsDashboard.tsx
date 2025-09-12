@@ -9,16 +9,7 @@ import { analyticsService } from '@/lib/analytics/analyticsService';
 import { logger } from '@/utils/logger';
 import { PerformanceMetricsCard } from './PerformanceMetricsCard';
 
-interface PlatformMetrics {
-  totalUsers: number;
-  activeUsers: number;
-  totalCompanies: number;
-  activeCompanies: number;
-  totalLeads: number;
-  platformRevenue: number;
-  systemHealth: 'healthy' | 'warning' | 'critical';
-  uptime: number;
-}
+import { PlatformMetrics } from '@/types/metrics';
 
 interface UserEngagement {
   date: string;

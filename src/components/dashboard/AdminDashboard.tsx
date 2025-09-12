@@ -11,20 +11,8 @@ import { AlertCircle, TrendingUp, Users, FileText, DollarSign, Clock, Target } f
 import { useAdminFullData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/components/ui/use-toast';
+import { DashboardMetrics } from '@/types/metrics';
 import { logger } from '@/utils/logger';
-
-interface DashboardMetrics {
-  totalLeads: number;
-  assignedLeads: number;
-  unassignedLeads: number;
-  totalCompanies: number;
-  activeCompanies: number;
-  totalBudget: number;
-  avgAssignmentCost: number;
-  conversionRate: number;
-  todayLeads: number;
-  distributionSuccessRate: number;
-}
 
 export const AdminDashboard: React.FC = () => {
   const { leads, companies, loading, refetch } = useAdminFullData();

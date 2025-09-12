@@ -32,12 +32,7 @@ interface ServiceStatus {
   endpoint: string;
 }
 
-interface ApiMetrics {
-  requestsPerMinute: number;
-  errorRate: number;
-  avgResponseTime: number;
-  activeConnections: number;
-}
+import { ApiMetrics } from '@/types/metrics';
 
 export const ApiGatewayStatus: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);

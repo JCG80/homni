@@ -1,13 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
-
-interface RetentionMetrics {
-  loginStreak: number;
-  lastActiveDate: string;
-  totalSessions: number;
-  engagementScore: number;
-}
+import { RetentionMetrics } from '@/types/metrics';
 
 interface UserActivity {
   page_visited: string;

@@ -1,12 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from "@/components/ui/use-toast";
-
-interface PerformanceMetrics {
-  loadTime: number;
-  renderTime: number;
-  memoryUsage: number;
-  networkLatency: number;
-}
+import { PerformanceMetrics } from '@/types/metrics';
 
 export const usePerformanceOptimization = () => {
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);

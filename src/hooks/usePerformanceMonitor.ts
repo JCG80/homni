@@ -1,11 +1,6 @@
 import { useEffect, useCallback } from 'react';
+import { PerformanceMetrics } from '@/types/metrics';
 import { logger } from '@/utils/logger';
-
-interface PerformanceMetrics {
-  componentName: string;
-  loadTime: number;
-  renderTime: number;
-}
 
 export const usePerformanceMonitor = (componentName: string) => {
   const startTime = performance.now();

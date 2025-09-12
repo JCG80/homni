@@ -1,17 +1,7 @@
 import { useEffect, useCallback, useState } from 'react'
 import { supabase } from "@/integrations/supabase/client"
-
-interface PerformanceMetrics {
-  page_route: string
-  load_time_ms: number
-  first_contentful_paint?: number
-  largest_contentful_paint?: number
-  cumulative_layout_shift?: number
-  first_input_delay?: number
-  device_type: string
-  network_type?: string
-  metadata?: Record<string, any>
-}
+import { PerformanceMetrics } from '@/types/metrics';
+import { logger } from '@/utils/logger';
 
 export const useProductionMonitoring = (pageName: string) => {
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
@@ -33,6 +23,7 @@ export const useProductionMonitoring = (pageName: string) => {
       const performanceData: PerformanceMetrics = {
         page_route: pageName,
         load_time_ms: Math.round(loadTime),
+        loadTime: Math.round(loadTime), // Required field
         device_type: deviceType,
         network_type: networkType,
         metadata: {
@@ -52,24 +43,27 @@ export const useProductionMonitoring = (pageName: string) => {
 
       setMetrics(performanceData)
 
-      // Insert into database
-      await supabase.from('performance_monitoring').insert({
-        ...performanceData,
-        user_id: user?.id,
-        session_id: sessionId
+      // Insert into database - only the fields that exist in the database
+      await supabase.from('performance_metrics').insert({
+        metric_name: `page_load_${pageName}`,
+        metric_value: Math.round(loadTime),
+        metric_unit: 'ms',
+        service_name: 'frontend',
+        metadata: performanceData.metadata
       })
 
     } catch (error) {
-      console.error('Failed to track performance metrics:', error)
+      logger.error('Failed to track performance metrics:', error)
     }
   }, [pageName, sessionId])
 
   const trackSystemHealth = useCallback(async (metricName: string, value: number, unit: string = 'count') => {
     try {
-      await supabase.from('system_health_metrics').insert({
+      await supabase.from('performance_metrics').insert({
         metric_name: metricName,
         metric_value: value,
         metric_unit: unit,
+        service_name: 'frontend',
         metadata: {
           page_route: pageName,
           session_id: sessionId,
@@ -77,7 +71,7 @@ export const useProductionMonitoring = (pageName: string) => {
         }
       })
     } catch (error) {
-      console.error('Failed to track system health metric:', error)
+      logger.error('Failed to track system health metric:', error)
     }
   }, [pageName, sessionId])
 

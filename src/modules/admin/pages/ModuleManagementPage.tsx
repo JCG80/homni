@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 import { 
   Plus, 
   Package, 
@@ -87,7 +88,7 @@ export const ModuleManagementPage: React.FC = () => {
 
       setModules(modulesData || []);
     } catch (error) {
-      console.error('Error fetching modules:', error);
+      logger.error('Error fetching modules:', error);
       toast({
         title: "Error",
         description: "Failed to fetch system modules",
@@ -121,7 +122,7 @@ export const ModuleManagementPage: React.FC = () => {
         description: `Module has been ${!currentState ? 'enabled' : 'disabled'}`,
       });
     } catch (err) {
-      console.error('Error updating module:', err);
+      logger.error('Error updating module:', err);
       toast({
         title: "Update failed",
         description: "There was an error updating the module",
@@ -177,7 +178,7 @@ export const ModuleManagementPage: React.FC = () => {
       // Refresh modules list
       fetchModules();
     } catch (err) {
-      console.error('Error creating module:', err);
+      logger.error('Error creating module:', err);
       toast({
         title: "Creation failed",
         description: "There was an error creating the module",
@@ -209,7 +210,7 @@ export const ModuleManagementPage: React.FC = () => {
         description: `System module "${moduleName}" has been deleted`,
       });
     } catch (err) {
-      console.error('Error deleting module:', err);
+      logger.error('Error deleting module:', err);
       toast({
         title: "Deletion failed",
         description: "There was an error deleting the module",
