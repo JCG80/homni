@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { logger } from '@/utils/logger';
 import { 
   Home, 
   FileText, 
@@ -59,7 +60,7 @@ export const PropertyIntegrationWidget: React.FC = () => {
 
       setProperties(mockProperties);
     } catch (error) {
-      console.error('Error fetching property summary:', error);
+      logger.error('Error fetching property summary:', {}, error);
     } finally {
       setLoading(false);
     }

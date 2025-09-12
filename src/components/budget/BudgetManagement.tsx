@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/modules/auth/hooks';
 import { useToast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 import { 
   CreditCard, 
   TrendingUp, 
@@ -92,7 +93,7 @@ export const BudgetManagement: React.FC = () => {
       })));
 
     } catch (error) {
-      console.error('Error fetching budget data:', error);
+      logger.error('Error fetching budget data:', {}, error);
       toast({
         title: "Error",
         description: "Failed to load budget information",
@@ -126,7 +127,7 @@ export const BudgetManagement: React.FC = () => {
       });
 
     } catch (error) {
-      console.error('Error updating budget settings:', error);
+      logger.error('Error updating budget settings:', {}, error);
       toast({
         title: "Error",
         description: "Failed to update budget settings",
@@ -191,7 +192,7 @@ export const BudgetManagement: React.FC = () => {
       });
 
     } catch (error) {
-      console.error('Error adding budget:', error);
+      logger.error('Error adding budget:', {}, error);
       toast({
         title: "Error", 
         description: "Failed to add budget",

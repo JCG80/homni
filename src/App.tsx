@@ -12,6 +12,7 @@ import { AppDiagnostics } from '@/components/debug/AppDiagnostics';
 import { NetworkDiagnostics } from '@/components/debug/NetworkDiagnostics';
 import { DebugToggle } from '@/components/debug/DebugToggle';
 import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
+import { logger } from '@/utils/logger';
 
 import { usePageViews } from '@/lib/analytics/react';
 
@@ -26,7 +27,7 @@ function App() {
       
       // Log initial state for debugging
       if (import.meta.env.DEV) {
-        console.info('App initializing:', {
+        logger.info('App initializing:', {
           hasToken: hasLovableToken(),
           routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser',
           hostname: window.location.hostname

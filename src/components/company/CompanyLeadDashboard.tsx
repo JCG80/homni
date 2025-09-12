@@ -8,6 +8,7 @@ import { Clock, DollarSign, TrendingUp, AlertCircle, Phone, Mail, MessageSquare 
 import { useCompanyLeadsData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface Lead {
   id: string;
@@ -33,7 +34,7 @@ export default function CompanyLeadDashboard() {
         setSelectedLead({ ...selectedLead, status });
       }
     } catch (error) {
-      console.error('Failed to update status:', error);
+      logger.error('Failed to update status:', {}, error);
     }
   };
 
@@ -59,7 +60,7 @@ export default function CompanyLeadDashboard() {
       });
       setNotes('');
     } catch (error) {
-      console.error('Failed to add note:', error);
+      logger.error('Failed to add note:', {}, error);
       toast({
         title: "Error",
         description: "Failed to add note",

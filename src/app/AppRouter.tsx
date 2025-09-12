@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { isLovablePreviewHost } from '@/lib/env/hosts';
+import { logger } from '@/utils/logger';
 
 interface AppRouterProps {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ export function AppRouter({ children }: AppRouterProps) {
   const R: any = forceHash ? HashRouter : BrowserRouter;
 
   // EMERGENCY: Enhanced diagnostics 
-  console.error('[EMERGENCY ROUTER] Configuration:', {
+  logger.error('[EMERGENCY ROUTER] Configuration:', {
     hostname,
     isLovableHost,
     isPreview,

@@ -6,6 +6,7 @@ import { useAdminFullData } from '@/hooks/useLeadsData';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, CheckCircle, XCircle, Clock, Users } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 export const LeadsManagement: React.FC = () => {
   const { leads, companies, loading, refetch } = useAdminFullData();
@@ -47,7 +48,7 @@ export const LeadsManagement: React.FC = () => {
       });
       refetch();
     } catch (error) {
-      console.error(`Error ${action}ing lead:`, error);
+      logger.error(`Error ${action}ing lead:`, {}, error);
       toast({
         title: "Error",
         description: "Feil ved oppdatering av lead",

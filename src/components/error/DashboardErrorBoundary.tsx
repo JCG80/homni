@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 interface DashboardErrorBoundaryProps {
   children: React.ReactNode;
@@ -23,17 +24,17 @@ export class DashboardErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error): DashboardErrorBoundaryState {
-    console.error('[DashboardErrorBoundary] Error caught:', error);
+    logger.error('[DashboardErrorBoundary] Error caught:', {}, error);
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('[DashboardErrorBoundary] Error details:', { error, errorInfo });
+    logger.error('[DashboardErrorBoundary] Error details:', { error, errorInfo });
     this.setState({ errorInfo });
   }
 
   handleRetry = () => {
-    console.log('[DashboardErrorBoundary] Retrying...');
+    logger.info('[DashboardErrorBoundary] Retrying...');
     this.setState({ hasError: false, error: undefined, errorInfo: undefined });
     window.location.reload();
   };

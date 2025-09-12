@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 interface RouteErrorBoundaryProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ export class RouteErrorBoundary extends React.Component<RouteErrorBoundaryProps,
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Route Error Boundary caught an error:', error, errorInfo);
+    logger.error('Route Error Boundary caught an error:', { errorInfo }, error);
     this.setState({ error, errorInfo });
   }
 

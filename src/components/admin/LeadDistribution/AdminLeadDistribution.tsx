@@ -13,6 +13,7 @@ import { DistributionStrategy, DISTRIBUTION_STRATEGIES } from '@/modules/leads/s
 import { processUnassignedLeads } from '@/modules/leads/utils/processLeads';
 import { updateLeadSettings, fetchLeadSettings } from '@/modules/leads/api/leadSettings';
 import { updateDistributionStrategy, getCurrentStrategy } from '@/modules/leads/utils/getCurrentStrategy';
+import { logger } from '@/utils/logger';
 
 interface AdminLeadDistributionProps {
   className?: string;
@@ -46,7 +47,7 @@ export const AdminLeadDistribution: React.FC<AdminLeadDistributionProps> = ({ cl
           setMonthlyBudget(settings.monthly_budget?.toString() || '');
         }
       } catch (error) {
-        console.error('Error loading settings:', error);
+        logger.error('Error loading settings:', {}, error);
         toast({
           title: 'Error loading settings',
           description: 'Failed to load current lead distribution settings',
@@ -75,7 +76,7 @@ export const AdminLeadDistribution: React.FC<AdminLeadDistributionProps> = ({ cl
         throw new Error('Failed to update strategy');
       }
     } catch (error) {
-      console.error('Error saving strategy:', error);
+      logger.error('Error saving strategy:', {}, error);
       toast({
         title: 'Error',
         description: 'Failed to update distribution strategy',
@@ -101,7 +102,7 @@ export const AdminLeadDistribution: React.FC<AdminLeadDistributionProps> = ({ cl
         description: 'Lead distribution settings have been updated',
       });
     } catch (error) {
-      console.error('Error saving settings:', error);
+      logger.error('Error saving settings:', {}, error);
       toast({
         title: 'Error',
         description: 'Failed to save lead distribution settings',
@@ -128,7 +129,7 @@ export const AdminLeadDistribution: React.FC<AdminLeadDistributionProps> = ({ cl
         description: `Processed ${processedCount} unassigned leads`,
       });
     } catch (error) {
-      console.error('Error testing distribution:', error);
+      logger.error('Error testing distribution:', {}, error);
       toast({
         title: 'Test failed',
         description: 'Failed to test lead distribution',
@@ -149,7 +150,7 @@ export const AdminLeadDistribution: React.FC<AdminLeadDistributionProps> = ({ cl
       
       setLastProcessResult(processedCount);
     } catch (error) {
-      console.error('Error processing leads:', error);
+      logger.error('Error processing leads:', {}, error);
     } finally {
       setIsLoading(false);
     }

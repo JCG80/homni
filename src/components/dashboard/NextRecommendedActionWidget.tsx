@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/modules/auth/hooks';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/utils/logger';
 import { 
   ArrowRight, 
   Plus, 
@@ -173,7 +174,7 @@ export const NextRecommendedActionWidget = () => {
 
       setRecommendedActions(sortedActions.slice(0, 3)); // Show max 3 actions
     } catch (error) {
-      console.error('Error generating recommended actions:', error);
+      logger.error('Error generating recommended actions:', {}, error);
     } finally {
       setLoading(false);
     }
