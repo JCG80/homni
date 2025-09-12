@@ -2888,6 +2888,10 @@ export type Database = {
         Args: { is_admin?: boolean; user_email: string }
         Returns: string
       }
+      system_health_check: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       track_analytics_event: {
         Args: {
           p_event_name: string
