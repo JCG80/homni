@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 export interface AutoPurchaseOptions {
   leadId: string;
@@ -99,7 +100,13 @@ export async function checkAutoPurchaseEligibility(
 
     return { eligible: true };
   } catch (error: any) {
-    console.error('Error checking auto-purchase eligibility:', error);
+    logger.error('Error checking auto-purchase eligibility:', {
+      module: 'autoPurchase',
+      action: 'checkEligibility',
+      buyerId,
+      packageId,
+      cost
+    }, error);
     return { eligible: false, reason: 'System error during eligibility check' };
   }
 }
@@ -136,7 +143,13 @@ export async function executeAutoPurchase(options: AutoPurchaseOptions): Promise
       .single();
 
     if (error) {
-      console.error('Auto-purchase database error:', error);
+      logger.error('Auto-purchase database error:', {
+        module: 'autoPurchase',
+        action: 'executeAutoPurchase',
+        leadId,
+        buyerId,
+        cost
+      }, error);
       return {
         success: false,
         error: error.message
@@ -173,7 +186,14 @@ export async function executeAutoPurchase(options: AutoPurchaseOptions): Promise
     }
     
     // Log the successful auto-purchase
-    console.log(`Auto-purchase successful: Lead ${leadId} assigned to buyer ${buyerId} for NOK ${cost}`);
+    logger.info(`Auto-purchase successful: Lead ${leadId} assigned to buyer ${buyerId} for NOK ${cost}`, {
+      module: 'autoPurchase',
+      action: 'executeAutoPurchase',
+      leadId,
+      buyerId,
+      cost,
+      assignmentId: assignment.id
+    });
     
     return {
       success: true,
@@ -181,7 +201,13 @@ export async function executeAutoPurchase(options: AutoPurchaseOptions): Promise
     };
 
   } catch (error: any) {
-    console.error('Auto-purchase execution error:', error);
+    logger.error('Auto-purchase execution error:', {
+      module: 'autoPurchase',
+      action: 'executeAutoPurchase',
+      leadId,
+      buyerId,
+      cost
+    }, error);
     return {
       success: false,
       error: error.message || 'Failed to execute auto-purchase'
@@ -204,7 +230,11 @@ async function getDailySpending(buyerId: string): Promise<number> {
     .eq('transaction_type', 'lead_purchase');
 
   if (error) {
-    console.error('Error fetching daily spending:', error);
+    logger.error('Error fetching daily spending:', {
+      module: 'autoPurchase',
+      action: 'getDailySpending',
+      buyerId
+    }, error);
     return 0;
   }
 
@@ -227,7 +257,11 @@ async function getMonthlySpending(buyerId: string): Promise<number> {
     .eq('transaction_type', 'lead_purchase');
 
   if (error) {
-    console.error('Error fetching monthly spending:', error);
+    logger.error('Error fetching monthly spending:', {
+      module: 'autoPurchase',
+      action: 'getMonthlySpending',
+      buyerId
+    }, error);
     return 0;
   }
 
@@ -290,7 +324,11 @@ export async function getAutoPurchaseStats(buyerId: string, dateRange?: { from: 
       averageCost: data?.length ? (data.reduce((sum, assignment) => sum + (assignment.cost || 0), 0) / data.length) : 0
     };
   } catch (error: any) {
-    console.error('Failed to get auto-purchase stats:', error);
+    logger.error('Failed to get auto-purchase stats:', {
+      module: 'autoPurchase',
+      action: 'getAutoPurchaseStats',
+      buyerId
+    }, error);
     throw error;
   }
 }

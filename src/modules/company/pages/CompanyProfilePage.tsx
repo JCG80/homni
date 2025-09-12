@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 interface CompanyProfileData {
   id: string;
@@ -47,7 +48,12 @@ export const CompanyProfilePage = () => {
       if (error) throw error;
       setCompanyProfile(data);
     } catch (error) {
-      console.error("Error fetching company profile:", error);
+      logger.error("Error fetching company profile:", {
+        module: 'CompanyProfilePage',
+        action: 'fetchCompanyProfile',
+        companyId: profile?.company_id,
+        userRole: profile?.role
+      }, error as Error);
       toast({
         title: "Feil ved henting av bedriftsprofil",
         description: "Kunne ikke hente bedriftsinformasjon",

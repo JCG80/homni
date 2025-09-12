@@ -8,12 +8,18 @@ import { ContentEditorDashboard } from './pages/ContentEditorDashboard';
 import { useProfileContext } from '@/hooks/useProfileContext';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { DashboardErrorBoundary } from '@/components/error/DashboardErrorBoundary';
+import { logger } from '@/utils/logger';
 
 export function DashboardRouter() {
   const { role, isAdmin, isMasterAdmin, profile } = useAuth();
   const { activeContext } = useProfileContext();
 
-  console.log('[DashboardRouter] Current state:', { role, activeContext, profile: !!profile });
+  logger.debug('[DashboardRouter] Current state:', {
+    module: 'DashboardRouter',
+    role,
+    activeContextType: activeContext?.type,
+    hasProfile: !!profile
+  });
 
   // Determine which dashboard to show based on active context or role
   const getDashboardComponent = () => {

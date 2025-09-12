@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import { eventBus } from '@/lib/events/EventBus';
+import { logger } from '@/utils/logger';
 
 export interface LeadDistributionOptions {
   leadId: string;
@@ -42,7 +43,12 @@ export async function distributeLeadToBuyer(options: LeadDistributionOptions): P
       cost: result.cost
     };
   } catch (error: any) {
-    console.error('Lead distribution failed:', error);
+    logger.error('Lead distribution failed:', {
+      module: 'leadDistribution',
+      action: 'distributeLeadToBuyer',
+      leadId: options.leadId,
+      strategy: options.strategy
+    }, error);
     return {
       success: false,
       error: error.message || 'Failed to distribute lead'
@@ -85,7 +91,11 @@ export async function getDistributionStats(dateRange?: { from: Date; to: Date })
       }
     };
   } catch (error: any) {
-    console.error('Failed to get distribution stats:', error);
+    logger.error('Failed to get distribution stats:', {
+      module: 'leadDistribution',
+      action: 'getDistributionStats',
+      dateRange
+    }, error);
     throw error;
   }
 }
@@ -102,7 +112,13 @@ export async function processNewLeadDistribution(leadId: string) {
       .single();
 
     if (!settings?.auto_distribute || settings.globally_paused) {
-      console.log('Auto-distribution is disabled or paused');
+      logger.info('Auto-distribution is disabled or paused', {
+        module: 'leadDistribution',
+        action: 'processNewLeadDistribution',
+        leadId,
+        autoDistribute: settings?.auto_distribute,
+        globallyPaused: settings?.globally_paused
+      });
       return null;
     }
 
@@ -123,12 +139,21 @@ export async function processNewLeadDistribution(leadId: string) {
         timestamp: new Date().toISOString(),
       });
     } else {
-      console.warn('Lead distribution failed:', result.error);
+      logger.warn('Lead distribution failed:', {
+        module: 'leadDistribution',
+        action: 'processNewLeadDistribution',
+        leadId,
+        error: result.error
+      });
     }
 
     return result;
   } catch (error: any) {
-    console.error('Auto-distribution process failed:', error);
+    logger.error('Auto-distribution process failed:', {
+      module: 'leadDistribution',
+      action: 'processNewLeadDistribution',
+      leadId
+    }, error);
     toast.error('Failed to auto-distribute lead');
     return null;
   }
@@ -187,7 +212,11 @@ export async function getBuyerEligibility(leadId: string) {
 
     return eligibleBuyers;
   } catch (error: any) {
-    console.error('Failed to get buyer eligibility:', error);
+    logger.error('Failed to get buyer eligibility:', {
+      module: 'leadDistribution',
+      action: 'getBuyerEligibility',
+      leadId
+    }, error);
     throw error;
   }
 }
