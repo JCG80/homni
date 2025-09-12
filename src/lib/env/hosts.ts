@@ -3,6 +3,8 @@
  * Provides reliable detection of Lovable preview environments
  */
 
+import { logger } from '@/utils/logger';
+
 export function isLovablePreviewHost(): boolean {
   if (typeof window === 'undefined') return false;
   const hostname = window.location.hostname;
@@ -12,7 +14,8 @@ export function isLovablePreviewHost(): boolean {
          hostname.includes('.sandbox.lovable.dev');
   
   // Debug logging for preview detection
-  console.info('[Host Detection]', {
+  logger.info('[Host Detection]', {
+    module: 'hostDetection',
     hostname,
     isLovable,
     contains: {

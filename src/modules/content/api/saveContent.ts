@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { Content, ContentFormValues } from '../types/content-types';
 import { parseContent } from '../utils/parseContent';
+import { logger } from '@/utils/logger';
 
 /**
  * Save content - creates new or updates existing
@@ -14,7 +15,11 @@ export async function saveContent(contentData: ContentFormValues): Promise<Conte
       return createContent(contentData);
     }
   } catch (error) {
-    console.error('Error saving content:', error);
+    logger.error('Error saving content:', {
+      module: 'saveContent',
+      action: 'saveContent',
+      contentId: contentData.id
+    }, error as Error);
     throw error;
   }
 }
@@ -27,7 +32,10 @@ export async function createContent(contentData: ContentFormValues): Promise<Con
   const userId = userData?.user?.id;
   
   if (!userId) {
-    console.error('No authenticated user found');
+    logger.error('No authenticated user found', {
+      module: 'saveContent',
+      action: 'createContent'
+    });
     return null;
   }
   
@@ -43,7 +51,11 @@ export async function createContent(contentData: ContentFormValues): Promise<Con
     .select();
   
   if (error) {
-    console.error('Error creating content:', error);
+    logger.error('Error creating content:', {
+      module: 'saveContent',
+      action: 'createContent',
+      title: contentDataWithoutId.title
+    }, error);
     return null;
   }
   
@@ -67,7 +79,11 @@ export async function updateContent(id: string, contentData: Partial<ContentForm
     .select();
   
   if (error) {
-    console.error('Error updating content:', error);
+    logger.error('Error updating content:', {
+      module: 'saveContent',
+      action: 'updateContent',
+      contentId: id
+    }, error);
     return null;
   }
   

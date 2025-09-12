@@ -5,6 +5,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { logger } from '@/utils/logger';
 
 export interface FeatureFlag {
   id: string;
@@ -66,7 +67,9 @@ async function fetchFeatureFlags(): Promise<FeatureFlag[]> {
     .order('name');
 
   if (error) {
-    console.error('Error fetching feature flags:', error);
+    logger.error('Error fetching feature flags:', {
+      module: 'featureFlags'
+    }, error);
     throw error;
   }
 
@@ -83,7 +86,10 @@ async function checkFeatureFlag(flagName: string): Promise<boolean> {
   });
 
   if (error) {
-    console.error(`Error checking feature flag ${flagName}:`, error);
+    logger.error(`Error checking feature flag ${flagName}:`, {
+      module: 'featureFlags',
+      flagName
+    }, error);
     return false;
   }
 

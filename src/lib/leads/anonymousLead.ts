@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import { eventBus } from '@/lib/events/EventBus';
+import { logger } from '@/utils/logger';
 
 interface AnonymousLeadData {
   title: string;
@@ -19,7 +20,11 @@ const checkDuplicate = async (email: string, category: string): Promise<boolean>
     .limit(1);
     
   if (error) {
-    console.error('Duplicate check error:', error);
+    logger.error('Duplicate check error:', {
+      module: 'anonymousLead',
+      email,
+      category
+    }, error);
     return false; // Allow creation if check fails
   }
   
@@ -57,7 +62,11 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
       .single();
 
     if (createError || !lead) {
-      console.error('Error creating lead:', createError);
+      logger.error('Error creating lead:', {
+        module: 'anonymousLead',
+        title: leadData.title,
+        category: leadData.category
+      }, createError || new Error('No lead returned'));
       throw new Error('Kunne ikke opprette forespørsel. Vennligst prøv igjen.');
     }
 
@@ -77,7 +86,11 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
     );
 
     if (distributionError) {
-      console.error('Error distributing lead:', distributionError);
+      logger.error('Error distributing lead:', {
+        module: 'anonymousLead',
+        leadId: lead.id,
+        category: leadData.category
+      }, distributionError);
       // Lead created but not distributed - still return success
     }
     
@@ -102,7 +115,11 @@ export const createAnonymousLead = async (leadData: AnonymousLeadData) => {
       cost: result?.assignment_cost || 0
     };
   } catch (error) {
-    console.error('Error in createAnonymousLead:', error);
+    logger.error('Error in createAnonymousLead:', {
+      module: 'anonymousLead',
+      title: leadData.title,
+      category: leadData.category
+    }, error as Error);
     throw error;
   }
 };

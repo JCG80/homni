@@ -3,6 +3,8 @@
  * Supports Norwegian (NO) and English (EN)
  */
 
+import { logger } from '@/utils/logger';
+
 export type Locale = 'no' | 'en';
 
 export interface TranslationMessages {
@@ -55,7 +57,11 @@ export function getCurrentLocale(): Locale {
  */
 export function setLocale(locale: Locale): void {
   if (!SUPPORTED_LOCALES.includes(locale)) {
-    console.warn(`Unsupported locale: ${locale}, falling back to ${DEFAULT_LOCALE}`);
+    logger.warn(`Unsupported locale: ${locale}, falling back to ${DEFAULT_LOCALE}`, {
+      module: 'i18n',
+      locale,
+      fallback: DEFAULT_LOCALE
+    });
     locale = DEFAULT_LOCALE;
   }
   
@@ -87,7 +93,10 @@ export async function loadMessages(locale: Locale): Promise<TranslationMessages>
     
     return translationMessages;
   } catch (error) {
-    console.error(`Failed to load locale ${locale}:`, error);
+    logger.error(`Failed to load locale ${locale}:`, {
+      module: 'i18n',
+      locale
+    }, error as Error);
     
     // Fallback to default locale if loading fails
     if (locale !== DEFAULT_LOCALE) {
@@ -125,14 +134,21 @@ export function createTranslator(messages: TranslationMessages) {
         value = value[k];
       } else {
         // Key not found, return the key itself
-        console.warn(`Translation key not found: ${key}`);
+        logger.warn(`Translation key not found: ${key}`, {
+          module: 'i18n',
+          key
+        });
         return key;
       }
     }
     
     // If value is not a string, return the key
     if (typeof value !== 'string') {
-      console.warn(`Translation value is not a string: ${key}`, value);
+      logger.warn(`Translation value is not a string: ${key}`, {
+        module: 'i18n',
+        key,
+        value
+      });
       return key;
     }
     

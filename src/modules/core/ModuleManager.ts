@@ -7,6 +7,7 @@ import { propertyManagementService, type PropertyDocument } from '@/modules/prop
 import { diySellingService, type PropertyListing } from '@/modules/sales/services/diySellingService';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 export interface CrossModuleInsight {
   id: string;
@@ -70,7 +71,11 @@ export class ModuleManager {
 
       return profile;
     } catch (error) {
-      console.error('Failed to initialize user journey:', error);
+      logger.error('Failed to initialize user journey:', {
+        module: 'ModuleManager',
+        action: 'initializeUserJourney',
+        userId
+      }, error as Error);
       throw error;
     }
   }
@@ -226,7 +231,11 @@ export class ModuleManager {
         estimated_costs: estimatedCosts
       };
     } catch (error) {
-      console.error('Failed to initiate property sale:', error);
+      logger.error('Failed to initiate property sale:', {
+        module: 'ModuleManager',
+        action: 'initiatePropertySale',
+        propertyId
+      }, error as Error);
       toast.error('Kunne ikke starte salgsprosess');
       throw error;
     }
@@ -275,7 +284,11 @@ export class ModuleManager {
 
       return property;
     } catch (error) {
-      console.error('Failed to convert lead to property:', error);
+      logger.error('Failed to convert lead to property:', {
+        module: 'ModuleManager',
+        action: 'convertLeadToProperty',
+        leadId
+      }, error as Error);
       toast.error('Kunne ikke konvertere lead til eiendom');
       throw error;
     }
@@ -343,7 +356,11 @@ export class ModuleManager {
         recommendations
       };
     } catch (error) {
-      console.error('Failed to get dashboard data:', error);
+      logger.error('Failed to get dashboard data:', {
+        module: 'ModuleManager',
+        action: 'getDashboardData',
+        userId
+      }, error as Error);
       throw error;
     }
   }

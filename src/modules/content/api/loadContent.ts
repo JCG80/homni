@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { Content } from '../types/content-types';
 import { parseContent } from '../utils/parseContent';
+import { logger } from '@/utils/logger';
 
 /**
  * Load all content items
@@ -13,7 +14,10 @@ export async function loadAllContent(): Promise<Content[]> {
     .order('created_at', { ascending: false }) as any; // Using type assertion until types are updated
   
   if (error) {
-    console.error('Error loading content:', error);
+    logger.error('Error loading content:', {
+      module: 'loadContent',
+      action: 'loadAllContent'
+    }, error);
     return [];
   }
   
@@ -44,7 +48,13 @@ export async function loadContent(idOrSlug: string): Promise<Content | null> {
     .maybeSingle() as any;
   
   if (errorId && errorSlug) {
-    console.error('Error loading content:', errorId, errorSlug);
+    logger.error('Error loading content:', {
+      module: 'loadContent',
+      action: 'loadContent',
+      idOrSlug,
+      errorId,
+      errorSlug
+    });
     return null;
   }
   
@@ -62,7 +72,11 @@ export async function loadContentById(id: string): Promise<Content | null> {
     .single() as any; // Using type assertion until types are updated
   
   if (error) {
-    console.error('Error loading content by ID:', error);
+    logger.error('Error loading content by ID:', {
+      module: 'loadContent',
+      action: 'loadContentById',
+      id
+    }, error);
     return null;
   }
   
@@ -79,7 +93,11 @@ export async function loadContentBySlug(slug: string): Promise<Content[]> {
     .eq('slug', slug) as any; // Using type assertion until types are updated
   
   if (error) {
-    console.error('Error loading content by slug:', error);
+    logger.error('Error loading content by slug:', {
+      module: 'loadContent',
+      action: 'loadContentBySlug',
+      slug
+    }, error);
     return [];
   }
   
@@ -103,7 +121,11 @@ export async function loadPublishedContent(type?: string): Promise<Content[]> {
   const { data, error } = await query;
   
   if (error) {
-    console.error('Error loading published content:', error);
+    logger.error('Error loading published content:', {
+      module: 'loadContent',
+      action: 'loadPublishedContent',
+      type
+    }, error);
     return [];
   }
   

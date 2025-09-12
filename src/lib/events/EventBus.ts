@@ -1,4 +1,5 @@
 import type { EventMap } from './types';
+import { logger } from '@/utils/logger';
 
 // Lightweight, typed event bus for browser/React environments
 // No external dependencies to keep bundle small
@@ -36,7 +37,10 @@ class EventBus<E extends Record<string, any>> {
         listener(payload);
       } catch (err) {
         // Ensure one bad subscriber doesn't break others
-        console.error(`[EventBus] Error in listener for ${String(event)}:`, err);
+        logger.error(`[EventBus] Error in listener for ${String(event)}:`, {
+          module: 'EventBus',
+          event: String(event)
+        }, err as Error);
       }
     });
   }
