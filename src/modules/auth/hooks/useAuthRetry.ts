@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface AuthRetryOptions {
   maxRetries?: number;
@@ -32,7 +33,7 @@ export const useAuthRetry = (options: AuthRetryOptions = {}) => {
     setCurrentAttempt(attempt + 1);
     
     try {
-      console.log(`Attempt ${attempt + 1}/${maxRetries}`);
+      logger.info('Auth retry attempt', { attempt: attempt + 1, maxRetries });
       const result = await operation();
       
       // Success
@@ -54,13 +55,13 @@ export const useAuthRetry = (options: AuthRetryOptions = {}) => {
       return result;
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Ukjent feil");
-      console.error(`Attempt ${attempt + 1} failed:`, error);
+      logger.error('Auth retry attempt failed', { attempt: attempt + 1, error });
       setLastError(error);
       
       // Check if we should retry
       if (attempt < maxRetries - 1) {
         const delay = initialDelay * Math.pow(backoffFactor, attempt);
-        console.log(`Retrying in ${delay}ms...`);
+        logger.info('Auth retry delay', { delay });
         
         // Wait and try again
         return new Promise(resolve => {

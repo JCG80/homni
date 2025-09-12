@@ -6,6 +6,7 @@ import { signOut } from '../api/auth-authentication';
 import { useDevAuth } from './useDevAuth';
 import { useModuleAccessQuery } from './useModuleAccessQuery';
 import { AuthContextType } from '../types/types';
+import { logger } from '@/utils/logger';
 
 // Create context with default values
 export const AuthContext = createContext<AuthContextType>({
@@ -41,7 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const devAuth = useDevAuth();
   const moduleAccessQuery = useModuleAccessQuery();
   
-  console.log('[AuthProvider] Role properly connected:', {
+  logger.info('AuthProvider role properly connected', {
     authStateRole: authState.role,
     roleChecksAdmin: roleChecks.isAdmin,
     roleChecksMasterAdmin: roleChecks.isMasterAdmin
@@ -49,12 +50,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   
   // Add the logout function implementation
   const logout = async () => {
-    console.log('Logging out user');
+    logger.info('Logging out user');
     try {
       await signOut();
-      console.log('User logged out successfully');
+      logger.info('User logged out successfully');
     } catch (error) {
-      console.error('Error logging out:', error);
+      logger.error('Error logging out', { error });
     }
   };
 

@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
+import { logger } from '@/utils/logger';
 
 type LogEntry = {
   id: string;
@@ -48,7 +49,7 @@ export const AuditLogViewer = ({
         setLogs(logs);
       } catch (err) {
         setError('En uventet feil oppstod ved henting av aktivitetslogger.');
-        console.error('Error fetching audit logs:', err);
+        logger.error('Error fetching audit logs', { error: err });
       } finally {
         setIsLoading(false);
       }

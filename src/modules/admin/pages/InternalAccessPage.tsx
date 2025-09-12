@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { logger } from '@/utils/logger';
 import {
   Dialog,
   DialogContent,
@@ -61,7 +62,7 @@ export function InternalAccessPage() {
       const { data, error } = await supabase.rpc('get_internal_admins');
       
       if (error) {
-        console.error('Error fetching internal admins:', error);
+        logger.error('Error fetching internal admins', { error });
         throw new Error('Failed to fetch internal administrators');
       }
       

@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { updateProfile } from '../api';
 import { useAuth } from '../hooks/useAuth';
+import { logger } from '@/utils/logger';
 
 export const ProfileInfo: React.FC = () => {
   const { user, profile, refreshProfile } = useAuth();
@@ -49,7 +50,7 @@ export const ProfileInfo: React.FC = () => {
       });
       setIsEditing(false);
     } catch (error) {
-      console.error("Error updating profile:", error);
+      logger.error('Error updating profile', { error });
       toast({
         title: "Feil ved oppdatering",
         description: "Kunne ikke oppdatere brukerprofil. Vennligst prøv igjen.",

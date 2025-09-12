@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { QuickLoginUser, UserRole } from '../types/unified-types';
 import { isUserRole } from '../utils/roles/guards';
+import { logger } from '@/utils/logger';
 
 /**
  * Hook to fetch all available test users from the database
@@ -79,7 +80,7 @@ export const useAllUsers = () => {
         setUsers(formattedUsers);
         setError(null);
       } catch (err) {
-        console.error('Error fetching users:', err);
+        logger.error('Error fetching users', { error: err });
         setError(err instanceof Error ? err.message : 'Unknown error fetching users');
       } finally {
         setLoading(false);

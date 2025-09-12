@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UseLoginFormProps } from '@/types/hooks';
+import { logger } from '@/utils/logger';
 
 // Enhanced validation schema with more helpful error messages
 const formSchema = z.object({
@@ -42,7 +43,7 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
     setCurrentAttempt(prev => prev + 1);
     
     try {
-      console.log(`Logging in user: ${values.email} (type: ${userType})`);
+      logger.info('Logging in user', { email: values.email, userType });
       
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: values.email,
@@ -50,7 +51,7 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
       });
 
       if (signInError) {
-        console.error("Login error:", signInError);
+        logger.error('Login error', { error: signInError });
         setLastError(signInError);
         
         // Provide more user-friendly error messages
@@ -67,7 +68,7 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
       }
 
       // Success handling
-      console.log("Login success:", data);
+      logger.info('Login success', { userId: data.user?.id });
       toast.success("Du er nå logget inn");
       
       // Handle any pending redirects
@@ -80,9 +81,9 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
       if (returnUrlParam) {
         try {
           returnPath = decodeURIComponent(returnUrlParam);
-          console.log(`Using return URL from query parameter: ${returnPath}`);
+          logger.info('Using return URL from query parameter', { returnPath });
         } catch (error) {
-          console.error("Error decoding return URL:", error);
+          logger.error('Error decoding return URL', { error });
         }
       }
       
@@ -99,7 +100,7 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
       }
       
     } catch (error: any) {
-      console.error("Unexpected login error:", error);
+      logger.error('Unexpected login error', { error });
       setLastError(error);
       setError(`En feil oppstod: ${error.message || 'Ukjent feil'}`);
     } finally {

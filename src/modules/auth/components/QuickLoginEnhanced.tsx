@@ -6,6 +6,7 @@ import { setupTestUsers } from '../utils/setupTestUsers';
 import { UserRole, normalizeRole } from '@/modules/auth/normalizeRole';
 import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface QuickLoginProps {
   redirectTo?: string;
@@ -33,7 +34,7 @@ export const QuickLoginEnhanced = ({ redirectTo, showHeader = true }: QuickLogin
       await setupTestUsers(normalizedRole);
       // Note: setupTestUsers handles toast notifications internally
     } catch (error) {
-      console.error('Failed to login with test user:', error);
+      logger.error('Failed to login with test user', { error });
       toast({
         title: 'Login Failed',
         description: `Could not login as ${role}. Please try again.`,

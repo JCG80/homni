@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 import type { RegistrationData } from '../components/enhanced/EnhancedRegistrationWizard';
+import { logger } from '@/utils/logger';
 
 interface UseEnhancedRegistrationOptions {
   onSuccess?: () => void;
@@ -110,7 +111,7 @@ export const useEnhancedRegistration = ({
       }
 
     } catch (err) {
-      console.error('Registration error:', err);
+      logger.error('Enhanced registration error', { error: err });
       const errorMessage = getErrorMessage(err);
       setError(errorMessage);
       

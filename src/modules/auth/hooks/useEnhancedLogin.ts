@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface LoginData {
   email: string;
@@ -96,7 +97,7 @@ export const useEnhancedLogin = ({
       }
 
     } catch (err) {
-      console.error('Login error:', err);
+      logger.error('Enhanced login error', { error: err });
       const errorMessage = getErrorMessage(err);
       setError(errorMessage);
       

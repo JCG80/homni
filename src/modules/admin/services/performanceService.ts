@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/utils/logger';
 
 export interface PerformanceMetric {
   id: string;
@@ -140,7 +141,7 @@ export const performanceService = {
         }
       };
     } catch (error) {
-      console.error('Error getting API gateway status:', error);
+      logger.error('Error getting API gateway status', { error });
       
       // Return degraded status on error
       return {

@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Profile } from '../types/types';
 import { parseUserProfile } from '../utils/parseUserProfile';
+import { logger } from '@/utils/logger';
 
 /**
  * Hook for fetching user profile data
@@ -13,7 +14,7 @@ export const useFetchUserProfile = () => {
    */
   const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
-      console.log(`Fetching profile for user: ${userId}`);
+      logger.info('Fetching profile for user', { userId });
       
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
@@ -33,12 +34,12 @@ export const useFetchUserProfile = () => {
       ]) as any;
 
       if (profileError) {
-        console.error("Error fetching profile:", profileError);
+        logger.error('Error fetching profile', { error: profileError });
         throw profileError;
       }
 
       if (!profileData) {
-        console.warn(`No profile found for user ID: ${userId}. Returning basic profile.`);
+        logger.warn('No profile found for user, returning basic profile', { userId });
         
         // Instead of trying to create a profile, return a basic one
         // This prevents hanging when user doesn't exist in user_profiles yet
@@ -64,7 +65,7 @@ export const useFetchUserProfile = () => {
       
       // Check if user_id is missing and update it if necessary
       if (!profileData.user_id) {
-        console.warn(`Profile ${userId} has null user_id. Updating...`);
+        logger.warn('Profile has null user_id, updating', { userId });
         
         const { error: updateError } = await supabase
           .from('user_profiles')
@@ -72,16 +73,16 @@ export const useFetchUserProfile = () => {
           .eq('id', userId);
           
         if (updateError) {
-          console.error("Error updating user_id in profile:", updateError);
+          logger.error('Error updating user_id in profile', { error: updateError });
         } else {
-          console.log("Successfully updated user_id in profile");
+          logger.info('Successfully updated user_id in profile');
         }
       }
 
       const parsedProfile = parseUserProfile(profileData);
       
       // Log fetched profile for debugging
-      console.log("Fetched and parsed profile:", {
+      logger.info('Fetched and parsed profile', {
         id: parsedProfile.id,
         role: parsedProfile.role,
         metadata: parsedProfile.metadata
@@ -89,7 +90,7 @@ export const useFetchUserProfile = () => {
       
       return parsedProfile;
     } catch (error) {
-      console.error("Unexpected error in fetchProfile:", error);
+      logger.error('Unexpected error in fetchProfile', { error });
       throw error;
     }
   }, []);

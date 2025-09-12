@@ -5,6 +5,7 @@ import { AuthUser, AuthState } from '../types/types';
 import { useFetchUserProfile } from './useFetchUserProfile';
 import { UserRole, normalizeRole } from '../normalizeRole';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 /**
  * Hook that manages the auth session state and listens for changes
@@ -77,7 +78,7 @@ export const useAuthSession = () => {
               }));
             }
           } catch (error) {
-            console.error("Error after auth state change:", error);
+            logger.error('Error after auth state change', { error });
             
             if (mounted) {
               setAuthState(prev => ({
@@ -139,7 +140,7 @@ export const useAuthSession = () => {
             }
           })
           .catch(error => {
-            console.error("Error fetching initial profile:", error);
+            logger.error('Error fetching initial profile', { error });
             
             if (mounted) {
               setAuthState(prev => ({
@@ -194,7 +195,7 @@ export const useAuthSession = () => {
 
         return profile;
       } catch (error) {
-        console.error("Error refreshing profile:", error);
+        logger.error('Error refreshing profile', { error });
         
         const errorMessage = error instanceof Error 
           ? error.message 

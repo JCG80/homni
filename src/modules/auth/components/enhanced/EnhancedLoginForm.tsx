@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { LogIn, Key, Mail } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { logger } from '@/utils/logger';
 
 interface EnhancedLoginFormProps {
   userType: 'private' | 'business';
@@ -129,7 +130,7 @@ export const EnhancedLoginForm = ({
             className="text-primary hover:underline p-0 h-auto"
             onClick={() => {
               // TODO: Implement forgot password
-              console.log('Forgot password clicked');
+              logger.info('Forgot password clicked');
             }}
           >
             Glemt passord?
