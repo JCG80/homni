@@ -5,6 +5,7 @@
 
 import { track } from '@/lib/analytics';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 export interface ErrorReport {
   id: string;
@@ -180,7 +181,10 @@ class ErrorTracker {
       try {
         observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input'] });
       } catch (e) {
-        console.warn('Performance observer not supported');
+        logger.warn('Performance observer not supported', {
+          module: 'ErrorTracker',
+          action: 'setupPerformanceErrorTracking'
+        });
       }
     }
   }
@@ -284,7 +288,11 @@ class ErrorTracker {
         }, err.userId);
       }
     } catch (error) {
-      console.error('Failed to flush errors:', error);
+      logger.error('Failed to flush errors', {
+        module: 'ErrorTracker',
+        action: 'flushErrors',
+        errorCount: errorsToFlush.length
+      }, error);
       // Re-add to buffer for retry
       this.errorBuffer.unshift(...errorsToFlush);
     }
@@ -332,7 +340,11 @@ class ErrorTracker {
 
       return analytics;
     } catch (error) {
-      console.error('Failed to get error analytics:', error);
+      logger.error('Failed to get error analytics', {
+        module: 'ErrorTracker',
+        action: 'getErrorAnalytics',
+        dateRange
+      }, error);
       throw error;
     }
   }

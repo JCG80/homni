@@ -21,6 +21,7 @@ import { motion } from 'framer-motion';
 import { moduleManager, type CrossModuleInsight } from './ModuleManager';
 import { useAuth } from '@/modules/auth/hooks';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 interface DashboardData {
   metrics: {
@@ -52,7 +53,11 @@ export const UnifiedDashboard = () => {
       const dashboardData = await moduleManager.getDashboardData(user!.id);
       setData(dashboardData);
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+      logger.error('Failed to load dashboard data', {
+        module: 'UnifiedDashboard',
+        action: 'loadDashboardData',
+        userId: user?.id
+      }, error);
       toast.error('Kunne ikke laste dashboard-data');
     } finally {
       setLoading(false);

@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { ProjectDoc } from '../types/docs-types';
 import { parseProjectDoc } from '../utils/parseProjectDoc';
+import { logger } from '@/utils/logger';
 
 /**
  * Load all project docs
@@ -13,7 +14,10 @@ export async function loadProjectDocs(): Promise<ProjectDoc[]> {
     .order('created_at', { ascending: false });
   
   if (error) {
-    console.error('Error loading project docs:', error);
+    logger.error('Error loading project docs', {
+      module: 'loadProjectDocs',
+      action: 'loadProjectDocs'
+    }, error);
     throw error;
   }
   
@@ -35,7 +39,11 @@ export async function loadProjectDocById(id: string): Promise<ProjectDoc | null>
       // No rows returned
       return null;
     }
-    console.error('Error loading project doc:', error);
+    logger.error('Error loading project doc', {
+      module: 'loadProjectDocs',
+      action: 'loadProjectDocById',
+      docId: id
+    }, error);
     throw error;
   }
   
@@ -61,7 +69,11 @@ export async function loadProjectDocByType(docType: string): Promise<ProjectDoc 
       // No rows returned
       return null;
     }
-    console.error('Error loading project doc by type:', error);
+    logger.error('Error loading project doc by type', {
+      module: 'loadProjectDocs',
+      action: 'loadProjectDocByType',
+      docType
+    }, error);
     throw error;
   }
   

@@ -7,6 +7,7 @@ import { ContentEditor } from '../components/ContentEditor';
 import { loadContent } from '../api/loadContent';
 import { saveContent } from '../api/saveContent';
 import { ContentFormValues } from '../types/content-types';
+import { logger } from '@/utils/logger';
 
 export const EditContentPage = () => {
   const { id } = useParams();
@@ -30,10 +31,19 @@ export const EditContentPage = () => {
           });
           return true;
         } catch (error) {
-          console.error('Error saving content:', error);
+          logger.error('Error saving content', {
+            module: 'EditContentPage',
+            action: 'handleSubmit',
+            retryCount
+          }, error);
           if (retryCount < maxRetries) {
             retryCount++;
-            console.log(`Retrying save (${retryCount}/${maxRetries})...`);
+            logger.info('Retrying save', {
+              module: 'EditContentPage',
+              action: 'handleSubmit',
+              retryCount,
+              maxRetries
+            });
             await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
             return attemptSave();
           }

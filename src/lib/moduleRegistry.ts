@@ -6,6 +6,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useFeatureFlag } from './featureFlags';
+import { logger } from '@/utils/logger';
 
 export interface ModuleMetadata {
   id: string;
@@ -87,7 +88,10 @@ async function fetchModuleMetadata(): Promise<ModuleMetadata[]> {
     .order('name');
 
   if (error) {
-    console.error('Error fetching module metadata:', error);
+    logger.error('Error fetching module metadata', {
+      module: 'moduleRegistry',
+      action: 'fetchModuleMetadata'
+    }, error);
     throw error;
   }
 
