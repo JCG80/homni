@@ -694,6 +694,51 @@ export type Database = {
         }
         Relationships: []
       }
+      error_tracking: {
+        Row: {
+          created_at: string
+          error_message: string
+          error_type: string
+          id: string
+          metadata: Json | null
+          resolved: boolean | null
+          session_id: string | null
+          severity: string
+          stack_trace: string | null
+          url: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message: string
+          error_type: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean | null
+          session_id?: string | null
+          severity?: string
+          stack_trace?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string
+          error_type?: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean | null
+          session_id?: string | null
+          severity?: string
+          stack_trace?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           created_at: string
@@ -1338,6 +1383,54 @@ export type Database = {
           metric_value?: number
           recorded_at?: string | null
           service_name?: string
+        }
+        Relationships: []
+      }
+      performance_monitoring: {
+        Row: {
+          created_at: string
+          cumulative_layout_shift: number | null
+          device_type: string | null
+          first_contentful_paint: number | null
+          first_input_delay: number | null
+          id: string
+          largest_contentful_paint: number | null
+          load_time_ms: number
+          metadata: Json | null
+          network_type: string | null
+          page_route: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          cumulative_layout_shift?: number | null
+          device_type?: string | null
+          first_contentful_paint?: number | null
+          first_input_delay?: number | null
+          id?: string
+          largest_contentful_paint?: number | null
+          load_time_ms: number
+          metadata?: Json | null
+          network_type?: string | null
+          page_route: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          cumulative_layout_shift?: number | null
+          device_type?: string | null
+          first_contentful_paint?: number | null
+          first_input_delay?: number | null
+          id?: string
+          largest_contentful_paint?: number | null
+          load_time_ms?: number
+          metadata?: Json | null
+          network_type?: string | null
+          page_route?: string
+          session_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
