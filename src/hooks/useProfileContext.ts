@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, createContext, useContext } from 'rea
 import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { useAuth } from '@/modules/auth/hooks';
+import { logger } from '@/utils/logger';
 
 export interface ProfileContext {
   id: string;
@@ -60,7 +61,10 @@ export const useProfileContextLogic = (): ProfileContextType => {
         await supabase.rpc('clear_company_context');
       }
     } catch (error) {
-      console.error('Failed to set session context:', error);
+      logger.error('Failed to set session context:', {
+        module: 'useProfileContext',
+        companyId
+      }, error as Error);
     }
   };
 
@@ -74,7 +78,12 @@ export const useProfileContextLogic = (): ProfileContextType => {
         metadata_param: metadata,
       });
     } catch (error) {
-      console.error('Failed to log admin action:', error);
+      logger.error('Failed to log admin action:', {
+        module: 'useProfileContext',
+        action,
+        targetKind,
+        targetId
+      }, error as Error);
     }
   };
 
@@ -128,7 +137,10 @@ export const useProfileContextLogic = (): ProfileContextType => {
         isLoading: false,
       }));
     } catch (error) {
-      console.error('Failed to load available contexts:', error);
+      logger.error('Failed to load available contexts:', {
+        module: 'useProfileContext',
+        userId: user?.id
+      }, error as Error);
       setState(prev => ({
         ...prev,
         error: 'Failed to load available contexts',
@@ -166,7 +178,11 @@ export const useProfileContextLogic = (): ProfileContextType => {
         isLoading: false,
       }));
     } catch (error) {
-      console.error('Failed to switch to user context:', error);
+      logger.error('Failed to switch to user context:', {
+        module: 'useProfileContext',
+        userId,
+        reason
+      }, error as Error);
       setState(prev => ({
         ...prev,
         error: 'Failed to switch context',
@@ -203,7 +219,10 @@ export const useProfileContextLogic = (): ProfileContextType => {
         isLoading: false,
       }));
     } catch (error) {
-      console.error('Failed to switch to company context:', error);
+      logger.error('Failed to switch to company context:', {
+        module: 'useProfileContext',
+        companyId
+      }, error as Error);
       setState(prev => ({
         ...prev,
         error: 'Failed to switch context',
@@ -235,7 +254,11 @@ export const useProfileContextLogic = (): ProfileContextType => {
         isLoading: false,
       }));
     } catch (error) {
-      console.error('Failed to return to admin context:', error);
+      logger.error('Failed to return to admin context:', {
+        module: 'useProfileContext',
+        activeContextType: state.activeContext?.type,
+        activeContextId: state.activeContext?.id
+      }, error as Error);
       setState(prev => ({
         ...prev,
         error: 'Failed to return to admin context',

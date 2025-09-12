@@ -2,6 +2,7 @@
  * Plugin Loader System - Runtime module loading
  */
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 export interface PluginManifest {
   id: string;
@@ -32,7 +33,7 @@ export class PluginLoader {
         .rpc('get_enabled_plugins');
 
       if (error) {
-        console.error('Failed to fetch enabled plugins:', error);
+        logger.error('Failed to fetch enabled plugins:', { module: 'pluginLoader' }, error);
         return;
       }
 
@@ -50,7 +51,7 @@ export class PluginLoader {
         await this.loadPlugin(manifest);
       }
     } catch (error) {
-      console.error('Error loading plugins:', error);
+      logger.error('Error loading plugins:', { module: 'pluginLoader' }, error as Error);
     }
   }
 
@@ -82,9 +83,18 @@ export class PluginLoader {
         isActive: true,
       });
 
-      console.log(`Plugin loaded: ${manifest.name} v${manifest.version}`);
+      logger.info(`Plugin loaded: ${manifest.name} v${manifest.version}`, {
+        module: 'pluginLoader',
+        pluginId: manifest.id,
+        pluginName: manifest.name,
+        version: manifest.version
+      });
     } catch (error) {
-      console.error(`Failed to load plugin ${manifest.name}:`, error);
+      logger.error(`Failed to load plugin ${manifest.name}:`, {
+        module: 'pluginLoader',
+        pluginId: manifest.id,
+        pluginName: manifest.name
+      }, error as Error);
     }
   }
 
@@ -104,9 +114,17 @@ export class PluginLoader {
       // Remove from loaded plugins
       this.loadedPlugins.delete(pluginId);
       
-      console.log(`Plugin unloaded: ${plugin.manifest.name}`);
+      logger.info(`Plugin unloaded: ${plugin.manifest.name}`, {
+        module: 'pluginLoader',
+        pluginId,
+        pluginName: plugin.manifest.name
+      });
     } catch (error) {
-      console.error(`Failed to unload plugin ${plugin.manifest.name}:`, error);
+      logger.error(`Failed to unload plugin ${plugin.manifest.name}:`, {
+        module: 'pluginLoader',
+        pluginId,
+        pluginName: plugin.manifest.name
+      }, error as Error);
     }
   }
 
@@ -200,7 +218,10 @@ export class PluginLoader {
       return module;
     } catch (error) {
       // Fallback for different module formats
-      console.warn(`Failed to load module ${entryPoint}:`, error);
+      logger.warn(`Failed to load module ${entryPoint}:`, {
+        module: 'pluginLoader',
+        entryPoint
+      }, error as Error);
       return null;
     }
   }
@@ -216,7 +237,11 @@ export class PluginLoader {
       loader: this,
       // Add other context objects as needed
       utils: {
-        toast: (message: string) => console.log(`Plugin ${manifest.name}: ${message}`),
+        toast: (message: string) => logger.info(`Plugin ${manifest.name}: ${message}`, {
+          module: 'pluginLoader',
+          pluginId: manifest.id,
+          pluginName: manifest.name
+        }),
         storage: {
           get: (key: string) => localStorage.getItem(`plugin_${manifest.id}_${key}`),
           set: (key: string, value: string) => 

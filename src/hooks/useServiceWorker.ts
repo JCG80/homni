@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/utils/logger';
 
 interface ServiceWorkerState {
   isRegistered: boolean;
@@ -57,7 +58,10 @@ export function useServiceWorker() {
 
       // Listen for messages from service worker
       navigator.serviceWorker.addEventListener('message', (event) => {
-        console.log('Message from service worker:', event.data);
+        logger.info('Message from service worker:', {
+          module: 'useServiceWorker',
+          data: event.data
+        });
       });
 
     } catch (error) {
@@ -80,10 +84,15 @@ export function useServiceWorker() {
     if ('storage' in navigator && 'persist' in navigator.storage) {
       try {
         const persistent = await navigator.storage.persist();
-        console.log('Persistent storage:', persistent);
+        logger.info('Persistent storage:', {
+          module: 'useServiceWorker',
+          persistent
+        });
         return persistent;
       } catch (error) {
-        console.error('Failed to request persistent storage:', error);
+        logger.error('Failed to request persistent storage:', {
+          module: 'useServiceWorker'
+        }, error as Error);
         return false;
       }
     }
@@ -99,7 +108,9 @@ export function useServiceWorker() {
           usage: estimate.usage,
         };
       } catch (error) {
-        console.error('Failed to get storage estimate:', error);
+        logger.error('Failed to get storage estimate:', {
+          module: 'useServiceWorker'
+        }, error as Error);
         return null;
       }
     }

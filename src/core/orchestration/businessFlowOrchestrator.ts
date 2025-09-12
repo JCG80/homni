@@ -6,6 +6,7 @@ import { leadEngineService } from '@/modules/leads/services/leadEngineService';
 import { propertyManagementService } from '@/modules/property/services/propertyManagementService';
 import { diySellingService } from '@/modules/sales/services/diySellingService';
 import { supabase } from '@/lib/supabaseClient';
+import { logger } from '@/utils/logger';
 
 export interface BusinessFlow {
   id: string;
@@ -84,7 +85,11 @@ export class BusinessFlowOrchestrator {
 
       await this.updateFlowStatus(flow.id, 'completed');
     } catch (error) {
-      console.error(`Business flow ${flow.id} failed:`, error);
+      logger.error(`Business flow ${flow.id} failed:`, {
+        module: 'businessFlowOrchestrator',
+        flowId: flow.id,
+        flowType: flow.type
+      }, error as Error);
       await this.updateFlowStatus(flow.id, 'failed');
     }
   }

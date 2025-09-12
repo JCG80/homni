@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/utils/logger';
 
 export interface AnalyticsEvent {
   event_type: 'user_action' | 'system_event' | 'business_event' | 'performance';
@@ -65,10 +66,19 @@ export async function track(
 
     // Development logging
     if (import.meta.env.MODE === 'development') {
-      console.debug(`📊 Analytics: ${eventType}/${eventName}`, enrichedProperties);
+      logger.debug(`📊 Analytics: ${eventType}/${eventName}`, {
+        module: 'analytics',
+        eventType,
+        eventName,
+        properties: enrichedProperties
+      });
     }
   } catch (error) {
-    console.error('Analytics tracking error:', error);
+    logger.error('Analytics tracking error:', {
+      module: 'analytics',
+      eventType,
+      eventName
+    }, error as Error);
   }
 }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserRole } from '@/components/landing/VisitorWizard';
+import { logger } from '@/utils/logger';
 
 interface FormData {
   role: UserRole;
@@ -45,7 +46,9 @@ export const useWizardProgress = () => {
         setCurrentStep(savedStep);
         setHasRestoredProgress(true);
       } catch (error) {
-        console.warn('Failed to restore wizard progress:', error);
+        logger.warn('Failed to restore wizard progress:', {
+          module: 'useWizardProgress'
+        }, error as Error);
       }
     }
   }, []);

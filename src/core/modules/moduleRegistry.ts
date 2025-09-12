@@ -2,6 +2,7 @@
  * Module Registry - Centralized module management following rettningslinjer
  */
 import { pluginLoader } from '@/core/plugins/pluginLoader';
+import { logger } from '@/utils/logger';
 
 export interface ModuleManifest {
   id: string;
@@ -135,7 +136,11 @@ export class ModuleRegistry {
     // Validate dependencies
     for (const dep of manifest.dependencies) {
       if (!this.isModuleActive(dep) && dep !== 'auth' && dep !== 'database' && dep !== 'storage') {
-        console.warn(`Module ${manifest.id} depends on inactive module: ${dep}`);
+        logger.warn(`Module ${manifest.id} depends on inactive module: ${dep}`, {
+          module: 'moduleRegistry',
+          moduleId: manifest.id,
+          dependency: dep
+        });
       }
     }
 
@@ -147,7 +152,11 @@ export class ModuleRegistry {
       await this.activateModule(manifest.id);
     }
 
-    console.log(`Module registered: ${manifest.name} v${manifest.version}`);
+    logger.info(`Module registered: ${manifest.name} v${manifest.version}`, {
+      module: 'moduleRegistry',
+      moduleId: manifest.id,
+      version: manifest.version
+    });
   }
 
   /**
@@ -176,7 +185,11 @@ export class ModuleRegistry {
     // Initialize module services
     await this.initializeModuleServices(module);
 
-    console.log(`Module activated: ${module.name}`);
+    logger.info(`Module activated: ${module.name}`, {
+      module: 'moduleRegistry',
+      moduleId: moduleId,
+      moduleName: module.name
+    });
   }
 
   /**
@@ -202,7 +215,11 @@ export class ModuleRegistry {
     // Cleanup module services
     await this.cleanupModuleServices(module);
 
-    console.log(`Module deactivated: ${module.name}`);
+    logger.info(`Module deactivated: ${module.name}`, {
+      module: 'moduleRegistry',
+      moduleId: moduleId,
+      moduleName: module.name
+    });
   }
 
   /**
@@ -259,9 +276,17 @@ export class ModuleRegistry {
     for (const service of module.services) {
       try {
         // Dynamic import would happen here in real implementation
-        console.log(`Initializing service: ${service} for module ${module.name}`);
+        logger.info(`Initializing service: ${service} for module ${module.name}`, {
+          module: 'moduleRegistry',
+          service,
+          moduleName: module.name
+        });
       } catch (error) {
-        console.error(`Failed to initialize service ${service}:`, error);
+        logger.error(`Failed to initialize service ${service}:`, {
+          module: 'moduleRegistry',
+          service,
+          moduleName: module.name
+        }, error as Error);
       }
     }
   }
@@ -269,7 +294,11 @@ export class ModuleRegistry {
   private async cleanupModuleServices(module: ModuleManifest): Promise<void> {
     // Cleanup services for the module
     for (const service of module.services) {
-      console.log(`Cleaning up service: ${service} for module ${module.name}`);
+      logger.info(`Cleaning up service: ${service} for module ${module.name}`, {
+        module: 'moduleRegistry',
+        service,
+        moduleName: module.name
+      });
     }
   }
 }

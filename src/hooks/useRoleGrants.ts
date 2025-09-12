@@ -4,6 +4,7 @@ import { RoleGrantsService, RoleGrant } from '@/services/roleGrantsService';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { useAuth } from '@/modules/auth/hooks';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 /**
  * Hook for managing user role grants
@@ -56,7 +57,11 @@ export function useRoleGrants(targetUserId?: string) {
       toast.success('Rolle tildelt');
     },
     onError: (error) => {
-      console.error('Error granting role:', error);
+      logger.error('Error granting role:', {
+        module: 'useRoleGrants',
+        userId,
+        action: 'grantRole'
+      }, error as Error);
       toast.error('Feil ved tildeling av rolle');
     },
   });
@@ -72,7 +77,11 @@ export function useRoleGrants(targetUserId?: string) {
       toast.success('Rolle fjernet');
     },
     onError: (error) => {
-      console.error('Error revoking role:', error);
+      logger.error('Error revoking role:', {
+        module: 'useRoleGrants',
+        userId,
+        action: 'revokeRole'
+      }, error as Error);
       toast.error('Feil ved fjerning av rolle');
     },
   });
