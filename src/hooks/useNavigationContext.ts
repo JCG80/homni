@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { logger } from '@/utils/logger';
 import { UserRole } from '@/modules/auth/normalizeRole';
 
 interface NavigationPreferences {
@@ -46,7 +47,7 @@ export function useNavigationContext(): NavigationContext {
       }
     } catch (error) {
       // Silently handle Router context errors
-      console.warn('Router context not available in useNavigationContext');
+      logger.warn('Router context not available in useNavigationContext');
     }
   }, [location?.pathname]);
 

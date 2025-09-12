@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/utils/logger';
 
 interface PWAInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -67,7 +68,7 @@ export function usePWA(): PWACapabilities {
       setInstallPrompt(null);
       setIsInstallable(false);
     } catch (error) {
-      console.error('Failed to prompt install:', error);
+      logger.error('Failed to prompt install:', {}, error);
     }
   };
 

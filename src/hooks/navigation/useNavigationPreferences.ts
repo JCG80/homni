@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { UserRole } from '@/modules/auth/normalizeRole';
+import { logger } from '@/utils/logger';
 
 export interface NavigationPreferences {
   sidebarCollapsed: boolean;
@@ -49,7 +50,7 @@ export const useNavigationPreferences = () => {
         setPreferences(prev => ({ ...prev, ...parsedPreferences }));
       }
     } catch (error) {
-      console.warn('[NavigationPreferences] Failed to load preferences:', error);
+      logger.warn('[NavigationPreferences] Failed to load preferences:', {}, error);
     }
   }, []);
 
@@ -58,7 +59,7 @@ export const useNavigationPreferences = () => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
     } catch (error) {
-      console.warn('[NavigationPreferences] Failed to save preferences:', error);
+      logger.warn('[NavigationPreferences] Failed to save preferences:', {}, error);
     }
   }, [preferences]);
 

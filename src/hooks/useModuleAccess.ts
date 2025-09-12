@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { AuthService } from '@/services/authService';
+import { logger } from '@/utils/logger';
 
 interface UseModuleAccessOptions {
   modules: string[];
@@ -52,7 +53,7 @@ export const useModuleAccess = ({
       const userModules = await AuthService.getUserEnabledModules(user.id);
       setEnabledModules(userModules);
     } catch (error) {
-      console.error('Error fetching module access:', error);
+      logger.error('Error fetching module access:', {}, error);
       setAccessStates({});
       setEnabledModules([]);
     } finally {

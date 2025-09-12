@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/utils/logger';
 
 export const useLinkAnonymousLeads = () => {
   const [linkedCount, setLinkedCount] = useState<number>(0);
@@ -28,7 +29,7 @@ export const useLinkAnonymousLeads = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to link leads';
       setError(errorMessage);
-      console.error('Error linking anonymous leads:', err);
+      logger.error('Error linking anonymous leads:', {}, err);
       return 0;
     } finally {
       setIsLinking(false);

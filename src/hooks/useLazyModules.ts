@@ -1,5 +1,6 @@
 import React, { lazy, ComponentType, useCallback } from 'react';
 import { UserRole } from '@/modules/auth/normalizeRole';
+import { logger } from '@/utils/logger';
 
 // Lazy load business modules
 export const LazyLeadEngine = lazy(() => 
@@ -81,7 +82,7 @@ export const useLazyModules = (role: UserRole | string | null) => {
           }
           return { moduleId, success: true };
         } catch (error) {
-          console.warn(`Failed to preload module ${moduleId}:`, error);
+          logger.warn(`Failed to preload module ${moduleId}:`, {}, error);
           return { moduleId, success: false, error };
         }
       }
@@ -120,7 +121,7 @@ export const useLazyModules = (role: UserRole | string | null) => {
       }
       return true;
     } catch (error) {
-      console.warn(`Failed to preload module ${moduleId}:`, error);
+      logger.warn(`Failed to preload module ${moduleId}:`, {}, error);
       return false;
     }
   }, [role]);

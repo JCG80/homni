@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { logger } from '@/utils/logger';
 
 interface CachedRoute {
   path: string;
@@ -33,7 +34,7 @@ export function useNavigationCache() {
         };
       }
     } catch (error) {
-      console.warn('Failed to load navigation cache:', error);
+      logger.warn('Failed to load navigation cache:', {}, error);
     }
     
     return {
@@ -53,7 +54,7 @@ export function useNavigationCache() {
       };
       localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
     } catch (error) {
-      console.warn('Failed to persist navigation cache:', error);
+      logger.warn('Failed to persist navigation cache:', {}, error);
     }
   }, [cache]);
 
@@ -179,7 +180,7 @@ export function useNavigationCache() {
       
       return true;
     } catch (error) {
-      console.warn(`Failed to preload route ${path}:`, error);
+      logger.warn(`Failed to preload route ${path}:`, {}, error);
       return false;
     }
   }, [cache.routes, cacheRouteData]);

@@ -4,6 +4,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { useNavigationContext } from './useNavigationContext';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { navUser, navControl } from '@/config/navigation';
+import { logger } from '@/utils/logger';
 
 interface ContextualSuggestion {
   id: string;
@@ -28,7 +29,7 @@ export function useContextualNavigation() {
     navigate = useNavigate();
   } catch (error) {
     // Fallback when Router context is not available
-    console.warn('Router context not available in useContextualNavigation');
+    logger.warn('Router context not available in useContextualNavigation');
     return {
       suggestions: [],
       quickActions: [],

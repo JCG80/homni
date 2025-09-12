@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Lead, LeadStatus } from '@/types/leads-canonical';
 import { useAuth } from '@/modules/auth/hooks';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 interface CompanyDashboardData {
   assignedLeads: Lead[];
@@ -100,7 +101,7 @@ export const useCompanyDashboard = () => {
       });
 
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      logger.error('Error fetching dashboard data:', {}, error);
       setData(prev => ({
         ...prev,
         loading: false,
@@ -126,7 +127,7 @@ export const useCompanyDashboard = () => {
       
       return true;
     } catch (error) {
-      console.error('Error updating lead status:', error);
+      logger.error('Error updating lead status:', {}, error);
       throw error;
     }
   };

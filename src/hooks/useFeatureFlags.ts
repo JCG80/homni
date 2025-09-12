@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { DEFAULT_FEATURE_FLAGS, getDefaultFeatureFlagValue } from '@/config/featureFlags';
+import { logger } from '@/utils/logger';
 
 type FeatureFlags = Record<string, boolean>;
 
@@ -58,7 +59,7 @@ export const useFeatureFlags = (): FeatureFlags => {
           setFlags({ ...DEFAULT_FEATURE_FLAGS, ...flagsMap });
         }
       } catch (error) {
-        console.warn('Failed to fetch feature flags, using defaults:', error);
+        logger.warn('Failed to fetch feature flags, using defaults:', {}, error);
         setFlags(DEFAULT_FEATURE_FLAGS);
       }
     };

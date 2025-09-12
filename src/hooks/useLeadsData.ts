@@ -1,12 +1,9 @@
-/**
- * Real-time leads data hook for admin and company dashboards
- * Replaces mock data with actual Supabase queries
- */
-
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuthSession } from '@/modules/auth/hooks/useAuthSession';
 import { Lead, LeadStatus, LEAD_STATUSES } from '@/types/leads-canonical';
 import { useAuth } from '@/modules/auth/hooks';
+import { logger } from '@/utils/logger';
 import { toast } from 'sonner';
 
 interface LeadsStats {
@@ -111,7 +108,7 @@ export const useLeadsData = (companyOnly: boolean = false): UseLeadsDataReturn =
         metadata: lead.metadata as Record<string, any> || {}
       })));
     } catch (err) {
-      console.error('Error fetching leads:', err);
+      logger.error('Error fetching leads:', {}, err);
       setError(err instanceof Error ? err.message : 'Failed to fetch leads');
       toast.error('Kunne ikke hente leads');
     } finally {
@@ -144,7 +141,7 @@ export const useLeadsData = (companyOnly: boolean = false): UseLeadsDataReturn =
 
       toast.success('Lead status oppdatert');
     } catch (err) {
-      console.error('Error updating lead status:', err);
+      logger.error('Error updating lead status:', {}, err);
       toast.error('Kunne ikke oppdatere lead status');
       throw err;
     }
@@ -212,7 +209,7 @@ export const useAdminFullData = () => {
       setLeads(transformedLeads);
       setCompanies(companiesResult.data || []);
     } catch (error) {
-      console.error('Error fetching admin data:', error);
+      logger.error('Error fetching admin data:', {}, error);
       toast.error('Kunne ikke hente data');
     } finally {
       setLoading(false);

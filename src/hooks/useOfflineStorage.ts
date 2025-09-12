@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/utils/logger';
 
 interface OfflineData {
   id: string;
@@ -23,7 +24,7 @@ export const useOfflineStorage = () => {
         setOfflineData(JSON.parse(stored));
       }
     } catch (error) {
-      console.error('Failed to load offline data:', error);
+      logger.error('Failed to load offline data:', {}, error);
     }
   }, []);
 
@@ -49,7 +50,7 @@ export const useOfflineStorage = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
       setOfflineData(trimmed);
     } catch (error) {
-      console.error('Failed to save offline data:', error);
+      logger.error('Failed to save offline data:', {}, error);
     }
   }, []);
 
@@ -103,7 +104,7 @@ export const useOfflineStorage = () => {
         return true;
       }
     } catch (error) {
-      console.error('Retry sync failed:', error);
+      logger.error('Retry sync failed:', {}, error);
     }
     return false;
   }, [markAsSynced]);
