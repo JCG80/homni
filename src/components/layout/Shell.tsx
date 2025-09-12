@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import { useRoutes, type RouteObject } from 'react-router-dom';
+import React, { Suspense, useEffect } from 'react';
+import { useRoutes, type RouteObject, useNavigate } from 'react-router-dom';
 import { mainRouteObjects } from '@/routes/mainRouteObjects';
 import { adminRouteObjects } from '@/routes/adminRouteObjects';
 import { leadRouteObjects } from '@/routes/leadRouteObjects';
@@ -10,6 +10,7 @@ import { applyFeatureFlags } from '@/routes/filters';
 import type { AppRoute } from '@/routes/routeTypes';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
 import { RouterDiagnostics } from '@/components/router/RouterDiagnostics';
@@ -53,12 +54,28 @@ const NotFound = () => (
 );
 
 // Unauthorized page component
-const UnauthorizedPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Ingen tilgang</h1>
-    <p className="text-muted-foreground mt-2">Du har ikke tilgang til denne siden.</p>
-  </div>
-);
+const UnauthorizedPage = () => {
+  const { isAuthenticated, role, isLoading } = useAuth();
+  const navigate = useNavigate();
+  
+  // If user has high-level access, redirect them away from unauthorized page
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && (role === 'admin' || role === 'master_admin')) {
+      console.log('[UnauthorizedPage] High-level user detected, redirecting to dashboard');
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isLoading, isAuthenticated, role, navigate]);
+  
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Ingen tilgang</h1>
+      <p className="text-muted-foreground mt-2">Du har ikke tilgang til denne siden.</p>
+      {role && (
+        <p className="text-sm text-muted-foreground mt-4">Din rolle: {role}</p>
+      )}
+    </div>
+  );
+};
 
 // Convert route objects to React Router format, handling type compatibility
 function convertToRouteObjects(routes: AppRoute[]): RouteObject[] {

@@ -14,13 +14,15 @@ export function AppRouter({ children }: AppRouterProps) {
   const useHash = envMode === 'hash' || isLovableHost;
   const R: any = useHash ? HashRouter : BrowserRouter;
 
-  if (import.meta.env.DEV) {
-    // Deterministic router diagnostics
-    console.info('[Router] mode:', useHash ? 'hash' : 'browser', {
-      VITE_ROUTER_MODE: envMode || '(unset)',
-      hostname: typeof window !== 'undefined' ? window.location.hostname : '(ssr)'
-    });
-  }
+  // Enhanced diagnostics for preview debugging
+  console.info('[Router] Configuration:', {
+    hostname: typeof window !== 'undefined' ? window.location.hostname : '(ssr)',
+    isLovableHost,
+    envMode: envMode || '(unset)',
+    useHash,
+    mode: useHash ? 'hash' : 'browser',
+    VITE_ROUTER_MODE: import.meta.env.VITE_ROUTER_MODE
+  });
 
   return <R basename={import.meta.env.BASE_URL || '/'}>{children}</R>;
 }

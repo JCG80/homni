@@ -61,9 +61,20 @@ export const ProtectedRoute = ({
         return;
       }
       
+      // Debug logging for authorization issues
+      console.log('[ProtectedRoute] Authorization check:', {
+        isAuthenticated,
+        role,
+        allowedRoles,
+        allowAnyAuthenticated,
+        module,
+        pathname: location.pathname
+      });
+      
       // PRIORITY: Check module access first (handles public modules for guest users)
       if (module) {
         const hasModuleAccess = canAccessModule(module);
+        console.log('[ProtectedRoute] Module access check:', { module, hasModuleAccess });
         setIsAllowed(hasModuleAccess);
         setIsCheckingPermission(false);
         return;
@@ -71,6 +82,7 @@ export const ProtectedRoute = ({
       
       // If not authenticated and no module specified, redirect to login
       if (!isAuthenticated) {
+        console.log('[ProtectedRoute] Not authenticated, denying access');
         setIsAllowed(false);
         setIsCheckingPermission(false);
         return;
@@ -78,6 +90,7 @@ export const ProtectedRoute = ({
       
       // CRITICAL FIX: If user is authenticated but role is still undefined/null, wait a bit more
       if (isAuthenticated && (!role || role === null || role === undefined)) {
+        console.log('[ProtectedRoute] Auth OK but role not ready, retrying...');
         // Don't set isAllowed yet, keep checking
         setTimeout(() => {
           // Re-trigger this effect after a short delay
@@ -88,6 +101,7 @@ export const ProtectedRoute = ({
       
       // If any authenticated user is allowed, allow access
       if (allowAnyAuthenticated && isAuthenticated && role) {
+        console.log('[ProtectedRoute] Any authenticated user allowed');
         setIsAllowed(true);
         setIsCheckingPermission(false);
         return;
@@ -96,6 +110,12 @@ export const ProtectedRoute = ({
       // If specific roles are required, check if the user has one of them
       if (allowedRoles.length > 0 && role) {
         const hasRequiredRole = allowedRoles.some(r => hasRole(r));
+        console.log('[ProtectedRoute] Role check:', { 
+          role, 
+          allowedRoles, 
+          hasRequiredRole,
+          roleChecks: allowedRoles.map(r => ({ role: r, hasRole: hasRole(r) }))
+        });
         setIsAllowed(hasRequiredRole);
         setIsCheckingPermission(false);
         return;
@@ -103,8 +123,10 @@ export const ProtectedRoute = ({
       
       // By default, allow access if we reach this point and user is authenticated with a role
       if (isAuthenticated && role) {
+        console.log('[ProtectedRoute] Default allow for authenticated user with role');
         setIsAllowed(true);
       } else {
+        console.log('[ProtectedRoute] Default deny');
         setIsAllowed(false);
       }
       setIsCheckingPermission(false);
