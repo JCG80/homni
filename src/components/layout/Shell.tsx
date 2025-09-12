@@ -11,6 +11,8 @@ import type { AppRoute } from '@/routes/routeTypes';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
 import { Link } from 'react-router-dom';
+import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
+import { RouterDiagnostics } from '@/components/router/RouterDiagnostics';
 
 // Loading fallback component
 const RouteLoadingFallback = () => (
@@ -100,14 +102,19 @@ export function Shell() {
   }
 
   return (
-    <Suspense fallback={<RouteLoadingFallback />}>
-      <Routes>
-        {renderRoutes(filteredRoutes)}
-        
-        {/* Error routes */}
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+    <RouteErrorBoundary>
+      <Suspense fallback={<RouteLoadingFallback />}>
+        <Routes>
+          {renderRoutes(filteredRoutes)}
+          
+          {/* Error routes */}
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+      
+      {/* Router diagnostics for development */}
+      <RouterDiagnostics />
+    </RouteErrorBoundary>
   );
 }
