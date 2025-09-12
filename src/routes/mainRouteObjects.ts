@@ -32,7 +32,7 @@ const ProfilePageWrapper = lazy(() => import('./components/ProfilePageWrapper').
 const AccountPageWrapper = lazy(() => import('./components/AccountPageWrapper').then(m => ({ default: m.AccountPageWrapper })));
 
 // Settings redirect
-const SettingsRedirect = lazy(() => import('./components/SettingsRedirect').then(m => ({ default: m.SettingsRedirect })));
+const SettingsRedirect = lazy(() => import('./components/AccountRedirect').then(m => ({ default: m.SettingsRedirect })));
 
 // Dashboard router for unified dashboard experience
 const DashboardRouter = lazy(() => import('@/modules/dashboard/DashboardRouter').then(m => ({ default: m.DashboardRouter })));

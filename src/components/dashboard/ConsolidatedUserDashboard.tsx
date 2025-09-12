@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 import { nb } from 'date-fns/locale';
 
 // Lazy load heavy components
@@ -66,20 +67,15 @@ export const ConsolidatedUserDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('[ConsolidatedUserDashboard] Auth state:', { 
-    user: !!user, 
-    profile: !!profile, 
-    isLoading,
-    userEmail: user?.email 
-  });
+  // Debug logging removed for cleaner console
 
   useEffect(() => {
     if (user && !isLoading) {
-      console.log('[ConsolidatedUserDashboard] User ready, fetching data');
+      // User ready, fetching data
       checkOnboardingStatus();
       fetchDashboardData();
     } else if (!user && !isLoading) {
-      console.log('[ConsolidatedUserDashboard] No user but auth finished loading');
+      // No user but auth finished loading
       setLoading(false);
     }
   }, [user, isLoading]);
