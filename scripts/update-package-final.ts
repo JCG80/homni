@@ -1,72 +1,79 @@
 #!/usr/bin/env ts-node
 
 /**
- * Update package.json with all required health check scripts
+ * Final package.json cleanup script for HOMNI platform
+ * Removes invalid dependencies and ensures proper structure
  */
 
 import { readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
-const packageJsonPath = 'package.json';
-const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+interface PackageJson {
+  name: string;
+  version: string;
+  scripts: Record<string, string>;
+  dependencies: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  [key: string]: any;
+}
 
-// Clean up invalid dependencies first
-const invalidDeps = ['a', 'are', 'been', 'can', 'commands', 'direct', 'edits', 'environment', 
-                     'has', 'is', 'it', 'modify', 'only', 'our', 'prevent', 'provides', 
-                     'special', 'the', 'to', 'uninstall', 'use', 'ways', 'you'];
-
-invalidDeps.forEach(dep => {
-  if (packageJson.dependencies && packageJson.dependencies[dep]) {
-    delete packageJson.dependencies[dep];
+function cleanPackageJson() {
+  const packagePath = join(process.cwd(), 'package.json');
+  
+  try {
+    const content = readFileSync(packagePath, 'utf8');
+    const pkg: PackageJson = JSON.parse(content);
+    
+    // List of invalid single-word dependencies that should be removed
+    const invalidDeps = [
+      'a', 'are', 'been', 'can', 'commands', 'direct', 'edits', 
+      'environment', 'has', 'is', 'it', 'modify', 'only', 'our', 
+      'prevent', 'provides', 'special', 'the', 'to', 'uninstall', 
+      'use', 'ways', 'you'
+    ];
+    
+    let cleaned = false;
+    
+    // Remove invalid dependencies
+    for (const dep of invalidDeps) {
+      if (pkg.dependencies[dep]) {
+        delete pkg.dependencies[dep];
+        cleaned = true;
+        console.log(`Removed invalid dependency: ${dep}`);
+      }
+    }
+    
+    // Ensure critical scripts exist
+    const requiredScripts = {
+      'typecheck': 'tsc --noEmit',
+      'test': 'vitest run',
+      'test:coverage': 'vitest run --coverage',
+      'test:watch': 'vitest',
+      'e2e': 'playwright test',
+      'lint:fix': 'eslint . --fix',
+      'format': 'prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,md}"',
+      'format:check': 'prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"'
+    };
+    
+    for (const [script, command] of Object.entries(requiredScripts)) {
+      if (!pkg.scripts[script]) {
+        pkg.scripts[script] = command;
+        cleaned = true;
+        console.log(`Added missing script: ${script}`);
+      }
+    }
+    
+    if (cleaned) {
+      writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + '\n');
+      console.log('✅ Package.json cleaned successfully');
+    } else {
+      console.log('✅ Package.json is already clean');
+    }
+    
+  } catch (error) {
+    console.error('❌ Error cleaning package.json:', error);
+    process.exit(1);
   }
-});
+}
 
-console.log('🧹 Cleaned invalid dependencies from package.json');
-
-// Add comprehensive script collection
-const newScripts = {
-  ...packageJson.scripts,
-  // Core
-  "dev": packageJson.scripts?.dev || "vite",
-  "build": packageJson.scripts?.build || "vite build",
-  "preview": packageJson.scripts?.preview || "vite preview",
-
-  // Quality & Types
-  "typecheck": "tsc --noEmit",
-  "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
-  "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
-  "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
-  "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
-
-  // Tests
-  "test": "vitest",
-  "test:watch": "vitest --watch",
-  "test:unit": "vitest run",
-  "test:coverage": "vitest run --coverage",
-  "e2e": "playwright test",
-  "e2e:ui": "playwright test --ui",
-
-  // Guards & Health
-  "check:duplicates": "ts-node scripts/checkDuplicates.ts",
-  "guard:required": "ts-node --transpile-only scripts/guardRequiredFiles.ts",
-  "guard:legacy-roles": "ts-node --transpile-only scripts/guardLegacyRoles.ts",
-  "guard:rls": "ts-node scripts/checkRls.ts",
-  "guard:functions": "ts-node scripts/checkFunctions.ts",
-  "guard:migrations": "ts-node scripts/checkMigrations.ts",
-  "migrations:check": "ts-node scripts/checkMigrations.ts",
-  "migrations:generate-downs": "ts-node scripts/generateDownMigrations.ts",
-  "repo:health": "ts-node scripts/repo-health.ts",
-
-  // DX Utilities
-  "seed:users": "ts-node scripts/seedTestUsers.ts",
-  "update:supabase-imports": "node scripts/updateSupabaseImports.js",
-  "types:generate": "supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts",
-
-  // Phase complete
-  "phase:complete": "npm run repo:health && echo '✅ Phase marked as SHIPPABLE'"
-};
-
-packageJson.scripts = newScripts;
-
-writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
-console.log('✅ Updated package.json with comprehensive health check scripts');
-console.log('✅ Cleaned invalid dependencies from package.json');
+cleanPackageJson();
