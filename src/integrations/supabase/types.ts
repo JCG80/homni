@@ -2905,6 +2905,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_authenticated_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_feature_enabled: {
         Args: { flag_name: string; user_id?: string }
         Returns: boolean

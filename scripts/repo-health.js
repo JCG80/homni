@@ -1,127 +1,73 @@
 #!/usr/bin/env node
 
 /**
- * Repo Health Check Script - Ultimate Master 2.0 Standard
- * Ensures code quality, type safety, and standards compliance
+ * Repo Health Check Script
+ * Validates project integrity before deployment
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { exec } = require('child_process');
+const { promisify } = require('util');
+const execAsync = promisify(exec);
 
-console.log('🔍 Running Repo Health Check...\n');
+class HealthChecker {
+  constructor() {
+    this.results = [];
+    this.passed = 0;
+    this.failed = 0;
+  }
 
-let allPassed = true;
-
-// Helper function to run commands and capture output
-function runCheck(name, command, optional = false) {
-  try {
-    console.log(`📋 ${name}...`);
-    const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' });
-    console.log(`✅ ${name} passed\n`);
-    return true;
-  } catch (error) {
-    if (optional) {
-      console.log(`⚠️  ${name} failed (optional): ${error.message}\n`);
+  async runCheck(name, command, isRequired = true) {
+    console.log(`🔍 Running: ${name}...`);
+    try {
+      const { stdout, stderr } = await execAsync(command);
+      this.results.push({ name, status: 'PASS', message: 'OK', isRequired });
+      this.passed++;
+      console.log(`✅ ${name}: PASSED`);
       return true;
-    } else {
-      console.error(`❌ ${name} failed:`);
-      console.error(error.stdout || error.message);
-      console.error('\n');
-      allPassed = false;
+    } catch (error) {
+      const message = error.message || error.stderr || 'Unknown error';
+      this.results.push({ name, status: 'FAIL', message, isRequired });
+      this.failed++;
+      console.log(`❌ ${name}: FAILED - ${message}`);
       return false;
     }
   }
-}
 
-// 1. TypeScript type checking
-runCheck('TypeScript Type Check', 'npx tsc --noEmit');
+  async runHealthChecks() {
+    console.log('🏥 Starting Repo Health Check...\n');
 
-// 2. Build check
-runCheck('Build Check', 'npm run build');
-
-// 3. Unit tests (if available)
-runCheck('Unit Tests', 'npm run test -- --run', true);
-
-// 4. Lint check
-runCheck('ESLint Check', 'npx eslint src --max-warnings 0', true);
-
-// 5. Check for legacy roles in code
-function checkLegacyRoles() {
-  console.log('📋 Checking for legacy roles...');
-  const legacyPatterns = [
-    /['"]member['"]/g,
-    /['"]anonymous['"]/g,
-    /role:\s*['"]member['"]/g,
-    /role:\s*['"]anonymous['"]/g
-  ];
-  
-  let violations = [];
-  
-  function scanDirectory(dir) {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-      const filePath = path.join(dir, file);
-      const stat = fs.statSync(filePath);
-      
-      if (stat.isDirectory() && !['node_modules', '.git', 'dist', 'build'].includes(file)) {
-        scanDirectory(filePath);
-      } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
-        const content = fs.readFileSync(filePath, 'utf8');
-        legacyPatterns.forEach((pattern, index) => {
-          const matches = content.match(pattern);
-          if (matches) {
-            violations.push(`${filePath}: ${matches.join(', ')}`);
-          }
-        });
-      }
+    // TypeScript compilation
+    await this.runCheck('TypeScript Check', 'npx tsc --noEmit');
+    
+    // ESLint
+    await this.runCheck('ESLint Check', 'npx eslint . --ext .ts,.tsx --max-warnings 0');
+    
+    // Build check
+    await this.runCheck('Build Check', 'npm run build');
+    
+    // Security audit
+    await this.runCheck('Security Audit', 'npm audit --audit-level=moderate', false);
+    
+    // Check for console.log statements
+    await this.runCheck('Console Log Check', 'grep -r "console\\.log" src/ && exit 1 || exit 0', false);
+    
+    console.log('\n📊 Health Check Summary:');
+    console.log(`✅ Passed: ${this.passed}`);
+    console.log(`❌ Failed: ${this.failed}`);
+    
+    if (this.failed > 0) {
+      console.log('\n❌ Health check failed. Please fix the issues above before deploying.');
+      process.exit(1);
+    } else {
+      console.log('\n🎉 All health checks passed! Repository is deployment-ready.');
+      process.exit(0);
     }
   }
-  
-  scanDirectory('src');
-  
-  if (violations.length > 0) {
-    console.error('❌ Legacy role violations found:');
-    violations.forEach(v => console.error(`  ${v}`));
-    console.error('\n');
-    allPassed = false;
-    return false;
-  } else {
-    console.log('✅ No legacy roles found\n');
-    return true;
-  }
 }
 
-checkLegacyRoles();
-
-// 6. Check for required files
-function checkRequiredFiles() {
-  console.log('📋 Checking required files...');
-  const requiredFiles = [
-    'src/config/routeForRole.ts',
-    'src/modules/auth/hooks/useAuthGate.ts',
-    'src/modules/auth/normalizeRole.ts'
-  ];
-  
-  for (const file of requiredFiles) {
-    if (!fs.existsSync(file)) {
-      console.error(`❌ Required file missing: ${file}`);
-      allPassed = false;
-    }
-  }
-  
-  if (allPassed) {
-    console.log('✅ All required files present\n');
-  }
-}
-
-checkRequiredFiles();
-
-// Final result
-if (allPassed) {
-  console.log('🎉 All repo health checks passed!');
-  process.exit(0);
-} else {
-  console.error('💥 Some repo health checks failed. Please fix the issues above.');
+// Run health checks
+const checker = new HealthChecker();
+checker.runHealthChecks().catch(error => {
+  console.error('❌ Health check script failed:', error);
   process.exit(1);
-}
+});

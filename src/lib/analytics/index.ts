@@ -1,4 +1,5 @@
 // Minimal, adapter-based analytics – SSR/Edge-safe
+import { logger } from "@/utils/logger";
 
 export type AnalyticsProps = Record<string, unknown>;
 
@@ -13,13 +14,13 @@ export interface AnalyticsDestination {
 
 const destinations: AnalyticsDestination[] = [];
 
-// Dev-konsoll som default i DEV
+// Dev-logging as default in DEV
 if (import.meta.env.DEV && import.meta.env.VITE_ANALYTICS_CONSOLE !== 'false') {
   destinations.push({
     name: 'console',
-    track: (e, p) => console.log('[analytics:track]', e, p ?? {}),
-    page: (path, title) => console.log('[analytics:page]', path, title ?? ''),
-    identify: (id, traits) => console.log('[analytics:identify]', id, traits ?? {}),
+    track: (e, p) => logger.info('[analytics:track]', { event: e, properties: p ?? {} }),
+    page: (path, title) => logger.info('[analytics:page]', { path, title: title ?? '' }),
+    identify: (id, traits) => logger.info('[analytics:identify]', { id, traits: traits ?? {} }),
   });
 }
 

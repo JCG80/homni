@@ -2,6 +2,7 @@
  * A/B Testing Framework for Homni
  * Provides simple A/B testing capabilities with localStorage persistence
  */
+import { logger } from "@/utils/logger";
 
 export interface ABTestVariant {
   id: string;
@@ -48,7 +49,7 @@ class ABTestingFramework {
         });
       }
     } catch (error) {
-      console.warn('Failed to load A/B test results from storage:', error);
+      logger.warn('Failed to load A/B test results from storage:', error);
     }
   }
 
@@ -57,7 +58,7 @@ class ABTestingFramework {
       const results = Array.from(this.testResults.values());
       localStorage.setItem(this.storageKey, JSON.stringify(results));
     } catch (error) {
-      console.warn('Failed to save A/B test results to storage:', error);
+      logger.warn('Failed to save A/B test results to storage:', error);
     }
   }
 
@@ -114,8 +115,8 @@ class ABTestingFramework {
     const result = this.testResults.get(testId);
     if (!result) return;
 
-    // For now, just log to console. In production, send to analytics service
-    console.log('A/B Test Conversion:', {
+    // For now, just log. In production, send to analytics service
+    logger.info('A/B Test Conversion:', {
       testId,
       variantId: result.variantId,
       event,

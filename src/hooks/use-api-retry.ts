@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface ApiRetryOptions<T> {
   onSuccess?: (data: T) => void;
@@ -58,11 +59,11 @@ export function useApiRetry<T>() {
         return result;
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
-        console.error(`API call failed (attempt ${retryCount + 1}/${maxRetries + 1}):`, error);
+        logger.error(`API call failed (attempt ${retryCount + 1}/${maxRetries + 1}):`, error);
 
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Retrying API call (${retryCount}/${maxRetries})...`);
+          logger.info(`Retrying API call (${retryCount}/${maxRetries})...`);
           // Exponential backoff
           const delay = Math.min(1000 * 2 ** retryCount, 8000);
           await new Promise(resolve => setTimeout(resolve, delay));

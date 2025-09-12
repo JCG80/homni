@@ -5,6 +5,7 @@ import { useNavigationContext } from './useNavigationContext';
 import { useNavigationCache } from './useNavigationCache';
 import { getNavigation, getNextSuggestions } from '@/config/navigation';
 import { UserRole } from '@/modules/auth/normalizeRole';
+import { logger } from '@/utils/logger';
 
 interface SmartNavigationHook {
   // Navigation state
@@ -107,10 +108,10 @@ export function useSmartNavigation(): SmartNavigationHook {
       setNavigationTime(duration);
       
       // Analytics
-      console.log(`Navigation to ${path} took ${duration.toFixed(2)}ms`);
+      logger.info(`Navigation to ${path} took ${duration.toFixed(2)}ms`);
       
     } catch (error) {
-      console.error('Navigation error:', error);
+      logger.error('Navigation error:', error);
     } finally {
       setIsNavigating(false);
     }
@@ -128,7 +129,7 @@ export function useSmartNavigation(): SmartNavigationHook {
           await preloadRoute(suggestion.href, moduleId);
         }
       } catch (error) {
-        console.warn(`Failed to preload ${suggestion.href}:`, error);
+        logger.warn(`Failed to preload ${suggestion.href}:`, error);
       }
     });
 
@@ -143,7 +144,7 @@ export function useSmartNavigation(): SmartNavigationHook {
 
     // Log performance metrics
     if (duration > 1000) {
-      console.warn(`Slow navigation detected: ${duration.toFixed(2)}ms`);
+      logger.warn(`Slow navigation detected: ${duration.toFixed(2)}ms`);
     }
   }, []);
 

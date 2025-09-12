@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { logger } from '@/utils/logger';
 
 interface PerformanceMetrics {
   componentName: string;
@@ -11,7 +12,7 @@ export const usePerformanceMonitor = (componentName: string) => {
   
   const logPerformance = useCallback((metrics: Partial<PerformanceMetrics>) => {
     if (import.meta.env.DEV) {
-      console.log(`[Performance] ${componentName}:`, {
+      logger.info(`[Performance] ${componentName}:`, {
         componentName,
         loadTime: performance.now() - startTime,
         ...metrics
