@@ -1,107 +1,81 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-
-interface RouterDiagnosticInfo {
-  pathname: string;
-  search: string;
-  hash: string;
-  state: any;
-  params: Record<string, string>;
-  searchParams: Record<string, string>;
-  userAgent: string;
-  origin: string;
-  href: string;
-  routerMode: string;
-  timestamp: string;
-}
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import { useCurrentRole } from '@/hooks/useCurrentRole';
 
 export function RouterDiagnostics() {
   const location = useLocation();
-  const params = useParams();
-  const [searchParams] = useSearchParams();
-  const [info, setInfo] = useState<RouterDiagnosticInfo | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
+  const flags = useFeatureFlags();
+  const role = useCurrentRole();
 
-  useEffect(() => {
-    const searchParamsObj: Record<string, string> = {};
-    searchParams.forEach((value, key) => {
-      searchParamsObj[key] = value;
-    });
-
-    setInfo({
-      pathname: location.pathname,
-      search: location.search,
-      hash: location.hash,
-      state: location.state,
-      params,
-      searchParams: searchParamsObj,
-      userAgent: navigator.userAgent.substring(0, 100) + '...',
-      origin: window.location.origin,
-      href: window.location.href,
-      routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser',
-      timestamp: new Date().toLocaleTimeString()
-    });
-  }, [location, params, searchParams]);
-
-  // Only show in development
   if (!import.meta.env.DEV) return null;
 
-  if (!isVisible) {
-    return (
-      <button
-        onClick={() => setIsVisible(true)}
-        className="fixed bottom-14 right-2 z-[9998] bg-blue-600/80 text-white px-2 py-1 rounded text-xs opacity-60 hover:opacity-100"
-        title="Show router diagnostics"
-      >
-        🛣️
-      </button>
-    );
-  }
+  const routerInfo = {
+    mode: import.meta.env.VITE_ROUTER_MODE || 'browser',
+    isLovableHost: window.location.hostname.includes('lovableproject.com'),
+    pathname: location.pathname,
+    search: location.search,
+    hash: location.hash,
+    baseUrl: import.meta.env.BASE_URL || '/',
+    role,
+    enabledFlags: Object.entries(flags).filter(([_, v]) => v).map(([k]) => k)
+  };
+
+  const quickNavigation = [
+    { path: '/', label: 'Home' },
+    { path: '/dashboard', label: 'Dashboard' },
+    { path: '/login', label: 'Login' },
+    { path: '/admin', label: 'Admin' }
+  ];
 
   return (
-    <div className="fixed bottom-14 right-2 z-[9998] bg-blue-900/95 text-white p-3 rounded-lg text-xs max-w-sm shadow-lg max-h-96 overflow-y-auto">
-      <div className="flex justify-between items-center mb-2">
-        <strong>Router Diagnostics</strong>
-        <button 
-          onClick={() => setIsVisible(false)}
-          className="text-blue-200 hover:text-white ml-2"
-        >
-          ✕
-        </button>
-      </div>
+    <div className="fixed top-4 right-4 z-50 max-w-md p-4 bg-background border rounded-lg shadow-lg text-xs font-mono">
+      <h3 className="font-bold text-sm mb-2">🧭 Router Debug</h3>
       
-      {info && (
-        <div className="space-y-2">
-          <div className="border-b border-blue-400 pb-1 mb-2">
-            <strong>Location</strong>
-          </div>
-          <div><span className="text-blue-200">pathname:</span> {info.pathname}</div>
-          <div><span className="text-blue-200">search:</span> {info.search || 'none'}</div>
-          <div><span className="text-blue-200">hash:</span> {info.hash || 'none'}</div>
-          
-          <div className="border-b border-blue-400 pb-1 mb-2 mt-3">
-            <strong>Parameters</strong>
-          </div>
-          <div><span className="text-blue-200">params:</span> {JSON.stringify(info.params)}</div>
-          <div><span className="text-blue-200">searchParams:</span> {JSON.stringify(info.searchParams)}</div>
-          
-          <div className="border-b border-blue-400 pb-1 mb-2 mt-3">
-            <strong>Environment</strong>
-          </div>
-          <div><span className="text-blue-200">mode:</span> {info.routerMode}</div>
-          <div><span className="text-blue-200">origin:</span> {info.origin}</div>
-          <div><span className="text-blue-200">updated:</span> {info.timestamp}</div>
-          
-          {info.state && (
-            <>
-              <div className="border-b border-blue-400 pb-1 mb-2 mt-3">
-                <strong>State</strong>
-              </div>
-              <div className="break-all">{JSON.stringify(info.state, null, 2)}</div>
-            </>
-          )}
+      <div className="space-y-2">
+        <div>
+          <strong>Mode:</strong> {routerInfo.mode} 
+          {routerInfo.isLovableHost && ' (Lovable)'}
         </div>
-      )}
+        
+        <div>
+          <strong>Path:</strong> {routerInfo.pathname}
+        </div>
+        
+        <div>
+          <strong>Role:</strong> {routerInfo.role}
+        </div>
+
+        {routerInfo.enabledFlags.length > 0 && (
+          <div>
+            <strong>Flags:</strong> {routerInfo.enabledFlags.join(', ')}
+          </div>
+        )}
+
+        <details className="mt-2">
+          <summary className="cursor-pointer font-semibold">Quick Nav</summary>
+          <div className="mt-1 space-y-1">
+            {quickNavigation.map(nav => (
+              <button
+                key={nav.path}
+                onClick={() => navigate(nav.path)}
+                className="block w-full text-left px-2 py-1 text-xs bg-muted hover:bg-accent rounded transition-colors"
+                disabled={location.pathname === nav.path}
+              >
+                {nav.label} {location.pathname === nav.path && '(current)'}
+              </button>
+            ))}
+          </div>
+        </details>
+
+        <details>
+          <summary className="cursor-pointer font-semibold">Full State</summary>
+          <pre className="mt-1 text-xs overflow-auto max-h-32">
+            {JSON.stringify(routerInfo, null, 2)}
+          </pre>
+        </details>
+      </div>
     </div>
   );
 }

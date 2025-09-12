@@ -9,6 +9,7 @@ import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
 import { stripLovableToken, hasLovableToken } from '@/app/stripToken';
 import { performDevCleanup } from '@/pwa/cleanup';
 import { AppDiagnostics } from '@/components/debug/AppDiagnostics';
+import { NetworkDiagnostics } from '@/components/debug/NetworkDiagnostics';
 import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
 
 import { usePageViews } from '@/lib/analytics/react';
@@ -49,6 +50,7 @@ function App() {
         
         <Toaster />
         <AppDiagnostics />
+        <NetworkDiagnostics />
       </SiteLayout>
     </ErrorBoundary>
   );
