@@ -9,7 +9,8 @@ interface AppRouterProps {
 export function AppRouter({ children }: AppRouterProps) {
   const isLovableHost = typeof window !== 'undefined' && window.location.hostname.includes('lovableproject.com');
   const envMode = import.meta.env.VITE_ROUTER_MODE as string | undefined;
-  const useHash = envMode === 'hash' || isLovableHost;
+  // Force hash mode for Lovable preview or when explicitly set
+  const useHash = envMode === 'hash' || isLovableHost || (!envMode && isLovableHost);
   const R: any = useHash ? HashRouter : BrowserRouter;
 
   if (import.meta.env.DEV) {

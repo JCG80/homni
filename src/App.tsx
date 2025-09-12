@@ -8,6 +8,8 @@ import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
 import { stripLovableToken, hasLovableToken } from '@/app/stripToken';
 import { performDevCleanup } from '@/pwa/cleanup';
+import { AppDiagnostics } from '@/components/debug/AppDiagnostics';
+import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
 
 import { usePageViews } from '@/lib/analytics/react';
 
@@ -17,6 +19,9 @@ function App() {
   // Initialize app cleanup on mount
   useEffect(() => {
     const initializeApp = async () => {
+      // Auto-configure environment
+      autoConfigureEnvironment();
+      
       // Log initial state for debugging
       if (import.meta.env.DEV) {
         console.info('App initializing:', {
@@ -43,6 +48,7 @@ function App() {
         <Shell />
         
         <Toaster />
+        <AppDiagnostics />
       </SiteLayout>
     </ErrorBoundary>
   );

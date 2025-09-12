@@ -13,6 +13,7 @@ import { useCurrentRole } from '@/hooks/useCurrentRole';
 import { Link } from 'react-router-dom';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
 import { RouterDiagnostics } from '@/components/router/RouterDiagnostics';
+import { RouterEmergencyFallback } from '@/components/debug/RouterEmergencyFallback';
 
 // Loading fallback component
 const RouteLoadingFallback = () => (
@@ -108,8 +109,15 @@ export function Shell() {
     ...maintenanceRouteObjects,
   ];
   
-  // Apply feature flags and role filtering
-  const filteredRoutes = applyFeatureFlags(allRoutes, flags, role);
+  // Apply feature flags and role filtering with error handling
+  let filteredRoutes: AppRoute[] = [];
+  try {
+    filteredRoutes = applyFeatureFlags(allRoutes, flags, role);
+  } catch (error) {
+    console.error('Route filtering failed:', error);
+    // Fallback to basic routes if filtering fails
+    filteredRoutes = mainRouteObjects.filter(route => !route.flag && (!route.roles || route.roles.includes('guest')));
+  }
   
   // Debug filtered routes in development
   if (import.meta.env.DEV) {
@@ -121,10 +129,16 @@ export function Shell() {
     ...convertToRouteObjects(filteredRoutes),
     // Error routes - always available
     { path: '/unauthorized', element: <UnauthorizedPage /> },
+    { path: '/emergency', element: <RouterEmergencyFallback /> },
     { path: '*', element: <NotFound /> }
   ];
 
   const routes = useRoutes(routeElements);
+
+  // Emergency fallback if no routes are rendered and we're in a problematic state
+  if (!routes && filteredRoutes.length === 0) {
+    return <RouterEmergencyFallback />;
+  }
 
   return (
     <RouteErrorBoundary>
