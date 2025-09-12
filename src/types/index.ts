@@ -1,9 +1,32 @@
 /**
- * Centralized type definitions for the Homni platform
- * This file serves as the single source of truth for all types
+ * DEPRECATED - Use @/types/consolidated-types instead
+ * 
+ * Legacy index file for backward compatibility.
+ * All types are now consolidated in consolidated-types.ts
  */
 
-// Core domain types
+// Re-export from consolidated types for backward compatibility
+export type {
+  UserRole,
+  NavigationItem,
+  NavigationConfig,
+  UnifiedNavConfig,
+  UserProfile,
+  AuthUser,
+  QuickLoginUser,
+  Lead,
+  LeadFormValues,
+  LeadStatus,
+  PipelineStage,
+  BaseComponentProps,
+  LoadingState,
+  ApiResponse,
+  FeatureFlag,
+  ModuleAccess,
+  AuditLogEntry
+} from './consolidated-types';
+
+// Legacy exports for backward compatibility
 export * from './auth';
 export * from './common';
 export * from './leads-canonical';
@@ -14,26 +37,5 @@ export * from './logging';
 // Company types (explicit exports to avoid conflicts)
 export type { CompanyProfile, CompanyStatistics, PurchaseRecord } from './company';
 
-// Marketplace types (explicit exports to avoid conflicts)
+// Marketplace types (explicit exports to avoid conflicts)  
 export type { BuyerAccount, LeadPackage, LeadAssignment } from './marketplace';
-
-// Legacy compatibility exports - canonical sources only
-export type { UserRole, UserProfile, AuthUser, QuickLoginUser } from './auth';
-export type { Lead, LeadFormValues, LeadStatus, PipelineStage } from './leads-canonical';
-
-// Hook types
-export type { 
-  UseFilterHookProps, 
-  UseFilterFetchProps, 
-  UseKanbanBoardProps, 
-  UseLoginFormProps, 
-  UseRoleCheckProps 
-} from './hooks';
-
-// Admin types (explicit exports to avoid conflicts)
-export type { 
-  UseModuleAccessProps, 
-  ModuleAccessManagerProps, 
-  Module, 
-  AdminLog 
-} from './admin';

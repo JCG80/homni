@@ -1,6 +1,8 @@
 /**
+ * DEPRECATED - Use @/types/consolidated-types instead
+ * 
  * Navigation types - Re-exports from consolidated types
- * @deprecated Use @/types/navigation-consolidated directly
+ * @deprecated Use @/types/consolidated-types directly
  */
 
 export type {
@@ -17,4 +19,4 @@ export type {
   RoleBasedNavigationProps,
   NavigationCache,
   SmartNavigationHook
-} from '@/types/navigation-consolidated';
+} from './consolidated-types';

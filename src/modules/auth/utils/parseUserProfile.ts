@@ -1,6 +1,7 @@
 
 import { Profile } from '../types/types';
 import { isUserRole } from './roles/guards';
+import { logger } from '@/utils/logger';
 
 /**
  * Parse user profile data from the database into a structured Profile object
@@ -17,7 +18,7 @@ export const parseUserProfile = (profileData: any): Profile | null => {
 
   // Validate role
   if (!isUserRole(role)) {
-    console.warn(`[parseUserProfile] Invalid role '${role}' found, defaulting to 'user'`);
+    logger.warn('Invalid role found, defaulting to user', { role });
     role = 'user';
   }
 
@@ -38,6 +39,6 @@ export const parseUserProfile = (profileData: any): Profile | null => {
     updated_at: profileData.updated_at
   };
 
-  console.log('[parseUserProfile] Parsed profile with role:', role);
+  logger.info('Parsed profile with role', { role });
   return parsed;
 };

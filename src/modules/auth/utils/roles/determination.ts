@@ -4,6 +4,7 @@
  */
 import { UserRole } from './types';
 import { isUserRole } from './guards';
+import { logger } from '@/utils/logger';
 
 /**
  * Determine user role based on metadata with fallback
@@ -40,7 +41,7 @@ export function determineUserRole(userData: Record<string, any> | null): UserRol
     
     return 'user' as UserRole; // Default fallback role
   } catch (error) {
-    console.error('Error determining user role:', error);
+    logger.error('Error determining user role', { error });
     return 'user' as UserRole; // Fallback to default role on error
   }
 }

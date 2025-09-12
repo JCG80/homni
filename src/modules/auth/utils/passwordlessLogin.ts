@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { TestUser } from '../types/types';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 export interface LoginResult {
   success: boolean;
@@ -15,7 +16,7 @@ export interface LoginResult {
  */
 export const passwordlessDevLogin = async (user: TestUser): Promise<LoginResult> => {
   if (import.meta.env.MODE !== 'development') {
-    console.warn('passwordlessDevLogin should not be used in production');
+    logger.warn('passwordlessDevLogin should not be used in production');
     return { 
       success: false, 
       error: new Error('Not in development mode') 
@@ -33,7 +34,7 @@ export const passwordlessDevLogin = async (user: TestUser): Promise<LoginResult>
     });
 
     if (error) {
-      console.error('Login error details:', error);
+      logger.error('Login error details', { error });
       toast({
         title: 'Login failed',
         description: `Could not log in as ${user.name || user.email}. ${error.message}`,
@@ -49,7 +50,7 @@ export const passwordlessDevLogin = async (user: TestUser): Promise<LoginResult>
 
     return { success: true };
   } catch (error: any) {
-    console.error('Login error:', error);
+    logger.error('Login error', { error });
     return { success: false, error };
   }
 };
@@ -72,7 +73,7 @@ export const fallbackPasswordLogin = async (user: TestUser): Promise<LoginResult
     });
 
     if (error) {
-      console.error('Fallback login error:', error);
+      logger.error('Fallback login error', { error });
       throw error;
     }
 
@@ -83,7 +84,7 @@ export const fallbackPasswordLogin = async (user: TestUser): Promise<LoginResult
 
     return { success: true };
   } catch (error: any) {
-    console.error('Fallback login error:', error);
+    logger.error('Fallback login error', { error });
     return { success: false, error };
   }
 };
@@ -102,7 +103,7 @@ export const smartDevLogin = async (user: TestUser): Promise<LoginResult> => {
       return passwordlessResult;
     }
     
-    console.log('Passwordless login failed, falling back to password login');
+    logger.info('Passwordless login failed, falling back to password login');
     
     // If passwordless failed and we have a password, try password login
     if (user.password) {
@@ -115,7 +116,7 @@ export const smartDevLogin = async (user: TestUser): Promise<LoginResult> => {
       error: new Error('Login failed and no password available for fallback') 
     };
   } catch (error: any) {
-    console.error('Smart login error:', error);
+    logger.error('Smart login error', { error });
     return { success: false, error };
   }
 };

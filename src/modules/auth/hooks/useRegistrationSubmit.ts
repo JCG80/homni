@@ -6,6 +6,7 @@ import { toast } from '@/components/ui/use-toast';
 import { UserRole, isUserRole } from '../utils/roles';
 import { supabase } from '@/lib/supabaseClient';
 import { Profile } from '../types/types';
+import { logger } from '@/utils/logger';
 
 interface RegistrationData {
   email: string;
@@ -90,7 +91,7 @@ export const useRegistrationSubmit = () => {
                 .eq('id', user.id);
             }
           } catch (companyError) {
-            console.error("Error creating company profile:", companyError);
+            logger.error('Error creating company profile', { error: companyError });
             // Continue with signup even if company profile creation fails
             // The user can still access the system, but with limited company features
           }

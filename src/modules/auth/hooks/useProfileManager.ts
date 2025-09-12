@@ -5,6 +5,7 @@ import { Profile } from '../types/types';
 import { useAuth } from './useAuth';
 import { useAuthRetry } from './useAuthRetry';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface ProfileUpdateOptions {
   showToasts?: boolean;
@@ -70,7 +71,7 @@ export const useProfileManager = () => {
         
         return null;
       } catch (error) {
-        console.error('Error updating profile:', error);
+        logger.error('Error updating profile', { error });
         
         const errorObj = error instanceof Error ? error : new Error('Ukjent feil ved oppdatering av profil');
         

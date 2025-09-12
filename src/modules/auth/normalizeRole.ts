@@ -2,6 +2,7 @@
  * Canonical role normalization for Homni project
  * Maps legacy roles to canonical values with fallback to 'guest'
  */
+import { logger } from '@/utils/logger';
 
 export type UserRole = 'guest' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
 
@@ -102,7 +103,7 @@ export function normalizeRole(role: string | null | undefined): UserRole {
   }
   
   // Fallback to guest for unknown roles
-  console.warn(`Unknown role '${role}' normalized to 'guest'`);
+  logger.warn('Unknown role normalized to guest', { role, normalized: 'guest' });
   return 'guest';
 }
 

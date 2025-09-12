@@ -3,6 +3,7 @@
  * Role-based access control and module permissions
  */
 import { UserRole } from './types';
+import { logger } from '@/utils/logger';
 
 /**
  * Get all modules a specific role has access to
@@ -59,7 +60,7 @@ export function getAccessibleModules(
       .filter(([_, allowedRoles]) => allowedRoles.includes(role))
       .map(([moduleName, _]) => moduleName);
   } catch (error) {
-    console.error('Error getting accessible modules:', error);
+    logger.error('Error getting accessible modules', { error });
     return []; // Return empty array as fallback
   }
 }

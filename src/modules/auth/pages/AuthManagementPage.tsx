@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { UserRole, isUserRole } from '../utils/roles';
+import { logger } from '@/utils/logger';
 
 interface UserWithProfile {
   id: string;
@@ -61,7 +62,7 @@ export const AuthManagementPage = () => {
         
         setUsers(formattedUsers);
       } catch (err: any) {
-        console.error('Failed to load users:', err);
+        logger.error('Failed to load users', { error: err });
         setError('Could not load users. Please try again later.');
       } finally {
         setLoading(false);
@@ -92,7 +93,7 @@ export const AuthManagementPage = () => {
         description: `User role has been updated to ${newRole}.`
       });
     } catch (err: any) {
-      console.error('Failed to update role:', err);
+      logger.error('Failed to update role', { error: err });
       toast({
         title: 'Error updating role',
         description: 'Could not update user role. Please try again later.',

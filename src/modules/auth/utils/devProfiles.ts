@@ -1,4 +1,5 @@
 import { UserRole } from './roles/types';
+import { logger } from '@/utils/logger';
 
 // Define a type for dev user profile
 export interface DevUserProfile {
@@ -31,7 +32,7 @@ export const getDevUsers = (): Record<string, DevUserProfile> => {
         const userProfile = JSON.parse(import.meta.env[key]);
         devUsers[userKey] = userProfile;
       } catch (error) {
-        console.error(`Error parsing dev user from ${key}:`, error);
+        logger.error('Error parsing dev user', { key, error });
       }
     }
   });

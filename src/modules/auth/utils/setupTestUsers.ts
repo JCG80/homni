@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { UserRole } from '../types/unified-types';
 import { normalizeRole } from '../normalizeRole';
+import { logger } from '@/utils/logger';
 
 const DEV_USERS: Record<UserRole, { email: string; password: string; name: string }> = {
   'guest': { email: 'guest@homni.no', password: 'Test1234!', name: 'Guest User' },
@@ -18,15 +19,15 @@ const DEV_USERS: Record<UserRole, { email: string; password: string; name: strin
  */
 export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> => {
   try {
-    console.log(`[setupTestUsers] Setting up test user with role: ${role}`);
+    logger.info('Setting up test user with role', { role });
     
     // Normalize the role to ensure we have a canonical value
     const normalizedRole = normalizeRole(role);
-    console.log(`[setupTestUsers] Normalized role: ${normalizedRole}`);
+    logger.info('Normalized role', { role, normalizedRole });
     
     const devUser = DEV_USERS[normalizedRole];
     if (!devUser) {
-      console.error(`[setupTestUsers] No dev user configuration found for role: ${normalizedRole}`);
+      logger.error('No dev user configuration found for role', { normalizedRole });
       toast({
         title: 'Configuration Error',
         description: `No test user configured for role: ${normalizedRole}`,
@@ -35,7 +36,7 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
       return false;
     }
 
-    console.log(`[setupTestUsers] Attempting to sign in as: ${devUser.email}`);
+    logger.info('Attempting to sign in', { email: devUser.email });
 
     // Sign out any existing user first
     await supabase.auth.signOut();
@@ -47,7 +48,7 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
     });
 
     if (signInError && signInError.message.includes('Invalid login credentials')) {
-      console.log(`[setupTestUsers] User doesn't exist, creating account for: ${devUser.email}`);
+      logger.info('User does not exist, creating account', { email: devUser.email });
       
       // Create the user account
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -63,7 +64,7 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
       });
 
       if (signUpError) {
-        console.error('[setupTestUsers] Sign up error:', signUpError);
+        logger.error('Sign up error', { error: signUpError });
         toast({
           title: 'Account Creation Failed',
           description: signUpError.message,
@@ -72,12 +73,12 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
         return false;
       }
 
-      console.log('[setupTestUsers] Account created successfully');
+      logger.info('Account created successfully');
       
       // Short delay to let auth propagate
       await new Promise(resolve => setTimeout(resolve, 100));
     } else if (signInError) {
-      console.error('[setupTestUsers] Sign in error:', signInError);
+      logger.error('Sign in error', { error: signInError });
       toast({
         title: 'Sign In Failed',
         description: signInError.message,
@@ -92,7 +93,7 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
     while (retries > 0 && !user) {
       const { data: { user: currentUser }, error: getUserError } = await supabase.auth.getUser();
       if (getUserError) {
-        console.error('[setupTestUsers] Failed to get user:', getUserError);
+        logger.error('Failed to get user', { error: getUserError });
         retries--;
         await new Promise(resolve => setTimeout(resolve, 200));
         continue;
@@ -102,15 +103,15 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
     }
 
     if (!user) {
-      console.error('[setupTestUsers] Failed to get authenticated user after retries');
+      logger.error('Failed to get authenticated user after retries');
       return false;
     }
 
-    console.log(`[setupTestUsers] Successfully authenticated user: ${user.id}`);
+    logger.info('Successfully authenticated user', { userId: user.id });
 
     // Use the SECURITY DEFINER RPC function for atomic profile upsert
     try {
-      console.log(`[setupTestUsers] Calling ensure_user_profile RPC with role: ${normalizedRole}`);
+      logger.info('Calling ensure_user_profile RPC', { role: normalizedRole });
       
       const { data: profileData, error: rpcError } = await supabase.rpc('ensure_user_profile', {
         p_user_id: user.id,
@@ -119,7 +120,7 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
       });
 
       if (rpcError) {
-        console.error('[setupTestUsers] RPC ensure_user_profile failed:', rpcError);
+        logger.error('RPC ensure_user_profile failed', { error: rpcError });
         // Fallback to manual profile update
         const { error: profileError } = await supabase
           .from('user_profiles')
@@ -135,10 +136,10 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
           });
 
         if (profileError) {
-          console.warn('[setupTestUsers] Fallback profile upsert also failed:', profileError);
+          logger.warn('Fallback profile upsert also failed', { error: profileError });
         }
       } else {
-        console.log('[setupTestUsers] Profile ensured via RPC:', profileData);
+        logger.info('Profile ensured via RPC', { profileData });
       }
 
       // Short delay for profile to propagate
@@ -146,17 +147,17 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
       
       // Initialize user modules based on role
       try {
-        console.log('[setupTestUsers] Initializing user modules...');
+        logger.info('Initializing user modules');
         const { initializeUserModules } = await import('@/modules/system/ModuleInitializer');
         const moduleInitSuccess = await initializeUserModules(user.id, normalizedRole);
         
         if (moduleInitSuccess) {
-          console.log('[setupTestUsers] User modules initialized successfully');
+          logger.info('User modules initialized successfully');
         } else {
-          console.warn('[setupTestUsers] Module initialization failed, continuing anyway');
+          logger.warn('Module initialization failed, continuing anyway');
         }
       } catch (moduleError) {
-        console.warn('[setupTestUsers] Module initialization error:', moduleError);
+        logger.warn('Module initialization error', { error: moduleError });
         // Continue anyway - user is authenticated
       }
 
@@ -167,7 +168,7 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
       
       return true;
     } catch (profileError) {
-      console.error('[setupTestUsers] Profile setup error:', profileError);
+      logger.error('Profile setup error', { error: profileError });
       // Continue anyway - the user is authenticated
       toast({
         title: 'Partial Success',
@@ -177,7 +178,7 @@ export const setupTestUsers = async (role: UserRole = 'user'): Promise<boolean> 
       return true;
     }
   } catch (error) {
-    console.error('[setupTestUsers] Unexpected error:', error);
+    logger.error('Unexpected error', { error });
     toast({
       title: 'Unexpected Error',
       description: 'An unexpected error occurred during test user setup',

@@ -1,6 +1,7 @@
 import { UserRole } from './roles/types';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 export interface TestUser {
   id: string;
@@ -32,7 +33,7 @@ export const TEST_USERS: TestUser[] = [
  */
 export const devLogin = async (role: UserRole): Promise<DevLoginResult> => {
   if (import.meta.env.MODE !== 'development') {
-    console.warn('devLogin should not be used in production');
+    logger.warn('devLogin should not be used in production');
     return { success: false, error: new Error('Not in development mode') };
   }
 
@@ -53,7 +54,7 @@ export const devLogin = async (role: UserRole): Promise<DevLoginResult> => {
     });
 
     if (error) {
-      console.error('Dev login error details:', error);
+      logger.error('Dev login error details', { details: error });
       toast({
         title: 'Innloggingsfeil',
         description: `Kunne ikke logge inn som ${testUser.role}: ${error.message}`,
@@ -69,7 +70,7 @@ export const devLogin = async (role: UserRole): Promise<DevLoginResult> => {
 
     return { success: true };
   } catch (error: any) {
-    console.error('Dev login error:', error);
+    logger.error('Dev login error', { error });
     return { success: false, error };
   }
 };
@@ -93,7 +94,7 @@ export const verifyTestUsers = async (): Promise<string[]> => {
     
     return missingUsers;
   } catch (err) {
-    console.error('Error verifying test users:', err);
+    logger.error('Error verifying test users', { error: err });
     return TEST_USERS.map(user => user.email);
   }
 };

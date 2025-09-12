@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { logger } from '@/utils/logger';
 
 interface ModuleAccessResult {
   moduleAccess: string[];
@@ -29,7 +30,7 @@ export const useModuleAccessQuery = () => {
         .eq('is_enabled', true);
 
       if (moduleError) {
-        console.error('Error fetching module access:', moduleError);
+        logger.error('Error fetching module access', { error: moduleError });
         return { moduleAccess: [], isInternalAdmin: false };
       }
 
@@ -38,7 +39,7 @@ export const useModuleAccessQuery = () => {
         .rpc('is_internal_admin', { check_user_id: user.id });
 
       if (adminError) {
-        console.error('Error fetching internal admin status:', adminError);
+        logger.error('Error fetching internal admin status', { error: adminError });
       }
 
       const moduleAccess = (moduleData || []).map(item => item.module_id);

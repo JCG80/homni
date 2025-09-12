@@ -1,6 +1,7 @@
 
 import { Profile } from '../types/types';
 import { isUserRole } from '../utils/roles';
+import { logger } from '@/utils/logger';
 
 /**
  * Parse raw profile data from database into typed Profile object
@@ -16,7 +17,7 @@ export const parseProfileData = (profileData: any): Profile | null => {
   // Validate that role is a valid UserRole
   let role = profileData.role;
   if (!isUserRole(role)) {
-    console.warn(`Invalid role '${role}' found in profile, defaulting to 'user'`);
+    logger.warn('Invalid role found in profile, defaulting to user', { role });
     role = 'user';
   }
   

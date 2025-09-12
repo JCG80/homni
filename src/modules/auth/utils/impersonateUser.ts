@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { QuickLoginUser } from '../types/unified-types';
 import { toast } from '@/components/ui/use-toast';
 import { smartDevLogin } from './passwordlessLogin';
+import { logger } from '@/utils/logger';
 
 export interface ImpersonationResult {
   success: boolean;
@@ -15,7 +16,7 @@ export interface ImpersonationResult {
  */
 export const impersonateUser = async (user: QuickLoginUser): Promise<ImpersonationResult> => {
   if (import.meta.env.MODE !== 'development') {
-    console.warn('impersonateUser should not be used in production');
+    logger.warn('impersonateUser should not be used in production');
     return { 
       success: false, 
       error: new Error('Not in development mode') 
@@ -26,7 +27,7 @@ export const impersonateUser = async (user: QuickLoginUser): Promise<Impersonati
     // Use our smart login that tries passwordless first, then falls back to password
     return await smartDevLogin(user);
   } catch (error: any) {
-    console.error('Impersonation error:', error);
+    logger.error('Impersonation error', { error });
     return { success: false, error };
   }
 };
