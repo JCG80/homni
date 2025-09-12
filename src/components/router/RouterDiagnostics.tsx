@@ -2,18 +2,22 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
+import { getHostEnvironment, isLovablePreviewHost } from '@/lib/env/hosts';
 
 export function RouterDiagnostics() {
   const location = useLocation();
   const navigate = useNavigate();
   const flags = useFeatureFlags();
   const role = useCurrentRole();
+  const hostEnv = getHostEnvironment();
 
-  if (!import.meta.env.DEV) return null;
+  // Show in dev or preview mode for easy debugging
+  if (!import.meta.env.DEV && hostEnv !== 'preview') return null;
 
   const routerInfo = {
     mode: import.meta.env.VITE_ROUTER_MODE || 'browser',
-    isLovableHost: window.location.hostname.includes('lovableproject.com'),
+    isLovableHost: isLovablePreviewHost(),
+    hostEnv,
     pathname: location.pathname,
     search: location.search,
     hash: location.hash,
@@ -35,8 +39,8 @@ export function RouterDiagnostics() {
       
       <div className="space-y-2">
         <div>
-          <strong>Mode:</strong> {routerInfo.mode} 
-          {routerInfo.isLovableHost && ' (Lovable)'}
+          <strong>Mode:</strong> {routerInfo.mode} ({routerInfo.hostEnv})
+          {routerInfo.isLovableHost && ' 🔧'}
         </div>
         
         <div>

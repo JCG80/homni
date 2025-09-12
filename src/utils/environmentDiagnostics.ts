@@ -3,6 +3,8 @@
  * Helps detect and resolve common environment-related issues
  */
 
+import { isLovablePreviewHost } from '@/lib/env/hosts';
+
 export interface EnvironmentDiagnostics {
   routerMode: string;
   isLovableHost: boolean;
@@ -14,7 +16,7 @@ export interface EnvironmentDiagnostics {
 }
 
 export function getEnvironmentDiagnostics(): EnvironmentDiagnostics {
-  const isLovableHost = typeof window !== 'undefined' && window.location.hostname.includes('lovableproject.com');
+  const isLovableHost = isLovablePreviewHost();
   const routerMode = import.meta.env.VITE_ROUTER_MODE || 'browser';
   const shouldUseHashRouter = routerMode === 'hash' || isLovableHost;
   
@@ -65,5 +67,15 @@ export function autoConfigureEnvironment(): void {
   
   if (diagnostics.isLovableHost && !import.meta.env.VITE_ROUTER_MODE) {
     console.info('🔧 Auto-configuring hash router for Lovable preview');
+  }
+  
+  // Aggressive cleanup in preview to prevent stale state
+  if (diagnostics.isLovableHost) {
+    // Clear potential stale service worker state
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => registration.unregister());
+      });
+    }
   }
 }

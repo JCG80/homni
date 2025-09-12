@@ -3,6 +3,8 @@
  * Handles development cleanup and service worker management
  */
 
+import { isLovablePreviewHost, getHostEnvironment } from '@/lib/env/hosts';
+
 interface CleanupOptions {
   clearCache?: boolean;
   unregisterSW?: boolean;
@@ -15,19 +17,19 @@ interface CleanupOptions {
  */
 export async function performDevCleanup(options: CleanupOptions = {}): Promise<void> {
   const {
-    clearCache = false,
-    unregisterSW = false,
+    clearCache = import.meta.env.DEV || isLovablePreviewHost(),
+    unregisterSW = import.meta.env.DEV || isLovablePreviewHost(),
     clearStorage = false,
     verbose = import.meta.env.DEV
   } = options;
 
   if (verbose) {
-    console.info('[PWA Cleanup] Starting development cleanup...');
+    console.info('[PWA Cleanup] Starting cleanup for:', getHostEnvironment());
   }
 
   try {
-    // In preview mode (non-dev), perform service worker cleanup
-    if (import.meta.env.PROD && window.location.hostname.includes('lovableproject.com')) {
+    // In preview mode, perform aggressive service worker cleanup
+    if (isLovablePreviewHost()) {
       if (verbose) {
         console.info('[PWA Cleanup] Preview mode detected - cleaning service workers');
       }
@@ -146,10 +148,7 @@ async function clearDevelopmentStorage(): Promise<void> {
  * Utility to check if service worker is in self-healing mode
  */
 export function isServiceWorkerSelfHealing(): boolean {
-  return (
-    import.meta.env.PROD && 
-    window.location.hostname.includes('lovableproject.com')
-  );
+  return isLovablePreviewHost() && import.meta.env.PROD;
 }
 
 /**

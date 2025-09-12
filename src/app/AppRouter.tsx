@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
+import { isLovablePreviewHost } from '@/lib/env/hosts';
 
 interface AppRouterProps {
   children: React.ReactNode;
@@ -7,10 +8,10 @@ interface AppRouterProps {
 
 // Centralized router wrapper with preview-safe defaults
 export function AppRouter({ children }: AppRouterProps) {
-  const isLovableHost = typeof window !== 'undefined' && window.location.hostname.includes('lovableproject.com');
+  const isLovableHost = isLovablePreviewHost();
   const envMode = import.meta.env.VITE_ROUTER_MODE as string | undefined;
   // Force hash mode for Lovable preview or when explicitly set
-  const useHash = envMode === 'hash' || isLovableHost || (!envMode && isLovableHost);
+  const useHash = envMode === 'hash' || isLovableHost;
   const R: any = useHash ? HashRouter : BrowserRouter;
 
   if (import.meta.env.DEV) {
