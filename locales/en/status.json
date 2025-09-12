@@ -13,5 +13,14 @@
   "statusDashboard": "Status Dashboard",
   "liveStatus": "Live status and changelog for the Homni platform",
   "markdownEditor": "Markdown editor",
-  "note": "Note"
+  "note": "Note",
+  "importTitle": "Legacy Document Import",
+  "importDescription": "Drag and drop HTML files or Markdown documents for automatic conversion",
+  "dragActive": "Drop the file here...",
+  "dragInactive": "Drag HTML/Markdown files here, or click to select",
+  "supportedFormats": "Supports: .html, .htm, .md, .txt",
+  "autoStructure": "Auto-structure",
+  "structuring": "Structuring...",
+  "converting": "Converting file...",
+  "download": "Download"
 }

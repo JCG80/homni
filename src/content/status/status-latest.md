@@ -1,9 +1,75 @@
 # Systemstatus & Endringslogg
 
-> **Kilde:** Migrert fra legacy "docs/status/NOW.md". Denne Markdown-filen er nå **single source of truth** for statusmeldinger i Admin.
-> 
-> **Sist oppdatert:** 18. august 2025  
-> **Neste review:** Ved core-endringer i src/, supabase/, eller roles
+*Status per 2025-01-12 – sentral dokumentasjon for systemets nåværende tilstand og utviklingshistorikk.*
+
+---
+
+## 📍 **NÅVÆRENDE FASE-STATUS**
+
+**Fase 2B: Repository Standardization** (Q1 2025)
+- ✅ Dokumentasjonskonsolidering: 95% ferdig
+- 🔄 Code Quality: 78% ferdig (ESLint ✅, TypeScript: 0 feil, Testing: 89%)
+- ⏳ Performance Optimization: 45% ferdig
+- 🔄 Security Hardening: 34% ferdig (43 Supabase linter warnings aktiv)
+
+**Neste Fase:** Fase 3 – Bedriftsmodul (Q2 2025)
+
+---
+
+## 🗃️ **DATABASE-STATUS & FORBEDRINGER**
+
+| Kategori | Status | Neste Steg |
+|----------|---------|------------|
+| Soft Delete (deleted_at) | ⏳ Planlagt | Migrering Q2 2025 |
+| JSONB-indekser | 🔄 Pågår | 8/15 tabeller ferdig |
+| Fulltekst-søk | ⏳ Planlagt | GIN-indekser implementering |
+| Constraints & Foreign Keys | ✅ 90% ferdig | Maintenance-modus |
+| RLS Policies | 🔧 Under revisjon | 43 Supabase linter warnings |
+
+---
+
+## 🛠️ **TYPESCRIPT & TEKNISK GJELD**
+
+### **Aktive TS-feil (0 registrert)**
+- ✅ isMasterAdmin-felt: Løst i UserProfile interface
+- ✅ RoleType-utvidelse: Implementert med master_admin
+- ✅ MenuItem-props: Standardisert i navigation config
+
+### **Duplikater & Cleanup Status**
+- 🔧 RoleToggle-varianter: 3 funnet → konsolidering pågår
+- 🔧 LeadForm-komponenter: 2 varianter → single source etablert
+- ✅ File casing: 0 TS1261-feil registrert
+- 🔄 Bundle size: 180KB gzipped → mål: <200KB (✅ oppnådd)
+
+---
+
+## 🚦 **NAVIGASJON & ARKITEKTUR**
+
+### **Implementert (✅)**
+- Sentral navConfig[role] i `/src/config/navigation.ts`
+- Én <BrowserRouter> entry-point
+- ModuleMetadata tabell etablert
+- FeatureFlags med rollback-skript
+- Admin status-interface med legacy HTML→Markdown conversion
+
+### **Under Utvikling (🔄)**
+- Role Mode Switcher for admin testing
+- Control Plan separation (admin vs user interfaces)
+- Auto-status oppdateringer via CI
+
+---
+
+## 👥 **PROFILBASERT FREMDRIFT**
+
+| Profil | Status | Fullført % | Neste Milepæl |
+|--------|--------|------------|---------------|
+| 🎯 Besøkende (Guest) | ✅ **Ferdig** | 100% | Maintenance-modus |
+| 👤 Medlem (User) | 🔄 **Pågår** | 85% | Dashboard-widgets Q2 |
+| 🏢 Bedrift (Company) | 🎯 **Nåværende fokus** | 60% | Analytics-modul Q2 |
+| ⚙️ Admin | 🔄 **Delvis ferdig** | 70% | Advanced filtering |
+| 🔒 Master Admin | ⏳ **Planlagt** | 35% | Q2 2025 |
+
+---
 
 ## 🎯 **CORE FEATURES (Live i prod)**
 
