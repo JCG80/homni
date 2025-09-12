@@ -107,6 +107,7 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
     { href: '/admin/smart-insights', title: 'SmartStart Innsikt', icon: BarChart3 },
     { href: '/admin/system-modules', title: 'Systemmoduler', icon: Database },
     { href: '/admin/api', title: 'API & Integrasjoner', icon: Zap },
+    { href: '/admin/status', title: 'Systemstatus & endringslogg', icon: FileText },
   ],
 
   master_admin: [
@@ -123,6 +124,7 @@ export const navControl: Record<'admin' | 'master_admin', NavigationItem[]> = {
     { href: '/admin/modules', title: 'Moduladministrasjon', icon: Database },
     { href: '/admin/market-trends', title: 'Markedstrender', icon: TrendingUp },
     { href: '/admin/api-gateway', title: 'API Gateway', icon: Activity },
+    { href: '/admin/status', title: 'Systemstatus & endringslogg', icon: FileText },
   ],
 };
 

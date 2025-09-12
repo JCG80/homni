@@ -1,0 +1,17 @@
+{
+  "title": "System Status & Changelog",
+  "source": "Source",
+  "file": "src/content/status/status-latest.md",
+  "preview": "Preview",
+  "edit": "Edit",
+  "devOnly": "(dev only)",
+  "editTitle": "Live Editor (Development)",
+  "editDescription": "Modify Markdown content temporarily for testing. Changes are not persisted in production.",
+  "editHelp": "Changes here are not saved to file in production. For permanent changes, update the file via PR.",
+  "reset": "Reset",
+  "export": "Export",
+  "statusDashboard": "Status Dashboard",
+  "liveStatus": "Live status and changelog for the Homni platform",
+  "markdownEditor": "Markdown editor",
+  "note": "Note"
+}

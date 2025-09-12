@@ -12,6 +12,7 @@ const CompaniesManagementPage = lazy(() => import('@/modules/admin/pages/Compani
 const SystemModulesPage = lazy(() => import('@/modules/system/pages/SystemModulesPage').then(m => ({ default: m.SystemModulesPage })));
 const InternalAccessPage = lazy(() => import('@/modules/admin/pages/InternalAccessPage').then(m => ({ default: m.default })));
 const AdminSettingsPage = lazy(() => import('@/modules/admin/pages/AdminSettingsPage').then(m => ({ default: m.AdminSettingsPage })));
+const AdminStatusPage = lazy(() => import('@/modules/admin/status/AdminStatusPage').then(m => ({ default: m.default })));
 
 export const adminRouteObjects: AppRoute[] = [
   {
@@ -73,5 +74,11 @@ export const adminRouteObjects: AppRoute[] = [
     element: createElement(AdminSettingsPage),
     roles: ['admin', 'master_admin'],
     navKey: 'admin-settings'
+  },
+  {
+    path: '/admin/status',
+    element: createElement(AdminStatusPage),
+    roles: ['admin', 'master_admin'],
+    navKey: 'admin-status'
   },
 ];

@@ -47,6 +47,7 @@ export default defineConfig(({ mode }) => {
     },
     dedupe: ['react', 'react-dom'],
   },
+  assetsInclude: ['**/*.md'], // Enable markdown imports
   optimizeDeps: {
     include: [
       'react', 

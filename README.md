@@ -153,3 +153,58 @@ The Homni platform follows a modular architecture with clear separation of conce
   ├── migrations/       # 📊 Database schema changes
   └── functions/        # ⚡ Edge functions
 ```
+
+## Status Publishing & Management
+
+### System Status Documentation
+
+Homni uses a modernized status documentation system with both admin interface and static mirrors:
+
+- **Live Source:** `src/content/status/status-latest.md` (Single Source of Truth)
+- **Admin Interface:** Admin → Systemstatus & endringslogg (`/admin/status`)
+- **Static Mirror:** `docs/status/status.html`
+- **Legacy Archive:** `docs/archive/status-legacy-placeholder.html` (DEPRECATED)
+
+### Publishing Status Updates
+
+#### Standard Procedure
+1. **Edit the Markdown source:** Modify `src/content/status/status-latest.md`
+2. **Create PR:** Use descriptive title (e.g., "status: add P0 security hardening update")
+3. **Review & Merge:** When PR is merged to `main`, status appears in Admin → Systemstatus
+4. **Update Static Mirror:** For major updates, also update `docs/status/status.html`
+
+#### Development Testing
+- In dev mode, the Admin status page includes a live editor for temporary testing
+- Changes in dev editor are **not persisted** - they're only for preview
+- Use the "Export" button to download edited content for permanent file updates
+
+#### Content Guidelines
+- Use clear, concise language with bullet points for readability
+- Include date/timestamp for significant changes
+- Follow the established sections: Core Features, In Progress, Backlog, Technical Debt, Metrics
+- Never include secrets, API keys, or sensitive operational details
+- Use emoji indicators: ✅ (complete), 🚧 (in progress), 🔧 (needs attention)
+
+#### File Structure
+```
+src/content/status/
+  └── status-latest.md          # Main status source
+docs/status/
+  └── status.html              # Static HTML mirror
+docs/archive/
+  └── status-legacy-*.html     # Deprecated versions
+locales/{no,en}/
+  └── status.json              # i18n translations
+```
+
+#### Access Control
+- **Admin/Master Admin:** Full read/write access via `/admin/status`
+- **Other Roles:** No direct access (internal documentation)
+- **Public:** Static mirror only (if needed for transparency)
+
+#### Integration with CI/CD
+The status documentation integrates with:
+- **Status Sentinel:** CI checks that warn when core changes aren't reflected in status
+- **Prompt Guardian:** Automated reviews for status consistency
+- **Feature Flags:** Status updates can reference feature flag changes
+- **Migration Tracking:** Database changes should be reflected in status updates

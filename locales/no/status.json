@@ -1,0 +1,17 @@
+{
+  "title": "Systemstatus & endringslogg",
+  "source": "Kilde",
+  "file": "src/content/status/status-latest.md",
+  "preview": "Forhåndsvisning",
+  "edit": "Rediger",
+  "devOnly": "(kun dev)",
+  "editTitle": "Live Editor (Development)",
+  "editDescription": "Endre Markdown-innholdet midlertidig for testing. Endringer lagres ikke permanent i prod.",
+  "editHelp": "Endringer her lagres ikke til fil i produksjon. For permanente endringer, oppdater filen via PR.",
+  "reset": "Tilbakestill",
+  "export": "Eksporter",
+  "statusDashboard": "Status Dashboard",
+  "liveStatus": "Live status og endringslogg for Homni-plattformen",
+  "markdownEditor": "Markdown editor",
+  "note": "Merk"
+}
