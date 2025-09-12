@@ -10,6 +10,7 @@ import {
 import { DetachedBuilding, CreateDetachedBuildingInput, UpdateDetachedBuildingInput } from '../types/detached-buildings-types';
 import { BuildingFormValues } from '../components/admin/DetachedBuildingFormDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { logger } from '@/utils/logger';
 
 export const useDetachedBuildings = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -32,7 +33,10 @@ export const useDetachedBuildings = () => {
       setIsDialogOpen(false);
     },
     onError: (error) => {
-      console.error('Error adding building:', error);
+      logger.error('Error adding building:', {
+        module: 'useDetachedBuildings',
+        action: 'addMutation'
+      }, error as Error);
       toast.error('Kunne ikke legge til bygningstype');
     }
   });
@@ -46,7 +50,10 @@ export const useDetachedBuildings = () => {
       setIsDialogOpen(false);
     },
     onError: (error) => {
-      console.error('Error updating building:', error);
+      logger.error('Error updating building:', {
+        module: 'useDetachedBuildings',
+        action: 'updateMutation'
+      }, error as Error);
       toast.error('Kunne ikke oppdatere bygningstype');
     }
   });
@@ -59,7 +66,10 @@ export const useDetachedBuildings = () => {
       toast.success('Bygningstype slettet');
     },
     onError: (error) => {
-      console.error('Error deleting building:', error);
+      logger.error('Error deleting building:', {
+        module: 'useDetachedBuildings',
+        action: 'deleteMutation'
+      }, error as Error);
       toast.error('Kunne ikke slette bygningstype');
     }
   });

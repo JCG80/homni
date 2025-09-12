@@ -11,6 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { loadContent } from '../api/loadContent';
 import { saveContent } from '../api/saveContent';
 import { ContentFormValues, ContentType } from '../types/content-types';
+import { logger } from '@/utils/logger';
 
 export interface ContentEditorProps {
   contentId?: string;
@@ -48,10 +49,19 @@ export const ContentEditor = ({ contentId, contentType = 'article', onSave, isLo
             setPublished(content.published || false);
           }
         } catch (error) {
-          console.error('Failed to load content:', error);
+          logger.error('Failed to load content:', {
+            module: 'ContentEditor',
+            action: 'fetchContent',
+            contentId: actualId,
+            retryCount
+          }, error as Error);
           if (retryCount < maxRetries) {
             retryCount++;
-            console.log(`Retrying content load (${retryCount}/${maxRetries})...`);
+            logger.info(`Retrying content load (${retryCount}/${maxRetries})...`, {
+              module: 'ContentEditor',
+              contentId: actualId,
+              retryCount
+            });
             setTimeout(fetchContent, 1000 * retryCount);
           } else {
             toast({
@@ -107,10 +117,20 @@ export const ContentEditor = ({ contentId, contentType = 'article', onSave, isLo
           navigate('/admin/content');
         }
       } catch (error) {
-        console.error('Error saving content:', error);
+        logger.error('Error saving content:', {
+          module: 'ContentEditor',
+          action: 'attemptSave',
+          contentId: actualId,
+          title,
+          retryCount
+        }, error as Error);
         if (retryCount < maxRetries) {
           retryCount++;
-          console.log(`Retrying save (${retryCount}/${maxRetries})...`);
+          logger.info(`Retrying save (${retryCount}/${maxRetries})...`, {
+            module: 'ContentEditor',
+            contentId: actualId,
+            retryCount
+          });
           setTimeout(attemptSave, 1000 * retryCount);
         } else {
           toast({

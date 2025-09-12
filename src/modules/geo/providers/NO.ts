@@ -1,5 +1,6 @@
 
 import { AddressLookupProvider, AddressResult } from '../addressLookup';
+import { logger } from '@/utils/logger';
 
 const kartverketBaseUrl = 'https://ws.geonorge.no/adresser/v1';
 
@@ -27,7 +28,11 @@ const NorwegianProvider: AddressLookupProvider = {
         lng: parseFloat(address.representasjonspunkt?.lon || 0),
       }));
     } catch (error) {
-      console.error('Error in Norwegian address search:', error);
+      logger.error('Error in Norwegian address search:', {
+        module: 'NorwegianProvider',
+        action: 'search',
+        query
+      }, error as Error);
       // Return empty array instead of throwing to prevent breaking the UI
       return [];
     }
@@ -62,7 +67,12 @@ const NorwegianProvider: AddressLookupProvider = {
         lng: parseFloat(address.representasjonspunkt?.lon || lng),
       };
     } catch (error) {
-      console.error('Error in Norwegian reverse geocoding:', error);
+      logger.error('Error in Norwegian reverse geocoding:', {
+        module: 'NorwegianProvider',
+        action: 'reverse',
+        lat,
+        lng
+      }, error as Error);
       return null;
     }
   },

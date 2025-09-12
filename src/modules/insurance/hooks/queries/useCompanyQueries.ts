@@ -10,15 +10,22 @@ import {
   deleteInsuranceCompany 
 } from "../../api";
 import { InsuranceCompany } from "../../types/insurance-types";
+import { logger } from "@/utils/logger";
 
 // Insurance Companies Queries
 export const useInsuranceCompanies = () => {
   return useQuery({
     queryKey: ['insuranceCompanies'],
     queryFn: async () => {
-      console.log('Fetching insurance companies');
+      logger.info('Fetching insurance companies', {
+        module: 'useCompanyQueries',
+        action: 'fetchInsuranceCompanies'
+      });
       const data = await fetchInsuranceCompanies();
-      console.log('Fetched insurance companies:', data);
+      logger.info('Fetched insurance companies:', {
+        module: 'useCompanyQueries',
+        count: data?.length || 0
+      });
       return data;
     }
   });
@@ -28,9 +35,17 @@ export const useInsuranceCompany = (id: string) => {
   return useQuery({
     queryKey: ['insuranceCompany', id],
     queryFn: async () => {
-      console.log(`Fetching insurance company with id: ${id}`);
+      logger.info(`Fetching insurance company with id: ${id}`, {
+        module: 'useCompanyQueries',
+        action: 'fetchInsuranceCompanyById',
+        companyId: id
+      });
       const data = await fetchInsuranceCompanyById(id);
-      console.log('Fetched insurance company:', data);
+      logger.info('Fetched insurance company:', {
+        module: 'useCompanyQueries',
+        companyId: id,
+        companyName: data?.name
+      });
       return data;
     },
     enabled: !!id

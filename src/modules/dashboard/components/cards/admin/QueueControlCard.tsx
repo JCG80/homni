@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Play, Pause, RotateCcw, AlertTriangle } from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 interface QueueStats {
   pending_assignments: number;
@@ -59,13 +60,20 @@ export const QueueControlCard: React.FC = () => {
       if (error) throw error;
       refetch();
     } catch (err) {
-      console.error('Failed to update global pause:', err);
+      logger.error('Failed to update global pause:', {
+        module: 'QueueControlCard',
+        action: 'handleGlobalPause',
+        paused
+      }, err as Error);
     }
   };
 
   const handleReassignFailed = async () => {
     // Mock action - in real implementation, trigger reassignment
-    console.log('Reassigning failed assignments...');
+    logger.info('Reassigning failed assignments...', {
+      module: 'QueueControlCard',
+      action: 'handleReassignFailed'
+    });
     refetch();
   };
 

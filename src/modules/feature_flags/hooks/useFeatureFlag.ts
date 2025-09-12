@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/modules/auth/hooks';
 import { FeatureFlag } from '../types/types';
+import { logger } from '@/utils/logger';
 
 /**
  * Hook to check if a feature flag is enabled for the current user
@@ -37,7 +38,11 @@ export const useFeatureFlag = (flagName: string, fallbackValue = false) => {
         setIsEnabled(data === true);
         setError(null);
       } catch (err) {
-        console.error('Error checking feature flag:', err);
+        logger.error('Error checking feature flag:', {
+          module: 'useFeatureFlag',
+          flagName,
+          userId: user?.id
+        }, err as Error);
         setError(err instanceof Error ? err : new Error('Unknown error checking feature flag'));
         setIsEnabled(fallbackValue);
       } finally {
@@ -85,7 +90,10 @@ export const useFeatureFlags = () => {
         setFlags(data as FeatureFlag[] || []);
         setError(null);
       } catch (err) {
-        console.error('Error fetching feature flags:', err);
+        logger.error('Error fetching feature flags:', {
+          module: 'useFeatureFlags',
+          userId: user?.id
+        }, err as Error);
         setError(err instanceof Error ? err : new Error('Unknown error fetching feature flags'));
         setFlags([]);
       } finally {
