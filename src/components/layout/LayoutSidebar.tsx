@@ -98,12 +98,7 @@ export const LayoutSidebar: React.FC<LayoutSidebarProps> = ({
               <LeadsSection />
             </motion.div>
             
-            {/* Admin section */}
-            {(role === 'admin' || role === 'master_admin') && (
-              <motion.div variants={sectionVariants}>
-                <AdminSection isMasterAdmin={role === 'master_admin'} />
-              </motion.div>
-            )}
+            {/* Admin section - REMOVED from main sidebar, now has dedicated AdminLayout */}
           </>
         )}
         

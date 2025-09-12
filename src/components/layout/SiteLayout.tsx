@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { Header } from './Header';
 
 interface SiteLayoutProps {
@@ -6,6 +7,21 @@ interface SiteLayoutProps {
 }
 
 export function SiteLayout({ children }: SiteLayoutProps) {
+  const location = useLocation();
+  
+  // Don't render Header for admin routes - AdminLayout handles its own header
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  
+  if (isAdminRoute) {
+    // For admin routes, just render children (AdminLayout will handle header/sidebar)
+    return (
+      <div className="min-h-screen">
+        {children}
+      </div>
+    );
+  }
+  
+  // For user routes, use the standard layout with Header
   return (
     <div className="min-h-screen bg-background">
       <Header />

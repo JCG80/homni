@@ -15,12 +15,11 @@ import {
 import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SmartHamburgerMenu } from '@/components/navigation/SmartHamburgerMenu';
-import { RoleSwitcher } from '@/components/admin/RoleSwitcher';
+// RoleSwitcher moved to AdminHeader
 import { QuickActionsDropdown } from '@/components/navigation';
 import { CommandPalette } from '@/components/navigation/CommandPalette';
 import { useKeyboardShortcuts } from '@/hooks/navigation/useKeyboardShortcuts';
-import { UpdateAppButton } from '@/components/debug/UpdateAppButton';
-import { EnvProbe } from '@/components/debug/EnvProbe';
+// Admin debug tools moved to AdminHeader
 
 interface HeaderProps {
   /** Allow passing through layout class names */
@@ -72,12 +71,7 @@ export const Header = ({ className = '' }: HeaderProps) => {
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
               <QuickActionsDropdown variant="icon" className="hidden md:flex" />
-              {(isAdmin || isMasterAdmin) && (
-                <>
-                  <RoleSwitcher />
-                  <UpdateAppButton />
-                </>
-              )}
+              {/* Admin tools removed from main header - now in AdminHeader */}
               <ProfileHeader />
             </div>
           ) : (
@@ -101,8 +95,7 @@ export const Header = ({ className = '' }: HeaderProps) => {
         />
       )}
 
-      {/* Environment Probe - Admin only */}
-      {(isAdmin || isMasterAdmin) && <EnvProbe />}
+      {/* Environment Probe moved to AdminHeader */}
     </header>
   );
 };
