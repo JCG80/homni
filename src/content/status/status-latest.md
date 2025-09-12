@@ -10,7 +10,7 @@
 - ✅ Dokumentasjonskonsolidering: 95% ferdig
 - 🔄 Code Quality: 78% ferdig (ESLint ✅, TypeScript: 0 feil, Testing: 89%)
 - ⏳ Performance Optimization: 45% ferdig
-- 🔄 Security Hardening: 34% ferdig (43 Supabase linter warnings aktiv)
+- 🔄 Security Hardening: 34% ferdig (66 Supabase linter warnings aktiv)
 
 **Neste Fase:** Fase 3 – Bedriftsmodul (Q2 2025)
 
@@ -24,7 +24,7 @@
 | JSONB-indekser | 🔄 Pågår | 8/15 tabeller ferdig |
 | Fulltekst-søk | ⏳ Planlagt | GIN-indekser implementering |
 | Constraints & Foreign Keys | ✅ 90% ferdig | Maintenance-modus |
-| RLS Policies | 🔧 Under revisjon | 43 Supabase linter warnings |
+| RLS Policies | 🔧 Under revisjon | 66 Supabase linter warnings |
 
 ---
 
@@ -101,7 +101,7 @@
 - **Control Plan Separation:** Admin/Master interfaces atskilt fra brukerflater
 
 ### **Security Hardening**
-- **RLS Policy Review:** 43 Supabase linter warnings må adresseres
+- **RLS Policy Review:** 66 Supabase linter warnings må adresseres
 - **Function Security:** SET search_path = public på alle funksjoner
 - **Anonymous Access:** Restriktiv tilgang, kun leads INSERT for anon
 
@@ -151,7 +151,7 @@
 - **TypeScript:** 0 errors ✅
 - **Test coverage:** 89% (target: ≥90%)
 - **ESLint:** 0 warnings ✅
-- **Security:** 43 warnings 🔧
+- **Security:** 66 warnings 🔧
 
 ### **Business**
 - **Lead conversion:** 12% (benchmark etableres)
