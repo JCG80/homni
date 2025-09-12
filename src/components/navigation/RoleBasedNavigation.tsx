@@ -12,19 +12,22 @@ import { Badge } from '@/components/ui/badge';
 import { useNavigationPreferences, useQuickActions } from '@/hooks/navigation';
 import { Star, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import type { NavItem } from '@/config/unifiedNavigation';
 
 interface RoleBasedNavigationProps {
   className?: string;
   variant?: 'vertical' | 'horizontal';
   showBadges?: boolean;
   showFavoriteButtons?: boolean;
+  items?: NavItem[]; // Allow passing custom items
 }
 
 export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
   className,
   variant = 'vertical',
   showBadges = true,
-  showFavoriteButtons = true
+  showFavoriteButtons = true,
+  items // Use provided items or fall back to legacy navigation
 }) => {
   const { role, isAuthenticated } = useAuth();
   const location = useLocation();
@@ -32,7 +35,17 @@ export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
   const { quickActions } = useQuickActions();
   
   const currentRole = isAuthenticated ? role : 'guest';
-  const navItems = getNavigation(currentRole as UserRole);
+  
+  // Use provided items or fall back to legacy navigation
+  const navItems = items || getNavigation(currentRole as UserRole);
+  
+  // Convert NavItem[] to legacy format if needed
+  const navigationItems = items ? items.map(item => ({
+    href: item.href,
+    title: item.title,
+    icon: item.icon,
+    badge: item.badge
+  })) : navItems;
   
   // Get notification counts for navigation items
   const getNotificationCount = (href: string) => {
@@ -66,7 +79,7 @@ export const RoleBasedNavigation: React.FC<RoleBasedNavigationProps> = ({
       className
     )}>
       <AnimatePresence>
-        {navItems.map((item, index) => {
+        {navigationItems.map((item, index) => {
           const Icon = item.icon;
           const active = isActive(item.href);
           const notificationCount = getNotificationCount(item.href);
