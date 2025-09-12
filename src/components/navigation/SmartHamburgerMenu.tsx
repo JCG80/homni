@@ -112,7 +112,7 @@ export const SmartHamburgerMenu: React.FC<SmartHamburgerMenuProps> = ({ classNam
         <Button
           variant="ghost"
           size="icon"
-          className={cn("md:hidden", className)}
+          className={className}
           aria-label="Åpne meny"
         >
           <Menu className="h-5 w-5" />

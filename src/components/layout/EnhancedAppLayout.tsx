@@ -99,9 +99,6 @@ export const EnhancedAppLayout: React.FC<EnhancedAppLayoutProps> = ({
           <MobileNavigationEnhancements />
         </>
       )}
-
-      {/* Desktop Quick Access FAB */}
-      {!isMobile && isAuthenticated && <QuickAccessFAB />}
     </div>
   );
 };
