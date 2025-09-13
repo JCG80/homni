@@ -69,33 +69,27 @@ export const ConsolidatedAccountPage = () => {
                 Hurtighandlinger
               </CardTitle>
               <CardDescription>
-                Rask tilgang til de mest brukte funksjonene
+                Administrer kontoen din og få oversikt over aktiviteten din
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Link to="/property">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Home className="h-4 w-4 mr-2" />
-                    Mine eiendommer
-                  </Button>
-                </Link>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Link to="/leads">
                   <Button variant="outline" className="w-full justify-start">
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Forespørsler
                   </Button>
                 </Link>
-                <Link to="/documents">
+                <Link to="/property">
                   <Button variant="outline" className="w-full justify-start">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Dokumenter
+                    <Home className="h-4 w-4 mr-2" />
+                    Mine eiendommer
                   </Button>
                 </Link>
-                <Link to="/sales">
+                <Link to="/profile">
                   <Button variant="outline" className="w-full justify-start">
-                    <Heart className="h-4 w-4 mr-2" />
-                    DIY Salg
+                    <User className="h-4 w-4 mr-2" />
+                    Min profil
                   </Button>
                 </Link>
               </div>

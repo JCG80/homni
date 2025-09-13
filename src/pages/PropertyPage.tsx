@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSearchParams, useParams } from 'react-router-dom';
-import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
+import { PropertyNavigationBar } from '@/components/property/PropertyNavigationBar';
 import { PropertyDashboard } from '@/modules/property/components/PropertyDashboard';
 import { PropertyDocuments } from '@/modules/property/components/PropertyDocuments';
 import { PropertyMaintenance } from '@/modules/property/components/PropertyMaintenance';
 import { PropertySettings } from '@/modules/property/components/PropertySettings';
 import { ProprSalesModule } from '@/modules/property/components/ProprSalesModule';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { Settings, Heart, FileText, Home } from 'lucide-react';
 
 const PropertyPage = () => {
   const [searchParams] = useSearchParams();
@@ -29,25 +33,51 @@ const PropertyPage = () => {
         <link rel="canonical" href="https://homni.no/property" />
       </Helmet>
 
+      <PropertyNavigationBar />
+      
       <div className="container mx-auto px-4 py-6">
-        <BreadcrumbNavigation 
-          customItems={[
-            { label: 'Forside', href: '/', isActive: false },
-            { label: 'Boligmappa', href: '/property', isActive: true }
-          ]}
-          showOnMobile
-        />
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="text-center space-y-4">
+              <h1 className="text-4xl font-bold text-foreground">
+                Mine Eiendommer
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Administrer eiendommer, dokumenter, vedlikehold og DIY-salg på ett sted
+              </p>
+            </div>
 
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-foreground">
-              Din Digitale Boligmappe
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Organiser dokumenter, planlegg vedlikehold, og hold oversikt over alle dine eiendommer på ett sted
-            </p>
-          </div>
+            {/* Property Quick Actions */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4">
+                    <Link to="?tab=dashboard">
+                      <Home className="h-5 w-5" />
+                      <span className="text-sm">Oversikt</span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4">
+                    <Link to="?tab=documents">
+                      <FileText className="h-5 w-5" />
+                      <span className="text-sm">Dokumenter</span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4">
+                    <Link to="?tab=maintenance">
+                      <Settings className="h-5 w-5" />
+                      <span className="text-sm">Vedlikehold</span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4">
+                    <Link to="?tab=propr">
+                      <Heart className="h-5 w-5" />
+                      <span className="text-sm">DIY Salg</span>
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
           {/* Main Content */}
           <Tabs defaultValue={initialTab} className="space-y-6">

@@ -41,9 +41,10 @@ export const OptimizedNavigation: React.FC = () => {
     },
     {
       href: '/properties',
-      label: 'Eiendommer',
+      label: 'Mine eiendommer',
       icon: Building,
-      description: 'Administrer eiendommer'
+      description: 'Administrer eiendommer og dokumenter',
+      primary: true
     },
     {
       href: '/leads',
