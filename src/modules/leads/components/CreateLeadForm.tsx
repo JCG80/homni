@@ -7,9 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { supabase } from '@/lib/supabaseClient';
+import { CheckCircle, Clock, Zap } from 'lucide-react';
 
 const createLeadSchema = z.object({
   title: z.string().min(5, 'Tittel må være minst 5 tegn'),
@@ -118,108 +120,170 @@ export const CreateLeadForm: React.FC<CreateLeadFormProps> = ({ onSuccess }) => 
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Title */}
-      <div className="space-y-2">
-        <Label htmlFor="title">Tittel på forespørselen *</Label>
-        <Input
-          id="title"
-          placeholder="F.eks. 'Trenger elektriker til utskifting av sikringsskap'"
-          {...register('title')}
-          disabled={isLoading}
-        />
-        {errors.title && (
-          <p className="text-sm text-destructive">{errors.title.message}</p>
-        )}
-      </div>
-
-      {/* Category */}
-      <div className="space-y-2">
-        <Label>Kategori *</Label>
-        <Select 
-          value={category} 
-          onValueChange={(value) => setValue('category', value)}
-          disabled={isLoading}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Velg type tjeneste" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat.value} value={cat.value}>
-                {cat.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.category && (
-          <p className="text-sm text-destructive">{errors.category.message}</p>
-        )}
-      </div>
-
-      {/* Description */}
-      <div className="space-y-2">
-        <Label htmlFor="description">Beskrivelse *</Label>
-        <Textarea
-          id="description"
-          placeholder="Beskriv arbeidet som skal utføres, tidspunkt, budsjett osv..."
-          className="min-h-[100px]"
-          {...register('description')}
-          disabled={isLoading}
-        />
-        {errors.description && (
-          <p className="text-sm text-destructive">{errors.description.message}</p>
-        )}
-      </div>
-
-      {/* Contact Information */}
-      <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-        <h3 className="font-medium">Kontaktinformasjon</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <Card className="max-w-2xl mx-auto">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold">Send ny forespørsel</CardTitle>
+        <CardDescription>
+          Beskriv tjenesten du trenger, så kobler vi deg med passende leverandører
+        </CardDescription>
+        <div className="flex items-center gap-2 pt-2">
+          <Badge variant="secondary" className="flex items-center gap-1">
+            <Zap className="h-3 w-3" />
+            Automatisk matching
+          </Badge>
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            Respons samme dag
+          </Badge>
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="customer_name">Navn</Label>
+            <Label htmlFor="title" className="text-base font-medium">
+              Hva trenger du hjelp til? *
+            </Label>
             <Input
-              id="customer_name"
-              placeholder="Ditt navn"
-              {...register('customer_name')}
+              id="title"
+              placeholder="F.eks. 'Trenger elektriker til utskifting av sikringsskap'"
+              {...register('title')}
               disabled={isLoading}
+              className="text-base"
             />
+            {errors.title && (
+              <p className="text-sm text-destructive flex items-center gap-1">
+                {errors.title.message}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Vær spesifikk - det hjelper oss å finne riktig leverandør
+            </p>
           </div>
 
+          {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="customer_phone">Telefonnummer</Label>
-            <Input
-              id="customer_phone"
-              type="tel"
-              placeholder="+47 123 45 678"
-              {...register('customer_phone')}
+            <Label className="text-base font-medium">Kategori *</Label>
+            <Select 
+              value={category} 
+              onValueChange={(value) => setValue('category', value)}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="text-base">
+                <SelectValue placeholder="Velg type tjeneste" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.value} value={cat.value} className="text-base">
+                    {cat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.category && (
+              <p className="text-sm text-destructive">{errors.category.message}</p>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-base font-medium">
+              Detaljert beskrivelse *
+            </Label>
+            <Textarea
+              id="description"
+              placeholder="Beskriv arbeidet som skal utføres, tidspunkt, budsjett, spesielle krav..."
+              className="min-h-[120px] text-base"
+              {...register('description')}
               disabled={isLoading}
             />
+            {errors.description && (
+              <p className="text-sm text-destructive">{errors.description.message}</p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Jo mer informasjon, jo bedre kan vi matche deg med riktig leverandør
+            </p>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="customer_email">E-postadresse</Label>
-          <Input
-            id="customer_email"
-            type="email"
-            placeholder="din@epost.no"
-            {...register('customer_email')}
-            disabled={isLoading}
-          />
-          {errors.customer_email && (
-            <p className="text-sm text-destructive">{errors.customer_email.message}</p>
-          )}
-        </div>
-      </div>
+          {/* Contact Information */}
+          <Card className="bg-muted/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Kontaktinformasjon</CardTitle>
+              <CardDescription>
+                Slik kan leverandørene komme i kontakt med deg
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="customer_name">Navn</Label>
+                  <Input
+                    id="customer_name"
+                    placeholder="Ditt navn"
+                    {...register('customer_name')}
+                    disabled={isLoading}
+                    className="text-base"
+                  />
+                </div>
 
-      {/* Submit */}
-      <div className="flex gap-3 pt-4">
-        <Button type="submit" disabled={isLoading} className="flex-1">
-          {isLoading ? 'Sender...' : 'Send forespørsel'}
-        </Button>
-      </div>
-    </form>
+                <div className="space-y-2">
+                  <Label htmlFor="customer_phone">Telefonnummer</Label>
+                  <Input
+                    id="customer_phone"
+                    type="tel"
+                    placeholder="+47 123 45 678"
+                    {...register('customer_phone')}
+                    disabled={isLoading}
+                    className="text-base"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customer_email">E-postadresse *</Label>
+                <Input
+                  id="customer_email"
+                  type="email"
+                  placeholder="din@epost.no"
+                  {...register('customer_email')}
+                  disabled={isLoading}
+                  className="text-base"
+                />
+                {errors.customer_email && (
+                  <p className="text-sm text-destructive">{errors.customer_email.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Submit */}
+          <div className="flex flex-col gap-3 pt-6">
+            <Button 
+              type="submit" 
+              disabled={isLoading} 
+              className="w-full h-12 text-base font-medium"
+              size="lg"
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Sender forespørsel...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Send forespørsel
+                </div>
+              )}
+            </Button>
+            
+            <p className="text-xs text-center text-muted-foreground">
+              Gratis og uten forpliktelser • Får svar innen 24 timer
+            </p>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
