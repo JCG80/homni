@@ -2541,6 +2541,48 @@ export type Database = {
           },
         ]
       }
+      smart_notifications: {
+        Row: {
+          content: string
+          created_at: string | null
+          dismissed_at: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          notification_type: string
+          priority: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          notification_type: string
+          priority?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          notification_type?: string
+          priority?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       smart_start_submissions: {
         Row: {
           converted_at: string | null
@@ -2770,6 +2812,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_behavior_events: {
+        Row: {
+          created_at: string | null
+          event_context: Json | null
+          event_target: string
+          event_type: string
+          id: string
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_context?: Json | null
+          event_target: string
+          event_type: string
+          id?: string
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_context?: Json | null
+          event_target?: string
+          event_type?: string
+          id?: string
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_company_roles: {
         Row: {
           company_id: string
@@ -2832,6 +2904,51 @@ export type Database = {
           is_default?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_insights: {
+        Row: {
+          acted_on_at: string | null
+          confidence_score: number | null
+          created_at: string | null
+          data: Json | null
+          description: string
+          expires_at: string | null
+          id: string
+          insight_type: string
+          is_active: boolean | null
+          title: string
+          user_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          acted_on_at?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          data?: Json | null
+          description: string
+          expires_at?: string | null
+          id?: string
+          insight_type: string
+          is_active?: boolean | null
+          title: string
+          user_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          acted_on_at?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          data?: Json | null
+          description?: string
+          expires_at?: string | null
+          id?: string
+          insight_type?: string
+          is_active?: boolean | null
+          title?: string
+          user_id?: string
+          viewed_at?: string | null
         }
         Relationships: []
       }
@@ -2902,6 +3019,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string | null
+          id: string
+          preference_data: Json
+          preference_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          preference_data?: Json
+          preference_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          preference_data?: Json
+          preference_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {
