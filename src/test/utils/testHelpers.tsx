@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { vi } from 'vitest';
+import { vi, expect } from 'vitest';
 import { QueryClient } from '@tanstack/react-query';
 import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement } from 'react';
