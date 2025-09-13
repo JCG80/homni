@@ -2,38 +2,11 @@ import { supabase } from '@/lib/supabaseClient';
 import { ApiError } from '@/utils/apiHelpers';
 import { toast } from '@/components/ui/use-toast';
 import { logger } from '@/utils/logger';
+import { BudgetStatus, SpendingHistory, BudgetAlert, BudgetSettings } from '@/types/company-types';
 
 /**
  * Company Billing API - Budget tracking and Stripe integration preparation
  */
-
-export interface BudgetStatus {
-  current_budget: number;
-  daily_budget: number;
-  monthly_budget: number;
-  daily_spent: number;
-  monthly_spent: number;
-  remaining_daily: number;
-  remaining_monthly: number;
-  is_budget_exceeded: boolean;
-  next_reset_date: string;
-}
-
-export interface SpendingHistory {
-  date: string;
-  amount: number;
-  lead_count: number;
-  average_cost: number;
-}
-
-export interface BudgetAlert {
-  id: string;
-  type: 'low_budget' | 'budget_exceeded' | 'high_spending';
-  message: string;
-  threshold: number;
-  current_value: number;
-  created_at: string;
-}
 
 /**
  * Get current budget status for company
@@ -228,13 +201,7 @@ export async function fetchBudgetAlerts(companyId: string): Promise<BudgetAlert[
  */
 export async function updateBudgetSettings(
   companyId: string,
-  settings: {
-    daily_budget?: number;
-    monthly_budget?: number;
-    auto_accept_leads?: boolean;
-    budget_alerts_enabled?: boolean;
-    low_budget_threshold?: number;
-  }
+  settings: BudgetSettings
 ): Promise<boolean> {
   try {
     logger.info('Updating budget settings', { module: 'companyBillingApi', companyId, settings });

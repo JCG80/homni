@@ -1,4 +1,5 @@
 import { UserRole } from '@/modules/auth/normalizeRole';
+import { ServiceCategory as BaseServiceCategory } from '@/types/service-types';
 
 export interface SmartStartProps {
   className?: string;
@@ -13,12 +14,9 @@ export interface SearchStep {
   required: boolean;
 }
 
-export interface ServiceCategory {
-  id: string;
-  name: string;
-  description: string;
+// Extend base ServiceCategory with SmartStart-specific fields
+export interface ServiceCategory extends BaseServiceCategory {
   icon: string;
-  popular?: boolean;
   roles: UserRole[];
 }
 

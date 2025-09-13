@@ -30,7 +30,12 @@ export {
   updateBudgetSettings,
   checkBudgetAvailability,
   prepareStripeIntegration,
-  type BudgetStatus,
-  type SpendingHistory,
-  type BudgetAlert,
 } from './company-billing';
+
+// Type exports from consolidated types
+export type {
+  BudgetStatus,
+  SpendingHistory,
+  BudgetAlert,
+  BudgetSettings,
+} from '@/types/company-types';

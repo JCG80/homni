@@ -26,6 +26,21 @@ export type {
   AuditLogEntry
 } from './consolidated-types';
 
+// Service and category types
+export type {
+  ServiceCategory,
+  ServiceInfo,
+  LeadSubmissionPreferences,
+} from './service-types';
+
+// Company and billing types
+export type {
+  BudgetStatus,
+  SpendingHistory,
+  BudgetAlert,
+  BudgetSettings,
+} from './company-types';
+
 // Legacy exports for backward compatibility
 export * from './auth';
 export * from './common';
