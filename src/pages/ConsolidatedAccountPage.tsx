@@ -7,9 +7,6 @@ import { Input } from '@/components/ui/input';
 import { User, Settings, Bell, Mail, Heart, Home, MessageSquare, FileText } from 'lucide-react';
 import { ProfileInfo } from '@/modules/auth/components/ProfileInfo';
 import { ProfileCard } from '@/components/account/ProfileCard';
-import { ReviewsCard } from '@/components/account/ReviewsCard';
-import { OffersCard } from '@/components/account/OffersCard';
-import { MessagesCard } from '@/components/account/MessagesCard';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -54,10 +51,7 @@ export const ConsolidatedAccountPage = () => {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <ReviewsCard />
-            <OffersCard />
-            <MessagesCard />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ProfileCard />
           </div>
 
