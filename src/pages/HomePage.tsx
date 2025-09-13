@@ -12,6 +12,7 @@ import { TestimonialSection } from '@/components/testimonials/TestimonialSection
 import { Footer } from '@/components/layout/Footer';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { abTesting, AB_TESTS } from '@/lib/abTesting/abTestingFramework';
+import { SystemIntegrationTest } from '@/components/testing/SystemIntegrationTest';
 
 const HomePage: React.FC = () => {
   const [selectedRole, setSelectedRole] = React.useState<'private' | 'business'>('private');
@@ -121,6 +122,17 @@ const HomePage: React.FC = () => {
               <CallToAction />
             </div>
           </section>
+
+          {/* System Integration Testing (Development) */}
+          {import.meta.env.DEV && (
+            <section className="py-16 bg-muted/30">
+              <div className="container mx-auto px-4">
+                <ErrorBoundary componentName="SystemIntegrationTest">
+                  <SystemIntegrationTest />
+                </ErrorBoundary>
+              </div>
+            </section>
+          )}
         </main>
         
         <Footer />
