@@ -132,30 +132,36 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
           </DropdownMenuLabel>
 
           {/* Profile/Mode Switching Section */}
-          {canSwitchModes && (
+          {(canSwitchModes || role === 'master_admin') && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-xs font-medium text-muted-foreground px-2 py-1">
                 BYTT PROFIL
               </DropdownMenuLabel>
               
-              <DropdownMenuItem 
-                onClick={() => handleModeSwitch('personal')}
-                disabled={isSwitching}
-                className={cn(
-                  "cursor-pointer",
-                  activeMode === 'personal' && "bg-accent text-accent-foreground"
-                )}
-              >
-                <User className="mr-2 h-4 w-4" />
-                <div className="flex flex-col flex-1">
-                  <span className="text-sm">Privat</span>
-                  <span className="text-xs text-muted-foreground">Personlige eiendommer</span>
-                </div>
-                {activeMode === 'personal' && <div className="w-2 h-2 bg-primary rounded-full" />}
-              </DropdownMenuItem>
+              {/* Show personal mode for all users with multiple roles */}
+              {availableRoles.includes('user') && (
+                <DropdownMenuItem 
+                  onClick={() => handleModeSwitch('personal')}
+                  disabled={isSwitching}
+                  className={cn(
+                    "cursor-pointer",
+                    activeMode === 'personal' && role === 'user' && "bg-accent text-accent-foreground"
+                  )}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  <div className="flex flex-col flex-1">
+                    <span className="text-sm">Privat</span>
+                    <span className="text-xs text-muted-foreground">
+                      {primaryUserEmail ? `Som ${primaryUserEmail}` : 'Personlige eiendommer'}
+                    </span>
+                  </div>
+                  {activeMode === 'personal' && role === 'user' && <div className="w-2 h-2 bg-primary rounded-full" />}
+                </DropdownMenuItem>
+              )}
               
-              {hasProfessional && (
+              {/* Show professional mode for company users */}
+              {(hasProfessional || availableRoles.includes('company')) && (
                 <DropdownMenuItem 
                   onClick={() => handleModeSwitch('professional')}
                   disabled={isSwitching}
@@ -173,7 +179,8 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
                 </DropdownMenuItem>
               )}
 
-              {(role === 'master_admin') && (
+              {/* Show admin access for master admin */}
+              {(availableRoles.includes('master_admin') || role === 'master_admin') && (
                 <DropdownMenuItem 
                   onClick={() => navigate('/admin')}
                   className="cursor-pointer"

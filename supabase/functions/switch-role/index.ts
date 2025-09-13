@@ -33,14 +33,34 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Ugyldig token' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const allowed = (user.app_metadata?.allowed_modes as string[]) || ['personal'];
+    // Get user profile to check allowed modes
+    const { data: profile, error: profileErr } = await supabase
+      .from('user_profiles')
+      .select('metadata')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profileErr || !profile) {
+      return new Response(JSON.stringify({ error: 'Finner ikke brukerprofil' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    const allowed = (profile.metadata?.allowed_modes as string[]) || ['personal'];
     if (!allowed.includes(new_mode)) {
       return new Response(JSON.stringify({ error: 'Ingen tilgang til denne modusen' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { error: updateErr } = await supabase.auth.admin.updateUserById(user.id, {
-      app_metadata: { ...user.app_metadata, active_mode: new_mode, last_mode_switch: new Date().toISOString() },
-    });
+    // Update user profile metadata
+    const updatedMetadata = {
+      ...profile.metadata,
+      active_mode: new_mode,
+      last_mode_switch: new Date().toISOString()
+    };
+
+    const { error: updateErr } = await supabase
+      .from('user_profiles')
+      .update({ metadata: updatedMetadata })
+      .eq('user_id', user.id);
+
     if (updateErr) throw updateErr;
 
     // Attempt audit insert (ignore if table doesn't exist)
