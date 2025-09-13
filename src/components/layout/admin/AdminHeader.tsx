@@ -35,7 +35,7 @@ export const AdminHeader: React.FC = () => {
       <div className="flex items-center justify-between">
         {/* Admin Branding */}
         <div className="flex items-center gap-4">
-          <Link to="/admin/dashboard" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-red-600" />
             <span className="text-xl font-bold text-slate-900 dark:text-white">
               Homni Admin
