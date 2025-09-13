@@ -34,11 +34,12 @@ export function NewPropertyPage() {
       
       await createProperty({
         name: formData.name,
-        type: formData.type,
+        type: formData.type as any,
         address: formData.address || undefined,
         size: formData.size ? Number(formData.size) : undefined,
         purchase_date: formData.purchase_date || undefined,
-      });
+        user_id: '', // This will be set by the hook
+      } as any);
 
       navigate('/properties');
     } catch (error) {

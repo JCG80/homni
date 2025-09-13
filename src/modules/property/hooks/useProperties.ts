@@ -1,137 +1,173 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/modules/auth/hooks';
-import { toast } from 'sonner';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { Property } from '../types/propertyTypes';
+import { logger } from '@/utils/logger';
 
-interface Property {
-  id: string;
-  name: string;
-  type: string;
-  address?: string;
-  size?: number;
-  purchase_date?: string;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-}
-
-export function useProperties() {
-  const { user } = useAuth();
+export const useProperties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const { user } = useAuth();
 
-  const fetchProperties = async () => {
+  useEffect(() => {
     if (!user) {
       setIsLoading(false);
       return;
     }
 
+    const fetchProperties = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const { data, error: supabaseError } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (supabaseError) {
+          throw supabaseError;
+        }
+
+        setProperties((data || []) as Property[]);
+      } catch (err) {
+        logger.error('Failed to fetch user properties', {
+          module: 'useProperties',
+          userId: user.id
+        }, err as Error);
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, [user]);
+
+  const refetch = async () => {
+    if (!user) return;
+    
     try {
       setIsLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
+      const { data, error: supabaseError } = await supabase
         .from('properties')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (fetchError) throw fetchError;
+      if (supabaseError) {
+        throw supabaseError;
+      }
 
-      setProperties(data || []);
+      setProperties((data || []) as Property[]);
     } catch (err) {
-      console.error('Error fetching properties:', err);
+      logger.error('Failed to refetch user properties', {
+        module: 'useProperties',
+        userId: user.id
+      }, err as Error);
       setError(err as Error);
-      toast.error('Feil ved lasting av eiendommer');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const createProperty = async (propertyData: Omit<Property, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+  const addProperty = async (propertyData: Omit<Property, 'id' | 'created_at' | 'updated_at'>) => {
     if (!user) throw new Error('User not authenticated');
 
     try {
-      const { data, error: createError } = await supabase
+      const { data, error: supabaseError } = await supabase
         .from('properties')
-        .insert({
-          name: propertyData.name,
-          type: propertyData.type,
-          address: propertyData.address,
-          size: propertyData.size,
-          purchase_date: propertyData.purchase_date,
-          user_id: user.id,
-        })
+        .insert([{
+          ...propertyData,
+          user_id: user.id
+        }])
         .select()
         .single();
 
-      if (createError) throw createError;
+      if (supabaseError) {
+        throw supabaseError;
+      }
 
-      setProperties(prev => [data, ...prev]);
-      toast.success('Eiendom opprettet');
+      setProperties(prev => [data as Property, ...prev]);
       return data;
     } catch (err) {
-      console.error('Error creating property:', err);
-      toast.error('Feil ved opprettelse av eiendom');
+      logger.error('Failed to add property', {
+        module: 'useProperties',
+        userId: user.id,
+        propertyData
+      }, err as Error);
       throw err;
     }
   };
 
   const updateProperty = async (id: string, updates: Partial<Property>) => {
+    if (!user) throw new Error('User not authenticated');
+
     try {
-      const { data, error: updateError } = await supabase
+      const { data, error: supabaseError } = await supabase
         .from('properties')
         .update(updates)
         .eq('id', id)
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .select()
         .single();
 
-      if (updateError) throw updateError;
+      if (supabaseError) {
+        throw supabaseError;
+      }
 
-      setProperties(prev => 
-        prev.map(p => p.id === id ? { ...p, ...data } : p)
-      );
-      toast.success('Eiendom oppdatert');
+      setProperties(prev => prev.map(property => 
+        property.id === id ? { ...property, ...(data as Property) } : property
+      ));
       return data;
     } catch (err) {
-      console.error('Error updating property:', err);
-      toast.error('Feil ved oppdatering av eiendom');
+      logger.error('Failed to update property', {
+        module: 'useProperties',
+        userId: user.id,
+        propertyId: id,
+        updates
+      }, err as Error);
       throw err;
     }
   };
 
   const deleteProperty = async (id: string) => {
+    if (!user) throw new Error('User not authenticated');
+
     try {
-      const { error: deleteError } = await supabase
+      const { error: supabaseError } = await supabase
         .from('properties')
         .delete()
         .eq('id', id)
-        .eq('user_id', user?.id);
+        .eq('user_id', user.id);
 
-      if (deleteError) throw deleteError;
+      if (supabaseError) {
+        throw supabaseError;
+      }
 
-      setProperties(prev => prev.filter(p => p.id !== id));
-      toast.success('Eiendom slettet');
+      setProperties(prev => prev.filter(property => property.id !== id));
     } catch (err) {
-      console.error('Error deleting property:', err);
-      toast.error('Feil ved sletting av eiendom');
+      logger.error('Failed to delete property', {
+        module: 'useProperties',
+        userId: user.id,
+        propertyId: id
+      }, err as Error);
       throw err;
     }
   };
-
-  useEffect(() => {
-    fetchProperties();
-  }, [user]);
 
   return {
     properties,
     isLoading,
     error,
-    refetch: fetchProperties,
-    createProperty,
+    refetch,
+    addProperty,
+    createProperty: addProperty, // Alias for compatibility
     updateProperty,
-    deleteProperty,
+    deleteProperty
   };
-}
+};
