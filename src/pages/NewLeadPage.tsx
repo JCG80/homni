@@ -2,12 +2,12 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { AddPropertyForm } from '@/modules/property/components/AddPropertyForm';
+import { CreateLeadForm } from '@/modules/leads/components/CreateLeadForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
-export default function NewPropertyPage() {
+export default function NewLeadPage() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -27,16 +27,16 @@ export default function NewPropertyPage() {
 
   const handleSuccess = () => {
     navigate('/dashboard/user', { 
-      state: { message: 'Eiendom opprettet!' }
+      state: { message: 'Forespørsel sendt!' }
     });
   };
 
   return (
     <>
       <Helmet>
-        <title>Ny Eiendom - Homni</title>
-        <meta name="description" content="Registrer en ny eiendom i Homni for å holde oversikt over dokumenter og vedlikehold" />
-        <meta name="keywords" content="ny eiendom, eiendomsregistrering, bolig, dokumentasjon" />
+        <title>Ny Forespørsel - Homni</title>
+        <meta name="description" content="Send en forespørsel til leverandører om tjenester for din eiendom" />
+        <meta name="keywords" content="forespørsel, tjenester, leverandører, eiendom" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-6 max-w-2xl">
@@ -52,20 +52,20 @@ export default function NewPropertyPage() {
           </Button>
           
           <h1 className="text-3xl font-bold tracking-tight">
-            Registrer ny eiendom
+            Send forespørsel
           </h1>
           <p className="text-muted-foreground mt-1">
-            Legg til en eiendom for å holde oversikt over dokumenter og vedlikehold
+            Beskriv tjenesten du trenger så kobler vi deg med riktige leverandører
           </p>
         </div>
 
         {/* Form */}
         <Card>
           <CardHeader>
-            <CardTitle>Eiendomsinformasjon</CardTitle>
+            <CardTitle>Forespørselsinformasjon</CardTitle>
           </CardHeader>
           <CardContent>
-            <AddPropertyForm onSuccess={handleSuccess} />
+            <CreateLeadForm onSuccess={handleSuccess} />
           </CardContent>
         </Card>
       </div>

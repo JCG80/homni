@@ -19,7 +19,7 @@ export const QuickActions: React.FC = () => {
       icon: MessageSquare,
       label: 'Send forespørsel',
       description: 'Be om tilbud på tjenester',
-      action: () => navigate('/requests/new'),
+      action: () => navigate('/leads/new'),
       primary: true
     },
     {

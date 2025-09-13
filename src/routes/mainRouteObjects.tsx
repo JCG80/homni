@@ -10,6 +10,9 @@ const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
 const UserDashboard = React.lazy(() => import('@/pages/UserDashboard'));
 const LoginPage = React.lazy(() => import('@/pages/LoginPage'));
 const RegisterPage = React.lazy(() => import('@/pages/RegisterPage'));
+const NewPropertyPage = React.lazy(() => import('@/pages/NewPropertyPage'));
+const NewLeadPage = React.lazy(() => import('@/pages/NewLeadPage'));
+const PropertiesPage = React.lazy(() => import('@/modules/property/pages/PropertiesPage'));
 
 export const mainRouteObjects: AppRoute[] = [
   // Public routes (no layout wrapper)
@@ -54,6 +57,21 @@ export const mainRouteObjects: AppRoute[] = [
         path: 'profile',
         element: <ProfilePage />,
         roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
+      },
+      {
+        path: 'properties',
+        element: <PropertiesPage />,
+        roles: ['user']
+      },
+      {
+        path: 'properties/new',
+        element: <NewPropertyPage />,
+        roles: ['user']
+      },
+      {
+        path: 'leads/new',
+        element: <NewLeadPage />,
+        roles: ['user']
       }
     ]
   }
