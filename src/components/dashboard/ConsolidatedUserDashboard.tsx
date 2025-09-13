@@ -1,11 +1,14 @@
 import React, { useState, useEffect, Suspense, memo } from 'react';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
 import { useProperty } from '@/modules/property/hooks/useProperty';
+import { useDashboardOptimization } from '@/hooks/useDashboardOptimization';
 import { QuickActionsHub } from './QuickActionsHub';
 import { RealTimeNotifications } from './RealTimeNotifications';
 import { RealTimeActivityFeed } from './RealTimeActivityFeed';
 import { PropertyIntegrationWidget } from './PropertyIntegrationWidget';
-import { SkeletonDashboard } from './SkeletonDashboard';
+import { EnhancedSkeletonDashboard } from './enhanced/EnhancedSkeletonDashboard';
+import { OptimizedDashboardLayout, DashboardSection, DashboardStatsRow } from './layout/OptimizedDashboardLayout';
+import { UnifiedDashboardCard, MetricCard } from './unified/UnifiedDashboardCard';
 import { PostAuthOnboardingWizard } from '@/components/onboarding/PostAuthOnboardingWizard';
 import { CreatePropertyDialog } from '@/modules/property/components/CreatePropertyDialog';
 import { NextRecommendedActionWidget } from './NextRecommendedActionWidget';
@@ -60,8 +63,24 @@ interface DashboardStats {
 export const ConsolidatedUserDashboard: React.FC = memo(() => {
   const { user, profile, isLoading } = useIntegratedAuth();
   const { properties, loading: propertiesLoading } = useProperty();
+  
+  // Enhanced optimization hooks
+  const {
+    dashboardData,
+    isLoading: dashboardLoading,
+    error: dashboardError,
+    refreshDashboard,
+    performanceMetrics
+  } = useDashboardOptimization({
+    userId: user?.id,
+    userRole: 'user',
+    enablePerformanceMonitoring: true
+  });
+
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showPropertyDialog, setShowPropertyDialog] = useState(false);
+
+  // Legacy state for backwards compatibility
   const [stats, setStats] = useState<DashboardStats>({
     totalLeads: 0,
     pendingLeads: 0,
@@ -230,10 +249,13 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
     );
   }
 
-  // Show loading if auth is still loading or dashboard data is loading
-  if (isLoading || loading) {
-    // Showing loading state
-    return <SkeletonDashboard />;
+  // Show enhanced loading state
+  if (isLoading || loading || dashboardLoading) {
+    return (
+      <OptimizedDashboardLayout loading={true}>
+        <EnhancedSkeletonDashboard />
+      </OptimizedDashboardLayout>
+    );
   }
 
   // Show error state if there's an error
@@ -267,7 +289,11 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
   }
 
   return (
-    <div className="space-y-6">
+    <OptimizedDashboardLayout 
+      showPerformanceMonitor={true}
+      error={error ? new Error(error) : null}
+    >
+      <div className="space-y-6">
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -287,64 +313,33 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
       {/* Quick Actions */}
       <QuickActionsHub />
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Totale forespørsler</p>
-                <p className="text-2xl font-bold">{stats.totalLeads}</p>
-              </div>
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Mail className="w-5 h-5 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Venter på svar</p>
-                <p className="text-2xl font-bold">{stats.pendingLeads}</p>
-              </div>
-              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                <Clock className="w-5 h-5 text-yellow-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Kontaktet</p>
-                <p className="text-2xl font-bold">{stats.contactedLeads}</p>
-              </div>
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Siste uke</p>
-                <p className="text-2xl font-bold">{stats.recentActivity}</p>
-              </div>
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <Activity className="w-5 h-5 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Enhanced Stats Cards */}
+      <DashboardStatsRow
+        stats={[
+          {
+            label: 'Totale forespørsler',
+            value: stats.totalLeads,
+            icon: <Mail className="w-4 h-4" />,
+            change: { value: 12, trend: 'up' }
+          },
+          {
+            label: 'Venter på svar',
+            value: stats.pendingLeads,
+            icon: <Clock className="w-4 h-4" />,
+          },
+          {
+            label: 'Kontaktet',
+            value: stats.contactedLeads,
+            icon: <CheckCircle className="w-4 h-4" />,
+            change: { value: 8, trend: 'up' }
+          },
+          {
+            label: 'Siste uke',
+            value: stats.recentActivity,
+            icon: <Activity className="w-4 h-4" />,
+          }
+        ]}
+      />
 
       {/* Main Dashboard Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -524,11 +519,12 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
       {stats.totalLeads > 0 && (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Alle dine forespørsler</h2>
-          <Suspense fallback={<SkeletonDashboard />}>
+          <Suspense fallback={<EnhancedSkeletonDashboard />}>
             <LeadsOffersDashboard />
           </Suspense>
         </div>
       )}
-    </div>
+      </div>
+    </OptimizedDashboardLayout>
   );
 });
