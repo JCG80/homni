@@ -3,12 +3,15 @@
 /**
  * Seed Test Users for HOMNI Platform  
  * Creates comprehensive fictional test users for all roles to support full testing
+ * 
+ * Usage: 
+ *   npm run seed:users
+ *   node scripts/seedTestUsers.ts
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { config } from 'dotenv';
 
-config();
+// Load environment with fallbacks for CI/local development
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrYXpoY2lob29vdnN1d3JhdmhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MzMwMzUsImV4cCI6MjA2MjEwOTAzNX0.-HzjqXYqgThN0PrbrwZlm5GWK1vOGOeYHEEFrt0OpwM';
