@@ -65,8 +65,8 @@ export async function fetchUserPreferences(userId?: string): Promise<LeadSubmiss
     if (!data) return null;
 
     // Extract preferences from user profile data
-    const metadata = data.metadata as any || {};
-    const notificationPrefs = data.notification_preferences as any || {};
+    const metadata = (data.metadata as any) || {};
+    const notificationPrefs = (data.notification_preferences as any) || {};
     
     const preferences: LeadSubmissionPreferences = {
       preferred_categories: metadata.preferred_categories || [],
@@ -128,23 +128,27 @@ export async function updateUserPreferences(
         .eq('user_id', user.user.id)
         .single();
 
-      const currentMetadata = currentProfile?.metadata || {};
+      const currentMetadata = (currentProfile?.metadata as any) || {};
+      const updatedMetadata = Object.assign({}, currentMetadata);
       
-      updateData.metadata = {
-        ...currentMetadata,
-        ...(preferences.preferred_categories && { preferred_categories: preferences.preferred_categories }),
-        ...(preferences.default_contact_method && { default_contact_method: preferences.default_contact_method }),
-        ...(preferences.location_preferences && {
-          default_location: preferences.location_preferences.default_location,
-          search_radius_km: preferences.location_preferences.search_radius_km,
-          include_remote_services: preferences.location_preferences.include_remote_services,
-        }),
-        ...(preferences.budget_preferences && {
-          typical_budget_range: preferences.budget_preferences.typical_budget_range,
-          currency: preferences.budget_preferences.currency,
-          show_budget_in_requests: preferences.budget_preferences.show_budget_in_requests,
-        }),
-      };
+      if (preferences.preferred_categories) {
+        updatedMetadata.preferred_categories = preferences.preferred_categories;
+      }
+      if (preferences.default_contact_method) {
+        updatedMetadata.default_contact_method = preferences.default_contact_method;
+      }
+      if (preferences.location_preferences) {
+        updatedMetadata.default_location = preferences.location_preferences.default_location;
+        updatedMetadata.search_radius_km = preferences.location_preferences.search_radius_km;
+        updatedMetadata.include_remote_services = preferences.location_preferences.include_remote_services;
+      }
+      if (preferences.budget_preferences) {
+        updatedMetadata.typical_budget_range = preferences.budget_preferences.typical_budget_range;
+        updatedMetadata.currency = preferences.budget_preferences.currency;
+        updatedMetadata.show_budget_in_requests = preferences.budget_preferences.show_budget_in_requests;
+      }
+      
+      updateData.metadata = updatedMetadata;
     }
 
     // Update notification preferences
@@ -185,21 +189,7 @@ export async function fetchServiceCategories(): Promise<ServiceCategory[]> {
   try {
     logger.info('Fetching service categories', { module: 'userPreferencesApi' });
 
-    const { data, error } = await supabase
-      .from('service_categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('name');
-
-    if (error) {
-      throw new ApiError('fetchServiceCategories', error);
-    }
-
-    return data || [];
-  } catch (error) {
-    logger.error('Failed to fetch service categories', { module: 'userPreferencesApi' }, error);
-    
-    // Return default categories if database fetch fails
+    // Return static categories since service_categories table doesn't exist yet
     return [
       { id: '1', name: 'Elektro', is_popular: true, average_price_range: '500-5000' },
       { id: '2', name: 'VVS', is_popular: true, average_price_range: '800-8000' },
@@ -212,6 +202,9 @@ export async function fetchServiceCategories(): Promise<ServiceCategory[]> {
       { id: '9', name: 'Vinduer og dører', is_popular: false, average_price_range: '2000-20000' },
       { id: '10', name: 'Hagearbeid', is_popular: true, average_price_range: '200-2000' },
     ];
+  } catch (error) {
+    logger.error('Failed to fetch service categories', { module: 'userPreferencesApi' }, error);
+    throw new ApiError('fetchServiceCategories', error);
   }
 }
 
@@ -222,20 +215,12 @@ export async function fetchPopularCategories(limit = 10): Promise<ServiceCategor
   try {
     logger.info('Fetching popular categories', { module: 'userPreferencesApi', limit });
 
-    const { data, error } = await supabase
-      .rpc('get_popular_lead_categories', { limit_param: limit });
-
-    if (error) {
-      throw new ApiError('fetchPopularCategories', error);
-    }
-
-    return data || [];
-  } catch (error) {
-    logger.error('Failed to fetch popular categories', { module: 'userPreferencesApi' }, error);
-    
-    // Fallback to static popular categories
+    // Use static popular categories since RPC function doesn't exist yet
     const allCategories = await fetchServiceCategories();
     return allCategories.filter(cat => cat.is_popular).slice(0, limit);
+  } catch (error) {
+    logger.error('Failed to fetch popular categories', { module: 'userPreferencesApi' }, error);
+    throw new ApiError('fetchPopularCategories', error);
   }
 }
 
@@ -251,10 +236,20 @@ export async function updateCategoryPreferences(categories: string[]): Promise<b
       throw new Error('User not authenticated');
     }
 
+    // Get current metadata first
+    const { data: currentProfile } = await supabase
+      .from('user_profiles')
+      .select('metadata')
+      .eq('user_id', user.user.id)
+      .single();
+
+    const currentMetadata = (currentProfile?.metadata as any) || {};
+    const updatedMetadata = Object.assign({}, currentMetadata, { preferred_categories: categories });
+
     const { error } = await supabase
       .from('user_profiles')
       .update({
-        metadata: supabase.sql`metadata || ${JSON.stringify({ preferred_categories: categories })}`,
+        metadata: updatedMetadata,
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', user.user.id);
