@@ -9,6 +9,7 @@ import { OffersCard } from '@/components/account/OffersCard';
 import { MessagesCard } from '@/components/account/MessagesCard';
 import { Link } from 'react-router-dom';
 import { LeadsNavigationBar } from '@/components/leads/LeadsNavigationBar';
+import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
 
 const LeadsPage = () => {
   return (
@@ -29,6 +30,9 @@ const LeadsPage = () => {
       
       <div className="container mx-auto px-4 py-6">
         <div className="space-y-6">
+          {/* Breadcrumbs */}
+          <SmartBreadcrumbs />
+          
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold text-foreground">

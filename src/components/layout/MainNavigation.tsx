@@ -38,11 +38,12 @@ export const MainNavigation = () => {
   return (
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList>
-        <CrossPlatformNavigation 
+        <RoleBasedNavigation 
           items={navigation.primary}
           variant="horizontal"
-          density={adaptiveConfig.navigationDensity}
-          enableAnimations={!deviceContext.isMobile}
+          className="flex items-center space-x-1"
+          showBadges={true}
+          showFavoriteButtons={false}
         />
       </NavigationMenuList>
     </NavigationMenu>

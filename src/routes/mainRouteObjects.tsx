@@ -15,6 +15,7 @@ const NewLeadPage = React.lazy(() => import('@/pages/NewLeadPage'));
 const EnhancedPropertyPage = React.lazy(() => import('@/pages/EnhancedPropertyPage'));
 const MaintenanceCalendarPage = React.lazy(() => import('@/pages/MaintenanceCalendarPage'));
 const AuthTestPage = React.lazy(() => import('@/pages/AuthTestPage'));
+const ConsolidatedAccountPage = React.lazy(() => import('@/pages/ConsolidatedAccountPage'));
 
 const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
 const HelpPage = React.lazy(() => import('@/pages/HelpPage'));
@@ -61,6 +62,11 @@ export const mainRouteObjects: AppRoute[] = [
       {
         path: 'profile',
         element: <ProfilePage />,
+        roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
+      },
+      {
+        path: 'account',
+        element: <ConsolidatedAccountPage />,
         roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
       },
       {

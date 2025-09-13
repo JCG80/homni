@@ -10,6 +10,7 @@ import { ProprSalesModule } from '@/modules/property/components/ProprSalesModule
 import { PropertyOverviewCard } from '@/components/property/PropertyOverviewCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProperty } from '@/modules/property/hooks/useProperty';
+import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
 
 const EnhancedPropertyPage = () => {
   const [searchParams] = useSearchParams();
@@ -45,6 +46,9 @@ const EnhancedPropertyPage = () => {
       
       <div className="container mx-auto px-4 py-6">
         <div className="space-y-6">
+          {/* Breadcrumbs */}
+          <SmartBreadcrumbs />
+          
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold text-foreground">
