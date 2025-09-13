@@ -23,8 +23,10 @@ export function routeForRole(role: UserRole): string {
     case 'user':
       return '/dashboard/user';
     case 'guest':
+      // Authenticated users with guest role should go to basic dashboard
+      return '/dashboard';
     default:
-      return '/';
+      return '/dashboard';
   }
 }
 

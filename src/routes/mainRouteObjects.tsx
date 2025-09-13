@@ -45,7 +45,7 @@ export const mainRouteObjects: AppRoute[] = [
       {
         path: 'dashboard',
         element: <DashboardPage />,
-        roles: ['user', 'company', 'content_editor']
+        roles: ['user', 'company', 'content_editor', 'admin', 'master_admin', 'guest']
       },
       {
         path: 'dashboard/user',
