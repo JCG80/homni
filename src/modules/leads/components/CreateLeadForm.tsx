@@ -70,27 +70,39 @@ export const CreateLeadForm: React.FC<CreateLeadFormProps> = ({ onSuccess }) => 
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.from('leads').insert({
+      // Use the proper lead creation API that handles distribution
+      const leadData = {
         title: data.title,
         description: data.description,
         category: data.category,
-        customer_name: data.customer_name || null,
-        customer_email: data.customer_email || user.email || null,
-        customer_phone: data.customer_phone || null,
-        submitted_by: user.id,
-        status: 'new',
+        customer_name: data.customer_name,
+        customer_email: data.customer_email || user.email,
+        customer_phone: data.customer_phone,
         metadata: {
-          source: 'user_dashboard',
-          created_via: 'create_lead_form',
-        },
-      });
+          urgency: 'medium' as const,
+          preferred_contact_method: 'email' as const,
+          service_details: {
+            source: 'user_dashboard',
+            created_via: 'create_lead_form'
+          }
+        }
+      };
 
-      if (error) throw error;
+      // Import and use the createLead API
+      const { createLead } = await import('@/modules/leads/api/lead-creation');
+      const result = await createLead(leadData);
 
-      toast({
-        title: 'Forespørsel sendt!',
-        description: 'Vi har mottatt din forespørsel og vil koble deg med passende leverandører.',
-      });
+      if (result.status === 'distributed' && result.assignedCompany) {
+        toast({
+          title: 'Forespørsel sendt og tildelt!',
+          description: 'Din forespørsel har blitt automatisk sendt til en passende leverandør som vil kontakte deg snart.',
+        });
+      } else {
+        toast({
+          title: 'Forespørsel mottatt!',
+          description: 'Vi har mottatt din forespørsel og vil finne passende leverandører for deg.',
+        });
+      }
 
       onSuccess();
     } catch (error) {

@@ -1,5 +1,5 @@
 import { RequireAuth } from "@/components/auth/RequireAuth";
-import CompanyLeadDashboard from "@/components/company/CompanyLeadDashboard";
+import { CompanyLeadDashboard } from "@/components/company/CompanyLeadDashboard";
 
 export default function CompanyLeadDashboardPage() {
   return (

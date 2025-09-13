@@ -20,7 +20,7 @@ interface Lead {
   anonymous_email?: string;
 }
 
-export default function CompanyLeadDashboard() {
+export function CompanyLeadDashboard() {
   const { leads, stats, loading, refetch, updateLeadStatus } = useCompanyLeadsData();
   const { toast } = useToast();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);

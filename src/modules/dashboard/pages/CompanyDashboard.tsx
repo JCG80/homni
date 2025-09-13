@@ -1,17 +1,11 @@
-/**
- * Company Dashboard - Min bedrift
- * Company-focused lead and business management
- */
-
 import React from 'react';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { TodayLeadsCard } from '../components/cards/company/TodayLeadsCard';
+import { CompanyLeadDashboard } from '@/components/company/CompanyLeadDashboard';
 
+/**
+ * Company Dashboard - Enhanced with Real Data
+ * Primary dashboard for Company role users
+ * Routes to the comprehensive CompanyLeadDashboard component
+ */
 export const CompanyDashboard: React.FC = () => {
-  return (
-    <DashboardLayout title="Min bedrift">
-      <TodayLeadsCard />
-      {/* Additional cards to be implemented */}
-    </DashboardLayout>
-  );
+  return <CompanyLeadDashboard />;
 };
