@@ -23,7 +23,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';
 import { logger } from '@/utils/logger';
-import { UserShortcuts } from '@/components/shortcuts/UserShortcuts';
+import { DashboardNavigationCard } from '../DashboardNavigationCard';
+import { RecentActivityCard } from '../RecentActivityCard';
 import { StatsWidget, QuickMetrics, PropertySummary } from '@/components/dashboard/DashboardWidgets';
 
 interface UserStats {
@@ -290,18 +291,18 @@ export const OptimizedUserDashboard: React.FC = () => {
         
         {/* Shortcuts Sidebar - 1 column */}
         <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Hurtighandlinger</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <UserShortcuts />
-            </CardContent>
-          </Card>
+          <PropertySummary 
+            properties={properties || []} 
+            loading={propertiesLoading} 
+          />
         </div>
 
         {/* Primary Content - 2 columns */}
         <div className="lg:col-span-2 space-y-6">
+          
+          <DashboardNavigationCard />
+          
+          <RecentActivityCard />
           
           {/* Statistics */}
           {userStats.totalRequests > 0 && (
@@ -366,7 +367,7 @@ export const OptimizedUserDashboard: React.FC = () => {
                     Start ved å sende din første forespørsel
                   </p>
                   <Button onClick={() => navigate('/')}>
-                    <Plus className="w-4 h-4 mr-2" />
+                    <Plus className="w-4 w-4 mr-2" />
                     Send forespørsel
                   </Button>
                 </div>
