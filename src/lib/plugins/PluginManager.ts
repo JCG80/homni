@@ -96,8 +96,8 @@ export class PluginManager {
     try {
       // Dynamic import based on module type
       const modulePath = type === 'core' 
-        ? `/src/modules/${moduleId}/index.ts`
-        : `/src/plugins/${moduleId}/index.ts`;
+        ? `../../modules/${moduleId}/index`
+        : `../../plugins/${moduleId}/index`;
 
       const module = await import(modulePath);
       
