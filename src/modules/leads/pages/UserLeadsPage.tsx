@@ -1,67 +1,38 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '@/modules/auth/hooks';
 import { DashboardLayout } from '@/components/dashboard';
-import { FileText, Search } from 'lucide-react';
+import { FileText, Search, Loader2, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-
-interface UserLead {
-  id: string;
-  companyName: string;
-  service: string;
-  status: 'pending' | 'processing' | 'responded' | 'completed' | 'cancelled';
-  createdAt: string;
-}
-
-// Mock data for the demo
-const mockLeads: UserLead[] = [
-  {
-    id: '1',
-    companyName: 'Trygg Forsikring AS',
-    service: 'Bilforsikring',
-    status: 'pending',
-    createdAt: '2023-05-10T14:30:00Z',
-  },
-  {
-    id: '2',
-    companyName: 'Billig Strøm AS',
-    service: 'Strømavtale',
-    status: 'responded',
-    createdAt: '2023-05-09T10:15:00Z',
-  },
-  {
-    id: '3',
-    companyName: 'Nordisk Bank',
-    service: 'Boliglån',
-    status: 'completed',
-    createdAt: '2023-05-08T16:45:00Z',
-  },
-];
+import { useMyLeads } from '@/modules/leads/hooks/useMyLeads';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const UserLeadsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { leads, isLoading, error, refetch } = useMyLeads();
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   
-  const getStatusLabel = (status: UserLead['status']) => {
-    switch (status) {
-      case 'pending': return { label: 'Venter', variant: 'default' };
-      case 'processing': return { label: 'Under behandling', variant: 'secondary' };
-      case 'responded': return { label: 'Svart', variant: 'primary' };
-      case 'completed': return { label: 'Fullført', variant: 'success' };
-      case 'cancelled': return { label: 'Kansellert', variant: 'destructive' };
-      default: return { label: status, variant: 'default' };
+  const getStatusLabel = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'new': return { label: 'Ny', variant: 'default' };
+      case 'qualified': return { label: 'Kvalifisert', variant: 'secondary' };
+      case 'contacted': return { label: 'Kontaktet', variant: 'primary' };
+      case 'negotiating': return { label: 'Forhandler', variant: 'warning' };
+      case 'converted': return { label: 'Konvertert', variant: 'success' };
+      case 'lost': return { label: 'Tapt', variant: 'destructive' };
+      case 'paused': return { label: 'Pauset', variant: 'outline' };
+      default: return { label: status || 'Ukjent', variant: 'default' };
     }
   };
   
-  const filteredLeads = mockLeads
-    .filter(lead => filter === 'all' || lead.status === filter)
+  const filteredLeads = leads
+    .filter(lead => filter === 'all' || lead.status?.toLowerCase() === filter)
     .filter(lead => 
-      lead.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.service.toLowerCase().includes(searchQuery.toLowerCase())
+      lead.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.category?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   
   return (
@@ -82,11 +53,20 @@ export const UserLeadsPage: React.FC = () => {
             <CardTitle>Forespørselsoversikt</CardTitle>
           </CardHeader>
           <CardContent>
+            {error && (
+              <Alert className="mb-6">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Kunne ikke laste forespørsler. <Button variant="link" onClick={refetch} className="p-0 h-auto">Prøv igjen</Button>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Søk forespørsler..."
+                  placeholder="Søk i forespørsler..."
                   className="pl-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -104,37 +84,47 @@ export const UserLeadsPage: React.FC = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => setFilter('pending')}
-                  className={filter === 'pending' ? 'bg-muted' : ''}
+                  onClick={() => setFilter('new')}
+                  className={filter === 'new' ? 'bg-muted' : ''}
                 >
-                  Venter
+                  Nye
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => setFilter('completed')}
-                  className={filter === 'completed' ? 'bg-muted' : ''}
+                  onClick={() => setFilter('converted')}
+                  className={filter === 'converted' ? 'bg-muted' : ''}
                 >
-                  Fullført
+                  Konvertert
                 </Button>
               </div>
             </div>
             
-            {filteredLeads.length === 0 ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                <span>Laster forespørsler...</span>
+              </div>
+            ) : filteredLeads.length === 0 ? (
               <div className="text-center py-12 border rounded-md bg-muted/20">
-                <p className="text-lg mb-2">Ingen forespørsler funnet</p>
-                <p className="text-muted-foreground">
-                  Du har ingen aktive forespørsler for øyeblikket. Nye forespørsler vil vises her når du sender de inn.
+                <p className="text-lg mb-2">
+                  {leads.length === 0 ? 'Ingen forespørsler funnet' : 'Ingen forespørsler matcher søket'}
                 </p>
-                <Button className="mt-4">Send ny forespørsel</Button>
+                <p className="text-muted-foreground">
+                  {leads.length === 0 
+                    ? 'Du har ingen aktive forespørsler for øyeblikket. Nye forespørsler vil vises her når du sender de inn.'
+                    : 'Prøv å endre søkekriteriene eller filteret.'
+                  }
+                </p>
+                {leads.length === 0 && <Button className="mt-4">Send ny forespørsel</Button>}
               </div>
             ) : (
               <div className="border rounded-md overflow-hidden">
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="px-4 py-2 text-left font-medium">Bedrift</th>
-                      <th className="px-4 py-2 text-left font-medium">Tjeneste</th>
+                      <th className="px-4 py-2 text-left font-medium">Tittel</th>
+                      <th className="px-4 py-2 text-left font-medium">Kategori</th>
                       <th className="px-4 py-2 text-left font-medium">Status</th>
                       <th className="px-4 py-2 text-left font-medium">Dato</th>
                       <th className="px-4 py-2 text-right font-medium">Handlinger</th>
@@ -144,16 +134,25 @@ export const UserLeadsPage: React.FC = () => {
                     {filteredLeads.map((lead) => {
                       const status = getStatusLabel(lead.status);
                       return (
-                        <tr key={lead.id} className="border-t">
-                          <td className="px-4 py-3 font-medium">{lead.companyName}</td>
-                          <td className="px-4 py-3">{lead.service}</td>
+                        <tr key={lead.id} className="border-t hover:bg-muted/20">
+                          <td className="px-4 py-3">
+                            <div>
+                              <div className="font-medium">{lead.title}</div>
+                              <div className="text-sm text-muted-foreground line-clamp-1">
+                                {lead.description}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <Badge variant="outline">{lead.category}</Badge>
+                          </td>
                           <td className="px-4 py-3">
                             <Badge variant={status.variant as any}>
                               {status.label}
                             </Badge>
                           </td>
                           <td className="px-4 py-3 text-muted-foreground">
-                            {new Date(lead.createdAt).toLocaleDateString('no-NO')}
+                            {new Date(lead.created_at).toLocaleDateString('no-NO')}
                           </td>
                           <td className="px-4 py-3 text-right">
                             <Button size="sm" variant="outline">Vis detaljer</Button>
