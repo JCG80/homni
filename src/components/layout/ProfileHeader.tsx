@@ -32,6 +32,11 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
   const { roles, activeMode, setActiveMode, isSwitching, error } = useRoleContext();
   const { isDevMode, devUserKey, switchToDevUser } = useDevAuth();
   
+  // Get available roles and modes from profile metadata
+  const availableRoles = profile?.metadata?.roles || [];
+  const allowedModes = profile?.metadata?.allowed_modes || ['personal'];
+  const primaryUserEmail = profile?.metadata?.primary_user_email;
+  
   // Import dev users synchronously
   const getDevUsers = () => {
     if (!isDevMode) return {};
@@ -75,8 +80,9 @@ export const ProfileHeader = ({ showFullProfile = false, className = '' }: Profi
     }
   };
 
-  const hasProfessional = roles.includes('company') || role === 'admin' || role === 'master_admin';
-  const canSwitchModes = hasProfessional && roles.length > 1;
+  // Determine if user can switch modes based on metadata
+  const hasProfessional = allowedModes.includes('professional') || availableRoles.includes('company') || role === 'admin' || role === 'master_admin';
+  const canSwitchModes = allowedModes.length > 1 || availableRoles.length > 1;
 
   if (!user || !profile) {
     return null;

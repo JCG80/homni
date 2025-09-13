@@ -31,19 +31,36 @@ export const RoleProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       return; 
     }
     
-    // Get user data from Supabase auth
-    const getAuthUser = async () => {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (authUser) {
-        const meta: any = authUser.app_metadata || {};
-        const allowed = (meta.allowed_modes as string[]) || ['personal'];
-        setRoles([...(meta.roles || []), ...(allowed.includes('professional') ? ['company'] : [])]);
-        setActiveModeState((meta.active_mode as Mode) || 'personal');
+    // Get user data from profile metadata instead of auth metadata
+    const getUserData = async () => {
+      try {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('metadata, role')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (profile?.metadata) {
+          const meta = profile.metadata as any; // Cast to any for safe access
+          const allowed = (meta?.allowed_modes as string[]) || ['personal'];
+          const userRoles = (meta?.roles as string[]) || [profile.role || 'user'];
+          
+          setRoles(userRoles);
+          setActiveModeState((meta?.active_mode as Mode) || 'personal');
+        } else {
+          // Fallback for users without metadata
+          setRoles([profile?.role || 'user']);
+          setActiveModeState('personal');
+        }
+      } catch (error) {
+        console.error('Error loading user roles:', error);
+        setRoles(['user']);
+        setActiveModeState('personal');
       }
       setIsLoading(false);
     };
     
-    getAuthUser();
+    getUserData();
   }, [user]);
 
   const setActiveMode = useCallback(async (m: Mode) => {
