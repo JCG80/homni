@@ -1215,6 +1215,56 @@ export type Database = {
           },
         ]
       }
+      lead_bids: {
+        Row: {
+          auto_bid: boolean
+          bid_amount_cents: number
+          bid_status: string
+          company_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          lead_id: string | null
+          max_budget_cents: number
+          message: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_bid?: boolean
+          bid_amount_cents: number
+          bid_status?: string
+          company_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          lead_id?: string | null
+          max_budget_cents: number
+          message?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_bid?: boolean
+          bid_amount_cents?: number
+          bid_status?: string
+          company_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          lead_id?: string | null
+          max_budget_cents?: number
+          message?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_bids_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_contact_access: {
         Row: {
           access_level: string
@@ -1341,6 +1391,110 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      lead_pricing_tiers: {
+        Row: {
+          base_price_cents: number
+          created_at: string
+          features: Json | null
+          full_access_price_multiplier: number
+          id: string
+          is_active: boolean
+          max_score: number
+          min_score: number
+          name: string
+          preview_access_level: string
+          time_limit_hours: number | null
+          updated_at: string
+        }
+        Insert: {
+          base_price_cents?: number
+          created_at?: string
+          features?: Json | null
+          full_access_price_multiplier?: number
+          id?: string
+          is_active?: boolean
+          max_score?: number
+          min_score?: number
+          name: string
+          preview_access_level?: string
+          time_limit_hours?: number | null
+          updated_at?: string
+        }
+        Update: {
+          base_price_cents?: number
+          created_at?: string
+          features?: Json | null
+          full_access_price_multiplier?: number
+          id?: string
+          is_active?: boolean
+          max_score?: number
+          min_score?: number
+          name?: string
+          preview_access_level?: string
+          time_limit_hours?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lead_quality_scores: {
+        Row: {
+          budget_indicator_score: number
+          calculated_at: string
+          category_demand_score: number
+          completeness_score: number
+          contact_quality_score: number
+          created_at: string
+          expires_at: string | null
+          id: string
+          lead_id: string | null
+          location_score: number
+          overall_score: number
+          scoring_factors: Json | null
+          updated_at: string
+          urgency_score: number
+        }
+        Insert: {
+          budget_indicator_score?: number
+          calculated_at?: string
+          category_demand_score?: number
+          completeness_score?: number
+          contact_quality_score?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          location_score?: number
+          overall_score?: number
+          scoring_factors?: Json | null
+          updated_at?: string
+          urgency_score?: number
+        }
+        Update: {
+          budget_indicator_score?: number
+          calculated_at?: string
+          category_demand_score?: number
+          completeness_score?: number
+          contact_quality_score?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          location_score?: number
+          overall_score?: number
+          scoring_factors?: Json | null
+          updated_at?: string
+          urgency_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_quality_scores_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lead_settings: {
         Row: {
@@ -3034,6 +3188,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      calculate_lead_score: {
+        Args: { p_lead_id: string }
+        Returns: number
+      }
       check_admin_role: {
         Args: Record<PropertyKey, never> | { user_id: string }
         Returns: boolean
@@ -3187,6 +3345,16 @@ export type Database = {
           full_name: string
           id: string
           metadata: Json
+        }[]
+      }
+      get_lead_pricing: {
+        Args: { p_lead_id: string }
+        Returns: {
+          base_price_cents: number
+          full_price_cents: number
+          preview_access_level: string
+          score: number
+          tier_name: string
         }[]
       }
       get_role_default_modules: {
