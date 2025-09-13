@@ -2,7 +2,7 @@ import React from 'react';
 import { DIYSalesDashboard } from '@/components/sales/DIYSalesDashboard';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 export function DIYSalesPage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -16,11 +16,12 @@ export function DIYSalesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6">
-        <SmartBreadcrumbs />
-        <DIYSalesDashboard />
-      </div>
-    </div>
+    <PageLayout 
+      title="DIY Salg"
+      description="Selg boligen din uten megler"
+      showBreadcrumbs={true}
+    >
+      <DIYSalesDashboard />
+    </PageLayout>
   );
 }

@@ -10,7 +10,7 @@ import { ProprSalesModule } from '@/modules/property/components/ProprSalesModule
 import { PropertyOverviewCard } from '@/components/property/PropertyOverviewCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProperty } from '@/modules/property/hooks/useProperty';
-import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 const EnhancedPropertyPage = () => {
   const [searchParams] = useSearchParams();
@@ -28,7 +28,11 @@ const EnhancedPropertyPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageLayout 
+      title="Mine Eiendommer" 
+      description="Administrer eiendommer, dokumenter, vedlikehold og DIY-salg på ett sted"
+      showBreadcrumbs={true}
+    >
       <Helmet>
         <title>Mine Eiendommer - Homni</title>
         <meta 
@@ -44,65 +48,48 @@ const EnhancedPropertyPage = () => {
 
       <PropertyNavigationBar />
       
-      <div className="container mx-auto px-4 py-6">
-        <div className="space-y-6">
-          {/* Breadcrumbs */}
-          <SmartBreadcrumbs />
-          
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-foreground">
-              Mine Eiendommer
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Administrer eiendommer, dokumenter, vedlikehold og DIY-salg på ett sted
-            </p>
-          </div>
+      {/* Main Content */}
+      <Tabs defaultValue={initialTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="dashboard" className="text-sm">
+            Oversikt
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="text-sm">
+            Dokumenter
+          </TabsTrigger>
+          <TabsTrigger value="maintenance" className="text-sm">
+            Vedlikehold
+          </TabsTrigger>
+          <TabsTrigger value="propr" className="text-sm">
+            DIY Salg
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="text-sm">
+            Innstillinger
+          </TabsTrigger>
+        </TabsList>
 
-          {/* Main Content */}
-          <Tabs defaultValue={initialTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="dashboard" className="text-sm">
-                Oversikt
-              </TabsTrigger>
-              <TabsTrigger value="documents" className="text-sm">
-                Dokumenter
-              </TabsTrigger>
-              <TabsTrigger value="maintenance" className="text-sm">
-                Vedlikehold
-              </TabsTrigger>
-              <TabsTrigger value="propr" className="text-sm">
-                DIY Salg
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="text-sm">
-                Innstillinger
-              </TabsTrigger>
-            </TabsList>
+        <TabsContent value="dashboard" className="space-y-6">
+          <PropertyOverviewCard data={overviewData} isLoading={loading} />
+          <PropertyDashboard />
+        </TabsContent>
 
-            <TabsContent value="dashboard" className="space-y-6">
-              <PropertyOverviewCard data={overviewData} isLoading={loading} />
-              <PropertyDashboard />
-            </TabsContent>
+        <TabsContent value="documents" className="space-y-6">
+          <PropertyDocuments propertyId="" />
+        </TabsContent>
 
-            <TabsContent value="documents" className="space-y-6">
-              <PropertyDocuments propertyId="" />
-            </TabsContent>
+        <TabsContent value="maintenance" className="space-y-6">
+          <PropertyMaintenance propertyId="" />
+        </TabsContent>
 
-            <TabsContent value="maintenance" className="space-y-6">
-              <PropertyMaintenance propertyId="" />
-            </TabsContent>
+        <TabsContent value="propr" className="space-y-6">
+          <ProprSalesModule propertyId="" />
+        </TabsContent>
 
-            <TabsContent value="propr" className="space-y-6">
-              <ProprSalesModule propertyId="" />
-            </TabsContent>
-
-            <TabsContent value="settings" className="space-y-6">
-              <PropertySettings propertyId="" />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-    </div>
+        <TabsContent value="settings" className="space-y-6">
+          <PropertySettings propertyId="" />
+        </TabsContent>
+      </Tabs>
+    </PageLayout>
   );
 };
 

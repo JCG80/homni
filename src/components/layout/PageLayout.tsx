@@ -1,6 +1,6 @@
 
 import React, { ReactNode, useState } from 'react';
-import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation';
+import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { LayoutSidebar } from './LayoutSidebar';
@@ -104,7 +104,7 @@ export const PageLayout = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {showBreadcrumbs && <BreadcrumbNavigation showOnMobile variant="compact" />}
+            {showBreadcrumbs && <SmartBreadcrumbs />}
             
             {(title || description) && (
               <motion.div 

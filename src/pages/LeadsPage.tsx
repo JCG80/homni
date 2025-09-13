@@ -9,11 +9,15 @@ import { OffersCard } from '@/components/account/OffersCard';
 import { MessagesCard } from '@/components/account/MessagesCard';
 import { Link } from 'react-router-dom';
 import { LeadsNavigationBar } from '@/components/leads/LeadsNavigationBar';
-import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 const LeadsPage = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <PageLayout 
+      title="Mine Forespørsler"
+      description="Hold oversikt over forespørsler, meldinger, tilbud og omtaler"
+      showBreadcrumbs={true}
+    >
       <Helmet>
         <title>Mine Forespørsler - Homni</title>
         <meta 
@@ -27,11 +31,6 @@ const LeadsPage = () => {
       </Helmet>
 
       <LeadsNavigationBar />
-      
-      <div className="container mx-auto px-4 py-6">
-        <div className="space-y-6">
-          {/* Breadcrumbs */}
-          <SmartBreadcrumbs />
           
           {/* Header */}
           <div className="text-center space-y-4">
@@ -120,9 +119,7 @@ const LeadsPage = () => {
               </div>
             </TabsContent>
           </Tabs>
-        </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 };
 

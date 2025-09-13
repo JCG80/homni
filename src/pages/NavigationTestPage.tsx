@@ -1,8 +1,3 @@
-/**
- * Navigation Test Page - Comprehensive testing of all navigation improvements
- * Part of Phase 4: Testing and validation completion
- */
-
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,19 +12,23 @@ import {
   BarChart3,
   Settings
 } from 'lucide-react';
-import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
 import { NavigationValidator } from '@/components/navigation/NavigationValidator';
 import { ContextualNavigation } from '@/components/navigation/ContextualNavigation';
 import { useUnifiedNavigation } from '@/hooks/useUnifiedNavigation';
 import { useAuth } from '@/modules/auth/hooks';
 import { Badge } from '@/components/ui/badge';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 const NavigationTestPage: React.FC = () => {
   const { navigation, isLoading } = useUnifiedNavigation();
   const { isAuthenticated, profile } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageLayout 
+      title="Navigasjonstest"
+      description="Omfattende testing og validering av det forbedrede navigasjonssystemet"
+      showBreadcrumbs={true}
+    >
       <Helmet>
         <title>Navigasjonstest - Homni</title>
         <meta 
@@ -37,22 +36,6 @@ const NavigationTestPage: React.FC = () => {
           content="Test og validering av navigasjonssystemet" 
         />
       </Helmet>
-
-      <div className="container mx-auto px-4 py-6">
-        <div className="space-y-6">
-          {/* Breadcrumbs */}
-          <SmartBreadcrumbs />
-          
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-foreground flex items-center justify-center gap-3">
-              <Navigation className="h-8 w-8 text-primary" />
-              Navigasjonstest
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Omfattende testing og validering av det forbedrede navigasjonssystemet
-            </p>
-          </div>
 
           {/* Status overview */}
           <Card>
@@ -289,10 +272,10 @@ const NavigationTestPage: React.FC = () => {
                       <div>
                         <p className="font-medium">Responsivitet</p>
                         <p className="text-muted-foreground">
-                          ✓ Fluid layout<br/>
-                          ✓ Breakpoint handling<br/>
-                          ✓ Adaptive content<br/>
-                          ✓ Performance optimized
+                            ✓ Fluid layout<br/>
+                            ✓ Breakpoint handling<br/>
+                            ✓ Adaptive content<br/>
+                            ✓ Performance optimized
                         </p>
                       </div>
                     </div>
@@ -342,9 +325,7 @@ const NavigationTestPage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 };
 

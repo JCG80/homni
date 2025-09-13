@@ -9,7 +9,7 @@ import { ProfileInfo } from '@/modules/auth/components/ProfileInfo';
 import { ProfileCard } from '@/components/account/ProfileCard';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 export const ConsolidatedAccountPage = () => {
   const { profile } = useAuth();
@@ -17,23 +17,11 @@ export const ConsolidatedAccountPage = () => {
   const userName = profile?.full_name || 'bruker';
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-6xl">
-      {/* Breadcrumbs */}
-      <div className="mb-6">
-        <SmartBreadcrumbs />
-      </div>
-      
-      {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-medium text-foreground flex items-center gap-2">
-          <User className="h-6 w-6 text-primary" />
-          Hei, <span className="text-gradient font-semibold">{userName}</span>! 
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Administrer kontoen din, innstillinger og få oversikt over aktiviteten din.
-        </p>
-      </header>
-
+    <PageLayout 
+      title={`Hei, ${userName}!`}
+      description="Administrer kontoen din, innstillinger og få oversikt over aktiviteten din."
+      showBreadcrumbs={true}
+    >
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 lg:grid-cols-4 mb-8">
@@ -216,6 +204,6 @@ export const ConsolidatedAccountPage = () => {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </PageLayout>
   );
 };
