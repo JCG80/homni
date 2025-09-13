@@ -29,8 +29,8 @@ export const LazyContentEditorDashboard = lazy(() =>
 );
 
 export const LazyMasterAdminDashboard = lazy(() => 
-  import('../master-admin/MasterAdminDashboard').then(module => ({
-    default: module.MasterAdminDashboard
+  import('../admin/AdminDashboard').then(module => ({
+    default: module.default
   }))
 );
 

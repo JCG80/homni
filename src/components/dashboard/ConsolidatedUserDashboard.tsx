@@ -55,10 +55,7 @@ interface DashboardStats {
  * Combines all features from EnhancedUserDashboard and UnifiedUserDashboard
  */
 export const ConsolidatedUserDashboard: React.FC = memo(() => {
-  // Performance monitoring
-  useRenderMetrics('ConsolidatedUserDashboard');
   const { user, profile, isLoading } = useIntegratedAuth();
-  const measureAsync = useAsyncMetrics();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalLeads: 0,
@@ -110,7 +107,7 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
     }
   };
 
-  const fetchDashboardData = useMemoizedCallback(async () => {
+  const fetchDashboardData = async () => {
     if (!user?.id) {
       // No user ID, skipping data fetch
       setLoading(false);
@@ -122,14 +119,11 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
       
       // Safer query construction
       const userEmail = user.email || '';
-      const { data: leads, error } = await measureAsync(
-        supabase
-          .from('leads')
-          .select('*')
-          .or(`submitted_by.eq.${user.id},and(anonymous_email.eq.${userEmail},submitted_by.is.null)`)
-          .order('created_at', { ascending: false }),
-        'dashboard-leads-fetch'
-      );
+      const { data: leads, error } = await supabase
+        .from('leads')
+        .select('*')
+        .or(`submitted_by.eq.${user.id},and(anonymous_email.eq.${userEmail},submitted_by.is.null)`)
+        .order('created_at', { ascending: false });
 
       if (error) {
         // Database error occurred
@@ -164,18 +158,9 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, measureAsync]);
+  };
 
-  // Memoized stats calculation
-  const computedStats = useMemoizedComputation(() => {
-    return {
-      totalLeads: stats.totalLeads,
-      pendingLeads: stats.pendingLeads,
-      contactedLeads: stats.contactedLeads,
-      recentActivity: stats.recentActivity
-    };
-  }, [stats.totalLeads, stats.pendingLeads, stats.contactedLeads, stats.recentActivity]);
-
+  const handleOnboardingComplete = () => {
     setShowOnboarding(false);
     // Refresh dashboard data
     fetchDashboardData();

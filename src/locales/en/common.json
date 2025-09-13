@@ -1,0 +1,37 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "dashboard": "Dashboard",
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "settings": "Settings"
+  },
+  "navigation": {
+    "home": "Home",
+    "leads": "Leads",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "leads": {
+    "title": "Leads",
+    "new": "New lead",
+    "status": "Status",
+    "created": "Created",
+    "pending": "Pending",
+    "contacted": "Contacted",
+    "completed": "Completed"
+  }
+}

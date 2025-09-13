@@ -41,29 +41,28 @@ export const PerformanceDashboard: React.FC = () => {
   }, [isMonitoring]);
 
   const updateMetrics = () => {
-    // Collect performance metrics
-    const navigationEntries = performance.getEntriesByType('navigation');
-    const paintEntries = performance.getEntriesByType('paint');
+      const navigationEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+      const paintEntries = performance.getEntriesByType('paint');
     
-    let renderTime = 0;
-    if (paintEntries.length > 0) {
-      const fcp = paintEntries.find(entry => entry.name === 'first-contentful-paint');
-      renderTime = fcp?.startTime || 0;
-    }
+      let renderTime = 0;
+      if (paintEntries.length > 0) {
+        const fcp = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+        renderTime = fcp?.startTime || 0;
+      }
 
-    let memoryUsage = 0;
-    if ('memory' in performance) {
-      const memInfo = (performance as any).memory;
-      memoryUsage = memInfo.usedJSHeapSize / (1024 * 1024); // MB
-    }
+      let memoryUsage = 0;
+      if ('memory' in performance) {
+        const memInfo = (performance as any).memory;
+        memoryUsage = memInfo.usedJSHeapSize / (1024 * 1024); // MB
+      }
 
-    setMetrics({
-      renderTime,
-      memoryUsage,
-      bundleSize: 0, // Would need to be calculated from build
-      networkLatency: navigationEntries[0]?.responseStart || 0,
-      errorRate: 0 // Would need error tracking
-    });
+      setMetrics({
+        renderTime,
+        memoryUsage,
+        bundleSize: 0, // Would need to be calculated from build
+        networkLatency: navigationEntries[0]?.responseStart || 0,
+        errorRate: 0 // Would need error tracking
+      });
   };
 
   const getPerformanceStatus = (value: number, threshold: number) => {

@@ -1,0 +1,37 @@
+{
+  "common": {
+    "welcome": "Velkommen",
+    "dashboard": "Dashboard",
+    "loading": "Laster...",
+    "error": "Feil",
+    "retry": "Prøv igjen",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "edit": "Rediger",
+    "delete": "Slett",
+    "create": "Opprett",
+    "back": "Tilbake",
+    "next": "Neste",
+    "previous": "Forrige",
+    "search": "Søk",
+    "filter": "Filtrer",
+    "sort": "Sorter",
+    "settings": "Innstillinger"
+  },
+  "navigation": {
+    "home": "Hjem",
+    "leads": "Forespørsler",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "logout": "Logg ut"
+  },
+  "leads": {
+    "title": "Forespørsler",
+    "new": "Ny forespørsel",
+    "status": "Status",
+    "created": "Opprettet",
+    "pending": "Venter",
+    "contacted": "Kontaktet",
+    "completed": "Fullført"
+  }
+}

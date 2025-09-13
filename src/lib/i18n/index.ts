@@ -27,9 +27,9 @@ export interface I18nContextType {
 // Create context
 export const I18nContext = createContext<I18nContextType | null>(null);
 
-// Import translation files - using require for JSON compatibility
-const commonNO = require('../../locales/no/common.json');
-const commonEN = require('../../locales/en/common.json');
+// Import translation files - using ES module imports for Vite compatibility
+import commonNO from '../../locales/no/common.json';
+import commonEN from '../../locales/en/common.json';
 
 const resources = {
   no: {

@@ -5,13 +5,13 @@
 import { memo, useMemo, useCallback } from 'react';
 
 /**
- * Enhanced memoization for React components with deep comparison
+ * Enhanced memoization for React components
  */
 export function createMemoizedComponent<T extends React.ComponentType<any>>(
   Component: T,
   propsAreEqual?: (prevProps: any, nextProps: any) => boolean
-): T {
-  return memo(Component, propsAreEqual) as T;
+) {
+  return memo(Component, propsAreEqual);
 }
 
 /**
