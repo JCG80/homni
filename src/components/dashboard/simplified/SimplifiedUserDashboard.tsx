@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
 import { useProperty } from '@/modules/property/hooks/useProperty';
 import { useDashboardOptimization } from '@/hooks/useDashboardOptimization';
@@ -9,13 +10,18 @@ import { ContextualSidebar } from './ContextualSidebar';
 import { EnhancedSkeletonDashboard } from '../enhanced/EnhancedSkeletonDashboard';
 import { OptimizedDashboardLayout } from '../layout/OptimizedDashboardLayout';
 import { PostAuthOnboardingWizard } from '@/components/onboarding/PostAuthOnboardingWizard';
+import { GuidedOnboardingFlow } from '../guided/GuidedOnboardingFlow';
+import { AchievementSystem } from '../guided/AchievementSystem';
+import { SmartProgressTracker } from '../guided/SmartProgressTracker';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Simplified User Dashboard - Phase 1 Implementation
- * Focused on reducing cognitive load and providing intuitive experience
+ * Simplified User Dashboard - Phase 1 & 2 Implementation
+ * Phase 1: Reduced cognitive load and intuitive experience
+ * Phase 2: Guided user experience with smart onboarding and progress tracking
  */
 export const SimplifiedUserDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { user, profile, isLoading } = useIntegratedAuth();
   const { properties, loading: propertiesLoading } = useProperty();
   
@@ -36,7 +42,10 @@ export const SimplifiedUserDashboard: React.FC = () => {
     pendingRequests: 0,
     completedRequests: 0,
     hasProperties: false,
-    isNewUser: false
+    isNewUser: false,
+    profileCompleted: false,
+    daysActive: 0,
+    weeklyActivity: 0
   });
 
   useEffect(() => {
@@ -90,7 +99,13 @@ export const SimplifiedUserDashboard: React.FC = () => {
         totalRequests,
         pendingRequests,
         completedRequests,
-        hasProperties: properties && properties.length > 0
+        hasProperties: properties && properties.length > 0,
+        profileCompleted: !!profile?.full_name && !!profile?.metadata,
+        daysActive: Math.floor((Date.now() - new Date(user.created_at || Date.now()).getTime()) / (1000 * 60 * 60 * 24)),
+        weeklyActivity: leads?.filter(lead => {
+          const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+          return new Date(lead.created_at) > weekAgo;
+        }).length || 0
       }));
     } catch (error) {
       console.error('Error fetching user stats:', error);
@@ -99,6 +114,27 @@ export const SimplifiedUserDashboard: React.FC = () => {
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    refreshDashboard();
+  };
+
+  const handleGoalAction = (goalId: string) => {
+    switch (goalId) {
+      case 'weekly-request':
+        navigate('/');
+        break;
+      case 'profile-optimization':
+        navigate('/profile');
+        break;
+      case 'property-management':
+        navigate('/properties');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleOnboardingStepComplete = (stepId: string) => {
+    // Handle step completion logic
     refreshDashboard();
   };
 
@@ -161,6 +197,20 @@ export const SimplifiedUserDashboard: React.FC = () => {
             <ContextualSidebar 
               userStats={userStats}
               performanceMetrics={performanceMetrics}
+            />
+            
+            {/* Phase 2: Smart Progress Tracker */}
+            <SmartProgressTracker 
+              userStats={userStats}
+              onGoalAction={handleGoalAction}
+            />
+            
+            {/* Phase 2: Achievement System */}
+            <AchievementSystem 
+              userStats={userStats}
+              onAchievementUnlocked={(achievement) => {
+                console.log('Achievement unlocked:', achievement.title);
+              }}
             />
           </div>
         </div>
