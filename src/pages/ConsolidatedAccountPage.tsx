@@ -80,7 +80,7 @@ export const ConsolidatedAccountPage = () => {
                     Forespørsler
                   </Button>
                 </Link>
-                <Link to="/property">
+                <Link to="/properties">
                   <Button variant="outline" className="w-full justify-start">
                     <Home className="h-4 w-4 mr-2" />
                     Mine eiendommer

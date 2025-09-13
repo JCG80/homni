@@ -55,7 +55,7 @@ export const PropertyDetails = ({ propertyId }: PropertyDetailsProps) => {
           Denne eiendommen eksisterer ikke eller du har ikke tilgang til den.
         </p>
         <Button asChild>
-          <Link to="/property">
+          <Link to="/properties">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Tilbake til mine eiendommer
           </Link>
@@ -70,7 +70,7 @@ export const PropertyDetails = ({ propertyId }: PropertyDetailsProps) => {
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/property">
+              <Link to="/properties">
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
