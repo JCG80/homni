@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -13,8 +14,12 @@ import { Footer } from '@/components/layout/Footer';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { abTesting, AB_TESTS } from '@/lib/abTesting/abTestingFramework';
 import { SystemIntegrationTest } from '@/components/testing/SystemIntegrationTest';
+import { useAuth } from '@/modules/auth/hooks';
+import { routeForRole } from '@/config/routeForRole';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 const HomePage: React.FC = () => {
+  const { isAuthenticated, role, isLoading } = useAuth();
   const [selectedRole, setSelectedRole] = React.useState<'private' | 'business'>('private');
   const wizardVariant = abTesting.getVariant(AB_TESTS.WIZARD_LAYOUT);
   
@@ -24,6 +29,12 @@ const HomePage: React.FC = () => {
       setSelectedRole(savedRole);
     }
   }, []);
+
+  // Redirect authenticated users to their dashboard
+  if (isAuthenticated && role && !isLoading) {
+    const dashboardPath = routeForRole(role as UserRole);
+    return <Navigate to={dashboardPath} replace />;
+  }
 
   return (
     <>

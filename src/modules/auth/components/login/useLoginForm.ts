@@ -100,14 +100,8 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
       if (returnPath) {
         navigate(returnPath, { replace: true });
       } else {
-        // Use a timeout to allow auth state to update before getting role
-        setTimeout(() => {
-          // Get role-specific dashboard - fallback to generic dashboard if no role yet
-          const dashboardPath = role && role in { user: 1, company: 1, admin: 1, master_admin: 1, content_editor: 1, guest: 1 }
-            ? routeForRole(role as UserRole) 
-            : '/dashboard';
-          navigate(dashboardPath, { replace: true });
-        }, 100);
+        // Always redirect to /dashboard which will then redirect to role-specific dashboard
+        navigate('/dashboard', { replace: true });
       }
       
     } catch (error: any) {

@@ -6,12 +6,22 @@ import { NavigationMenuItem } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/modules/auth/hooks';
+import { routeForRole } from '@/config/routeForRole';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 export const HomeNavLink = () => {
+  const { isAuthenticated, role } = useAuth();
+  
+  // For authenticated users, "Hjem" should lead to their dashboard
+  const homeLink = isAuthenticated && role 
+    ? routeForRole(role as UserRole)
+    : "/";
+  
   return (
     <NavigationMenuItem>
       <NavLink 
-        to="/" 
+        to={homeLink} 
         className={({ isActive }) => 
           cn(
             navigationMenuTriggerStyle(), 
