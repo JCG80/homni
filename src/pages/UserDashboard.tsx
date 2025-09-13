@@ -53,7 +53,11 @@ export default function UserDashboard() {
           </div>
           
           <div className="flex gap-2">
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={() => window.location.href = '/profile'}
+            >
               <Settings className="h-4 w-4" />
               Innstillinger
             </Button>
@@ -75,7 +79,11 @@ export default function UserDashboard() {
                   <Home className="h-5 w-5" />
                   Mine Eiendommer
                 </CardTitle>
-                <Button size="sm" className="flex items-center gap-2">
+                <Button 
+                  size="sm" 
+                  className="flex items-center gap-2"
+                  onClick={() => window.location.href = '/properties'}
+                >
                   <Plus className="h-4 w-4" />
                   Legg til eiendom
                 </Button>
@@ -92,7 +100,11 @@ export default function UserDashboard() {
                   <MessageSquare className="h-5 w-5" />
                   Mine Forespørsler
                 </CardTitle>
-                <Button size="sm" variant="outline">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => window.location.href = '/leads'}
+                >
                   Se alle
                 </Button>
               </CardHeader>

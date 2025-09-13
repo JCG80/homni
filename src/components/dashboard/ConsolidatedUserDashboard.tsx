@@ -3,6 +3,7 @@ import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
 import { useProperty } from '@/modules/property/hooks/useProperty';
 import { QuickActionsHub } from './QuickActionsHub';
 import { RealTimeNotifications } from './RealTimeNotifications';
+import { RealTimeActivityFeed } from './RealTimeActivityFeed';
 import { PropertyIntegrationWidget } from './PropertyIntegrationWidget';
 import { SkeletonDashboard } from './SkeletonDashboard';
 import { PostAuthOnboardingWizard } from '@/components/onboarding/PostAuthOnboardingWizard';
@@ -78,6 +79,13 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
       // User ready, fetching data
       checkOnboardingStatus();
       fetchDashboardData();
+      
+      // Set up auto-refresh for real-time updates
+      const interval = setInterval(() => {
+        fetchDashboardData();
+      }, 30000); // Refresh every 30 seconds
+      
+      return () => clearInterval(interval);
     } else if (!user && !isLoading) {
       // No user but auth finished loading
       setLoading(false);
@@ -345,9 +353,9 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
           <PropertyIntegrationWidget />
         </div>
 
-        {/* Notifications */}
+        {/* Real-time Activity */}
         <div className="lg:col-span-1">
-          <RealTimeNotifications />
+          <RealTimeActivityFeed />
         </div>
 
         {/* Next Actions */}
