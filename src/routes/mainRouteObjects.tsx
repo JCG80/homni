@@ -14,6 +14,7 @@ const NewPropertyPage = React.lazy(() => import('@/pages/NewPropertyPage'));
 const NewLeadPage = React.lazy(() => import('@/pages/NewLeadPage'));
 const PropertiesPage = React.lazy(() => import('@/modules/property/pages/PropertiesPage'));
 const MaintenanceCalendarPage = React.lazy(() => import('@/pages/MaintenanceCalendarPage'));
+const AuthTestPage = React.lazy(() => import('@/pages/AuthTestPage'));
 
 const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
 
@@ -86,6 +87,11 @@ export const mainRouteObjects: AppRoute[] = [
         path: 'maintenance/calendar',
         element: <MaintenanceCalendarPage />,
         roles: ['user', 'company', 'admin', 'master_admin']
+      },
+      {
+        path: 'auth-test',
+        element: <AuthTestPage />,
+        roles: ['guest', 'user', 'company', 'admin', 'master_admin']
       }
     ]
   }
