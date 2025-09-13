@@ -2,9 +2,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { UserProfileCard } from '@/modules/auth/components/UserProfileCard';
-import { MyPropertiesWidget } from '@/modules/property/components/MyPropertiesWidget';
+import { EnhancedPropertiesWidget } from '@/modules/property/components/EnhancedPropertiesWidget';
 import { MyRequestsWidget } from '@/modules/leads/components/MyRequestsWidget';
-import { QuickActions } from '@/components/dashboard/QuickActions';
+import { SmartQuickActions } from '@/components/dashboard/SmartQuickActions';
+import { EnhancedProfileInfo } from '@/modules/auth/components/EnhancedProfileInfo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Home, MessageSquare, User, Settings } from 'lucide-react';
@@ -59,8 +60,8 @@ export default function UserDashboard() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <QuickActions />
+        {/* Smart Quick Actions */}
+        <SmartQuickActions />
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -79,8 +80,8 @@ export default function UserDashboard() {
                   Legg til eiendom
                 </Button>
               </CardHeader>
-              <CardContent>
-                <MyPropertiesWidget />
+              <CardContent className="p-0">
+                <EnhancedPropertiesWidget />
               </CardContent>
             </Card>
 
@@ -112,8 +113,8 @@ export default function UserDashboard() {
                   Min Profil
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <UserProfileCard />
+              <CardContent className="p-0">
+                <EnhancedProfileInfo />
               </CardContent>
             </Card>
 

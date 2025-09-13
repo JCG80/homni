@@ -13,6 +13,7 @@ const RegisterPage = React.lazy(() => import('@/pages/RegisterPage'));
 const NewPropertyPage = React.lazy(() => import('@/pages/NewPropertyPage'));
 const NewLeadPage = React.lazy(() => import('@/pages/NewLeadPage'));
 const PropertiesPage = React.lazy(() => import('@/modules/property/pages/PropertiesPage'));
+const MaintenanceCalendarPage = React.lazy(() => import('@/pages/MaintenanceCalendarPage'));
 
 const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
 
@@ -80,6 +81,11 @@ export const mainRouteObjects: AppRoute[] = [
         element: <MarketplacePage />,
         roles: ['company', 'admin', 'master_admin'],
         flag: 'ENABLE_LEAD_MARKETPLACE'
+      },
+      {
+        path: 'maintenance/calendar',
+        element: <MaintenanceCalendarPage />,
+        roles: ['user', 'company', 'admin', 'master_admin']
       }
     ]
   }
