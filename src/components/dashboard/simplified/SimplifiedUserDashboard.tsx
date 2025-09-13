@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
 import { useProperty } from '@/modules/property/hooks/useProperty';
 import { useDashboardOptimization } from '@/hooks/useDashboardOptimization';
-import { useBehavioralLearning } from '@/hooks/useBehavioralLearning';
+import { useAdvancedCaching } from '@/hooks/useAdvancedCaching';
+import { DashboardPerformanceMonitor } from '@/components/dashboard/performance/DashboardPerformanceMonitor';
+import { LazyWidgetLoader } from '@/components/dashboard/performance/LazyWidgetLoader';
+import { logger } from '@/utils/logger';
+
 import { WelcomeHeader } from './WelcomeHeader';
 import { SmartQuickActions } from './SmartQuickActions';
 import { PrimaryContentArea } from './PrimaryContentArea';
@@ -29,7 +33,11 @@ export const SimplifiedUserDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, profile, isLoading } = useIntegratedAuth();
   const { properties, loading: propertiesLoading } = useProperty();
-  const { trackEvent, getBehaviorPatterns } = useBehavioralLearning();
+  const { smartInvalidate } = useAdvancedCaching({
+    enableBackgroundSync: true,
+    enablePredictivePreloading: true,
+    maxCacheSize: 50
+  });
   
   const {
     dashboardData,
@@ -68,14 +76,12 @@ export const SimplifiedUserDashboard: React.FC = () => {
   }, [user, isLoading]);
 
   const loadUserBehavior = async () => {
-    const patterns = await getBehaviorPatterns();
-    if (patterns) {
-      setUserBehavior({
-        primaryActions: patterns.primaryActions || [],
-        preferredContent: patterns.contentPreferences || [],
-        interactionPatterns: patterns
-      });
-    }
+    // Simplified behavior loading - could be enhanced with actual behavioral learning
+    setUserBehavior({
+      primaryActions: ['dashboard', 'properties', 'leads'],
+      preferredContent: ['quick-actions', 'notifications'],
+      interactionPatterns: {}
+    });
   };
 
   const checkUserStatus = async () => {
@@ -156,9 +162,10 @@ export const SimplifiedUserDashboard: React.FC = () => {
     }
   };
 
-  const handleOnboardingStepComplete = (stepId: string) => {
-    // Handle step completion logic
-    refreshDashboard();
+  // Simple event tracking function
+  const trackEvent = (eventType: string, eventId: string, metadata?: any) => {
+    logger.debug('Event tracked', { eventType, eventId, metadata });
+    // Could be enhanced to send to analytics service
   };
 
   // Show onboarding for new users

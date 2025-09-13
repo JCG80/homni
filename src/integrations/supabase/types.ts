@@ -348,6 +348,51 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          company_id: string | null
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          new_values: Json | null
+          old_values: Json | null
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       bi_reports: {
         Row: {
           generated_at: string
@@ -1630,6 +1675,33 @@ export type Database = {
           },
         ]
       }
+      localization_entries: {
+        Row: {
+          context: string | null
+          id: string
+          key: string
+          locale: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          context?: string | null
+          id?: string
+          key: string
+          locale: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          context?: string | null
+          id?: string
+          key?: string
+          locale?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       maintenance_tasks: {
         Row: {
           cost_estimate: number | null
@@ -1721,6 +1793,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      migration_records: {
+        Row: {
+          description: string | null
+          error_message: string | null
+          executed_at: string
+          execution_time_ms: number
+          id: string
+          rollback_available: boolean
+          success: boolean
+          version: string
+        }
+        Insert: {
+          description?: string | null
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number
+          id?: string
+          rollback_available?: boolean
+          success?: boolean
+          version: string
+        }
+        Update: {
+          description?: string | null
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number
+          id?: string
+          rollback_available?: boolean
+          success?: boolean
+          version?: string
+        }
+        Relationships: []
       }
       module_access: {
         Row: {
@@ -2665,6 +2770,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_health: {
+        Row: {
+          created_at: string
+          error_rate: number
+          id: string
+          last_check: string
+          metadata: Json | null
+          response_time_ms: number
+          service: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_rate?: number
+          id?: string
+          last_check?: string
+          metadata?: Json | null
+          response_time_ms?: number
+          service: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          error_rate?: number
+          id?: string
+          last_check?: string
+          metadata?: Json | null
+          response_time_ms?: number
+          service?: string
+          status?: string
+        }
+        Relationships: []
       }
       system_health_metrics: {
         Row: {
