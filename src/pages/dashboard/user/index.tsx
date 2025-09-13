@@ -1,5 +1,6 @@
 import React from 'react';
 import { RoleDashboard } from '@/components/dashboard/RoleDashboard';
+import { SimplifiedUserDashboard } from '@/components/dashboard/simplified/SimplifiedUserDashboard';
 import { UserDashboardFallback } from './UserDashboardFallback';
 import { logger } from '@/utils/logger';
 
@@ -7,7 +8,7 @@ const UserDashboard = () => {
   try {
     return (
       <RoleDashboard requiredRole="user">
-        <UserDashboardFallback />
+        <SimplifiedUserDashboard />
       </RoleDashboard>
     );
   } catch (error) {

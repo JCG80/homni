@@ -7,6 +7,9 @@ export { RoleDashboard } from './RoleDashboard';
 // Export consolidated user dashboard
 export { ConsolidatedUserDashboard } from './ConsolidatedUserDashboard';
 
+// Export simplified user dashboard (Phase 1)
+export { SimplifiedUserDashboard } from './simplified/SimplifiedUserDashboard';
+
 // Export company dashboard components
 export { LeadOverviewWidget } from './company/LeadOverviewWidget';
 export { AnalyticsSummaryWidget } from './company/AnalyticsSummaryWidget';
