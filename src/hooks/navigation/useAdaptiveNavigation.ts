@@ -134,7 +134,7 @@ export function useAdaptiveNavigation() {
     }
 
     return config;
-  }, [deviceContext, navigationContext, preferences.ui]);
+  }, [deviceContext, navigationContext, preferences]);
 
   // Navigation performance tracking
   const [navigationTiming, setNavigationTiming] = useState<Record<string, number>>({});
