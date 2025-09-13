@@ -3,8 +3,7 @@
  * Provides translation function, locale state and locale changing
  */
 
-import { useContext } from 'react';
-import { I18nContext } from '@/lib/i18n/index';
+import { useTranslation } from 'react-i18next';
 
 export const useI18n = () => {
   const context = useContext(I18nContext);

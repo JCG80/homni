@@ -13,7 +13,8 @@ import { NetworkDiagnostics } from '@/components/debug/NetworkDiagnostics';
 import { DebugToggle } from '@/components/debug/DebugToggle';
 import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
 import { logger } from '@/utils/logger';
-import { I18nProvider } from '@/lib/i18n/I18nProvider';
+// Import i18n configuration
+import '@/lib/i18n/index';
 import { ContextualHelp } from '@/components/guidance/ContextualHelp';
 
 import { usePageViews } from '@/lib/analytics/react';

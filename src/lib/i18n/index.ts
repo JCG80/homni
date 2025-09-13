@@ -1,16 +1,40 @@
-import React, { createContext } from 'react';
-import type { SupportedLocale } from '@/lib/i18n';
+/**
+ * i18n Configuration for React-i18next
+ * Part of Phase 3B Step 3: Unified Navigation Experience
+ */
 
-export type { SupportedLocale };
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 
-export interface Translation {
-  [key: string]: Translation | string;
-}
+// Import translation files - using require for JSON compatibility
+const commonNO = require('../../locales/no/common.json');
+const commonEN = require('../../locales/en/common.json');
 
-export interface I18nContextType {
-  locale: SupportedLocale;
-  setLocale: (locale: SupportedLocale) => void;
-  t: (key: string, params?: Record<string, string | number>) => string;
-}
+const resources = {
+  no: {
+    common: commonNO,
+  },
+  en: {
+    common: commonEN,
+  },
+} as const;
 
-export const I18nContext = createContext<I18nContextType | null>(null);
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: 'no', // default language
+    fallbackLng: 'en',
+    defaultNS: 'common',
+    ns: ['common'],
+    
+    interpolation: {
+      escapeValue: false, // React already escapes values
+    },
+    
+    react: {
+      useSuspense: false, // Disable suspense for now to avoid loading issues
+    },
+  });
+
+export default i18n;

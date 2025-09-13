@@ -16,6 +16,8 @@ import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SmartHamburgerMenu } from '@/components/navigation/SmartHamburgerMenu';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
+import { SmartNotifications } from '@/components/navigation/SmartNotifications';
 // RoleSwitcher moved to AdminHeader
 import { QuickActionsDropdown } from '@/components/navigation';
 import { CommandPalette } from '@/components/navigation/CommandPalette';
@@ -55,6 +57,9 @@ export const Header = ({ className = '' }: HeaderProps) => {
         
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">
+          {/* Smart Notifications */}
+          {isAuthenticated && <SmartNotifications />}
+          
           {/* Language Switcher */}
           <LanguageSwitcher />
           
@@ -92,6 +97,13 @@ export const Header = ({ className = '' }: HeaderProps) => {
           )}
         </div>
       </div>
+
+      {/* Smart Breadcrumbs - Below main header */}
+      {isAuthenticated && (
+        <div className="container mx-auto px-4 pt-2 pb-1 border-t border-border/30">
+          <SmartBreadcrumbs />
+        </div>
+      )}
 
       {/* Command Palette */}
       {isAuthenticated && (
