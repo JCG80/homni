@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Settings, Heart, FileText, Home } from 'lucide-react';
+import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
 
 const PropertyPage = () => {
   const [searchParams] = useSearchParams();
@@ -37,6 +38,9 @@ const PropertyPage = () => {
       
       <div className="container mx-auto px-4 py-6">
           <div className="space-y-6">
+            {/* Breadcrumbs */}
+            <SmartBreadcrumbs />
+            
             {/* Header */}
             <div className="text-center space-y-4">
               <h1 className="text-4xl font-bold text-foreground">

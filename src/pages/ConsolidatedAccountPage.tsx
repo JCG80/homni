@@ -9,6 +9,7 @@ import { ProfileInfo } from '@/modules/auth/components/ProfileInfo';
 import { ProfileCard } from '@/components/account/ProfileCard';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { SmartBreadcrumbs } from '@/components/navigation/SmartBreadcrumbs';
 
 export const ConsolidatedAccountPage = () => {
   const { profile } = useAuth();
@@ -17,6 +18,11 @@ export const ConsolidatedAccountPage = () => {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-6xl">
+      {/* Breadcrumbs */}
+      <div className="mb-6">
+        <SmartBreadcrumbs />
+      </div>
+      
       {/* Header */}
       <header className="mb-8">
         <h1 className="text-3xl font-medium text-foreground flex items-center gap-2">

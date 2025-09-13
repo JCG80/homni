@@ -27,3 +27,6 @@ export * from './SmartBreadcrumbs';
 export * from './SmartHamburgerMenu';
 export * from './SmartNotifications';
 export * from './UnifiedMobileNavigation';
+export * from './NavigationValidator';
+export * from './ContextualNavigation';
+export * from './NavigationSync';

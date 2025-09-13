@@ -16,6 +16,7 @@ const EnhancedPropertyPage = React.lazy(() => import('@/pages/EnhancedPropertyPa
 const MaintenanceCalendarPage = React.lazy(() => import('@/pages/MaintenanceCalendarPage'));
 const AuthTestPage = React.lazy(() => import('@/pages/AuthTestPage'));
 const ConsolidatedAccountPage = React.lazy(() => import('@/pages/ConsolidatedAccountPage'));
+const NavigationTestPage = React.lazy(() => import('@/pages/NavigationTestPage'));
 
 const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
 const HelpPage = React.lazy(() => import('@/pages/HelpPage'));
@@ -99,6 +100,11 @@ export const mainRouteObjects: AppRoute[] = [
         path: 'auth-test',
         element: <AuthTestPage />,
         roles: ['guest', 'user', 'company', 'admin', 'master_admin']
+      },
+      {
+        path: "navigation-test",
+        element: <NavigationTestPage />,
+        roles: ['admin', 'master_admin'] // Testing page for admins only
       },
       {
         path: 'help',
