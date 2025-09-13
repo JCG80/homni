@@ -1,57 +1,70 @@
-
 import React from 'react';
-import { CheckCircle2, Circle, ArrowRight } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
 }
 
-export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) => {
+export const StepIndicator: React.FC<StepIndicatorProps> = ({
+  currentStep,
+  totalSteps,
+}) => {
+  const steps = [
+    { number: 1, label: 'Konto' },
+    { number: 2, label: 'Profil' },
+    { number: 3, label: 'Plan' },
+    { number: 4, label: 'Fullfør' },
+  ];
+
   return (
-    <div className="flex items-center justify-center mb-8">
-      {Array.from({ length: totalSteps }).map((_, index) => {
-        const stepNumber = index + 1;
-        const isCompleted = stepNumber < currentStep;
-        const isActive = stepNumber === currentStep;
-        
-        return (
-          <React.Fragment key={stepNumber}>
+    <div className="mb-8">
+      <div className="flex items-center justify-between">
+        {steps.map((step, index) => (
+          <React.Fragment key={step.number}>
             <div className="flex flex-col items-center">
-              <div 
-                className={`h-10 w-10 rounded-full flex items-center justify-center transition-colors ${
-                  isCompleted 
-                    ? 'bg-primary text-primary-foreground' 
-                    : isActive 
-                    ? 'bg-primary/20 text-primary border-2 border-primary' 
-                    : 'bg-muted text-muted-foreground'
-                }`}
+              <div
+                className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-colors",
+                  step.number < currentStep
+                    ? "bg-green-600 text-white"
+                    : step.number === currentStep
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                )}
               >
-                {isCompleted ? (
-                  <CheckCircle2 className="h-6 w-6" />
+                {step.number < currentStep ? (
+                  <Check className="h-5 w-5" />
                 ) : (
-                  <span className="text-sm font-medium">{stepNumber}</span>
+                  step.number
                 )}
               </div>
-              <span 
-                className={`text-xs mt-2 ${
-                  isActive ? 'text-primary font-medium' : 'text-muted-foreground'
-                }`}
+              <span
+                className={cn(
+                  "mt-2 text-xs font-medium",
+                  step.number <= currentStep
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                )}
               >
-                {stepNumber === 1 ? 'Sign Up' : stepNumber === 2 ? 'Profile' : 'Complete'}
+                {step.label}
               </span>
             </div>
             
-            {stepNumber < totalSteps && (
-              <div className={`h-[2px] w-16 mx-2 ${stepNumber < currentStep ? 'bg-primary' : 'bg-muted'}`}>
-                {stepNumber === currentStep - 1 && (
-                  <ArrowRight className="h-4 w-4 text-primary animate-pulse translate-y-[-8px] translate-x-[28px]" />
+            {index < steps.length - 1 && (
+              <div
+                className={cn(
+                  "flex-1 h-0.5 mx-4 transition-colors",
+                  step.number < currentStep
+                    ? "bg-green-600"
+                    : "bg-muted"
                 )}
-              </div>
+              />
             )}
           </React.Fragment>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 };

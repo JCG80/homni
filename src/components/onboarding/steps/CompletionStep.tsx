@@ -1,9 +1,13 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight } from 'lucide-react';
-import { useRegistrationSubmit } from '@/modules/auth/hooks/useRegistrationSubmit';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Check, User, Building2, ChevronLeft, Loader2 } from 'lucide-react';
 import { UserType } from '../OnboardingWizard';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface CompletionStepProps {
   userType: UserType;
@@ -11,116 +15,237 @@ interface CompletionStepProps {
     email: string;
     password: string;
     fullName: string;
-    companyName?: string;
-    phoneNumber?: string;
+    companyName: string;
+    phoneNumber: string;
   };
-  selectedPlan?: string;
+  selectedPlan: string;
   onComplete: () => void;
   onBack: () => void;
 }
 
-export const CompletionStep = ({ userType, formData, selectedPlan, onComplete, onBack }: CompletionStepProps) => {
-  const { handleSubmit, isSubmitting, error } = useRegistrationSubmit();
-  
-  const completeRegistration = async () => {
-    // Map UserType (user/company) to registration API's expected format (private/business)
-    const mappedUserType = userType === 'user' ? 'private' : 'business';
-    
-    // Create registration data object with the mapped user type
-    const registrationData = {
-      email: formData.email,
-      password: formData.password,
-      fullName: formData.fullName,
-      companyName: formData.companyName,
-      phoneNumber: formData.phoneNumber,
-      userType: mappedUserType as 'private' | 'business',
-      redirectTo: `/dashboard/${userType}`,
-      onSuccess: onComplete,
-    };
-    
-    // Pass the data object directly to handleSubmit
-    await handleSubmit(registrationData);
+export const CompletionStep: React.FC<CompletionStepProps> = ({
+  userType,
+  formData,
+  selectedPlan,
+  onComplete,
+  onBack,
+}) => {
+  const [isCompleting, setIsCompleting] = useState(false);
+  const { user } = useAuth();
+
+  const handleComplete = async () => {
+    if (!user) {
+      toast({
+        title: "Feil",
+        description: "Bruker ikke funnet. Vennligst logg inn på nytt.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsCompleting(true);
+
+    try {
+      // Create or update user profile
+      const profileData = {
+        id: user.id,
+        user_id: user.id,
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phoneNumber || null,
+        role: userType,
+        metadata: {
+          account_type: userType,
+          selected_plan: selectedPlan,
+          onboarding_completed: true,
+          onboarding_completed_at: new Date().toISOString()
+        }
+      };
+
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .upsert(profileData, {
+          onConflict: 'id'
+        });
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      // If company type, create company profile
+      if (userType === 'company' && formData.companyName) {
+        const companyData = {
+          user_id: user.id,
+          name: formData.companyName,
+          contact_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phoneNumber || null,
+          subscription_plan: selectedPlan,
+          status: 'active'
+        };
+
+        const { error: companyError } = await supabase
+          .from('company_profiles')
+          .insert([companyData]);
+
+        if (companyError) {
+          logger.error('Failed to create company profile', {
+            module: 'CompletionStep',
+            error: companyError
+          });
+          // Don't throw - user profile was created successfully
+        }
+      }
+
+      toast({
+        title: "Velkommen til Homni!",
+        description: "Din konto er nå klar til bruk.",
+        variant: "default"
+      });
+
+      onComplete();
+    } catch (error) {
+      logger.error('Failed to complete onboarding', {
+        module: 'CompletionStep',
+        userType,
+        userId: user.id
+      }, error as Error);
+
+      toast({
+        title: "Feil ved ferdigstillelse",
+        description: "Noe gikk galt. Prøv igjen.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="text-center">
-        <div className="flex justify-center mb-4">
-          <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <CheckCircle className="h-10 w-10 text-primary" />
-          </div>
+        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+          <Check className="h-8 w-8 text-green-600" />
         </div>
-        <h2 className="text-2xl font-bold tracking-tight">Almost Done!</h2>
-        <p className="text-muted-foreground mt-2">
-          Review your information and create your account
+        <h2 className="text-2xl font-bold mb-2">Klar til å fullføre!</h2>
+        <p className="text-muted-foreground">
+          Gjennomgå informasjonen din og fullfør registreringen
         </p>
       </div>
-      
-      <div className="space-y-4">
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <h3 className="font-medium mb-2">Account Information</h3>
-          <div className="grid grid-cols-2 gap-y-2 text-sm">
-            <div className="text-muted-foreground">Account Type:</div>
-            <div className="font-medium capitalize">{userType}</div>
-            
-            <div className="text-muted-foreground">Name:</div>
-            <div>{formData.fullName}</div>
-            
-            <div className="text-muted-foreground">Email:</div>
-            <div>{formData.email}</div>
+
+      {/* Summary */}
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            {userType === 'user' ? (
+              <User className="h-5 w-5 text-primary" />
+            ) : (
+              <Building2 className="h-5 w-5 text-primary" />
+            )}
+            <div>
+              <h3 className="font-semibold">
+                {userType === 'user' ? 'Privatperson' : 'Bedrift'}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {formData.fullName}
+                {userType === 'company' && formData.companyName && (
+                  <span> • {formData.companyName}</span>
+                )}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">E-post:</span>
+              <span>{formData.email}</span>
+            </div>
             
             {formData.phoneNumber && (
-              <>
-                <div className="text-muted-foreground">Phone:</div>
-                <div>{formData.phoneNumber}</div>
-              </>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Telefon:</span>
+                <span>{formData.phoneNumber}</span>
+              </div>
             )}
             
-            {userType === 'company' && formData.companyName && (
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Plan:</span>
+              <Badge variant="secondary" className="capitalize">
+                {selectedPlan}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Benefits Preview */}
+      <Card>
+        <CardContent className="p-6">
+          <h4 className="font-semibold mb-3">Du får tilgang til:</h4>
+          <ul className="space-y-2 text-sm">
+            {userType === 'user' ? (
               <>
-                <div className="text-muted-foreground">Company:</div>
-                <div>{formData.companyName}</div>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Administrer dine eiendommer
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Send forespørsler om tjenester
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Lagre dokumenter og vedlikehold
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Motta leads fra kunder
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Administrer bedriftsprofil
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Statistikk og rapporter
+                </li>
               </>
             )}
-          </div>
-        </div>
-        
-        <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
-          <h3 className="font-medium mb-2 text-primary">Selected Plan</h3>
-          <div className="text-sm">
-            <span className="font-medium capitalize">
-              {selectedPlan === 'free' ? 'Starter (Free)' : 
-               selectedPlan?.includes('professional') ? 'Professional' :
-               selectedPlan?.includes('enterprise') ? 'Enterprise' : 'Free'}
-            </span>
-            {selectedPlan !== 'free' && (
-              <span className="text-muted-foreground ml-2">
-                • Payment will be processed after registration
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      {error && (
-        <div className="bg-destructive/10 border border-destructive text-destructive p-4 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
-      
-      <div className="flex justify-between">
-        <Button type="button" variant="outline" onClick={onBack} disabled={isSubmitting}>
-          Back
-        </Button>
-        <Button 
-          onClick={completeRegistration} 
-          disabled={isSubmitting} 
-          className="gap-2"
+          </ul>
+        </CardContent>
+      </Card>
+
+      {/* Navigation */}
+      <div className="flex justify-between pt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          disabled={isCompleting}
+          className="flex items-center gap-2"
         >
-          Create Account
-          {!isSubmitting && <ArrowRight className="h-4 w-4" />}
-          {isSubmitting && (
-            <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+          <ChevronLeft className="h-4 w-4" />
+          Tilbake
+        </Button>
+        
+        <Button
+          onClick={handleComplete}
+          disabled={isCompleting}
+          className="flex items-center gap-2 min-w-[140px]"
+        >
+          {isCompleting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Fullfører...
+            </>
+          ) : (
+            <>
+              Fullfør registrering
+              <Check className="h-4 w-4" />
+            </>
           )}
         </Button>
       </div>

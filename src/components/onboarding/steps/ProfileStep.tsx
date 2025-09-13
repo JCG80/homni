@@ -88,19 +88,19 @@ export const ProfileStep = ({
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Complete Your Profile</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Fortell oss om deg</h2>
         <p className="text-muted-foreground mt-2">
-          Choose your account type and complete your profile
+          Vi tilpasser opplevelsen basert på din profil
         </p>
       </div>
 
       <Tabs value={userType} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid grid-cols-2 mb-6">
           <TabsTrigger value="user" className="gap-2">
-            <User className="h-4 w-4" /> Individual
+            <User className="h-4 w-4" /> Privatperson
           </TabsTrigger>
           <TabsTrigger value="company" className="gap-2">
-            <Building2 className="h-4 w-4" /> Business
+            <Building2 className="h-4 w-4" /> Bedrift
           </TabsTrigger>
         </TabsList>
         
@@ -112,7 +112,7 @@ export const ProfileStep = ({
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number (Optional)</FormLabel>
+                    <FormLabel>Telefonnummer (valgfritt)</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="+47 123 45 678" 
@@ -130,10 +130,10 @@ export const ProfileStep = ({
               
               <div className="flex justify-between pt-4">
                 <Button type="button" variant="outline" onClick={onBack}>
-                  Back
+                  Tilbake
                 </Button>
                 <Button type="submit">
-                  Continue
+                  Fortsett
                 </Button>
               </div>
             </form>
@@ -148,7 +148,7 @@ export const ProfileStep = ({
                 name="companyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>Bedriftsnavn</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="Acme Inc." 
@@ -169,7 +169,7 @@ export const ProfileStep = ({
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number (Optional)</FormLabel>
+                    <FormLabel>Telefonnummer (valgfritt)</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="+47 123 45 678" 
@@ -187,10 +187,10 @@ export const ProfileStep = ({
               
               <div className="flex justify-between pt-4">
                 <Button type="button" variant="outline" onClick={onBack}>
-                  Back
+                  Tilbake
                 </Button>
                 <Button type="submit">
-                  Continue
+                  Fortsett
                 </Button>
               </div>
             </form>

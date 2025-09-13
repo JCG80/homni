@@ -92,7 +92,13 @@ export const OnboardingWizard = () => {
       
       // Navigate to the appropriate dashboard based on role
       setTimeout(() => {
-        navigate(`/dashboard/${userType}`);
+        if (userType === 'user') {
+          navigate('/dashboard/user');
+        } else if (userType === 'company') {
+          navigate('/dashboard/company');
+        } else {
+          navigate('/dashboard');
+        }
       }, 1500);
     } catch (error) {
       logger.error('Error completing onboarding:', {}, error);

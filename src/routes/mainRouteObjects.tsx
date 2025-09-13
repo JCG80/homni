@@ -7,6 +7,7 @@ const HomePage = React.lazy(() => import('@/pages/HomePage'));
 const DashboardPage = React.lazy(() => import('@/pages/DashboardPage')); 
 const LeadsPage = React.lazy(() => import('@/pages/LeadsPage'));
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
+const UserDashboard = React.lazy(() => import('@/pages/UserDashboard'));
 const LoginPage = React.lazy(() => import('@/pages/LoginPage'));
 const RegisterPage = React.lazy(() => import('@/pages/RegisterPage'));
 
@@ -38,6 +39,11 @@ export const mainRouteObjects: AppRoute[] = [
         path: 'dashboard',
         element: <DashboardPage />,
         roles: ['user', 'company', 'content_editor']
+      },
+      {
+        path: 'dashboard/user',
+        element: <UserDashboard />,
+        roles: ['user']
       },
       {
         path: 'leads',

@@ -1,18 +1,12 @@
-
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Eye, EyeOff, ChevronRight, Loader2, Mail, Lock } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
+import { logger } from '@/utils/logger';
 
 interface SignupStepProps {
   formData: {
@@ -24,115 +18,226 @@ interface SignupStepProps {
   onNext: () => void;
 }
 
-const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
-  fullName: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-});
+export const SignupStep: React.FC<SignupStepProps> = ({
+  formData,
+  onFormChange,
+  onNext,
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-export const SignupStep = ({ formData, onFormChange, onNext }: SignupStepProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: formData.email,
-      password: formData.password,
-      fullName: formData.fullName,
-    },
-  });
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Update parent form data
-    onFormChange('email', values.email);
-    onFormChange('password', values.password);
-    onFormChange('fullName', values.fullName);
-    
-    // Move to next step
-    onNext();
+    if (!formData.email) {
+      newErrors.email = 'E-post er påkrevd';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Ugyldig e-postadresse';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Passord er påkrevd';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Passord må være minst 6 tegn';
+    }
+
+    if (!formData.fullName) {
+      newErrors.fullName = 'Fullt navn er påkrevd';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Sign up with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            full_name: formData.fullName,
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user && !data.session) {
+        // Email confirmation required
+        toast({
+          title: "Bekreft e-posten din",
+          description: "Vi har sendt en bekreftelseslink til e-posten din. Sjekk innboksen og følg instruksjonene.",
+          variant: "default"
+        });
+      }
+
+      // Move to next step regardless of email confirmation
+      onNext();
+
+    } catch (error: any) {
+      logger.error('Signup failed', {
+        module: 'SignupStep',
+        email: formData.email
+      }, error);
+
+      let errorMessage = 'Noe gikk galt under registreringen';
+      
+      if (error.message?.includes('already registered')) {
+        errorMessage = 'E-postadressen er allerede registrert';
+      } else if (error.message?.includes('invalid email')) {
+        errorMessage = 'Ugyldig e-postadresse';
+      } else if (error.message?.includes('weak password')) {
+        errorMessage = 'Passordet er for svakt';
+      }
+
+      toast({
+        title: "Registrering mislyktes",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Create your account</h2>
-        <p className="text-muted-foreground mt-2">
-          Enter your details to create your Homni account
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-2">Opprett din konto</h2>
+        <p className="text-muted-foreground">
+          Kom i gang med Homni på få minutter
         </p>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="John Doe" 
-                    {...field} 
-                    onChange={(e) => {
-                      field.onChange(e);
-                      onFormChange('fullName', e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Kontoopplysninger</CardTitle>
+          <CardDescription>
+            Fyll inn informasjonen din for å opprette konto
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="fullName">
+              Fullt navn <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="fullName"
+              type="text"
+              placeholder="Ola Nordmann"
+              value={formData.fullName}
+              onChange={(e) => onFormChange('fullName', e.target.value)}
+              className={`mt-1 ${errors.fullName ? 'border-destructive' : ''}`}
+            />
+            {errors.fullName && (
+              <p className="text-sm text-destructive mt-1">{errors.fullName}</p>
             )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder="email@example.com" 
-                    {...field} 
-                    onChange={(e) => {
-                      field.onChange(e);
-                      onFormChange('email', e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    {...field} 
-                    onChange={(e) => {
-                      field.onChange(e);
-                      onFormChange('password', e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <div className="pt-4">
-            <Button type="submit" className="w-full">
-              Continue
-            </Button>
           </div>
-        </form>
-      </Form>
-    </div>
+
+          <div>
+            <Label htmlFor="email">
+              E-postadresse <span className="text-destructive">*</span>
+            </Label>
+            <div className="relative mt-1">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="ola@example.com"
+                value={formData.email}
+                onChange={(e) => onFormChange('email', e.target.value)}
+                className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
+              />
+            </div>
+            {errors.email && (
+              <p className="text-sm text-destructive mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="password">
+              Passord <span className="text-destructive">*</span>
+            </Label>
+            <div className="relative mt-1">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Minst 6 tegn"
+                value={formData.password}
+                onChange={(e) => onFormChange('password', e.target.value)}
+                className={`pl-10 pr-10 ${errors.password ? 'border-destructive' : ''}`}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            {errors.password && (
+              <p className="text-sm text-destructive mt-1">{errors.password}</p>
+            )}
+            <p className="text-xs text-muted-foreground mt-1">
+              Passordet ditt bør være minst 6 tegn langt
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Terms and Privacy */}
+      <div className="text-xs text-muted-foreground text-center">
+        Ved å opprette konto godtar du våre{' '}
+        <a href="/terms" className="text-primary hover:underline">
+          vilkår for bruk
+        </a>{' '}
+        og{' '}
+        <a href="/privacy" className="text-primary hover:underline">
+          personvernpolicy
+        </a>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex justify-end pt-4">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="flex items-center gap-2 min-w-[120px]"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Oppretter...
+            </>
+          ) : (
+            <>
+              Fortsett
+              <ChevronRight className="h-4 w-4" />
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
   );
 };
