@@ -27,6 +27,7 @@ export const DEFAULT_FEATURE_FLAGS = {
   
   // Future features
   ENABLE_MARKETPLACE: false,
+  ENABLE_LEAD_MARKETPLACE: true,
   ENABLE_ADVANCED_REPORTING: false,
 } as const;
 

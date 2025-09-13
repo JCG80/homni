@@ -144,7 +144,8 @@ const companyNavigation: NavigationItem[] = [
         href: '/marketplace',
         title: 'navigation.lead_marketplace',
         icon: Briefcase,
-        description: 'Kjøp nye leads'
+        description: 'Kjøp nye leads',
+        featureFlag: 'ENABLE_LEAD_MARKETPLACE'
       }
     ]
   },
@@ -383,7 +384,8 @@ const getQuickActionsForRole = (role: UserRole): NavigationItem[] => {
           href: '/marketplace',
           title: 'Kjøp leads',
           icon: Briefcase,
-          description: 'Gå til lead-markedsplass'
+          description: 'Gå til lead-markedsplass',
+          featureFlag: 'ENABLE_LEAD_MARKETPLACE'
         }
       ];
       

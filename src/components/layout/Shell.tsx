@@ -110,7 +110,7 @@ export function Shell() {
   
   const allRoutes = [
     ...mainRouteObjects,
-    ...adminRouteObjects,
+    ...adminRouteObjects, 
     ...leadRouteObjects,
     ...docsRouteObjects,
     ...listingsRouteObjects,

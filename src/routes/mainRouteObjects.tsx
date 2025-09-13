@@ -14,6 +14,8 @@ const NewPropertyPage = React.lazy(() => import('@/pages/NewPropertyPage'));
 const NewLeadPage = React.lazy(() => import('@/pages/NewLeadPage'));
 const PropertiesPage = React.lazy(() => import('@/modules/property/pages/PropertiesPage'));
 
+const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
+
 export const mainRouteObjects: AppRoute[] = [
   // Public routes (no layout wrapper)
   {
@@ -72,6 +74,12 @@ export const mainRouteObjects: AppRoute[] = [
         path: 'leads/new',
         element: <NewLeadPage />,
         roles: ['user']
+      },
+      {
+        path: 'marketplace',
+        element: <MarketplacePage />,
+        roles: ['company', 'admin', 'master_admin'],
+        flag: 'ENABLE_LEAD_MARKETPLACE'
       }
     ]
   }
