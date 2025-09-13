@@ -15,10 +15,12 @@ import {
 import { LayoutSidebar } from './LayoutSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SmartHamburgerMenu } from '@/components/navigation/SmartHamburgerMenu';
+import { LanguageSwitcher } from './LanguageSwitcher';
 // RoleSwitcher moved to AdminHeader
 import { QuickActionsDropdown } from '@/components/navigation';
 import { CommandPalette } from '@/components/navigation/CommandPalette';
 import { useKeyboardShortcuts } from '@/hooks/navigation/useKeyboardShortcuts';
+import { useI18n } from '@/hooks/useI18n';
 // Admin debug tools moved to AdminHeader
 
 interface HeaderProps {
@@ -31,6 +33,7 @@ export const Header = ({ className = '' }: HeaderProps) => {
   const { isAuthenticated, isAdmin, isMasterAdmin } = useAuth();
   const isMobile = useIsMobile();
   const { isCommandPaletteOpen, setIsCommandPaletteOpen } = useKeyboardShortcuts();
+  const { t } = useI18n();
   
   const goToLogin = () => {
     navigate('/login');
@@ -52,6 +55,9 @@ export const Header = ({ className = '' }: HeaderProps) => {
         
         {/* Auth/User Section */}
         <div className="flex items-center space-x-2 md:space-x-4">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+          
           {/* Command Palette Trigger - Desktop only */}
           {isAuthenticated && !isMobile && (
             <Button
@@ -61,7 +67,7 @@ export const Header = ({ className = '' }: HeaderProps) => {
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
             >
               <Search className="h-4 w-4" />
-              <span className="text-sm hidden lg:inline">Search</span>
+              <span className="text-sm hidden lg:inline">{t('navigation.search')}</span>
               <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                 <span className="text-xs">⌘</span>K
               </kbd>
@@ -81,7 +87,7 @@ export const Header = ({ className = '' }: HeaderProps) => {
               size={isMobile ? "sm" : "default"}
               className="whitespace-nowrap"
             >
-              Logg inn
+              {t('navigation.login')}
             </Button>
           )}
         </div>

@@ -50,19 +50,19 @@ import {
 const guestNavigation: NavigationItem[] = [
   {
     href: '/',
-    title: 'Hjem',
+    title: 'navigation.home',
     icon: Home,
     description: 'Startside og oversikt'
   },
   {
     href: '/sammenlign',
-    title: 'Sammenlign tjenester',
+    title: 'navigation.compare_services',
     icon: Search,
     description: 'Sammenlign strøm, forsikring og andre tjenester'
   },
   {
     href: '/om-oss',
-    title: 'Om oss',
+    title: 'navigation.about_us',
     icon: FileText,
     description: 'Les mer om Homni'
   }
@@ -72,37 +72,37 @@ const guestNavigation: NavigationItem[] = [
 const userNavigation: NavigationItem[] = [
   {
     href: '/dashboard/user',
-    title: 'Dashboard',
+    title: 'navigation.dashboard',
     icon: LayoutDashboard,
     description: 'Min personlige oversikt'
   },
   {
     href: '/leads/my',
-    title: 'Mine forespørsler',
+    title: 'navigation.my_requests',
     icon: Target,
     description: 'Se og administrer mine forespørsler'
   },
   {
     href: '/properties',
-    title: 'Mine eiendommer',
+    title: 'navigation.my_properties',
     icon: Building,
     description: 'Boligmappa - dokumenter og vedlikehold'
   },
   {
     href: '/maintenance',
-    title: 'Vedlikehold',
+    title: 'navigation.maintenance',
     icon: Settings,
     description: 'Planlegg og spor vedlikehold'
   },
   {
     href: '/sales',
-    title: 'DIY Salg',
+    title: 'navigation.diy_sales',
     icon: DollarSign,
     description: 'Selg eiendom selv med Propr'
   },
   {
     href: '/documents',
-    title: 'Mine dokumenter',
+    title: 'navigation.my_documents',
     icon: FileText,
     description: 'Alle eiendomsdokumenter'
   }
@@ -112,31 +112,31 @@ const userNavigation: NavigationItem[] = [
 const companyNavigation: NavigationItem[] = [
   {
     href: '/dashboard/company',
-    title: 'Bedriftsdashboard',
+    title: 'navigation.company_dashboard',
     icon: LayoutDashboard,
     description: 'Bedriftsoversikt og KPIer'
   },
   {
     href: '/leads',
-    title: 'Lead-håndtering',
+    title: 'navigation.lead_management',
     icon: Target,
     description: 'Administrer kundeemner',
     children: [
       {
         href: '/leads/my',
-        title: 'Mine leads',
+        title: 'navigation.my_leads',
         icon: Target,
         description: 'Aktive leads tildelt bedriften'
       },
       {
         href: '/leads/kanban',
-        title: 'Kanban-oversikt',
+        title: 'navigation.kanban_view',
         icon: Kanban,
         description: 'Visuell lead-pipeline'
       },
       {
         href: '/marketplace',
-        title: 'Lead-markedsplass',
+        title: 'navigation.lead_marketplace',
         icon: Briefcase,
         description: 'Kjøp nye leads'
       }
@@ -144,19 +144,19 @@ const companyNavigation: NavigationItem[] = [
   },
   {
     href: '/analytics',
-    title: 'Analyse og rapporter',
+    title: 'navigation.analytics_reports',
     icon: BarChart3,
     description: 'Ytelse, konvertering og ROI'
   },
   {
     href: '/properties/portfolio',
-    title: 'Eiendomsportefølje',
+    title: 'navigation.property_portfolio',
     icon: Building,
     description: 'Oversikt over alle eiendommer'
   },
   {
     href: '/sales/pipeline',
-    title: 'Salg Pipeline',
+    title: 'navigation.sales_pipeline',
     icon: DollarSign,
     description: 'Salgsaktiviteter og fremgang'
   }

@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { getNavigation } from '@/config/navigation-consolidated';
+import { useI18n } from '@/hooks/useI18n';
 
 interface RoleBasedSectionProps {
   role: UserRole;
@@ -11,25 +12,26 @@ interface RoleBasedSectionProps {
 
 export const RoleBasedSection: React.FC<RoleBasedSectionProps> = ({ role }) => {
   const navItems = getNavigation(role);
+  const { t } = useI18n();
   
   if (!navItems.length) return null;
   
   const getSectionTitle = (role: UserRole): string => {
     switch (role) {
       case 'guest':
-        return 'Navigasjon';
+        return t('navigation.menu');
       case 'user':
-        return 'Min side';
+        return t('navigation.my_page');
       case 'company':
-        return 'Bedrift';
+        return t('navigation.company');
       case 'content_editor':
-        return 'Innhold';
+        return t('navigation.content');
       case 'admin':
-        return 'Administrasjon';
+        return t('navigation.administration');
       case 'master_admin':
-        return 'System';
+        return t('navigation.system');
       default:
-        return 'Meny';
+        return t('navigation.menu');
     }
   };
 
@@ -56,7 +58,7 @@ export const RoleBasedSection: React.FC<RoleBasedSectionProps> = ({ role }) => {
               }
             >
               {Icon && typeof Icon === 'function' && <Icon size={16} />}
-              <span>{item.title}</span>
+              <span>{item.title.startsWith('navigation.') ? t(item.title) : item.title}</span>
             </NavLink>
           );
         })}
