@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/modules/auth/hooks';
+import { useRoleContext } from '@/contexts/RoleContext';
 import { SimplifiedUserDashboard } from '@/components/dashboard/SimplifiedUserDashboard';
 import { CompanyDashboard } from './pages/CompanyDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
@@ -13,15 +14,18 @@ import { logger } from '@/utils/logger';
 export function DashboardRouter() {
   const { role, isAdmin, isMasterAdmin, profile } = useAuth();
   const { activeContext } = useProfileContext();
+  const { activeMode, roles: contextRoles } = useRoleContext();
 
   logger.debug('[DashboardRouter] Current state:', {
     module: 'DashboardRouter',
     role,
+    activeMode,
     activeContextType: activeContext?.type,
-    hasProfile: !!profile
+    hasProfile: !!profile,
+    contextRoles
   });
 
-  // Determine which dashboard to show based on active context or role
+  // Determine which dashboard to show based on active context, mode, or role
   const getDashboardComponent = () => {
     // If admin is in a switched context, show that dashboard
     if (activeContext) {
@@ -33,6 +37,11 @@ export function DashboardRouter() {
         default:
           return <AdminDashboard />;
       }
+    }
+
+    // For regular users with mode switching capability
+    if (contextRoles.includes('company') && activeMode === 'professional') {
+      return <CompanyDashboard />;
     }
 
     // Otherwise show dashboard based on user's actual role
@@ -52,10 +61,19 @@ export function DashboardRouter() {
     }
   };
 
-  // Get dashboard title based on role
+  // Get dashboard title based on mode and role
   const getDashboardTitle = () => {
     if (activeContext) {
       return `${activeContext.type === 'company' ? 'Bedriftsdashboard' : 'Brukerdashboard'} (Admin Mode)`;
+    }
+    
+    // Handle mode-based titles for users with both capabilities
+    if (contextRoles.includes('company')) {
+      if (activeMode === 'professional') {
+        return 'Bedriftsdashboard';
+      } else {
+        return `Dashboard - ${profile?.full_name || 'Bruker'}`;
+      }
     }
     
     switch (role) {
@@ -77,6 +95,15 @@ export function DashboardRouter() {
   const getDashboardDescription = () => {
     if (activeContext) {
       return `Administrerer ${activeContext.type === 'company' ? 'bedrift' : 'bruker'} som administrator`;
+    }
+
+    // Handle mode-based descriptions for users with both capabilities
+    if (contextRoles.includes('company')) {
+      if (activeMode === 'professional') {
+        return 'Administrer leads, budsjett og ytelse for din bedrift';
+      } else {
+        return 'Se oversikt over dine forespørsler og aktivitet på Homni';
+      }
     }
 
     switch (role) {

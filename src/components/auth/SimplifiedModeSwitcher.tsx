@@ -1,6 +1,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useRoleContext } from '@/contexts/RoleContext';
+import { useAuth } from '@/modules/auth/hooks';
+import { useNavigate } from 'react-router-dom';
+import { routeForRole } from '@/config/routeForRole';
 import { User, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -11,6 +14,8 @@ import { cn } from '@/lib/utils';
  */
 export const SimplifiedModeSwitcher: React.FC = () => {
   const { roles, activeMode, setActiveMode, isSwitching, isLoading, error } = useRoleContext();
+  const { role } = useAuth();
+  const navigate = useNavigate();
   
   if (isLoading) return null;
 
@@ -48,7 +53,15 @@ export const SimplifiedModeSwitcher: React.FC = () => {
               variant="ghost"
               size="sm"
               disabled={isSwitching}
-              onClick={() => setActiveMode(mode.key)}
+              onClick={async () => {
+                await setActiveMode(mode.key);
+                // Redirect to appropriate dashboard after mode switch
+                if (role) {
+                  const targetRole = mode.key === 'professional' ? 'company' : 'user';
+                  const dashboardPath = routeForRole(targetRole);
+                  navigate(dashboardPath, { replace: true });
+                }
+              }}
               className={cn(
                 "relative z-10 flex items-center gap-2 px-3 py-1 text-sm transition-colors",
                 isActive 
