@@ -1,42 +1,75 @@
 
 import React, { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 
 type Integration = {
   id: string;
   name: string;
-  provider: string;
-  category: string;
-  is_enabled: boolean;
-  secret_name: string | null;
+  service_type: string;
+  status: string;
+  credentials_configured: boolean;
+  endpoint_url: string | null;
   created_at: string;
   updated_at: string;
-  config: Record<string, unknown>;
+  configuration: any;
+  api_version: string | null;
+  error_message: string | null;
 };
 
 const IntegrationsList: React.FC = () => {
   const [items, setItems] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorText, setErrorText] = useState<string | null>(null);
+  const [testingConnection, setTestingConnection] = useState<string | null>(null);
 
   useEffect(() => {
-    // Placeholder data until database tables are synced
-    const placeholderData: Integration[] = [
-      {
-        id: "1",
-        name: "Resend Email Service",
-        provider: "resend",
-        category: "email",
-        is_enabled: false,
-        secret_name: "RESEND_API_KEY",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        config: {}
-      }
-    ];
-    
-    setItems(placeholderData);
-    setLoading(false);
+    loadIntegrations();
   }, []);
+
+  const loadIntegrations = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('api_integrations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setItems(data || []);
+    } catch (err: any) {
+      setErrorText(err.message || 'Kunne ikke laste integrasjoner');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testConnection = async (integration: Integration) => {
+    setTestingConnection(integration.id);
+    try {
+      // Mock connection test - in real implementation this would check API connectivity
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Log the test attempt
+      await supabase.from('api_request_logs').insert({
+        integration_id: integration.id,
+        request_method: 'GET',
+        request_url: '/health',
+        response_status: 200,
+        response_time_ms: 150,
+        request_body: { test: true },
+        response_body: { status: 'ok', mock: true }
+      });
+      
+      alert(`✅ ${integration.name}: Tilkobling OK (mock test)`);
+    } catch (err) {
+      alert(`❌ ${integration.name}: Tilkoblingsfeil`);
+    } finally {
+      setTestingConnection(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -67,11 +100,12 @@ const IntegrationsList: React.FC = () => {
           <thead className="bg-muted/40 text-muted-foreground">
             <tr>
               <th className="px-4 py-2 text-left font-medium">Navn</th>
-              <th className="px-4 py-2 text-left font-medium">Provider</th>
-              <th className="px-4 py-2 text-left font-medium">Kategori</th>
+              <th className="px-4 py-2 text-left font-medium">Tjeneste</th>
               <th className="px-4 py-2 text-left font-medium">Status</th>
-              <th className="px-4 py-2 text-left font-medium">Secret</th>
+              <th className="px-4 py-2 text-left font-medium">Konfig</th>
+              <th className="px-4 py-2 text-left font-medium">Endpoint</th>
               <th className="px-4 py-2 text-left font-medium">Oppdatert</th>
+              <th className="px-4 py-2 text-left font-medium">Handlinger</th>
             </tr>
           </thead>
           <tbody>
@@ -79,7 +113,7 @@ const IntegrationsList: React.FC = () => {
               <tr>
                 <td
                   className="px-4 py-6 text-center text-muted-foreground"
-                  colSpan={6}
+                  colSpan={7}
                 >
                   Ingen integrasjoner registrert enda.
                 </td>
@@ -88,22 +122,24 @@ const IntegrationsList: React.FC = () => {
             {items.map((it) => (
               <tr key={it.id} className="border-t border-border">
                 <td className="px-4 py-2">{it.name}</td>
-                <td className="px-4 py-2">{it.provider}</td>
-                <td className="px-4 py-2">{it.category}</td>
+                <td className="px-4 py-2">{it.service_type}</td>
                 <td className="px-4 py-2">
-                  <span
-                    className={`inline-flex items-center rounded px-2 py-0.5 text-xs ${
-                      it.is_enabled
-                        ? "bg-green-600/10 text-green-600"
-                        : "bg-amber-500/10 text-amber-600"
-                    }`}
-                  >
-                    {it.is_enabled ? "Aktivert" : "Deaktivert"}
-                  </span>
+                  <Badge variant={it.status === 'active' ? "default" : "secondary"}>
+                    {it.credentials_configured ? (
+                      <><CheckCircle className="w-3 h-3 mr-1" /> {it.status}</>
+                    ) : (
+                      <><AlertCircle className="w-3 h-3 mr-1" /> Ikke konfigurert</>
+                    )}
+                  </Badge>
                 </td>
                 <td className="px-4 py-2">
-                  {it.secret_name ? (
-                    <code className="text-xs">{it.secret_name}</code>
+                  <Badge variant={it.credentials_configured ? "default" : "outline"}>
+                    {it.credentials_configured ? "Konfigurert" : "Mangler"}
+                  </Badge>
+                </td>
+                <td className="px-4 py-2">
+                  {it.endpoint_url ? (
+                    <code className="text-xs">{it.endpoint_url}</code>
                   ) : (
                     <span className="text-muted-foreground text-xs">
                       Ikke satt
@@ -112,6 +148,16 @@ const IntegrationsList: React.FC = () => {
                 </td>
                 <td className="px-4 py-2">
                   {new Date(it.updated_at).toLocaleString()}
+                </td>
+                <td className="px-4 py-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => testConnection(it)}
+                    disabled={testingConnection === it.id}
+                  >
+                    {testingConnection === it.id ? 'Tester...' : 'Test'}
+                  </Button>
                 </td>
               </tr>
             ))}
