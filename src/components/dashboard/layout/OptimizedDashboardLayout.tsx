@@ -83,7 +83,7 @@ export const OptimizedDashboardLayout: React.FC<DashboardLayoutProps> = ({
       <div className={cn('space-y-6 animate-fade-in', className)}>
         {showPerformanceMonitor && (
           <div className="fixed bottom-4 left-4 z-50 max-w-xs">
-            <DashboardPerformanceMonitor showDetails={false} />
+            <DashboardPerformanceMonitor visible={true} />
           </div>
         )}
         
