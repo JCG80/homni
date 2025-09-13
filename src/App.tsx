@@ -14,6 +14,7 @@ import { DebugToggle } from '@/components/debug/DebugToggle';
 import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
 import { logger } from '@/utils/logger';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
+import { ContextualHelp } from '@/components/guidance/ContextualHelp';
 
 import { usePageViews } from '@/lib/analytics/react';
 
@@ -51,6 +52,7 @@ function App() {
         <ConnectionStatus />
         <SiteLayout>
           <Shell />
+          <ContextualHelp />
           
           <Toaster />
           <DebugToggle />

@@ -95,6 +95,12 @@ const userNavigation: NavigationItem[] = [
     description: 'Planlegg og spor vedlikehold'
   },
   {
+    href: '/account',
+    title: 'navigation.account',
+    icon: User,
+    description: 'Administrer konto og profil'
+  },
+  {
     href: '/sales',
     title: 'navigation.diy_sales',
     icon: DollarSign,
