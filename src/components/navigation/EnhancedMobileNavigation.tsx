@@ -1,196 +1,139 @@
 /**
- * EnhancedMobileNavigation - Advanced mobile navigation with gestures and native feel
- * Part of Phase 3B Step 3: Unified Navigation Experience
+ * Enhanced Mobile Navigation with Cross-Platform Sync
+ * Optimized for mobile UX with gesture support and sync
  */
 
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, PanInfo } from 'framer-motion';
-import { NavigationItem } from '@/types/consolidated-types';
-import { useUnifiedNavigation } from '@/hooks/useUnifiedNavigation';
-import { NavigationPatterns } from '@/lib/navigation/NavigationPatterns';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
+import { useLocation, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useAdaptiveNavigation } from '@/hooks/navigation/useAdaptiveNavigation';
+import { useMobileNavigation } from '@/hooks/useUnifiedNavigation';
+import { cn } from '@/lib/utils';
+import { Home, Grid3X3, User, Settings, MoreHorizontal } from 'lucide-react';
 
 interface EnhancedMobileNavigationProps {
   className?: string;
   onItemClick?: () => void;
-  enableGestures?: boolean;
 }
 
 export const EnhancedMobileNavigation: React.FC<EnhancedMobileNavigationProps> = ({
-  className = '',
-  onItemClick,
-  enableGestures = true
+  className,
+  onItemClick
 }) => {
-  const { navigation, isLoading } = useUnifiedNavigation();
   const location = useLocation();
-  const { t } = useTranslation();
-  
-  const [activeTab, setActiveTab] = useState(0);
-  const [dragDirection, setDragDirection] = useState<'left' | 'right' | null>(null);
-
-  // Transform navigation for mobile
-  const mobileItems = NavigationPatterns.transformForMobile(navigation.primary);
-  const quickActions = navigation.quickActions.slice(0, 3);
-
-  // Handle swipe gestures
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (!enableGestures) return;
-
-    const threshold = 50;
-    if (Math.abs(info.velocity.x) > threshold) {
-      if (info.velocity.x > 0 && activeTab > 0) {
-        setActiveTab(activeTab - 1);
-      } else if (info.velocity.x < 0 && activeTab < mobileItems.length - 1) {
-        setActiveTab(activeTab + 1);
-      }
-    }
-    setDragDirection(null);
-  };
-
-  const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (!enableGestures) return;
-    
-    if (Math.abs(info.offset.x) > 10) {
-      setDragDirection(info.offset.x > 0 ? 'right' : 'left');
-    }
-  };
-
-  // Check if a path is active
-  const isActive = (href: string): boolean => {
-    if (href === '/' && location.pathname === '/') return true;
-    if (href === '/') return false;
-    return location.pathname.startsWith(href);
-  };
-
-  // Handle item click with haptic feedback (if supported)
-  const handleItemClick = (item: NavigationItem) => {
-    // Haptic feedback for supported devices
-    if ('vibrate' in navigator) {
-      navigator.vibrate(10);
-    }
-    
-    onItemClick?.();
-  };
+  const { items, quickActions, isLoading } = useMobileNavigation();
+  const { 
+    adaptiveConfig, 
+    deviceContext, 
+    shouldShowAnimation 
+  } = useAdaptiveNavigation();
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center p-4">
-        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
-      </div>
+      <nav className={cn("flex justify-around p-2 bg-background border-t", className)}>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex flex-col items-center space-y-1">
+            <div className="w-6 h-6 bg-muted animate-pulse rounded" />
+            <div className="w-8 h-3 bg-muted animate-pulse rounded" />
+          </div>
+        ))}
+      </nav>
     );
   }
 
-  return (
-    <motion.nav
-      className={`bg-background/95 backdrop-blur-sm border-t border-border ${className}`}
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-    >
-      {/* Quick Actions Row */}
-      {quickActions.length > 0 && (
-        <div className="flex justify-around items-center px-4 py-2 border-b border-border/50">
-          {quickActions.map((action) => (
-            <Link
-              key={action.href}
-              to={action.href}
-              onClick={() => handleItemClick(action)}
-              className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-muted/50 transition-colors min-w-0"
-            >
-              {action.icon && (
-                <div className="h-5 w-5 mb-1 text-muted-foreground">
-                  {typeof action.icon === 'function' ? React.createElement(action.icon, { className: "h-5 w-5" }) : action.icon}
-                </div>
-              )}
-              <span className="text-xs text-muted-foreground truncate max-w-[60px]">
-                {action.title}
-              </span>
-            </Link>
-          ))}
-        </div>
-      )}
+  // Limit mobile items to 5 for optimal UX
+  const displayItems = items.slice(0, 5);
+  
+  // Add overflow menu if there are more items
+  const hasOverflow = items.length > 5;
 
-      {/* Main Navigation */}
-      <motion.div
-        className="flex justify-around items-center px-2 py-3"
-        drag={enableGestures ? "x" : false}
-        dragConstraints={{ left: 0, right: 0 }}
-        onDrag={handleDrag}
-        onDragEnd={handleDragEnd}
-        style={{
-          x: dragDirection === 'left' ? -5 : dragDirection === 'right' ? 5 : 0
-        }}
-      >
-        {mobileItems.map((item, index) => {
-          const active = isActive(item.href);
-          
-          return (
-            <Link
-              key={item.href}
-              to={item.href}
-              onClick={() => handleItemClick(item)}
-              className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 max-w-[80px] relative ${
-                active 
-                  ? 'text-primary bg-primary/10' 
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-              }`}
+  return (
+    <motion.nav 
+      className={cn(
+        "flex justify-around items-center p-2 bg-background border-t",
+        "safe-area-inset-bottom", // Handle iPhone notch
+        adaptiveConfig.navigationDensity === 'compact' && "p-1",
+        className
+      )}
+      initial={shouldShowAnimation ? { y: 100, opacity: 0 } : false}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+    >
+      {displayItems.map((item, index) => {
+        const isActive = location.pathname === item.href || 
+          (item.href !== '/' && location.pathname.startsWith(item.href));
+
+        return (
+          <motion.div
+            key={item.href}
+            whileTap={shouldShowAnimation ? { scale: 0.95 } : undefined}
+            className="flex flex-col items-center min-w-0 flex-1"
+          >
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "flex flex-col items-center space-y-1 p-2 h-auto min-h-[48px]",
+                "text-xs font-medium transition-colors duration-200",
+                isActive 
+                  ? "text-primary bg-primary/10" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              )}
+              onClick={onItemClick}
             >
-              {/* Icon */}
-              {item.icon && (
-                <motion.div 
-                  className="h-6 w-6 mb-1 relative"
-                  animate={{ scale: active ? 1.1 : 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                >
-                  {typeof item.icon === 'function' ? React.createElement(item.icon, { 
-                    className: `h-6 w-6 ${active ? 'text-primary' : ''}` 
-                  }) : item.icon}
+              <Link to={item.href} className="flex flex-col items-center space-y-1">
+                <div className="relative">
+                  {item.icon && typeof item.icon === 'function' && (
+                    <item.icon className={cn(
+                      "w-5 h-5 transition-transform duration-200",
+                      isActive && "scale-110"
+                    )} />
+                  )}
                   
-                  {/* Badge indicator */}
+                  {/* Badge support */}
                   {item.badge && (
                     <Badge 
                       variant="destructive" 
-                      className="absolute -top-2 -right-2 h-5 w-5 text-xs p-0 flex items-center justify-center"
+                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
                     >
                       {item.badge}
                     </Badge>
                   )}
-                </motion.div>
-              )}
-              
-              {/* Label */}
-              <span className={`text-xs font-medium truncate max-w-full ${
-                active ? 'text-primary' : ''
-              }`}>
-                {item.title}
-              </span>
-              
-              {/* Active indicator */}
-              {active && (
-                <motion.div
-                  className="absolute bottom-0 h-0.5 bg-primary rounded-full"
-                  layoutId="activeIndicator"
-                  initial={{ width: 0 }}
-                  animate={{ width: '60%' }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                />
-              )}
-            </Link>
-          );
-        })}
-      </motion.div>
+                </div>
+                
+                <span className={cn(
+                  "text-[10px] leading-tight text-center truncate w-full max-w-[60px]",
+                  adaptiveConfig.navigationDensity === 'compact' && "text-[9px]"
+                )}>
+                  {item.title}
+                </span>
+              </Link>
+            </Button>
+          </motion.div>
+        );
+      })}
 
-      {/* Gesture hint */}
-      {enableGestures && dragDirection && (
+      {/* Overflow menu for additional items */}
+      {hasOverflow && (
         <motion.div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xs text-muted-foreground bg-background/90 px-2 py-1 rounded"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          whileTap={shouldShowAnimation ? { scale: 0.95 } : undefined}
+          className="flex flex-col items-center min-w-0 flex-1"
         >
-          {dragDirection === 'left' ? '← Swipe left' : 'Swipe right →'}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex flex-col items-center space-y-1 p-2 h-auto min-h-[48px] text-xs font-medium text-muted-foreground"
+            onClick={() => {
+              // Handle overflow menu - could open a sheet or dropdown
+              console.log('Show more navigation items');
+            }}
+          >
+            <MoreHorizontal className="w-5 h-5" />
+            <span className="text-[10px] leading-tight">Mer</span>
+          </Button>
         </motion.div>
       )}
     </motion.nav>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Header } from './Header';
+import { NavigationSync } from '@/components/navigation/NavigationSync';
+import { UserEngagementTracker } from '@/components/navigation/UserEngagementTracker';
 
 interface SiteLayoutProps {
   children: React.ReactNode;
@@ -23,9 +25,12 @@ export function SiteLayout({ children }: SiteLayoutProps) {
   
   // For user routes, use the standard layout with Header
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      {children}
-    </div>
+    <UserEngagementTracker>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <NavigationSync />
+        {children}
+      </div>
+    </UserEngagementTracker>
   );
 }

@@ -23,6 +23,7 @@ import { QuickActionsDropdown } from '@/components/navigation';
 import { CommandPalette } from '@/components/navigation/CommandPalette';
 import { useKeyboardShortcuts } from '@/hooks/navigation/useKeyboardShortcuts';
 import { useI18n } from '@/hooks/useI18n';
+import { NavigationSync } from '@/components/navigation/NavigationSync';
 // Admin debug tools moved to AdminHeader
 
 interface HeaderProps {
@@ -63,6 +64,13 @@ export const Header = ({ className = '' }: HeaderProps) => {
           {/* Language Switcher */}
           <LanguageSwitcher />
           
+          {/* Navigation Engagement - Show personalized suggestions */}
+          {isAuthenticated && !isMobile && (
+            <div className="hidden lg:block">
+              {/* This will be shown in a dropdown or sidebar panel */}
+            </div>
+          )}
+          
           {/* Command Palette Trigger - Desktop only */}
           {isAuthenticated && !isMobile && (
             <Button
@@ -101,7 +109,14 @@ export const Header = ({ className = '' }: HeaderProps) => {
       {/* Smart Breadcrumbs - Below main header */}
       {isAuthenticated && (
         <div className="container mx-auto px-4 pt-2 pb-1 border-t border-border/30">
-          <SmartBreadcrumbs />
+          <div className="flex items-center justify-between">
+            <SmartBreadcrumbs />
+            
+            {/* Navigation sync status indicator */}
+            <div className="flex items-center">
+              <NavigationSync />
+            </div>
+          </div>
         </div>
       )}
 

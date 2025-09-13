@@ -29,13 +29,21 @@ import {
 import { cn } from '@/lib/utils';
 
 interface CrossPlatformNavigationProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
+  items?: any[];
+  variant?: string;
+  density?: 'compact' | 'comfortable' | 'spacious';
+  enableAnimations?: boolean;
 }
 
 export const CrossPlatformNavigation: React.FC<CrossPlatformNavigationProps> = ({
   children,
-  className
+  className,
+  items = [],
+  variant = 'horizontal',
+  density = 'comfortable',
+  enableAnimations = true
 }) => {
   const location = useLocation();
   const {
@@ -187,7 +195,11 @@ export const CrossPlatformNavigation: React.FC<CrossPlatformNavigationProps> = (
   // Fallback layout (minimal)
   return (
     <div className={cn("min-h-screen", className)}>
-      {children}
+          {children || (
+            <div className="flex items-center justify-center min-h-[200px]">
+              <p className="text-muted-foreground">Navigasjon lastes...</p>
+            </div>
+          )}
     </div>
   );
 };

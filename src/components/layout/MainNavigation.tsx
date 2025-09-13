@@ -7,10 +7,13 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { RoleBasedNavigation } from '@/components/navigation/RoleBasedNavigation';
 import { useUnifiedNavigation } from '@/hooks/useUnifiedNavigation';
+import { useAdaptiveNavigation } from '@/hooks/navigation/useAdaptiveNavigation';
+import { CrossPlatformNavigation } from '@/components/navigation/CrossPlatformNavigation';
 
 export const MainNavigation = () => {
   const { navigation, isLoading } = useUnifiedNavigation();
   const isMobile = useIsMobile();
+  const { adaptiveConfig, deviceContext } = useAdaptiveNavigation();
   
   // For mobile, we'll handle navigation via MobileNavigation component
   if (isMobile) {
@@ -31,12 +34,15 @@ export const MainNavigation = () => {
     );
   }
   
+  // Use enhanced cross-platform navigation for better UX
   return (
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList>
-        <RoleBasedNavigation 
-          variant="horizontal" 
+        <CrossPlatformNavigation 
           items={navigation.primary}
+          variant="horizontal"
+          density={adaptiveConfig.navigationDensity}
+          enableAnimations={!deviceContext.isMobile}
         />
       </NavigationMenuList>
     </NavigationMenu>

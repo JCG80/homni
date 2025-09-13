@@ -14,3 +14,16 @@ export * from './EnhancedBreadcrumb';
 export * from './CommandPalette';
 export * from './SmartNavigationSuggestions';
 export * from './NavigationLoadingStates';
+
+// Cross-Platform Navigation System
+export * from './CrossPlatformNavigation';
+export * from './EnhancedMobileNavigation';
+export * from './NavigationEngagement';
+export * from './NavigationSync';
+export * from './UserEngagementTracker';
+
+// Smart Navigation Features
+export * from './SmartBreadcrumbs';
+export * from './SmartHamburgerMenu';
+export * from './SmartNotifications';
+export * from './UnifiedMobileNavigation';
