@@ -1,10 +1,11 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
-import { LayoutSidebar } from './LayoutSidebar';
+import { AppSidebar } from './AppSidebar';
 import { SimplifiedModeSwitcher } from '@/components/auth/SimplifiedModeSwitcher';
 import { useAuth } from '@/modules/auth/hooks';
 import { useRoleContext } from '@/contexts/RoleContext';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 
 export const UserLayout: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -15,15 +16,13 @@ export const UserLayout: React.FC = () => {
     (roles.includes('company') || roles.includes('buyer'));
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <div className="flex">
-        <div className="hidden md:block w-64">
-          <LayoutSidebar />
-        </div>
+    <SidebarProvider collapsedWidth={56}>
+      <div className="min-h-screen flex w-full bg-background">
+        {isAuthenticated && <AppSidebar />}
         
-        <div className="flex-1">
+        <SidebarInset className="flex-1">
+          <Header />
+          
           {/* Mode switcher for users with both personal/professional access */}
           {showModeSwitcher && (
             <div className="border-b bg-muted/20 px-6 py-3">
@@ -31,13 +30,13 @@ export const UserLayout: React.FC = () => {
             </div>
           )}
           
-          <main className="p-6">
+          <main className="flex-1 p-6">
             <div className="max-w-7xl mx-auto">
               <Outlet />
             </div>
           </main>
-        </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };

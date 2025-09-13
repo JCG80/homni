@@ -1,11 +1,14 @@
 import React from 'react';
-import { useAuth } from '@/modules/auth/hooks';
 import { 
-  SidebarContent, 
-  SidebarNavSection, 
-  SidebarNavLink 
+  SidebarGroup,
+  SidebarGroupContent, 
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton
 } from '@/components/ui/sidebar';
-import { getNavigation } from '@/config/navigation-consolidated';
+import { getConsolidatedNavigation } from '@/config/navigation-consolidated';
+import { NavLink } from 'react-router-dom';
 import { UserRole } from '@/modules/auth/normalizeRole';
 
 interface RoleBasedMenuProps {
@@ -14,23 +17,32 @@ interface RoleBasedMenuProps {
 
 export const RoleBasedMenu: React.FC<RoleBasedMenuProps> = ({ role }) => {
   // Get the navigation items for this role
-  const navItems = getNavigation(role as UserRole);
+  const navConfig = getConsolidatedNavigation(role as UserRole);
+  const navItems = navConfig.primary;
   
   return (
-    <SidebarNavSection title={`${role.charAt(0).toUpperCase() + role.slice(1)} Meny`}>
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        return (
-          <SidebarNavLink 
-            key={item.href} 
-            to={item.href} 
-            icon={typeof Icon === 'function' ? Icon : undefined}
-            end={item.href === '/'}
-          >
-            {item.title}
-          </SidebarNavLink>
-        );
-      })}
-    </SidebarNavSection>
+    <SidebarGroup>
+      <SidebarGroupLabel>{`${role.charAt(0).toUpperCase() + role.slice(1)} Meny`}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton asChild>
+                  <NavLink 
+                    to={item.href}
+                    end={item.href === '/'}
+                  >
+                    {typeof Icon === 'function' && <Icon className="h-4 w-4" />}
+                    <span>{item.title}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 };
