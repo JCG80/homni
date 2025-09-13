@@ -2,29 +2,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { logger } from '@/utils/logger';
+import { Lead, LeadStatus, normalizeLeadStatus } from '@/types/leads-canonical';
 
-export interface Lead {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  submitted_by?: string;
-  company_id?: string;
-  metadata?: any; // Using any to match Supabase Json type
-  anonymous_email?: string;
-  attributed_at?: string;
-  confirmation_email_sent_at?: string;
-  customer_email?: string;
-  customer_name?: string;
-  customer_phone?: string;
-  lead_type?: string;
-  session_id?: string;
-  smart_start_submission_id?: string;
-}
-
+// Remove the local Lead interface since we're using the canonical one from types
 export const useMyLeads = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +32,16 @@ export const useMyLeads = () => {
           throw supabaseError;
         }
 
-        setLeads(data || []);
+        // Transform database response to canonical Lead format
+        const transformedLeads: Lead[] = (data || []).map(dbLead => ({
+          ...dbLead,
+          status: normalizeLeadStatus(dbLead.status) as LeadStatus,
+          metadata: (typeof dbLead.metadata === 'object' && dbLead.metadata !== null) 
+            ? dbLead.metadata as Record<string, any> 
+            : {}
+        }));
+
+        setLeads(transformedLeads);
       } catch (err) {
         logger.error('Failed to fetch user leads', {
           module: 'useMyLeads',
@@ -84,7 +73,16 @@ export const useMyLeads = () => {
         throw supabaseError;
       }
 
-      setLeads(data || []);
+      // Transform database response to canonical Lead format
+      const transformedLeads: Lead[] = (data || []).map(dbLead => ({
+        ...dbLead,
+        status: normalizeLeadStatus(dbLead.status) as LeadStatus,
+        metadata: (typeof dbLead.metadata === 'object' && dbLead.metadata !== null) 
+          ? dbLead.metadata as Record<string, any> 
+          : {}
+      }));
+
+      setLeads(transformedLeads);
     } catch (err) {
       logger.error('Failed to refetch user leads', {
         module: 'useMyLeads',
