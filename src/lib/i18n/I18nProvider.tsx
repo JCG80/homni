@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { I18nContext, SupportedLocale, Translation } from './index';
-import { getCurrentLocale, setLocale as persistLocale, loadMessages, createTranslator } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
+import { I18nContext, SupportedLocale, getCurrentLocale, setLocale as persistLocale } from './index';
 
 interface I18nProviderProps {
   children: React.ReactNode;
@@ -11,37 +11,24 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({
   children, 
   defaultLocale = 'no' 
 }) => {
+  const { t, i18n } = useTranslation();
   const [locale, setLocaleState] = useState<SupportedLocale>(() => getCurrentLocale());
-  const [messages, setMessages] = useState<any>({});
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load messages when locale changes
+  // Update i18n language when locale changes
   useEffect(() => {
-    loadMessages(locale).then((loadedMessages) => {
-      setMessages(loadedMessages);
-      setIsLoaded(true);
-    });
-  }, [locale]);
+    i18n.changeLanguage(locale);
+  }, [locale, i18n]);
 
   const setLocale = useCallback((newLocale: SupportedLocale) => {
     persistLocale(newLocale);
     setLocaleState(newLocale);
   }, []);
 
-  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
-    if (!isLoaded) {
-      return key; // Return key while loading
-    }
-    
-    const translator = createTranslator(messages);
-    return translator(key, params);
-  }, [messages, isLoaded]);
-
   const contextValue = useMemo(() => ({
     locale,
     setLocale,
     t
-  }), [locale, t]);
+  }), [locale, setLocale, t]);
 
   return (
     <I18nContext.Provider value={contextValue}>

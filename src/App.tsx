@@ -16,6 +16,7 @@ import { logger } from '@/utils/logger';
 // Import i18n configuration
 import '@/lib/i18n/index';
 import { ContextualHelp } from '@/components/guidance/ContextualHelp';
+import { I18nProvider } from '@/lib/i18n/I18nProvider';
 
 import { usePageViews } from '@/lib/analytics/react';
 
