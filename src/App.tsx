@@ -13,6 +13,7 @@ import { NetworkDiagnostics } from '@/components/debug/NetworkDiagnostics';
 import { DebugToggle } from '@/components/debug/DebugToggle';
 import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
 import { logger } from '@/utils/logger';
+import { I18nProvider } from '@/lib/i18n/I18nProvider';
 
 import { usePageViews } from '@/lib/analytics/react';
 
@@ -46,15 +47,17 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ConnectionStatus />
-      <SiteLayout>
-        <Shell />
-        
-        <Toaster />
-        <DebugToggle />
-        <AppDiagnostics />
-        <NetworkDiagnostics />
-      </SiteLayout>
+      <I18nProvider>
+        <ConnectionStatus />
+        <SiteLayout>
+          <Shell />
+          
+          <Toaster />
+          <DebugToggle />
+          <AppDiagnostics />
+          <NetworkDiagnostics />
+        </SiteLayout>
+      </I18nProvider>
     </ErrorBoundary>
   );
 }

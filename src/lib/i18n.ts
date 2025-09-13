@@ -5,7 +5,7 @@
 
 import { logger } from '@/utils/logger';
 
-export type Locale = 'no' | 'en';
+export type SupportedLocale = 'no' | 'en' | 'se' | 'dk';
 
 export interface TranslationMessages {
   navigation: Record<string, string>;
@@ -22,20 +22,20 @@ export interface TranslationMessages {
 }
 
 // Default locale
-export const DEFAULT_LOCALE: Locale = 'no';
+export const DEFAULT_LOCALE: SupportedLocale = 'no';
 
 // Available locales
-export const SUPPORTED_LOCALES: Locale[] = ['no', 'en'];
+export const SUPPORTED_LOCALES: SupportedLocale[] = ['no', 'en', 'se', 'dk'];
 
 // Translation cache
-const translationCache = new Map<Locale, TranslationMessages>();
+const translationCache = new Map<SupportedLocale, TranslationMessages>();
 
 /**
  * Get current locale from browser/storage
  */
-export function getCurrentLocale(): Locale {
+export function getCurrentLocale(): SupportedLocale {
   // Check localStorage first
-  const stored = localStorage.getItem('homni-locale') as Locale;
+  const stored = localStorage.getItem('homni-locale') as SupportedLocale;
   if (stored && SUPPORTED_LOCALES.includes(stored)) {
     return stored;
   }
@@ -48,6 +48,12 @@ export function getCurrentLocale(): Locale {
   if (browserLang.startsWith('en')) {
     return 'en';
   }
+  if (browserLang.startsWith('se') || browserLang.startsWith('sv')) {
+    return 'se';
+  }
+  if (browserLang.startsWith('dk') || browserLang.startsWith('da')) {
+    return 'dk';
+  }
 
   return DEFAULT_LOCALE;
 }
@@ -55,7 +61,7 @@ export function getCurrentLocale(): Locale {
 /**
  * Set locale and persist to localStorage
  */
-export function setLocale(locale: Locale): void {
+export function setLocale(locale: SupportedLocale): void {
   if (!SUPPORTED_LOCALES.includes(locale)) {
     logger.warn(`Unsupported locale: ${locale}, falling back to ${DEFAULT_LOCALE}`, {
       module: 'i18n',
@@ -68,7 +74,13 @@ export function setLocale(locale: Locale): void {
   localStorage.setItem('homni-locale', locale);
   
   // Update document lang attribute
-  document.documentElement.lang = locale === 'no' ? 'nb-NO' : 'en-US';
+  const langMap: Record<SupportedLocale, string> = {
+    no: 'nb-NO',
+    en: 'en-US', 
+    se: 'sv-SE',
+    dk: 'da-DK'
+  };
+  document.documentElement.lang = langMap[locale];
   
   // Trigger custom event for components that need to react
   window.dispatchEvent(new CustomEvent('localechange', { detail: { locale } }));
@@ -77,7 +89,7 @@ export function setLocale(locale: Locale): void {
 /**
  * Load translation messages for a locale
  */
-export async function loadMessages(locale: Locale): Promise<TranslationMessages> {
+export async function loadMessages(locale: SupportedLocale): Promise<TranslationMessages> {
   // Return cached if available
   if (translationCache.has(locale)) {
     return translationCache.get(locale)!;
@@ -166,7 +178,7 @@ export function createTranslator(messages: TranslationMessages) {
 /**
  * Format date according to locale
  */
-export function formatDate(date: Date | string, locale: Locale): string {
+export function formatDate(date: Date | string, locale: SupportedLocale): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   
   const options: Intl.DateTimeFormatOptions = {
@@ -175,14 +187,20 @@ export function formatDate(date: Date | string, locale: Locale): string {
     day: 'numeric'
   };
   
-  const localeString = locale === 'no' ? 'nb-NO' : 'en-US';
-  return new Intl.DateTimeFormat(localeString, options).format(d);
+  const localeMap: Record<SupportedLocale, string> = {
+    no: 'nb-NO',
+    en: 'en-US',
+    se: 'sv-SE', 
+    dk: 'da-DK'
+  };
+  
+  return new Intl.DateTimeFormat(localeMap[locale], options).format(d);
 }
 
 /**
  * Format time according to locale
  */
-export function formatTime(date: Date | string, locale: Locale): string {
+export function formatTime(date: Date | string, locale: SupportedLocale): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   
   const options: Intl.DateTimeFormatOptions = {
@@ -190,56 +208,80 @@ export function formatTime(date: Date | string, locale: Locale): string {
     minute: '2-digit'
   };
   
-  const localeString = locale === 'no' ? 'nb-NO' : 'en-US';
-  return new Intl.DateTimeFormat(localeString, options).format(d);
+  const localeMap: Record<SupportedLocale, string> = {
+    no: 'nb-NO',
+    en: 'en-US',
+    se: 'sv-SE',
+    dk: 'da-DK'
+  };
+  
+  return new Intl.DateTimeFormat(localeMap[locale], options).format(d);
 }
 
 /**
  * Format number according to locale
  */
-export function formatNumber(number: number, locale: Locale): string {
-  const localeString = locale === 'no' ? 'nb-NO' : 'en-US';
-  return new Intl.NumberFormat(localeString).format(number);
+export function formatNumber(number: number, locale: SupportedLocale): string {
+  const localeMap: Record<SupportedLocale, string> = {
+    no: 'nb-NO',
+    en: 'en-US',
+    se: 'sv-SE',
+    dk: 'da-DK'
+  };
+  return new Intl.NumberFormat(localeMap[locale]).format(number);
 }
 
 /**
- * Format currency according to locale
+ * Format currency according to locale  
  */
-export function formatCurrency(amount: number, locale: Locale, currency: string = 'NOK'): string {
-  const localeString = locale === 'no' ? 'nb-NO' : 'en-US';
+export function formatCurrency(amount: number, locale: SupportedLocale, currency: string = 'NOK'): string {
+  const localeMap: Record<SupportedLocale, string> = {
+    no: 'nb-NO',
+    en: 'en-US',
+    se: 'sv-SE',
+    dk: 'da-DK'
+  };
   
   const options: Intl.NumberFormatOptions = {
     style: 'currency',
     currency: currency
   };
   
-  return new Intl.NumberFormat(localeString, options).format(amount);
+  return new Intl.NumberFormat(localeMap[locale], options).format(amount);
 }
 
 /**
  * Get display name for locale
  */
-export function getLocaleDisplayName(locale: Locale, inLocale: Locale = locale): string {
-  const names: Record<Locale, Record<Locale, string>> = {
+export function getLocaleDisplayName(locale: SupportedLocale, inLocale: SupportedLocale = locale): string {
+  const names: Record<SupportedLocale, Record<SupportedLocale, string>> = {
     no: {
       no: 'Norsk',
-      en: 'Engelsk'
+      en: 'Engelsk',
+      se: 'Svensk', 
+      dk: 'Dansk'
     },
     en: {
       no: 'Norwegian', 
-      en: 'English'
+      en: 'English',
+      se: 'Swedish',
+      dk: 'Danish'
+    },
+    se: {
+      no: 'Norska',
+      en: 'Engelska',
+      se: 'Svenska',
+      dk: 'Danska'
+    },
+    dk: {
+      no: 'Norsk',
+      en: 'Engelsk', 
+      se: 'Svensk',
+      dk: 'Dansk'
     }
   };
   
   return names[inLocale]?.[locale] || locale;
 }
 
-// Export a simple useI18n hook to fix build errors temporarily
-export const useI18n = () => {
-  const locale = getCurrentLocale();
-  return {
-    t: (key: string) => key, // Temporary fallback
-    locale,
-    setLocale
-  };
-};
+// Remove temporary hook - will be replaced by proper hook from I18nProvider

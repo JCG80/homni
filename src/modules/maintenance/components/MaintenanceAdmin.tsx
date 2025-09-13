@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trash2, Edit, Plus, Clock, Home } from 'lucide-react';
 import { toast } from 'sonner';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/hooks/useI18n';
 import { WithFeatureFlag } from '@/modules/feature_flags/components/FeatureFlagProvider';
 import { listTasks, createTask, updateTask, deleteTask, type MaintenanceTask } from '../api';
 

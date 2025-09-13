@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Calendar, CheckCircle, Clock, Wrench, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthState } from '@/modules/auth/hooks/useAuthState';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/hooks/useI18n';
 import { WithFeatureFlag } from '@/modules/feature_flags/components/FeatureFlagProvider';
 import { listDueTasksForCurrentSeason, markCompleted, getUserCompletions, getCurrentSeason, type DueTask, type UserTaskCompletion } from '../api';
 import { format } from 'date-fns';

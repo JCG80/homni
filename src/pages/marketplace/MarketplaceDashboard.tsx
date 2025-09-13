@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Package, Users, Activity, TrendingUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/hooks/useI18n';
 
 export const MarketplaceDashboard: React.FC = () => {
   const { role } = useAuth();
