@@ -23,6 +23,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';
 import { logger } from '@/utils/logger';
+import { UserShortcuts } from '@/components/shortcuts/UserShortcuts';
+import { StatsWidget, QuickMetrics, PropertySummary } from '@/components/dashboard/DashboardWidgets';
 
 interface UserStats {
   totalRequests: number;
@@ -284,73 +286,26 @@ export const OptimizedUserDashboard: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
-        {/* Primary Content - 2 columns */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Quick Actions */}
+        {/* Shortcuts Sidebar - 1 column */}
+        <div className="lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>Hurtighandlinger</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4">
-              {primaryActions.map((action) => (
-                <Button
-                  key={action.title}
-                  variant={action.variant}
-                  size="lg"
-                  className={`h-auto p-4 justify-start ${
-                    action.primary ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''
-                  }`}
-                  onClick={action.onClick}
-                >
-                  <div className="flex items-center gap-3 w-full">
-                    <action.icon className="w-5 h-5 flex-shrink-0" />
-                    <div className="flex-1 text-left">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{action.title}</span>
-                        <div className="flex items-center gap-2">
-                          {action.badge && (
-                            <Badge variant="secondary" className="text-xs">
-                              {action.badge}
-                            </Badge>
-                          )}
-                          <ArrowRight className="w-4 h-4" />
-                        </div>
-                      </div>
-                      <div className="text-sm opacity-80 mt-1">
-                        {action.description}
-                      </div>
-                    </div>
-                  </div>
-                </Button>
-              ))}
+            <CardContent>
+              <UserShortcuts />
             </CardContent>
           </Card>
+        </div>
 
+        {/* Primary Content - 2 columns */}
+        <div className="lg:col-span-2 space-y-6">
+          
           {/* Statistics */}
           {userStats.totalRequests > 0 && (
-            <div className="grid grid-cols-3 gap-4">
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold">{userStats.totalRequests}</div>
-                  <div className="text-sm text-muted-foreground">Forespørsler</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-orange-600">{userStats.pendingRequests}</div>
-                  <div className="text-sm text-muted-foreground">Venter svar</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-600">{userStats.completedRequests}</div>
-                  <div className="text-sm text-muted-foreground">Fullført</div>
-                </CardContent>
-              </Card>
-            </div>
+            <StatsWidget stats={userStats} />
           )}
 
           {/* Recent Activity */}
@@ -420,9 +375,25 @@ export const OptimizedUserDashboard: React.FC = () => {
           </Card>
         </div>
 
-        {/* Sidebar - 1 column */}
-        <div className="space-y-6">
+        {/* Right Sidebar - 1 column */}
+        <div className="lg:col-span-1 space-y-6">
           
+          {/* Properties Summary */}
+          <PropertySummary 
+            properties={properties || []} 
+            loading={propertiesLoading} 
+          />
+
+          {/* Quick Metrics */}
+          <QuickMetrics 
+            metrics={{
+              responseTime: "< 24t",
+              satisfactionRate: "98%",
+              activeProjects: userStats.pendingRequests,
+              weeklyActivity: Math.min(userStats.totalRequests, 7)
+            }}
+          />
+
           {/* Next Steps */}
           <Card>
             <CardHeader>
@@ -461,118 +432,6 @@ export const OptimizedUserDashboard: React.FC = () => {
                   )}
                 </div>
               ))}
-            </CardContent>
-          </Card>
-
-          {/* Properties Summary */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Home className="w-5 h-5 text-green-500" />
-                  Mine eiendommer
-                </CardTitle>
-                {properties && properties.length > 0 && (
-                  <Button 
-                    size="sm" 
-                    variant="ghost"
-                    onClick={() => navigate('/properties')}
-                  >
-                    Se alle
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              {propertiesLoading ? (
-                <div className="animate-pulse">
-                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-muted rounded w-1/2"></div>
-                </div>
-              ) : properties && properties.length > 0 ? (
-                <div className="space-y-3">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{properties.length}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {properties.length === 1 ? 'Eiendom' : 'Eiendommer'}
-                    </div>
-                  </div>
-                  {properties.slice(0, 2).map((property) => (
-                    <div key={property.id} className="text-sm">
-                      <div className="font-medium">{property.name}</div>
-                      <div className="text-muted-foreground">
-                        {property.address || 'Adresse ikke angitt'}
-                      </div>
-                    </div>
-                  ))}
-                  {properties.length > 2 && (
-                    <div className="text-xs text-muted-foreground">
-                      +{properties.length - 2} flere
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <Home className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Ingen eiendommer registrert
-                  </p>
-                  <Button 
-                    size="sm" 
-                    onClick={() => navigate('/properties/new')}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Legg til
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Quick Tips */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-yellow-500" />
-                Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 text-sm">
-                {userStats.isNewUser ? (
-                  <>
-                    <div>
-                      <div className="font-medium">Velkommen!</div>
-                      <div className="text-muted-foreground text-xs">
-                        Start med å sende en forespørsel for å teste tjenesten
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-medium">Registrer eiendom</div>
-                      <div className="text-muted-foreground text-xs">
-                        Få mer presise og relevante tilbud
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {!userStats.hasProperties && (
-                      <div>
-                        <div className="font-medium">Legg til eiendommer</div>
-                        <div className="text-muted-foreground text-xs">
-                          Registrer dine eiendommer for bedre tilbud
-                        </div>
-                      </div>
-                    )}
-                    <div>
-                      <div className="font-medium">Fullfør profilen</div>
-                      <div className="text-muted-foreground text-xs">
-                        Komplett informasjon gir bedre resultater
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
             </CardContent>
           </Card>
         </div>
