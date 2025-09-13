@@ -1215,6 +1215,44 @@ export type Database = {
           },
         ]
       }
+      lead_contact_access: {
+        Row: {
+          access_level: string
+          company_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          lead_id: string | null
+          purchased_at: string | null
+        }
+        Insert: {
+          access_level?: string
+          company_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          purchased_at?: string | null
+        }
+        Update: {
+          access_level?: string
+          company_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          purchased_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_contact_access_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_history: {
         Row: {
           assigned_to: string | null
@@ -1482,6 +1520,53 @@ export type Database = {
           version?: string
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          lead_id: string | null
+          message_type: string
+          metadata: Json | null
+          read_at: string | null
+          recipient_id: string | null
+          sender_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          message_type?: string
+          metadata?: Json | null
+          read_at?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          message_type?: string
+          metadata?: Json | null
+          read_at?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       module_access: {
         Row: {
@@ -3175,6 +3260,10 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+      }
+      has_contact_access: {
+        Args: { p_company_id: string; p_lead_id: string }
+        Returns: string
       }
       has_module_access: {
         Args: { module_name: string; user_id?: string }
