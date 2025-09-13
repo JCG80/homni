@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, memo } from 'react';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
 import { QuickActionsHub } from './QuickActionsHub';
 import { RealTimeNotifications } from './RealTimeNotifications';
@@ -54,8 +54,11 @@ interface DashboardStats {
  * Consolidated User Dashboard - Single source of truth
  * Combines all features from EnhancedUserDashboard and UnifiedUserDashboard
  */
-export const ConsolidatedUserDashboard: React.FC = () => {
+export const ConsolidatedUserDashboard: React.FC = memo(() => {
+  // Performance monitoring
+  useRenderMetrics('ConsolidatedUserDashboard');
   const { user, profile, isLoading } = useIntegratedAuth();
+  const measureAsync = useAsyncMetrics();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalLeads: 0,
@@ -107,7 +110,7 @@ export const ConsolidatedUserDashboard: React.FC = () => {
     }
   };
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useMemoizedCallback(async () => {
     if (!user?.id) {
       // No user ID, skipping data fetch
       setLoading(false);
@@ -119,11 +122,14 @@ export const ConsolidatedUserDashboard: React.FC = () => {
       
       // Safer query construction
       const userEmail = user.email || '';
-      const { data: leads, error } = await supabase
-        .from('leads')
-        .select('*')
-        .or(`submitted_by.eq.${user.id},and(anonymous_email.eq.${userEmail},submitted_by.is.null)`)
-        .order('created_at', { ascending: false });
+      const { data: leads, error } = await measureAsync(
+        supabase
+          .from('leads')
+          .select('*')
+          .or(`submitted_by.eq.${user.id},and(anonymous_email.eq.${userEmail},submitted_by.is.null)`)
+          .order('created_at', { ascending: false }),
+        'dashboard-leads-fetch'
+      );
 
       if (error) {
         // Database error occurred
@@ -158,9 +164,18 @@ export const ConsolidatedUserDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id, measureAsync]);
 
-  const handleOnboardingComplete = () => {
+  // Memoized stats calculation
+  const computedStats = useMemoizedComputation(() => {
+    return {
+      totalLeads: stats.totalLeads,
+      pendingLeads: stats.pendingLeads,
+      contactedLeads: stats.contactedLeads,
+      recentActivity: stats.recentActivity
+    };
+  }, [stats.totalLeads, stats.pendingLeads, stats.contactedLeads, stats.recentActivity]);
+
     setShowOnboarding(false);
     // Refresh dashboard data
     fetchDashboardData();
@@ -452,4 +467,4 @@ export const ConsolidatedUserDashboard: React.FC = () => {
       )}
     </div>
   );
-};
+});
