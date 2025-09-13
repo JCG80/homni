@@ -17,6 +17,7 @@ const MaintenanceCalendarPage = React.lazy(() => import('@/pages/MaintenanceCale
 const AuthTestPage = React.lazy(() => import('@/pages/AuthTestPage'));
 
 const MarketplacePage = React.lazy(() => import('@/pages/MarketplacePage'));
+const HelpPage = React.lazy(() => import('@/pages/HelpPage'));
 
 export const mainRouteObjects: AppRoute[] = [
   // Public routes (no layout wrapper)
@@ -92,6 +93,11 @@ export const mainRouteObjects: AppRoute[] = [
         path: 'auth-test',
         element: <AuthTestPage />,
         roles: ['guest', 'user', 'company', 'admin', 'master_admin']
+      },
+      {
+        path: 'help',
+        element: <HelpPage />,
+        alwaysAvailable: true
       }
     ]
   }
