@@ -7,34 +7,11 @@
  * - Analytics and performance tracking
  */
 
-// Lead matching operations
-export {
-  findBestMatches,
-  calculateMatchScore,
-  updateMatchingParameters,
-  fetchMatchingStats,
-  testMatchingAlgorithm,
-  createMatchingOverride,
-  analyzeMatchingFailures,
-  type MatchingCriteria,
-  type CompanyMatchResult,
-  type MatchingEngineStats,
-} from './lead-matching';
+// Lead matching operations (simplified)
+// TODO: Implement when matching engine is ready
 
-// Notification operations
-export {
-  sendNotification,
-  notifyLeadAssignment,
-  notifyStatusUpdate,
-  notifyBudgetAlert,
-  fetchUserNotifications,
-  markNotificationsAsRead,
-  updateNotificationPreferences,
-  subscribeToUserNotifications,
-  sendSystemAnnouncement,
-  type NotificationData,
-  type NotificationPreferences,
-} from './notifications';
+// Notification operations (simplified) 
+// TODO: Implement when notification system is ready
 
 // Analytics operations
 export {

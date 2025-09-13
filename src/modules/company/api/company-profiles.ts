@@ -41,17 +41,33 @@ export async function fetchCompanyProfile(userId?: string): Promise<CompanyProfi
   try {
     logger.info('Fetching company profile', { module: 'companyProfilesApi', userId });
 
+    let targetUserId = userId;
+    if (!targetUserId) {
+      const { data: user } = await supabase.auth.getUser();
+      targetUserId = user.user?.id;
+    }
+
+    if (!targetUserId) {
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('company_profiles')
       .select('*')
-      .eq('user_id', userId || supabase.auth.getUser().then(u => u.data.user?.id))
+      .eq('user_id', targetUserId)
       .single();
 
     if (error && error.code !== 'PGRST116') {
       throw new ApiError('fetchCompanyProfile', error);
     }
 
-    return data;
+    return data ? {
+      ...data,
+      metadata: (typeof data.metadata === 'string' ? JSON.parse(data.metadata) : data.metadata) || {},
+      notification_preferences: (typeof data.notification_preferences === 'string' ? JSON.parse(data.notification_preferences) : data.notification_preferences) || {},
+      ui_preferences: (typeof data.ui_preferences === 'string' ? JSON.parse(data.ui_preferences) : data.ui_preferences) || {},
+      feature_overrides: (typeof data.feature_overrides === 'string' ? JSON.parse(data.feature_overrides) : data.feature_overrides) || {}
+    } : null;
   } catch (error) {
     logger.error('Failed to fetch company profile', { module: 'companyProfilesApi' }, error);
     throw new ApiError('fetchCompanyProfile', error);
@@ -89,7 +105,13 @@ export async function upsertCompanyProfile(profileData: CompanyProfileData): Pro
       description: "Bedriftsprofilen din er oppdatert",
     });
 
-    return data;
+    return {
+      ...data,
+      metadata: (typeof data.metadata === 'string' ? JSON.parse(data.metadata) : data.metadata) || {},
+      notification_preferences: (typeof data.notification_preferences === 'string' ? JSON.parse(data.notification_preferences) : data.notification_preferences) || {},
+      ui_preferences: (typeof data.ui_preferences === 'string' ? JSON.parse(data.ui_preferences) : data.ui_preferences) || {},
+      feature_overrides: (typeof data.feature_overrides === 'string' ? JSON.parse(data.feature_overrides) : data.feature_overrides) || {}
+    };
   } catch (error) {
     logger.error('Failed to upsert company profile', { module: 'companyProfilesApi' }, error);
     toast({
@@ -168,20 +190,38 @@ export async function fetchBudgetTransactions(companyId: string, limit = 50) {
 }
 
 /**
- * Get company statistics
+ * Get company statistics (using existing data)
  */
 export async function fetchCompanyStats(companyId: string) {
   try {
     logger.info('Fetching company statistics', { module: 'companyProfilesApi', companyId });
 
-    const { data, error } = await supabase
-      .rpc('get_company_lead_stats', { company_id_param: companyId });
+    // Query existing tables for basic stats
+    const [leadsData, transactionsData] = await Promise.all([
+      supabase
+        .from('leads')
+        .select('id, status, created_at')
+        .eq('company_id', companyId),
+      supabase
+        .from('company_budget_transactions')
+        .select('amount, transaction_type')
+        .eq('company_id', companyId)
+    ]);
 
-    if (error) {
-      throw new ApiError('fetchCompanyStats', error);
-    }
+    const leads = leadsData.data || [];
+    const transactions = transactionsData.data || [];
 
-    return data;
+    return {
+      total_leads: leads.length,
+      active_leads: leads.filter(l => ['new', 'qualified', 'contacted'].includes(l.status)).length,
+      completed_leads: leads.filter(l => l.status === 'converted').length,
+      total_spent: transactions
+        .filter(t => t.transaction_type === 'debit')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0),
+      success_rate: leads.length > 0 
+        ? (leads.filter(l => l.status === 'converted').length / leads.length) * 100 
+        : 0
+    };
   } catch (error) {
     logger.error('Failed to fetch company stats', { module: 'companyProfilesApi' }, error);
     throw new ApiError('fetchCompanyStats', error);

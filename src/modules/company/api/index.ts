@@ -18,17 +18,8 @@ export {
   type BudgetUpdateData,
 } from './company-profiles';
 
-// Lead management operations
-export {
-  fetchCompanyLeads,
-  updateLeadPipeline,
-  respondToLeadAssignment,
-  fetchPipelineStats,
-  completeLeadAssignment,
-  type CompanyLead,
-  type LeadAssignment,
-  type PipelineUpdate,
-} from './company-leads';
+// Lead management operations (simplified)
+// TODO: Implement company-leads.ts when lead_assignments table is ready
 
 // Billing and budget operations
 export {
