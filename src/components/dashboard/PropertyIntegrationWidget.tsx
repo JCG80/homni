@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { logger } from '@/utils/logger';
+import { useProperty } from '@/modules/property/hooks/useProperty';
 import { 
   Home, 
   FileText, 
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
+import { CreatePropertyDialog } from '@/modules/property/components/CreatePropertyDialog';
 
 interface PropertySummary {
   id: string;
@@ -32,38 +33,27 @@ interface PropertySummary {
 export const PropertyIntegrationWidget: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useIntegratedAuth();
-  const [properties, setProperties] = useState<PropertySummary[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { properties, loading } = useProperty();
+  const [showPropertyDialog, setShowPropertyDialog] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      fetchPropertySummary();
-    }
-  }, [user]);
-
-  const fetchPropertySummary = async () => {
-    try {
-      // Simulate property data
-      const mockProperties: PropertySummary[] = [
-        {
-          id: 'prop-1',
-          address: 'Storgata 123, Oslo',
-          type: 'Enebolig',
-          documentsCount: 8,
-          documentsTotal: 12,
-          maintenanceTasksCount: 3,
-          maintenanceOverdue: 1,
-          completionScore: 67,
-          lastUpdated: new Date().toISOString()
-        }
-      ];
-
-      setProperties(mockProperties);
-    } catch (error) {
-      logger.error('Error fetching property summary:', {}, error);
-    } finally {
-      setLoading(false);
-    }
+  // Calculate property completion score based on available data
+  const getPropertyCompletionScore = (property: any) => {
+    let score = 0;
+    let total = 0;
+    
+    // Basic info (40% weight)
+    if (property.name) { score += 10; total += 10; }
+    if (property.address) { score += 10; total += 10; }
+    if (property.type) { score += 10; total += 10; }
+    if (property.size) { score += 10; total += 10; }
+    
+    // Additional info (60% weight)
+    if (property.purchase_date) { score += 15; total += 15; }
+    if (property.current_value) { score += 15; total += 15; }
+    if (property.description) { score += 15; total += 15; }
+    if (property.status) { score += 15; total += 15; }
+    
+    return total > 0 ? Math.round((score / total) * 100) : 0;
   };
 
   const getCompletionColor = (score: number) => {
@@ -91,7 +81,7 @@ export const PropertyIntegrationWidget: React.FC = () => {
     );
   }
 
-  if (properties.length === 0) {
+  if (!properties || properties.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -104,7 +94,7 @@ export const PropertyIntegrationWidget: React.FC = () => {
           <div className="text-center py-8">
             <Home className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground mb-4">Ingen eiendommer registrert</p>
-            <Button onClick={() => navigate('/property')}>
+            <Button onClick={() => setShowPropertyDialog(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Registrer eiendom
             </Button>
@@ -115,6 +105,13 @@ export const PropertyIntegrationWidget: React.FC = () => {
   }
 
   const property = properties[0]; // Show first property for now
+  const completionScore = getPropertyCompletionScore(property);
+  const propertyType = property.type === 'apartment' ? 'Leilighet' :
+                      property.type === 'house' ? 'Enebolig' :
+                      property.type === 'townhouse' ? 'Rekkehus' :
+                      property.type === 'cabin' ? 'Hytte' :
+                      property.type === 'commercial' ? 'Næring' :
+                      property.type === 'land' ? 'Tomt' : 'Annet';
 
   return (
     <Card>
@@ -127,7 +124,7 @@ export const PropertyIntegrationWidget: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/property')}
+            onClick={() => navigate('/properties')}
           >
             Se detaljer
             <ArrowRight className="h-4 w-4 ml-1" />
@@ -137,47 +134,44 @@ export const PropertyIntegrationWidget: React.FC = () => {
       <CardContent className="space-y-4">
         {/* Property Overview */}
         <div>
-          <h3 className="font-medium">{property.address}</h3>
-          <p className="text-sm text-muted-foreground">{property.type}</p>
+          <h3 className="font-medium">{property.name}</h3>
+          <p className="text-sm text-muted-foreground">
+            {property.address || 'Ingen adresse angitt'} • {propertyType}
+          </p>
         </div>
 
         {/* Completion Score */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Dokumentasjon fullført</span>
+            <span className="text-sm font-medium">Profil fullført</span>
             <div className="flex items-center gap-2">
-              {getCompletionIcon(property.completionScore)}
-              <span className={`text-sm font-medium ${getCompletionColor(property.completionScore)}`}>
-                {property.completionScore}%
+              {getCompletionIcon(completionScore)}
+              <span className={`text-sm font-medium ${getCompletionColor(completionScore)}`}>
+                {completionScore}%
               </span>
             </div>
           </div>
-          <Progress value={property.completionScore} className="h-2" />
+          <Progress value={completionScore} className="h-2" />
         </div>
 
-        {/* Quick Stats */}
+        {/* Property Details */}
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <Home className="h-4 w-4 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">
-                {property.documentsCount}/{property.documentsTotal}
+                {property.size ? `${property.size} m²` : 'Ikke angitt'}
               </p>
-              <p className="text-xs text-muted-foreground">Dokumenter</p>
+              <p className="text-xs text-muted-foreground">Størrelse</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">
-                {property.maintenanceTasksCount}
-                {property.maintenanceOverdue > 0 && (
-                  <Badge variant="destructive" className="ml-1 text-xs">
-                    {property.maintenanceOverdue}
-                  </Badge>
-                )}
+                {property.purchase_date ? new Date(property.purchase_date).getFullYear() : 'Ikke angitt'}
               </p>
-              <p className="text-xs text-muted-foreground">Vedlikehold</p>
+              <p className="text-xs text-muted-foreground">Kjøpsår</p>
             </div>
           </div>
         </div>
@@ -187,7 +181,7 @@ export const PropertyIntegrationWidget: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/property?tab=documents')}
+            onClick={() => navigate(`/properties/${property.id}?tab=documents`)}
             className="flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
@@ -196,7 +190,7 @@ export const PropertyIntegrationWidget: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/property?tab=maintenance')}
+            onClick={() => navigate(`/properties/${property.id}?tab=maintenance`)}
             className="flex items-center gap-2"
           >
             <Calendar className="h-4 w-4" />
@@ -204,26 +198,35 @@ export const PropertyIntegrationWidget: React.FC = () => {
           </Button>
         </div>
 
-        {/* Maintenance Alert */}
-        {property.maintenanceOverdue > 0 && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+        {/* Completion improvement tip */}
+        {completionScore < 80 && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
-              <p className="text-sm font-medium text-red-800">
-                {property.maintenanceOverdue} forfalt vedlikehold
+              <AlertTriangle className="h-4 w-4 text-blue-600" />
+              <p className="text-sm font-medium text-blue-800">
+                Fullfør eiendomprofilen for bedre oversikt
               </p>
             </div>
             <Button
               variant="link"
               size="sm"
-              onClick={() => navigate('/property?tab=maintenance')}
-              className="p-0 h-auto text-red-600"
+              onClick={() => navigate(`/properties/${property.id}`)}
+              className="p-0 h-auto text-blue-600"
             >
-              Se detaljer →
+              Rediger eiendom →
             </Button>
           </div>
         )}
       </CardContent>
+      
+      {/* Property Creation Dialog */}
+      <CreatePropertyDialog 
+        open={showPropertyDialog}
+        onOpenChange={setShowPropertyDialog}
+        onSuccess={() => {
+          setShowPropertyDialog(false);
+        }}
+      />
     </Card>
   );
 };

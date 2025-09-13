@@ -1,10 +1,12 @@
 import React, { useState, useEffect, Suspense, memo } from 'react';
 import { useIntegratedAuth } from '@/modules/auth/hooks/useIntegratedAuth';
+import { useProperty } from '@/modules/property/hooks/useProperty';
 import { QuickActionsHub } from './QuickActionsHub';
 import { RealTimeNotifications } from './RealTimeNotifications';
 import { PropertyIntegrationWidget } from './PropertyIntegrationWidget';
 import { SkeletonDashboard } from './SkeletonDashboard';
 import { PostAuthOnboardingWizard } from '@/components/onboarding/PostAuthOnboardingWizard';
+import { CreatePropertyDialog } from '@/modules/property/components/CreatePropertyDialog';
 import { NextRecommendedActionWidget } from './NextRecommendedActionWidget';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,7 +58,9 @@ interface DashboardStats {
  */
 export const ConsolidatedUserDashboard: React.FC = memo(() => {
   const { user, profile, isLoading } = useIntegratedAuth();
+  const { properties, loading: propertiesLoading } = useProperty();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showPropertyDialog, setShowPropertyDialog] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalLeads: 0,
     pendingLeads: 0,
@@ -266,7 +270,7 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
             Her er en oversikt over dine forespørsler og aktivitet
           </p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" onClick={() => window.location.href = '/'}>
           <Plus className="h-4 w-4" />
           Ny forespørsel
         </Button>
@@ -355,34 +359,101 @@ export const ConsolidatedUserDashboard: React.FC = memo(() => {
       {/* Property Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Home className="h-5 w-5" />
-            Min eiendom
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Home className="h-5 w-5" />
+              Mine eiendommer
+            </div>
+            {properties && properties.length > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => window.location.href = '/properties'}
+              >
+                Se alle
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Adresse</span>
-              <span className="text-sm font-medium">Ikke registrert</span>
+          {propertiesLoading ? (
+            <div className="animate-pulse space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Type</span>
-              <span className="text-sm font-medium">-</span>
+          ) : properties && properties.length > 0 ? (
+            <div className="space-y-4">
+              {properties.slice(0, 2).map((property) => (
+                <div key={property.id} className="p-4 border rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Adresse</span>
+                      <span className="text-sm font-medium">{property.address || 'Ikke angitt'}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Type</span>
+                      <span className="text-sm font-medium">
+                        {property.type === 'apartment' ? 'Leilighet' :
+                         property.type === 'house' ? 'Enebolig' :
+                         property.type === 'townhouse' ? 'Rekkehus' :
+                         property.type === 'cabin' ? 'Hytte' :
+                         property.type === 'commercial' ? 'Næring' :
+                         property.type === 'land' ? 'Tomt' : 'Annet'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Størrelse</span>
+                      <span className="text-sm font-medium">
+                        {property.size ? `${property.size} m²` : 'Ikke angitt'}
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="font-semibold">{property.name}</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-2"
+                    onClick={() => window.location.href = `/properties/${property.id}`}
+                  >
+                    Vis detaljer
+                  </Button>
+                </div>
+              ))}
+              {properties.length > 2 && (
+                <div className="text-center pt-2">
+                  <p className="text-sm text-muted-foreground">
+                    +{properties.length - 2} flere eiendommer
+                  </p>
+                </div>
+              )}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Størrelse</span>
-              <span className="text-sm font-medium">-</span>
+          ) : (
+            <div className="text-center py-6">
+              <Home className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">Ingen eiendommer registrert</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowPropertyDialog(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Registrer eiendom
+              </Button>
             </div>
-          </div>
-          <div className="mt-4">
-            <Button variant="outline" size="sm">
-              <Plus className="mr-2 h-4 w-4" />
-              Registrer eiendom
-            </Button>
-          </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Property Creation Dialog */}
+      <CreatePropertyDialog 
+        open={showPropertyDialog}
+        onOpenChange={setShowPropertyDialog}
+        onSuccess={() => {
+          setShowPropertyDialog(false);
+          // Properties will refresh automatically via the hook
+        }}
+      />
 
       {/* Recent Activity */}
       <Card>

@@ -6,6 +6,7 @@ import { PropertyDashboard } from '@/modules/property/components/PropertyDashboa
 import { PropertyDocuments } from '@/modules/property/components/PropertyDocuments';
 import { PropertyMaintenance } from '@/modules/property/components/PropertyMaintenance';
 import { PropertySettings } from '@/modules/property/components/PropertySettings';
+import { ProprSalesModule } from '@/modules/property/components/ProprSalesModule';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const PropertyPage = () => {
@@ -50,7 +51,7 @@ const PropertyPage = () => {
 
           {/* Main Content */}
           <Tabs defaultValue={initialTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="dashboard" className="text-sm">
                 Oversikt
               </TabsTrigger>
@@ -59,6 +60,9 @@ const PropertyPage = () => {
               </TabsTrigger>
               <TabsTrigger value="maintenance" className="text-sm">
                 Vedlikehold
+              </TabsTrigger>
+              <TabsTrigger value="propr" className="text-sm">
+                Propr
               </TabsTrigger>
               <TabsTrigger value="settings" className="text-sm">
                 Innstillinger
@@ -74,11 +78,15 @@ const PropertyPage = () => {
             </TabsContent>
 
             <TabsContent value="maintenance" className="space-y-6">
-              <PropertyMaintenance />
+              <PropertyMaintenance propertyId={propertyId} />
+            </TabsContent>
+
+            <TabsContent value="propr" className="space-y-6">
+              <ProprSalesModule propertyId={propertyId} />
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">
-              <PropertySettings />
+              <PropertySettings propertyId={propertyId} />
             </TabsContent>
           </Tabs>
         </div>
