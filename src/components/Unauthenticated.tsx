@@ -4,9 +4,11 @@ import { useAuth } from '@/modules/auth/hooks';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { routeForRole } from '@/config/routeForRole';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 export const Unauthenticated = () => {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoading, isAuthenticated, role } = useAuth();
   const location = useLocation();
 
   // Create a return URL to redirect back after login
@@ -43,13 +45,19 @@ export const Unauthenticated = () => {
         const decodedReturnUrl = decodeURIComponent(specifiedReturnUrl);
         return <Navigate to={decodedReturnUrl} replace />;
       } catch {
-        // Fall back to dashboard if we can't decode the return URL
-        return <Navigate to="/dashboard" replace />;
+        // Fall back to role-specific dashboard if we can't decode the return URL
+        const dashboardPath = role && role in { user: 1, company: 1, admin: 1, master_admin: 1, content_editor: 1, guest: 1 } 
+          ? routeForRole(role as UserRole) 
+          : '/dashboard';
+        return <Navigate to={dashboardPath} replace />;
       }
     }
     
-    // Default to dashboard if no specific return URL is provided
-    return <Navigate to="/dashboard" replace />;
+    // Default to role-specific dashboard if no specific return URL is provided
+    const dashboardPath = role && role in { user: 1, company: 1, admin: 1, master_admin: 1, content_editor: 1, guest: 1 }
+      ? routeForRole(role as UserRole) 
+      : '/dashboard';
+    return <Navigate to={dashboardPath} replace />;
   }
 
   return (

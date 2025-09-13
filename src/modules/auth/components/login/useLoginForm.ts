@@ -8,6 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UseLoginFormProps } from '@/types/hooks';
 import { logger } from '@/utils/logger';
+import { routeForRole } from '@/config/routeForRole';
+import { useAuth } from '@/modules/auth/hooks';
+import { UserRole } from '@/modules/auth/normalizeRole';
 
 // Enhanced validation schema with more helpful error messages
 const formSchema = z.object({
@@ -28,6 +31,7 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
   const [lastError, setLastError] = useState<Error | null>(null);
   const maxRetries = 3;
   const navigate = useNavigate();
+  const { role } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
@@ -96,7 +100,14 @@ export const useLoginForm = ({ onSuccess, redirectTo, userType = 'private' }: Us
       if (returnPath) {
         navigate(returnPath, { replace: true });
       } else {
-        navigate('/dashboard', { replace: true });
+        // Use a timeout to allow auth state to update before getting role
+        setTimeout(() => {
+          // Get role-specific dashboard - fallback to generic dashboard if no role yet
+          const dashboardPath = role && role in { user: 1, company: 1, admin: 1, master_admin: 1, content_editor: 1, guest: 1 }
+            ? routeForRole(role as UserRole) 
+            : '/dashboard';
+          navigate(dashboardPath, { replace: true });
+        }, 100);
       }
       
     } catch (error: any) {
