@@ -56,7 +56,7 @@
     "@types/react-window": "^1.8.8",
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/parser": "^8.43.0",
     "a": "^3.0.1",
     "are": "^0.0.1",
     "been": "^2.0.1",
