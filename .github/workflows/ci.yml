@@ -1,192 +1,264 @@
-name: CI/CD Pipeline
+name: Homni CI/CD Pipeline
+
 on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+  SUPABASE_PROJECT_ID: kkazhcihooovsuwravhs
+  SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrYXpoY2lob29vdnN1d3JhdmhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MzMwMzUsImV4cCI6MjA2MjEwOTAzNX0.-HzjqXYqgThN0PrbrwZlm5GWK1vOGOeYHEEFrt0OpwM
 
 jobs:
-  quality-gate:
+  # Code Quality & Security
+  code-quality:
     runs-on: ubuntu-latest
+    name: Code Quality & Security
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Lint check
+      run: npm run lint
+      
+    - name: Type check
+      run: npm run type-check
+      
+    - name: Format check
+      run: npm run format:check
+      
+    - name: Security audit
+      run: npm audit --audit-level=high
+      
+    - name: Check for unused exports
+      run: npm run unused-exports
+      
+    - name: Bundle size analysis
+      run: npm run build && npm run bundle-analyzer
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Master Prompt Quality Check
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔍 Running Master Prompt v2.1 Quality Gates..."
-          
-          # 1. Roadmap compliance check
-          echo "✅ 1. Checking roadmap compliance..."
-          
-          # 2. Duplicate detection
-          echo "✅ 2. Running duplicate detection..."
-          if [ -f "scripts/checkDuplicates.ts" ]; then
-            npm run check:duplicates
-          fi
-          
-          # 3. Role/profile alignment  
-          echo "✅ 3. Checking role/profile alignment..."
-          if [ -f "scripts/guardLegacyRoles.ts" ]; then
-            npm run guard:legacy-roles
-          fi
-          
-          # 4. Database schema validation
-          echo "✅ 4. Validating database schema..."
-          if [ -f "scripts/checkMigrations.ts" ]; then
-            npm run migrations:check
-          fi
-          
-          # 5. RLS verification
-          echo "✅ 5. Verifying RLS policies..."
-          if [ -f "scripts/checkRls.ts" ]; then
-            npm run guard:rls
-          fi
-          
-          # 6. Migration rollback tests
-          echo "✅ 6. Testing migration rollbacks..."
-          
-          # 7. Feature flag verification
-          echo "✅ 7. Checking feature flags..."
-          
-          # 8. Test coverage validation
-          echo "✅ 8. Running test coverage..."
-          npm run test:coverage
-          
-          # 9. Navigation consistency
-          echo "✅ 9. Checking navigation consistency..."
-          
-          # 10. Documentation updates
-          echo "✅ 10. Validating documentation..."
-
-      - name: TypeScript Check
-        run: npm run typecheck
-
-      - name: ESLint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-
-      - name: Unit Tests with Coverage
-        run: npm run test:coverage
-
-      - name: Post-Migration Testing
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🧪 Running post-migration multi-role validation..."
-          # Test authentication for different roles
-          if [ -f "scripts/test-role-access.ts" ]; then
-            npm run test:roles
-          fi
-          
-          # Test module visibility
-          if [ -f "scripts/test-module-access.ts" ]; then
-            npm run test:modules
-          fi
-          
-          # Validate RLS policies
-          echo "🔒 Running RLS policy validation..."
-          if [ -f "scripts/checkRls.ts" ]; then
-            npm run guard:rls
-          fi
-
-      - name: Coverage Gate (90% minimum)
-        run: |
-          # This will be implemented once vitest coverage is configured
-          echo "Coverage gating enabled for 90% minimum"
-
-      - name: E2E Tests
-        run: |
-          if [ -f "playwright.config.ts" ]; then
-            npx playwright install
-            npm run e2e
-          else
-            echo "E2E tests not configured yet"
-          fi
-
-      - name: Security Scan
-        run: |
-          npm audit --audit-level high
-          echo "Security scan completed"
-
-      - name: RLS Security Validation
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔐 Running comprehensive RLS security validation..."
-          # Check for anonymous access policies
-          if [ -f "scripts/security-audit.ts" ]; then
-            npm run security:audit
-          fi
-          
-          # Validate sensitive data exposure
-          if [ -f "scripts/check-data-exposure.ts" ]; then
-            npm run security:check-exposure
-          fi
-
-      - name: Repository Health Check
-        run: |
-          if [ -f "scripts/repo-health.ts" ]; then
-            npm run repo:health
-          else
-            echo "Repository health check script not found"
-          fi
-
-  supabase-security:
+  # Database & Migrations
+  database-tests:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    name: Database & Migration Tests
+    
+    services:
+      postgres:
+        image: supabase/postgres:15.1.1.83
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Setup Supabase CLI
+      uses: supabase/setup-cli@v1
+      with:
+        version: latest
+        
+    - name: Run database migrations
+      run: |
+        supabase db start
+        supabase db reset --linked
+        
+    - name: Validate RLS policies
+      run: npm run validate:rls
+      
+    - name: Test migration rollbacks
+      run: npm run test:migration-rollback
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
+  # Unit & Integration Tests
+  test:
+    runs-on: ubuntu-latest
+    name: Unit & Integration Tests
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Seed test data
+      run: npm run seed:test-users
+      
+    - name: Run unit tests
+      run: npm run test:unit -- --coverage --reporter=verbose
+      
+    - name: Run integration tests
+      run: npm run test:integration
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        
+    - name: Check coverage threshold
+      run: npm run test:coverage-check
 
-      - name: Run Supabase Linter
-        run: |
-          echo "Running Supabase security linter..."
-          echo "Note: This requires Supabase project access in production"
-          echo "Linter results should be reviewed manually"
+  # End-to-End Tests
+  e2e:
+    runs-on: ubuntu-latest
+    name: E2E Tests
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Run E2E tests
+      run: npm run test:e2e
+      
+    - name: Upload E2E artifacts
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
 
+  # Performance Tests
+  performance:
+    runs-on: ubuntu-latest
+    name: Performance Tests
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Run performance tests
+      run: npm run test:performance
+      
+    - name: Check performance budgets
+      run: npm run performance:budget-check
+
+  # Build & Deploy to Staging
   deploy-staging:
-    needs: [quality-gate]
     runs-on: ubuntu-latest
+    name: Deploy to Staging
+    needs: [code-quality, database-tests, test, e2e, performance]
     if: github.ref == 'refs/heads/develop'
+    
+    environment:
+      name: staging
+      url: https://staging.homni.no
+      
     steps:
-      - name: Deploy to Staging
-        run: |
-          echo "Staging deployment would happen here"
-          echo "Phase 1A: User functionality only"
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Run deployment checks
+      run: npm run deploy:check
+      
+    - name: Deploy to staging
+      run: npm run deploy:staging
+      
+    - name: Run smoke tests
+      run: npm run test:smoke -- --env=staging
 
+  # Deploy to Production
   deploy-production:
-    needs: [quality-gate, supabase-security]
     runs-on: ubuntu-latest
+    name: Deploy to Production
+    needs: [code-quality, database-tests, test, e2e, performance]
     if: github.ref == 'refs/heads/main'
+    
+    environment:
+      name: production
+      url: https://homni.no
+      
     steps:
-      - name: Production Deployment
-        run: |
-          echo "Production deployment requires manual approval"
-          echo "All 10 Master Prompt quality gates must pass"
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Run deployment checks
+      run: npm run deploy:check
+      
+    - name: Deploy to production
+      run: npm run deploy:production
+      
+    - name: Run smoke tests
+      run: npm run test:smoke -- --env=production
+      
+    - name: Notify deployment success
+      run: npm run notify:deployment-success
