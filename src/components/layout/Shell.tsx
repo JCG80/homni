@@ -105,6 +105,12 @@ function convertToRouteObjects(routes: AppRoute[]): RouteObject[] {
 }
 
 export function Shell() {
+  // EMERGENCY: If we're on login route, render emergency login immediately
+  if (window.location.pathname === '/login' || window.location.hash === '#/login') {
+    console.log('[EMERGENCY SHELL] Login route detected, rendering emergency fallback');
+    return <EmergencyLoginFallback />;
+  }
+  
   const flags = useFeatureFlags();
   const role = useCurrentRole();
   

@@ -48,6 +48,35 @@ function App() {
     initializeApp();
   }, []);
 
+  // EMERGENCY: Panic mode - if on login route and everything else fails
+  if (window.location.pathname === '/login' || window.location.hash === '#/login') {
+    // Import EmergencyLoginFallback dynamically to avoid circular dependencies
+    const EmergencyLogin = React.lazy(() => 
+      import('@/components/debug/EmergencyLoginFallback').then(module => ({ 
+        default: module.EmergencyLoginFallback 
+      }))
+    );
+    
+    return (
+      <ErrorBoundary>
+        <I18nProvider>
+          <ConnectionStatus />
+          <React.Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p>Emergency Login Loading...</p>
+              </div>
+            </div>
+          }>
+            <EmergencyLogin />
+          </React.Suspense>
+          <Toaster />
+        </I18nProvider>
+      </ErrorBoundary>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <I18nProvider>

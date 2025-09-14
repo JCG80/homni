@@ -27,11 +27,11 @@ export const LoginPage = () => {
       search: window.location.search
     });
     
-    // EMERGENCY: Force rendering after 1 second regardless of auth state
+    // EMERGENCY: Force rendering after 500ms - align with auth timeout
     const emergencyTimeout = setTimeout(() => {
-      console.log('[EMERGENCY LoginPage] Forcing render after timeout');
+      console.log('[EMERGENCY LoginPage] Forcing render after 500ms timeout');
       setForceRender(true);
-    }, 1000);
+    }, 500);
     
     return () => clearTimeout(emergencyTimeout);
   }, [isAuthenticated, role, isLoading, userType, returnUrl]);
