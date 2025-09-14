@@ -1,9 +1,11 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, Users, Crown, Building2, Edit3, User } from 'lucide-react';
 import { useAuth } from '@/modules/auth/hooks';
 import { RoleManagement } from '@/modules/admin/components/RoleManagement';
+import RoleOverview from '@/modules/admin/roles/RoleOverview';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { roleIcons, roleLabels } from '@/modules/auth/utils/shared/roleDisplay';
 
@@ -85,45 +87,92 @@ export function RoleManagementPage() {
         </CardContent>
       </Card>
 
-      {/* Role Management Section */}
+      {/* Role Management Tabs */}
       {isMasterAdmin && (
-        <RoleManagement
-          userId={user.id}
-          userName={profile.full_name || user.email || 'Ukjent bruker'}
-          currentRole={role as UserRole}
-        />
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Rolleoversikt</TabsTrigger>
+            <TabsTrigger value="manage">Administrer roller</TabsTrigger>
+            <TabsTrigger value="info">Systeminfo</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="space-y-4">
+            <RoleOverview />
+          </TabsContent>
+          
+          <TabsContent value="manage" className="space-y-4">
+            <RoleManagement
+              userId={user.id}
+              userName={profile.full_name || user.email || 'Ukjent bruker'}
+              currentRole={role as UserRole}
+            />
+          </TabsContent>
+          
+          <TabsContent value="info" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Om rollesystemet</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Grunnroller</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {Object.entries(roleLabels).map(([key, label]) => {
+                      const Icon = roleIcons[key as UserRole];
+                      return (
+                        <div key={key} className="flex items-center gap-2">
+                          <Icon className="h-4 w-4" />
+                          <span className="text-sm">{label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold mb-2">Rolletildelinger</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Master administratorer kan tildele og fjerne roller fra brukere. 
+                    Alle endringer blir logget og sporet i systemet.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       )}
 
-      {/* Info Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Om rollesystemet</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold mb-2">Grunnroller</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {Object.entries(roleLabels).map(([key, label]) => {
-                const Icon = roleIcons[key as UserRole];
-                return (
-                  <div key={key} className="flex items-center gap-2">
-                    <Icon className="h-4 w-4" />
-                    <span className="text-sm">{label}</span>
-                  </div>
-                );
-              })}
+      {/* For non-master admins, show info only */}
+      {!isMasterAdmin && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Om rollesystemet</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-semibold mb-2">Grunnroller</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {Object.entries(roleLabels).map(([key, label]) => {
+                  const Icon = roleIcons[key as UserRole];
+                  return (
+                    <div key={key} className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" />
+                      <span className="text-sm">{label}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold mb-2">Rolletildelinger</h4>
-            <p className="text-sm text-muted-foreground">
-              Master administratorer kan tildele og fjerne roller fra brukere. 
-              Alle endringer blir logget og sporet i systemet.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+            
+            <div>
+              <h4 className="font-semibold mb-2">Tilgang</h4>
+              <p className="text-sm text-muted-foreground">
+                Kun master administratorer kan administrere roller og tilganger.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
