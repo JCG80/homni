@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { Property } from '../types/propertyTypes';
 import { logger } from '@/utils/logger';
 

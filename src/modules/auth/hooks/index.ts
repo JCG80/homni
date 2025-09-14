@@ -4,9 +4,8 @@
  */
 
 // Core hooks - MAIN EXPORTS
-export { useAuth, AuthProvider } from './useAuth';
+export { useAuth, AuthProvider } from '../context';
 export { useAuthSession } from './useAuthSession';
-export { useAuthContext } from './useAuthContext';
 export { useAuthState } from './useAuthState';
 export { useAuthDerivedState } from './useAuthDerivedState';
 

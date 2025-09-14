@@ -2,7 +2,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks';
 import { MemoryRouter } from 'react-router-dom';
 import { UserRole } from '../types/types';
 

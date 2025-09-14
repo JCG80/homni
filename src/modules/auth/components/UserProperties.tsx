@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks';
 import { Property } from '@/modules/property/types/propertyTypes';
 import { PropertyList } from '@/modules/property/components/PropertyList';
 import { AddPropertyForm } from '@/modules/property/components/AddPropertyForm';

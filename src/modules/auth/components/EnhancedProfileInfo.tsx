@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
 import { updateProfile } from '../api';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks';
 import { useProperties } from '@/modules/property/hooks/useProperties';
 import { logger } from '@/utils/logger';
 import { 

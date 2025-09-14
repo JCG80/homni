@@ -9,7 +9,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { supabase } from '@/lib/supabaseClient';
 import { LoginPage } from '@/pages/LoginPage';
-import { AuthProvider } from '../hooks/useAuth';
+import { AuthProvider } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { UserRole } from '../types/unified-types';
 

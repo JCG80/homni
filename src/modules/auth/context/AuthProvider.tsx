@@ -1,41 +1,20 @@
-
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { useAuthState } from './useAuthState';
-import { useRoleCheck } from './roles/useRoleCheck';
+import React, { ReactNode } from 'react';
+import { useAuthState } from '../hooks/useAuthState';
+import { useRoleCheck } from '../hooks/roles/useRoleCheck';
 import { signOut } from '../api/auth-authentication';
-import { useDevAuth } from './useDevAuth';
-import { useModuleAccessQuery } from './useModuleAccessQuery';
-import { AuthContextType } from '../types/types';
+import { useDevAuth } from '../hooks/useDevAuth';
+import { useModuleAccessQuery } from '../hooks/useModuleAccessQuery';
+import { AuthContext } from './AuthContext';
+import type { AuthContextType } from '@/types/auth';
 import { logger } from '@/utils/logger';
-
-// Create context with default values
-export const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  user: null,
-  profile: null,
-  role: null,
-  loading: true,
-  isLoading: true,
-  error: null,
-  isAdmin: false,
-  isMasterAdmin: false,
-  isCompany: false,
-  isUser: false,
-  isContentEditor: false,
-  isGuest: true,
-  hasRole: () => false,
-  canAccess: () => false, // Keep this for backward compatibility
-  canAccessModule: () => false,
-  canPerform: () => false,
-  refreshProfile: async () => {},
-  logout: async () => {},
-});
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Auth Provider component
+/**
+ * Auth Provider component that provides authentication context to the app
+ */
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   console.log('[EMERGENCY AuthProvider] Starting auth provider initialization');
   const authState = useAuthState();
@@ -98,6 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextType = {
     ...authState, // Provides user, profile, isLoading, error, etc.
     ...roleChecks, // Provides role, isAdmin, isMasterAdmin, hasRole, etc.
+    role: authState.role, // Explicitly set role from authState
     loading: authState.isLoading || moduleAccessQuery.isLoading, // Include module access loading
     canAccessModule: canAccessModuleSync, 
     canAccess: canAccessModuleSync, // Alias for backward compatibility
@@ -113,15 +93,4 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-// Custom hook to use the auth context
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
-  
-  if (!context) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
-  }
-  
-  return context;
 };

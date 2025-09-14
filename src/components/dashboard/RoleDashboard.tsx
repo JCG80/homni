@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Shield, Users, Building2, Settings, BarChart3, Loader2 } from 'lucide-react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useLazyModules } from '@/hooks/useLazyModules';
 import { cn } from '@/lib/utils';
 import { logger } from '@/utils/logger';

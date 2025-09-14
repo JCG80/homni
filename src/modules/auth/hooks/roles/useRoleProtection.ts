@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { UserRole } from '../../utils/roles/types';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { logger } from '@/utils/logger';

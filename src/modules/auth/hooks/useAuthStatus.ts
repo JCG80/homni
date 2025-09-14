@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 
 /**
  * Hook som gir enkel tilgang til autentiseringsstatus og håndterer lasting

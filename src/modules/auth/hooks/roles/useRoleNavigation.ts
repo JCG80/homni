@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { routeForRole } from '@/config/routeForRole';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { logger } from '@/utils/logger';

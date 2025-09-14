@@ -7,7 +7,7 @@ import { render, type RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi } from 'vitest';
-import { AuthProvider } from '@/modules/auth/hooks/useAuth';
+import { AuthProvider } from '@/modules/auth/hooks';
 import { createMockAuthContext } from '@/test/factories/userFactory';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'wrapper'> {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, AlertCircle, LogOut, LogIn, Loader2, User, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

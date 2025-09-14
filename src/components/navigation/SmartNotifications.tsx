@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Notification {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { UserProfileCard } from '@/modules/auth/components/UserProfileCard';
 import { EnhancedPropertiesWidget } from '@/modules/property/components/EnhancedPropertiesWidget';
 import { MyRequestsWidget } from '@/modules/leads/components/MyRequestsWidget';

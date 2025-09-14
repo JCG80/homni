@@ -4,7 +4,7 @@ import { canAccessModule } from '../utils/roles';
 import { UserRole } from '../utils/roles/types';
 import { render } from '@testing-library/react';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock the useAuth hook

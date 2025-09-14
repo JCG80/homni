@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/hooks/use-toast';
 import { updateProfile } from '../api';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks';
 import { logger } from '@/utils/logger';
 
 export const ProfileInfo: React.FC = () => {

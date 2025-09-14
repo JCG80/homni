@@ -10,7 +10,7 @@ import { applyFeatureFlags } from '@/routes/filters';
 import type { AppRoute } from '@/routes/routeTypes';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { Link } from 'react-router-dom';
 import { isLovablePreviewHost } from '@/lib/env/hosts';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';

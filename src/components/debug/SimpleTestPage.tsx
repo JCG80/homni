@@ -2,7 +2,7 @@
  * Simple test page to verify routing is working
  */
 import React from 'react';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useCurrentRole } from '@/hooks/useCurrentRole';
 import { logger } from '@/utils/logger';
 

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock, MessageSquare, CheckCircle, AlertCircle } from 'lucide-react';
 import { useDashboardData } from '../../../hooks/useDashboardData';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { supabase } from '@/lib/supabaseClient';
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';

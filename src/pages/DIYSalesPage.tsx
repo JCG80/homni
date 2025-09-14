@@ -1,6 +1,6 @@
 import React from 'react';
 import { DIYSalesDashboard } from '@/components/sales/DIYSalesDashboard';
-import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { Navigate } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/PageLayout';
 

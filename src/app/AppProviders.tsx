@@ -1,5 +1,5 @@
 import { AnalyticsProvider } from '@/lib/analytics/react';
-import { AuthProvider } from '@/modules/auth/hooks/useAuth';
+import { AuthProvider } from '@/modules/auth/context';
 import { ProfileContextProvider } from '@/contexts/ProfileContextProvider';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { RolePreviewProvider } from '@/contexts/RolePreviewContext';

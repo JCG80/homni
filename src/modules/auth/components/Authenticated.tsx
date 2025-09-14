@@ -1,6 +1,6 @@
 
 import React, { ReactNode } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks';
 import { UserRole } from '../utils/roles';
 
 interface AuthenticatedProps {

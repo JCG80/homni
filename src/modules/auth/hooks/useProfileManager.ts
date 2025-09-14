@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Profile } from '../types/types';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/modules/auth/hooks';
 import { useAuthRetry } from './useAuthRetry';
 import { toast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
