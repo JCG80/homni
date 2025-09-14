@@ -29,7 +29,7 @@ import { AuthProvider } from '@/modules/auth/context';
 console.log('[MAIN] ✅ AuthProvider imported');
 
 console.log('[MAIN] Testing import: apiStatus');
-import { logApiStatusWarnings } from '@/services/apiStatus';
+import { validateEnvironment } from '@/utils/envCheck';
 console.log('[MAIN] ✅ All imports successful');
 
 // Add debugging logs to understand what's happening
@@ -47,12 +47,18 @@ checkModuleHealth().then(results => {
   console.error('[MAIN] Module health check failed:', error);
 });
 
-// Sjekk API-status ved oppstart
+// Sjekk API-status ved oppstart  
+// validateEnvironment handles this now
 try {
-  logApiStatusWarnings();
-  console.log('[MAIN] API status check completed');
+  // Log environment and startup details
+  console.info('🚀 Homni Platform starting...');
+
+  // Validate environment early - this will use the new logger system
+  const envReport = validateEnvironment();
+  console.info('Environment check:', envReport);
+  console.log('[MAIN] Environment validation completed');
 } catch (error) {
-  console.error('[MAIN] API status check failed:', error);
+  console.error('[MAIN] Environment validation failed:', error);
 }
 
 // Force HashRouter for Lovable preview environments
