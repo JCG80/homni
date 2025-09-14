@@ -7,6 +7,7 @@ import type { AuthContextType, LightUser } from '@/types/auth';
 import { getRoleLevel } from '@/types/auth';
 import { AuthContext } from './AuthContext';
 import { logger } from '@/utils/logger';
+import { shouldAttemptApiCall, logApiStatusWarnings } from '@/services/apiStatus';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -53,6 +54,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     let mounted = true;
     
     const fetchProfile = async (userId: string) => {
+      if (!shouldAttemptApiCall()) {
+        logger.warn('API ikke operativt - hopper over profil-henting');
+        return;
+      }
+
       try {
         const { data: profile, error } = await supabase
           .from('user_profiles')
@@ -77,6 +83,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const initAuth = async () => {
       try {
+        // Check API status before attempting auth calls
+        if (!shouldAttemptApiCall()) {
+          logger.warn('API ikke operativt - hopper over autentisering');
+          if (mounted) {
+            setAuthState(prev => ({
+              ...prev,
+              isLoading: false,
+            }));
+          }
+          return;
+        }
+
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
         

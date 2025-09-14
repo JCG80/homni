@@ -7,6 +7,10 @@ import { AppRouter } from './app/AppRouter';
 import { PluginSystemProvider } from '@/lib/core/PluginSystemProvider';
 import { LocalizationProvider } from '@/lib/localization/LocalizationProvider';
 import { FeatureFlagProvider } from '@/lib/feature-flags/FeatureFlagProvider';
+import { logApiStatusWarnings } from '@/services/apiStatus';
+
+// Sjekk API-status ved oppstart
+logApiStatusWarnings();
 
 createRoot(document.getElementById("root")!).render(
   <AppProviders>

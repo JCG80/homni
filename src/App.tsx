@@ -19,6 +19,8 @@ import { ContextualHelp } from '@/components/guidance/ContextualHelp';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
 import { SimpleRouter } from '@/components/routing/SimpleRouter';
 import { DirectLoginPage } from '@/components/direct/DirectLoginPage';
+import { ApiStatusBanner } from '@/components/ApiStatusBanner';
+import { EnvironmentChecker } from '@/components/EnvironmentChecker';
 
 import { usePageViews } from '@/lib/analytics/react';
 
@@ -54,7 +56,9 @@ function App() {
     <AuthProvider>
       <ErrorBoundary>
         <I18nProvider>
+          <EnvironmentChecker />
           <ConnectionStatus />
+          <ApiStatusBanner />
           {(window.location.pathname === '/login' || window.location.hash === '#/login') ? (
             <DirectLoginPage />
           ) : (
