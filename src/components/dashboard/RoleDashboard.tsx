@@ -33,7 +33,7 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
   const { role, isAuthenticated, isLoading, profile, user } = useAuth();
   
   // Get effective role from either role prop or profile data
-  const effectiveRole = role || profile?.role || (user?.role);
+  const effectiveRole = role || profile?.metadata?.role;
   
   logger.debug("RoleDashboard state", { 
     module: 'dashboard',
@@ -44,8 +44,8 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
     isLoading, 
     requiredRole, 
     allowAnyAuthenticated,
-    profileRole: profile?.role,
-    userRole: user?.role
+    profileRole: profile?.metadata?.role,
+    userRole: null
   });
   
   // Check if user is loading

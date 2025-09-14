@@ -57,7 +57,7 @@ export const useCreateLead = () => {
 
 export const useLeadsList = () => {
   // Implement proper fetching from Supabase with error handling
-  const { isAuthenticated, user, role } = useAuth();
+  const { isAuthenticated, user, role, profile } = useAuth();
   const { data: leads = [], isPending, error } = useQuery({
     queryKey: ['leads'],
     queryFn: async () => {
@@ -77,7 +77,7 @@ export const useLeadsList = () => {
         
         if (role === 'company') {
           console.log('Company user, fetching company leads');
-          return await getCompanyLeads(user.company_id || '');
+          return await getCompanyLeads(profile?.company_id || '');
         }
         
         // Default for regular users - fetch their own leads

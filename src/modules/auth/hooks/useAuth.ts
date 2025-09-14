@@ -1,16 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile } from '../types/unified-types';
-import { UserRole } from '../normalizeRole';
-import { AuthContextType } from '@/types/auth';
-
-interface AuthState {
-  user: User | null;
-  profile: UserProfile | null;
-  isLoading: boolean;
-  error: Error | null;
-}
+import { UserProfile, AuthUser, AuthContextType, AuthState } from '../types/unified-types';
+import { UserRole, hasRoleLevel, getRoleLevel } from '../normalizeRole';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -18,8 +10,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     profile: null,
+    userRoles: [],
     isLoading: true,
     error: null,
+    isAuthenticated: false,
+    role: null,
+    refreshProfile: async () => {}
   });
 
   // Initialize auth state with 1-second timeout
@@ -33,9 +29,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error) throw error;
         
         if (mounted) {
+          const authUser: AuthUser | null = session?.user ? {
+            id: session.user.id,
+            email: session.user.email
+          } : null;
+
           setAuthState(prev => ({
             ...prev,
-            user: session?.user || null,
+            user: authUser,
+            isAuthenticated: !!authUser,
             isLoading: false,
           }));
         }
@@ -60,16 +62,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
       
+      const authUser: AuthUser | null = session?.user ? {
+        id: session.user.id,
+        email: session.user.email
+      } : null;
+
       setAuthState(prev => ({
         ...prev,
-        user: session?.user || null,
+        user: authUser,
+        isAuthenticated: !!authUser,
         isLoading: false,
       }));
 
       if (session?.user) {
         fetchProfile(session.user.id);
       } else {
-        setAuthState(prev => ({ ...prev, profile: null }));
+        setAuthState(prev => ({ 
+          ...prev, 
+          profile: null, 
+          role: null,
+          userRoles: []
+        }));
       }
     });
 
@@ -102,9 +115,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
 
+      // Create proper UserProfile type with proper casting
+      const profileWithTypedMetadata: UserProfile | null = profile ? {
+        ...profile,
+        metadata: (profile.metadata as UserProfile['metadata']) || {},
+        preferences: (profile.preferences as Record<string, any>) || {},
+        notification_preferences: (profile.notification_preferences as Record<string, any>) || {},
+        ui_preferences: (profile.ui_preferences as Record<string, any>) || {},
+        feature_overrides: (profile.feature_overrides as Record<string, any>) || {}
+      } : null;
+
+      // Cast metadata from Json to proper type
+      const metadata = profileWithTypedMetadata?.metadata;
+      const role: UserRole | null = metadata?.role || (profile ? 'user' : null);
+
       setAuthState(prev => ({
         ...prev,
-        profile: profile || null,
+        profile: profileWithTypedMetadata,
+        role,
       }));
     } catch (error) {
       console.error('Profile fetch error:', error);
@@ -123,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Derive computed properties
   const isAuthenticated = !!authState.user;
-  const role: UserRole | null = authState.profile?.role || (isAuthenticated ? 'user' : null);
+  const role: UserRole | null = authState.role;
   const isAdmin = role === 'admin' || role === 'master_admin';
   const isMasterAdmin = role === 'master_admin';
   const isCompany = role === 'company';
@@ -139,8 +167,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return role === roleToCheck;
   };
 
+  const hasRoleLevelMethod = (minLevel: number) => {
+    if (!role) return false;
+    return getRoleLevel(role) >= minLevel;
+  };
+
   const canAccessModule = (moduleId: string) => {
-    return isAdmin || role === 'master_admin';
+    return isAdmin;
   };
 
   const canAccess = canAccessModule;
@@ -148,8 +181,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const contextValue: AuthContextType = {
     // Core state
-    user: authState.user ? { id: authState.user.id, email: authState.user.email } : null,
+    user: authState.user,
     profile: authState.profile,
+    userRoles: authState.userRoles,
     isLoading: authState.isLoading,
     error: authState.error,
     isAuthenticated,
@@ -169,16 +203,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Methods
     hasRole,
+    hasRoleLevel: hasRoleLevelMethod,
     canAccessModule,
     canAccess,
     canPerform,
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+  return React.createElement(
+    AuthContext.Provider,
+    { value: contextValue },
+    children
   );
 }
 

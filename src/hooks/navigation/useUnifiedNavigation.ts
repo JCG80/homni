@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/modules/auth/hooks';
 import { NavigationItem, NavigationConfig } from '@/types/consolidated-types';
+import { UserRole } from '@/modules/auth/normalizeRole';
 import { Home, Settings, Users, BarChart3, Building2, FileText, Shield } from 'lucide-react';
 
 /**
@@ -209,7 +210,7 @@ export function useUnifiedNavigation() {
     // Check role requirements
     if (item.requiredRole) {
       const requiredRoles = Array.isArray(item.requiredRole) ? item.requiredRole : [item.requiredRole];
-      return requiredRoles.some(role => hasRole([role]));
+      return requiredRoles.some(roleToCheck => hasRole(roleToCheck as UserRole));
     }
 
     return true;
