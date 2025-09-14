@@ -18,31 +18,31 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
     }
   }, []);
 
-  // EMERGENCY: Force render after 300ms - no dependency on auth state
+  // SIMPLIFIED: Force render after 500ms - no auth dependencies  
   useEffect(() => {
-    console.log('[EMERGENCY AuthWrapper] Setting 300ms force render timeout');
+    console.log('[AuthWrapper] Setting 500ms force render timeout');
     const forceTimeout = setTimeout(() => {
-      console.log('[EMERGENCY AuthWrapper] Force timeout reached - rendering children');
+      console.log('[AuthWrapper] Force timeout reached - rendering children');
       setForceRender(true);
-    }, 300);
+    }, 500);
     
     return () => clearTimeout(forceTimeout);
   }, []);
 
-  // Show loading for maximum 300ms, then force render
+  // Show loading for maximum 500ms, then force render
   if (!forceRender) {
-    console.log('[EMERGENCY AuthWrapper] Showing brief loading (max 300ms)');
+    console.log('[AuthWrapper] Showing brief loading (max 500ms)');
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 border-4 border-t-blue-500 rounded-full animate-spin mx-auto" />
+          <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
           <p className="mt-4">Starter app...</p>
-          <p className="text-sm text-gray-500 mt-2">Maksimalt 300ms...</p>
+          <p className="text-sm text-muted-foreground mt-2">Maksimalt 500ms...</p>
         </div>
       </div>
     );
   }
 
-  console.log('[EMERGENCY AuthWrapper] Rendering children');
+  console.log('[AuthWrapper] Rendering children');
   return <>{children}</>;
 };
