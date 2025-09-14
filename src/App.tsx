@@ -22,6 +22,7 @@ import { SimpleRouter } from '@/components/routing/SimpleRouter';
 import { AuthPage } from '@/pages/AuthPage';
 import { ApiStatusBanner } from '@/components/ApiStatusBanner';
 import { EnvironmentChecker } from '@/components/EnvironmentChecker';
+import { SystemStatusBanner } from '@/shared/components/SystemStatusBanner';
 
 import { usePageViews } from '@/lib/analytics/react';
 
@@ -82,6 +83,7 @@ function App() {
   return (
     <GlobalErrorBoundary>
       <I18nProvider>
+        <SystemStatusBanner />
         <EnvironmentChecker />
         <ConnectionStatus />
         <ApiStatusBanner />
