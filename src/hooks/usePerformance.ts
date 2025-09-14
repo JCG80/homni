@@ -15,7 +15,7 @@ interface PerformanceMetrics {
  * Hook for measuring component render performance
  */
 export function useRenderMetrics(componentName: string) {
-  const startTime = useRef<number>();
+  const startTime = useRef<number | undefined>(undefined);
   
   // Start measuring on mount
   useEffect(() => {
@@ -72,7 +72,7 @@ export function useDebounce<T extends (...args: any[]) => void>(
   callback: T,
   delay: number
 ): T {
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   return useCallback((...args: Parameters<T>) => {
     if (timeoutRef.current) {

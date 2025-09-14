@@ -38,7 +38,7 @@ export const RealtimeMetrics = () => {
     recentEvents: [],
   });
   
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const dataBufferRef = useRef<RealtimeData[]>([]);
 
   useEffect(() => {

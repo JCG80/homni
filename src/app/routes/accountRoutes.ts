@@ -3,7 +3,7 @@ import { lazy } from 'react';
 // Define a simple route type since @/types/routing doesn't exist
 interface AccountRoute {
   path: string;
-  element: React.LazyExoticComponent<() => JSX.Element>;
+  element: React.LazyExoticComponent<() => React.JSX.Element>;
   roles: string[];
   navKey: string;
 }
