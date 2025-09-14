@@ -6,21 +6,14 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // Auto-detect if we need hash routing (for Lovable preview or static hosting)
-  const isLovablePreview = process.env.NODE_ENV === 'production' && !process.env.VITE_ROUTER_MODE;
-  const isStaticBuild = mode === 'production' && process.env.VITE_ROUTER_MODE !== 'browser';
-  const routerMode = isStaticBuild ? 'hash' : (isLovablePreview ? 'hash' : 'browser');
-  
   return {
     server: {
       host: "::",
       port: 8080,
     },
     define: {
-      // Inject router mode into the app
-      'import.meta.env.VITE_ROUTER_MODE': JSON.stringify(
-        process.env.VITE_ROUTER_MODE || routerMode
-      ),
+      // Sandbox detection for conditional logic
+      __SANDBOX__: JSON.stringify(!!process.env.VITE_USE_HASHROUTER),
     },
   plugins: [
     react(),

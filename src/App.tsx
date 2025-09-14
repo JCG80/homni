@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 import '@/styles/accessibility.css';
-import { AuthProvider } from '@/modules/auth/context/AuthProvider';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { Toaster } from '@/components/ui/toaster';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
@@ -37,7 +37,7 @@ function App() {
       if (import.meta.env.DEV) {
         logger.info('App initializing:', {
           hasToken: hasLovableToken(),
-          routerMode: import.meta.env.VITE_ROUTER_MODE || 'browser',
+          useHashRouter: import.meta.env.VITE_USE_HASHROUTER,
           hostname: window.location.hostname
         });
       }
@@ -53,27 +53,28 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <ErrorBoundary>
-        <I18nProvider>
-          <EnvironmentChecker />
-          <ConnectionStatus />
-          <ApiStatusBanner />
-          {(window.location.pathname === '/login' || window.location.hash === '#/login') ? (
-            <DirectLoginPage />
-          ) : (
-            <SiteLayout>
-              <SimpleRouter />
-              <ContextualHelp />
-              <DebugToggle />
-              <AppDiagnostics />
-              <NetworkDiagnostics />
-            </SiteLayout>
-          )}
-          <Toaster />
-        </I18nProvider>
-      </ErrorBoundary>
-    </AuthProvider>
+    <ErrorBoundary>
+      <I18nProvider>
+        <EnvironmentChecker />
+        <ConnectionStatus />
+        <ApiStatusBanner />
+        <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+          <Routes>
+            <Route path="/login" element={<DirectLoginPage />} />
+            <Route path="/*" element={
+              <SiteLayout>
+                <SimpleRouter />
+                <ContextualHelp />
+                <DebugToggle />
+                <AppDiagnostics />
+                <NetworkDiagnostics />
+              </SiteLayout>
+            } />
+          </Routes>
+        </Suspense>
+        <Toaster />
+      </I18nProvider>
+    </ErrorBoundary>
   );
 }
 
