@@ -14,6 +14,19 @@ export const LoginPage = () => {
   const userType = searchParams.get('type') === 'business' ? 'business' : 'private';
   const returnUrl = searchParams.get('returnUrl');
 
+  // EMERGENCY: Debug logging to track rendering
+  useEffect(() => {
+    console.log('[EMERGENCY LoginPage] Component rendered:', {
+      isAuthenticated,
+      role,
+      isLoading,
+      userType,
+      returnUrl,
+      pathname: window.location.pathname,
+      search: window.location.search
+    });
+  }, [isAuthenticated, role, isLoading, userType, returnUrl]);
+
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (isAuthenticated && role && !isLoading) {
@@ -24,6 +37,7 @@ export const LoginPage = () => {
 
   // Show loading while checking authentication
   if (isLoading) {
+    console.log('[EMERGENCY LoginPage] Showing loading state');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -36,9 +50,11 @@ export const LoginPage = () => {
 
   // Don't render login form if user is already authenticated (will redirect)
   if (isAuthenticated && role) {
+    console.log('[EMERGENCY LoginPage] User already authenticated, returning null');
     return null;
   }
 
+  console.log('[EMERGENCY LoginPage] Rendering login form');
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="w-full max-w-md p-6">

@@ -33,9 +33,11 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
 
   // Improved loading with a timeout to prevent infinite loading
   useEffect(() => {
+    console.log('[EMERGENCY AuthWrapper] Setting up loading timeout');
     const timeoutId = setTimeout(() => {
       // If still loading after timeout, let the app render anyway
       if (isLoading) {
+        console.log('[EMERGENCY AuthWrapper] Loading timeout reached, forcing app to render');
         logger.warn('Auth initialization taking too long, rendering app anyway', {
           component: 'AuthWrapper',
           timeoutMs: 5000
@@ -48,6 +50,7 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
   }, [isLoading]);
 
   if (isLoading && showLoading) {
+    console.log('[EMERGENCY AuthWrapper] Showing loading spinner');
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
@@ -59,5 +62,6 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
     );
   }
 
+  console.log('[EMERGENCY AuthWrapper] Rendering children');
   return <>{children}</>;
 };

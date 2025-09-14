@@ -84,6 +84,19 @@ export const SimpleTestPage = () => {
               Go to Dashboard
             </button>
             <button 
+              onClick={() => window.location.hash = '#/login'}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#7c3aed',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Go to Login
+            </button>
+            <button 
               onClick={() => window.location.reload()}
               style={{
                 padding: '10px 20px',
