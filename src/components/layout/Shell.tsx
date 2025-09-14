@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 import { isLovablePreviewHost } from '@/lib/env/hosts';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
 import { RouterDiagnostics } from '@/components/router/RouterDiagnostics';
-import { RouterEmergencyFallback } from '@/components/debug/RouterEmergencyFallback';
+import { EmergencyLoginFallback } from '@/components/debug/EmergencyLoginFallback';
 import { logger } from '@/utils/logger';
 
 // Loading fallback component
@@ -131,28 +131,41 @@ export function Shell() {
     });
   }
   
+  // EMERGENCY: Simplify route logic - always include critical routes
+  const alwaysAvailableRoutes = mainRouteObjects.filter(r => r.alwaysAvailable);
+  const loginRoute = mainRouteObjects.find(r => r.path === '/login');
+  const homeRoute = mainRouteObjects.find(r => r.path === '/');
+  
   // Apply feature flags and role filtering with error handling
   let filteredRoutes: AppRoute[] = [];
   try {
     filteredRoutes = applyFeatureFlags(allRoutes, flags, role);
+    // EMERGENCY: Always ensure login route is available
+    if (loginRoute && !filteredRoutes.find(r => r.path === '/login')) {
+      filteredRoutes.push(loginRoute);
+    }
+    if (homeRoute && !filteredRoutes.find(r => r.path === '/')) {
+      filteredRoutes.push(homeRoute);
+    }
   } catch (error) {
     logger.error('Route filtering failed:', {}, error);
-    // Fallback to basic routes if filtering fails
-    filteredRoutes = mainRouteObjects.filter(route => !route.flag && (!route.roles || route.roles.includes('guest')));
+    // EMERGENCY: Fallback to critical routes only
+    filteredRoutes = [
+      ...(loginRoute ? [loginRoute] : []),
+      ...(homeRoute ? [homeRoute] : []),
+      ...alwaysAvailableRoutes
+    ];
   }
   
-  // Safe defaults: always-available routes
-  const safeRoutes: AppRoute[] = mainRouteObjects.filter(r => r.alwaysAvailable);
-  
-  // Prefer filtered routes; if empty, fall back to safe routes
-  const selectedRoutes: AppRoute[] = filteredRoutes.length > 0 ? filteredRoutes : safeRoutes;
+  // Use filtered routes, fallback to always available if empty
+  const selectedRoutes: AppRoute[] = filteredRoutes.length > 0 ? filteredRoutes : alwaysAvailableRoutes;
   
   // Convert to React Router compatible format
   const routeElements: RouteObject[] = [
     ...convertToRouteObjects(selectedRoutes),
     // Error routes - always available
     { path: '/unauthorized', element: <UnauthorizedPage /> },
-    { path: '/emergency', element: <RouterEmergencyFallback /> },
+    { path: '/emergency', element: <EmergencyLoginFallback /> },
     { path: '*', element: <NotFound /> }
   ];
   
@@ -160,8 +173,8 @@ export function Shell() {
   if (import.meta.env.DEV || isLovablePreviewHost()) {
     logger.error('[EMERGENCY SHELL] Filtered routes debug:', {
       filteredRoutesCount: filteredRoutes.length,
-      safeRoutesCount: safeRoutes.length,
-      used: filteredRoutes.length > 0 ? 'filtered' : 'safe',
+      alwaysAvailableRoutesCount: alwaysAvailableRoutes.length,
+      used: filteredRoutes.length > 0 ? 'filtered' : 'alwaysAvailable',
       availableRoutes: selectedRoutes.map(r => ({ path: r.path, roles: r.roles, flag: r.flag })).slice(0, 10),
       routeElementsCount: routeElements.length
     });
@@ -169,15 +182,21 @@ export function Shell() {
 
   const routes = useRoutes(routeElements);
 
+  // EMERGENCY: If we're on login path and have routing issues, show emergency login
+  if (window.location.pathname === '/login' && (!routes || selectedRoutes.length === 0)) {
+    logger.error('[EMERGENCY SHELL] Login route failed, using emergency fallback');
+    return <EmergencyLoginFallback />;
+  }
+  
   // EMERGENCY: Use emergency fallback only if no routes at all
   if (!routes || selectedRoutes.length === 0) {
     logger.error('[EMERGENCY SHELL] No routes available!', {
       routes: !!routes,
       filteredRoutesLength: filteredRoutes.length,
-      safeRoutesLength: safeRoutes.length,
+      alwaysAvailableRoutesLength: alwaysAvailableRoutes.length,
       allRoutesLength: allRoutes.length
     });
-    return <RouterEmergencyFallback />;
+    return <EmergencyLoginFallback />;
   }
 
   return (
