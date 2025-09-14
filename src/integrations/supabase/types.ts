@@ -3592,6 +3592,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           revoked_at: string | null
+          revoked_by: string | null
           role: Database["public"]["Enums"]["app_role"]
           scope_key: string | null
           user_id: string
@@ -3604,6 +3605,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           revoked_at?: string | null
+          revoked_by?: string | null
           role: Database["public"]["Enums"]["app_role"]
           scope_key?: string | null
           user_id: string
@@ -3616,6 +3618,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           revoked_at?: string | null
+          revoked_by?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           scope_key?: string | null
           user_id?: string
@@ -3784,6 +3787,24 @@ export type Database = {
         Row: {
           tasks: Json | null
           version: string | null
+        }
+        Relationships: []
+      }
+      user_roles_overview_v: {
+        Row: {
+          expires_at: string | null
+          granted_at: string | null
+          granted_by: string | null
+          granted_by_display_name: string | null
+          granted_by_email: string | null
+          is_active: boolean | null
+          revoked_at: string | null
+          revoked_by: string | null
+          role: Database["public"]["Enums"]["app_role"] | null
+          scope_key: string | null
+          user_display_name: string | null
+          user_email: string | null
+          user_id: string | null
         }
         Relationships: []
       }
@@ -4079,7 +4100,7 @@ export type Database = {
         Returns: string
       }
       get_user_role_level: {
-        Args: { _user_id: string }
+        Args: { _uid: string }
         Returns: number
       }
       get_user_security_context: {
@@ -4087,11 +4108,18 @@ export type Database = {
         Returns: Json
       }
       grant_user_role: {
-        Args: {
-          _expires_at?: string
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
+        Args:
+          | {
+              _expires_at?: string
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+          | {
+              _expires_date?: string
+              _role: Database["public"]["Enums"]["app_role"]
+              _scope_key?: string
+              _user_id: string
+            }
         Returns: undefined
       }
       gtrgm_compress: {
@@ -4138,7 +4166,7 @@ export type Database = {
         Returns: boolean
       }
       has_role_level: {
-        Args: { _min_level: number; _user_id: string }
+        Args: { _min_level: number; _uid: string }
         Returns: boolean
       }
       init_admin_action_challenge: {
@@ -4249,11 +4277,22 @@ export type Database = {
         Returns: string
       }
       revoke_user_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
+        Args:
+          | {
+              _role: Database["public"]["Enums"]["app_role"]
+              _scope_key?: string
+              _user_id: string
+            }
+          | { _role: Database["public"]["Enums"]["app_role"]; _user_id: string }
         Returns: undefined
+      }
+      search_users: {
+        Args: { term: string }
+        Returns: {
+          email: string
+          full_name: string
+          id: string
+        }[]
       }
       set_company_context: {
         Args: { company_uuid: string }

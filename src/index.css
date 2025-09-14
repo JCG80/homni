@@ -1,4 +1,7 @@
 
+/* Import Role Management Styles */
+@import './styles/role-management.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
