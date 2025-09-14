@@ -1,5 +1,6 @@
 /**
  * Language switcher component for the navigation
+ * Updated to use the new comprehensive i18n system
  */
 
 import React from 'react';
@@ -11,11 +12,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Languages } from 'lucide-react';
-import { useI18n } from '@/hooks/useI18n';
-import { SUPPORTED_LOCALES, getLocaleDisplayName } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage, changeLanguage, getCurrentLanguage } from '@/lib/i18n';
 
 export const LanguageSwitcher: React.FC = () => {
-  const { locale, setLocale } = useI18n();
+  const { i18n } = useTranslation();
+  const currentLanguage = getCurrentLanguage();
+
+  const handleLanguageChange = (language: SupportedLanguage) => {
+    changeLanguage(language);
+  };
 
   return (
     <DropdownMenu>
@@ -23,18 +29,18 @@ export const LanguageSwitcher: React.FC = () => {
         <Button variant="ghost" size="sm" className="gap-2">
           <Languages className="h-4 w-4" />
           <span className="hidden sm:inline">
-            {getLocaleDisplayName(locale)}
+            {SUPPORTED_LANGUAGES[currentLanguage]}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {SUPPORTED_LOCALES.map((lang) => (
+        {(Object.entries(SUPPORTED_LANGUAGES) as [SupportedLanguage, string][]).map(([code, name]) => (
           <DropdownMenuItem
-            key={lang}
-            onClick={() => setLocale(lang)}
-            className={locale === lang ? 'bg-accent' : ''}
+            key={code}
+            onClick={() => handleLanguageChange(code)}
+            className={currentLanguage === code ? 'bg-accent' : ''}
           >
-            {getLocaleDisplayName(lang, locale)}
+            {name}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

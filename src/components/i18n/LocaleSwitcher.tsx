@@ -1,26 +1,32 @@
 /**
  * LocaleSwitcher component for changing application language
+ * Updated to use the new comprehensive i18n system
  */
 
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useI18n } from '@/hooks/useI18n';
-import { SUPPORTED_LOCALES, getLocaleDisplayName } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage, changeLanguage, getCurrentLanguage } from '@/lib/i18n';
 import { Globe } from 'lucide-react';
 
 export const LocaleSwitcher: React.FC = () => {
-  const { locale, setLocale } = useI18n();
+  const { i18n } = useTranslation();
+  const currentLanguage = getCurrentLanguage();
+
+  const handleLanguageChange = (language: SupportedLanguage) => {
+    changeLanguage(language);
+  };
 
   return (
-    <Select value={locale} onValueChange={setLocale}>
+    <Select value={currentLanguage} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-auto min-w-[120px] gap-2">
         <Globe className="h-4 w-4" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {SUPPORTED_LOCALES.map((loc) => (
-          <SelectItem key={loc} value={loc}>
-            {getLocaleDisplayName(loc, locale)}
+        {(Object.entries(SUPPORTED_LANGUAGES) as [SupportedLanguage, string][]).map(([code, name]) => (
+          <SelectItem key={code} value={code}>
+            {name}
           </SelectItem>
         ))}
       </SelectContent>

@@ -29,9 +29,15 @@ export const SUPPORTED_LANGUAGES = {
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
 
+// Backward compatibility exports
+export const SUPPORTED_LOCALES = Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[];
+export const getLocaleDisplayName = (locale: SupportedLanguage, currentLocale?: SupportedLanguage): string => {
+  return SUPPORTED_LANGUAGES[locale] || locale;
+};
+
 // Language detection is handled above
 
-// Initialize i18next  
+// Initialize i18next with language detection
 i18n
   .use(initReactI18next)
   .init({
@@ -40,10 +46,7 @@ i18n
     fallbackLng: 'no', // Default to Norwegian
     
     // Language detection
-    detection: {
-      order: ['customDetector', 'localStorage', 'navigator', 'htmlTag'],
-      caches: ['localStorage'],
-    },
+    lng: languageDetector.detect(),
 
     // Resources
     resources: {
