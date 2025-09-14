@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Dev Doctor pre-commit validation
+echo "🧠 Running Dev Doctor pre-commit validation..."
+
+# Run basic validation (faster than full scan)
+npm run dev:doctor:json
+
+# Check if critical errors were found
+if [ $? -ne 0 ]; then
+  echo "❌ Dev Doctor found critical issues - commit blocked"
+  echo "💡 Run 'npm run dev:doctor' for detailed analysis"
+  exit 1
+fi
+
+# Check if dev-doctor-report.json was generated and has errors
+if [ -f "dev-doctor-report.json" ]; then
+  ERRORS=$(node -e "
+    try {
+      const report = JSON.parse(require('fs').readFileSync('dev-doctor-report.json', 'utf8'));
+      console.log(report.summary.errors || 0);
+    } catch(e) {
+      console.log(0);
+    }
+  ")
+  
+  if [ "$ERRORS" -gt "0" ]; then
+    echo "❌ Dev Doctor found $ERRORS critical error(s) - commit blocked"
+    echo "📄 Check dev-doctor-report.json for details"
+    exit 1
+  fi
+fi
+
+echo "✅ Dev Doctor validation passed"

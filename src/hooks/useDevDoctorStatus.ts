@@ -69,11 +69,30 @@ export const useDevDoctorStatus = (): DevDoctorStatus => {
   useEffect(() => {
     const fetchDevDoctorStatus = async () => {
       try {
-        // TODO: In production, fetch from GitHub Actions artifacts API
-        // const response = await fetch('/api/dev-doctor/latest');
-        // const report = await response.json();
+        // Try to fetch real Dev Doctor report from local file first
+        try {
+          const response = await fetch('/dev-doctor-report.json', { 
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
+          });
+          
+          if (response.ok) {
+            const report = await response.json();
+            setStatus({
+              report,
+              isLoading: false,
+              lastUpdated: new Date(),
+              error: null
+            });
+            return;
+          }
+        } catch {
+          // Fallback to mock data if file not available
+        }
         
-        // Mock data for development - represents a successful report
+        // Fallback to mock data if report not available
         const mockReport: DevDoctorReport = {
           timestamp: new Date().toISOString(),
           version: '2.0.0',

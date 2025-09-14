@@ -111,6 +111,28 @@ jobs:
             fi
           fi
 
+      # Multi-Channel Notifications
+      - name: 📱 Send Slack Notification
+        if: always()
+        run: node scripts/adapters/slack.js
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          
+      - name: 📱 Send Teams Notification  
+        if: always()
+        run: node scripts/adapters/teams.js
+        continue-on-error: true
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          
+      - name: 📱 Send Webhook Notification
+        if: always()
+        run: node scripts/adapters/webhook.js
+        continue-on-error: true
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+
   install-test:
     name: 📦 Test Installation with Dev Doctor Results
     runs-on: ubuntu-latest
