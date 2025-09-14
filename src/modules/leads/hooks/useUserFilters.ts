@@ -6,7 +6,7 @@ import { useFilterCreate } from './useFilterCreate';
 import { useFilterUpdate } from './useFilterUpdate';
 import { useFilterDelete } from './useFilterDelete';
 import { useFilterPermissions } from './useFilterPermissions';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 /**
  * Unified hook for managing user lead filters with automatic retry and role-based access

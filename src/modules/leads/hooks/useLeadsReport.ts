@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Lead } from '@/types/leads-canonical';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { fetchLeadsValidated } from '../api/lead-query';
 
 export const useLeadsReport = () => {

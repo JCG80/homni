@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { PowerComparisonHeader } from '@/components/power/PowerComparisonHeader';
 import { PowerComparisonFooter } from '@/components/power/PowerComparisonFooter';
 import { PowerComparisonForm } from '@/components/power/PowerComparisonForm';

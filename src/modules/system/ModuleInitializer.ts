@@ -7,7 +7,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { UserRole } from '@/modules/auth/normalizeRole';
 import { moduleRegistry, getModulesForRole } from './ModuleRegistry';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Initialize modules for a user based on their role

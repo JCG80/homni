@@ -1,7 +1,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { QuickLoginUser } from '../types/unified-types';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { smartDevLogin } from './passwordlessLogin';
 import { logger } from '@/utils/logger';
 

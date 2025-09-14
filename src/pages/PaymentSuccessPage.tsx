@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, CreditCard } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 export const PaymentSuccessPage = () => {
   const navigate = useNavigate();

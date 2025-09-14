@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { loadProjectDocByType } from '../api/loadProjectDocs';
 import { saveProjectDoc } from '../api/saveProjectDoc';
 import { ProjectDoc } from '../types/docs-types';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 export function useProjectPlan() {
   const [isEditing, setIsEditing] = useState(false);

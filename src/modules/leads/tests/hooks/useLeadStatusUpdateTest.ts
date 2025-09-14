@@ -4,7 +4,7 @@ import { useAuth } from '@/modules/auth/hooks';
 import { getLeadById } from '../../api/lead-list';
 import { updateLeadStatus } from '../../api/lead-update';
 import { LeadStatus } from '@/types/leads-canonical';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 export function useLeadStatusUpdateTest() {
   const { user } = useAuth();

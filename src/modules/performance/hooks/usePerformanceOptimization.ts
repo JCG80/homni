@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { PerformanceMetrics } from '@/types/metrics';
 
 export const usePerformanceOptimization = () => {

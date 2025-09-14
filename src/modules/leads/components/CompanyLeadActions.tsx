@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Lead, LeadStatus, STATUS_LABELS } from '@/types/leads-canonical';
 import { updateLeadStatus } from '../api/lead-update';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface CompanyLeadActionsProps {
   lead: Lead;

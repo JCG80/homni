@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
 import { insertLead } from '../../api';
 import { Lead, LeadStatus } from '../../types/types';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { createTestLead } from '../utils';
 
 export const useLeadInsertTest = () => {

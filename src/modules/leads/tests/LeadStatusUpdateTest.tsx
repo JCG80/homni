@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { updateLeadStatus } from '../api/lead-update';
 import { Button } from '@/components/ui/button';
 import { LEAD_STATUSES } from '../constants/lead-constants';

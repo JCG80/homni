@@ -5,7 +5,7 @@ import { LeadSettingsTest } from '../tests/components/LeadSettingsTest';
 import { Button } from '@/components/ui/button';
 import { fetchLeadSettings, pauseForAgents, globalPause } from '../api/leadSettings';
 import { LeadSettings } from '../types/lead-settings';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 export const LeadTestPage = () => {
   const [settings, setSettings] = useState<LeadSettings | null>(null);

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { DistributionStrategy } from '../../strategies/strategyFactory';
 import { getCurrentStrategy, updateDistributionStrategy } from '../../utils/leadDistributor';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 export function useDistributionStrategy() {
   const [selectedStrategy, setSelectedStrategy] = useState<DistributionStrategy>('roundRobin');

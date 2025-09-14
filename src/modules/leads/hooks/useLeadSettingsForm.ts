@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { DistributionStrategy } from '../strategies/strategyFactory';
 import { fetchLeadSettings, updateLeadSettings } from '../api/leadSettings';
 import { getCurrentStrategy, updateDistributionStrategy } from '../utils/leadDistributor';

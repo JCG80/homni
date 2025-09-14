@@ -9,7 +9,7 @@ import { Lead, STATUS_LABELS } from '@/types/leads-canonical';
 import { fetchLeadStatus } from '../api/lead-fetch';
 import { LeadContactInfo } from '../components/LeadContactInfo';
 import { CompanyLeadActions } from '../components/CompanyLeadActions';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const LeadDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

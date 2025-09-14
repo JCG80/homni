@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Lead, LeadStatus, STATUS_LABELS, STATUS_COLORS } from '@/types/leads-canonical';
 import { fetchLeadById, updateLeadDetails } from '../../api/leadDetails';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow, format } from 'date-fns';
 import { nb } from 'date-fns/locale';
 

@@ -1,7 +1,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { showLeadProcessingNotifications } from '../../utils/leadNotifications';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 // Mock dependencies
 vi.mock('@/hooks/use-toast', () => ({
