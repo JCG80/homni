@@ -31,15 +31,10 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
     }
   }, []);
 
-  // EMERGENCY: Add timeout to prevent infinite loading - SINGLE AGGRESSIVE TIMEOUT
+  // EMERGENCY: Simplified timeout - let useAuthSession handle the timeout instead
   useEffect(() => {
-    console.log('[EMERGENCY AuthWrapper] Setting up loading timeout');
-    const timeoutId = setTimeout(() => {
-      console.log('[EMERGENCY AuthWrapper] Timeout reached, forcing app to render regardless of auth state');
-      setShowLoading(false);
-    }, 500); // EMERGENCY: Most aggressive - 500ms timeout
-    
-    return () => clearTimeout(timeoutId);
+    console.log('[EMERGENCY AuthWrapper] AuthWrapper mounted');
+    // Remove duplicate timeout logic - useAuthSession now handles it
   }, []);
 
   if (isLoading && showLoading) {

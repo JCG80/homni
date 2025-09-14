@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { LoginForm } from '@/modules/auth/components/LoginForm';
 import { DevSeedUsers } from '@/modules/auth/components/DevSeedUsers';
@@ -13,8 +13,9 @@ export const LoginPage = () => {
   const { isAuthenticated, role, isLoading } = useAuth();
   const userType = searchParams.get('type') === 'business' ? 'business' : 'private';
   const returnUrl = searchParams.get('returnUrl');
+  const [forceRender, setForceRender] = useState(false);
 
-  // EMERGENCY: Debug logging to track rendering
+  // EMERGENCY: Force rendering after timeout
   useEffect(() => {
     console.log('[EMERGENCY LoginPage] Component rendered:', {
       isAuthenticated,
@@ -25,6 +26,14 @@ export const LoginPage = () => {
       pathname: window.location.pathname,
       search: window.location.search
     });
+    
+    // EMERGENCY: Force rendering after 1 second regardless of auth state
+    const emergencyTimeout = setTimeout(() => {
+      console.log('[EMERGENCY LoginPage] Forcing render after timeout');
+      setForceRender(true);
+    }, 1000);
+    
+    return () => clearTimeout(emergencyTimeout);
   }, [isAuthenticated, role, isLoading, userType, returnUrl]);
 
   // Redirect authenticated users to their dashboard
@@ -35,21 +44,23 @@ export const LoginPage = () => {
     }
   }, [isAuthenticated, role, isLoading, returnUrl, navigate]);
 
-  // Show loading while checking authentication
-  if (isLoading) {
-    console.log('[EMERGENCY LoginPage] Showing loading state');
+  // EMERGENCY: Show loading but with timeout - force render after timeout
+  if (isLoading && !forceRender) {
+    console.log('[EMERGENCY LoginPage] Showing loading state (will timeout)');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-muted-foreground">Sjekker innlogging...</p>
+          <p className="text-xs text-muted-foreground mt-2">Venter maks 1 sekund...</p>
         </div>
       </div>
     );
   }
 
-  // Don't render login form if user is already authenticated (will redirect)
-  if (isAuthenticated && role) {
+  // EMERGENCY: Don't render login form if user is already authenticated (will redirect)
+  // But only if we haven't forced rendering
+  if (isAuthenticated && role && !forceRender) {
     console.log('[EMERGENCY LoginPage] User already authenticated, returning null');
     return null;
   }

@@ -25,8 +25,16 @@ export const useAuthSession = () => {
   useEffect(() => {
     let mounted = true;
 
-    // EMERGENCY: Timeout removed to prevent conflicts with AuthWrapper
-    // Initialize auth state - timeout managed by AuthWrapper now
+    // EMERGENCY: Add aggressive timeout to prevent infinite loading
+    const emergencyTimeout = setTimeout(() => {
+      console.log('[EMERGENCY useAuthSession] Emergency timeout reached, forcing loading to false');
+      if (mounted) {
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false
+        }));
+      }
+    }, 500); // Very aggressive 500ms timeout
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -161,6 +169,7 @@ export const useAuthSession = () => {
 
     return () => {
       mounted = false;
+      clearTimeout(emergencyTimeout);
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
