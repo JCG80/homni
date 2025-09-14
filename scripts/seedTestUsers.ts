@@ -3,20 +3,31 @@
  * Part of Homni platform development plan
  */
 
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client for seeding
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'http://localhost:54321';
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '../src/lib/supabaseClient';
+import { UserRole } from '../src/modules/auth/utils/normalizeRole';
 
 interface TestUser {
   email: string;
   password: string;
-  role: 'anonymous' | 'user' | 'company' | 'content_editor' | 'admin' | 'master_admin';
+  role: UserRole;
   account_type: 'privatperson' | 'bedrift';
   profile_data: any;
   company_data?: any;
+}
+
+export interface CreateUserResult {
+  success: boolean;
+  user_id?: string;
+  profile_id?: string;
+  company_id?: string;
+  error?: string;
+}
+
+export interface RlsValidationResult {
+  success: boolean;
+  policies_tested: number;
+  failed_policies: number;
+  errors: string[];
 }
 
 const TEST_USERS: TestUser[] = [
@@ -108,44 +119,194 @@ const TEST_USERS: TestUser[] = [
   }
 ];
 
+export async function createUser(userData: TestUser): Promise<CreateUserResult> {
+  try {
+    console.log(`👤 Creating test user: ${userData.email}`);
+
+    // Create auth user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: userData.email,
+      password: userData.password,
+      options: {
+        emailRedirectTo: undefined // Skip email confirmation in development
+      }
+    });
+
+    if (authError) {
+      return { success: false, error: authError.message };
+    }
+
+    if (!authData.user) {
+      return { success: false, error: 'No user data returned from auth signup' };
+    }
+
+    // Create user profile
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles')
+      .insert({
+        user_id: authData.user.id,
+        display_name: userData.profile_data.display_name,
+        role: userData.role,
+        account_type: userData.account_type,
+        notification_preferences: userData.profile_data.notification_preferences,
+        ui_preferences: userData.profile_data.ui_preferences,
+        feature_overrides: userData.profile_data.feature_overrides,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select('id')
+      .single();
+
+    if (profileError) {
+      return { success: false, error: profileError.message };
+    }
+
+    let companyId: string | undefined;
+
+    // Create company profile if business account
+    if (userData.account_type === 'bedrift' && userData.company_data) {
+      const { data: companyData, error: companyError } = await supabase
+        .from('company_profiles')
+        .insert({
+          user_id: authData.user.id,
+          name: userData.company_data.company_name,
+          org_number: userData.company_data.org_number,
+          industry: userData.company_data.industry,
+          size: userData.company_data.size,
+          subscription_tier: userData.company_data.subscription_tier,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select('id')
+        .single();
+
+      if (companyError) {
+        console.warn(`⚠️ Company profile creation failed for ${userData.email}:`, companyError.message);
+      } else {
+        companyId = companyData.id;
+      }
+    }
+
+    console.log(`✅ Test user created: ${userData.email}`);
+    
+    return {
+      success: true,
+      user_id: authData.user.id,
+      profile_id: profileData.id,
+      company_id: companyId
+    };
+
+  } catch (error: any) {
+    console.error(`❌ Failed to create test user ${userData.email}:`, error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function validateRlsPolicies(userId: string, role: UserRole): Promise<RlsValidationResult> {
+  const result: RlsValidationResult = {
+    success: true,
+    policies_tested: 0,
+    failed_policies: 0,
+    errors: []
+  };
+
+  const testCases = [
+    {
+      name: 'user_profiles_select',
+      test: () => supabase.from('user_profiles').select('id').eq('user_id', userId).limit(1)
+    },
+    {
+      name: 'user_profiles_update',
+      test: () => supabase.from('user_profiles').update({ updated_at: new Date().toISOString() }).eq('user_id', userId)
+    }
+  ];
+
+  // Add role-specific test cases
+  if (role === 'company' || role === 'admin') {
+    testCases.push({
+      name: 'company_profiles_access',
+      test: () => supabase.from('company_profiles').select('id').limit(1)
+    });
+  }
+
+  if (role === 'admin' || role === 'master_admin') {
+    testCases.push({
+      name: 'admin_user_access',
+      test: () => supabase.from('user_profiles').select('id').limit(5)
+    });
+  }
+
+  for (const testCase of testCases) {
+    try {
+      result.policies_tested++;
+      const { error } = await testCase.test();
+      
+      if (error) {
+        result.failed_policies++;
+        result.errors.push(`${testCase.name}: ${error.message}`);
+        result.success = false;
+      }
+    } catch (error: any) {
+      result.failed_policies++;
+      result.errors.push(`${testCase.name}: ${error.message}`);
+      result.success = false;
+    }
+  }
+
+  return result;
+}
+
+export function getExpectedModulesForRole(role: UserRole): string[] {
+  const moduleMap: Record<UserRole, string[]> = {
+    anonymous: [],
+    user: ['leads', 'properties', 'documents', 'profile'],
+    company: ['leads', 'analytics', 'team', 'billing', 'properties', 'profile'],
+    content_editor: ['content', 'media', 'pages', 'profile'],
+    admin: ['admin', 'users', 'system', 'analytics', 'content', 'properties', 'profile'],
+    master_admin: ['admin', 'users', 'system', 'analytics', 'content', 'properties', 'profile', 'billing', 'team']
+  };
+
+  return moduleMap[role] || [];
+}
+
 export async function seedTestUsers() {
   try {
     console.log('🌱 Starting test user seeding...');
 
+    const results: CreateUserResult[] = [];
+
     // Create test users
     for (const testUser of TEST_USERS) {
-      await createTestUser(testUser);
+      const result = await createUser(testUser);
+      results.push(result);
+      
+      if (result.success && result.user_id) {
+        // Validate RLS policies for this user
+        const rlsResult = await validateRlsPolicies(result.user_id, testUser.role);
+        if (!rlsResult.success) {
+          console.warn(`⚠️ RLS validation failed for ${testUser.email}:`, rlsResult.errors);
+        }
+      }
     }
 
-    console.log('✅ Test user seeding completed successfully!');
+    const successful = results.filter(r => r.success).length;
+    const failed = results.filter(r => !r.success).length;
+
+    console.log(`✅ Test user seeding completed: ${successful} successful, ${failed} failed`);
+    
+    if (failed > 0) {
+      const errors = results.filter(r => !r.success).map(r => r.error);
+      console.error('❌ Seeding errors:', errors);
+    }
+
   } catch (error) {
     console.error('❌ Test user seeding failed:', error);
     throw error;
   }
 }
 
-async function createTestUser(testUser: TestUser) {
-  try {
-    console.log(`👤 Creating test user: ${testUser.email}`);
-
-    // For now, just log the user creation
-    // In a real implementation, this would create actual users
-    console.log(`User data:`, {
-      email: testUser.email,
-      role: testUser.role,
-      account_type: testUser.account_type,
-      display_name: testUser.profile_data.display_name
-    });
-
-    console.log(`✅ Test user logged: ${testUser.email}`);
-  } catch (error) {
-    console.error(`❌ Failed to create test user ${testUser.email}:`, error);
-    throw error;
-  }
-}
-
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   seedTestUsers()
     .then(() => process.exit(0))
     .catch((error) => {

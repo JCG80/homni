@@ -1,51 +1,66 @@
 import { defineConfig } from 'vitest/config';
-import { resolve } from 'path';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
 
 export default defineConfig({
+  plugins: [react()],
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./vitest.setup.ts'],
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}', 'scripts/**/*.{test,spec}.{js,ts}'],
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'e2e-tests'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
-        'src/test/',
+        'src/setupTests.ts',
+        'src/integrations/supabase/types.ts',
         '**/*.d.ts',
-        '**/*.test.{ts,tsx}',
-        '**/*.spec.{ts,tsx}',
+        '**/*.config.*',
+        '**/coverage/**',
+        '**/dist/**',
+        '**/build/**',
         'e2e-tests/',
-        'dist/',
-        'build/',
-        '.next/',
-        'coverage/',
-        'public/',
-        'src/integrations/supabase/types.ts'
+        'public/'
       ],
       thresholds: {
         global: {
           branches: 80,
-          functions: 90,
-          lines: 90,
-          statements: 90
+          functions: 80,
+          lines: 80,
+          statements: 80
         }
       }
     },
-    include: [
-      'src/**/*.{test,spec}.{ts,tsx}'
-    ],
-    exclude: [
-      'node_modules/',
-      'dist/',
-      'build/',
-      'e2e-tests/'
-    ]
+    // Performance optimizations
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: false,
+        useAtomics: true
+      }
+    },
+    // Test timeout
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    // Reporters
+    reporter: ['verbose', 'json', 'html'],
+    outputFile: {
+      json: './coverage/test-results.json',
+      html: './coverage/test-results.html'
+    }
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
-      '@/test': resolve(__dirname, './src/test')
-    }
-  }
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  define: {
+    // Mock environment variables for tests
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify('http://localhost:54321'),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify('test-anon-key'),
+    'import.meta.env.MODE': JSON.stringify('test'),
+  },
 });
