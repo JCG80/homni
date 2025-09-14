@@ -128,7 +128,17 @@ export const useLeadScoring = (leadId?: string) => {
 
       if (error) throw error;
 
-      return data;
+      if (!data || typeof data !== 'object') {
+        return null;
+      }
+
+      // Ensure data conforms to LeadPricing interface
+      const pricingData = data as any;
+      if (!pricingData.tier_name || typeof pricingData.base_price_cents !== 'number') {
+        return null;
+      }
+
+      return pricingData as LeadPricing;
     } catch (err) {
       console.error('Error fetching pricing:', err);
       return null;

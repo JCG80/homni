@@ -119,10 +119,10 @@ export function useLeadAnalytics(timeframe: '7d' | '30d' | '90d' | '1y' = '30d')
       const topCategories = Object.entries(categoryCounts)
         .map(([name, count]) => ({
           name,
-          count,
-          percentage: totalLeads > 0 ? (count / totalLeads) * 100 : 0
+          count: count as number,
+          percentage: totalLeads > 0 ? ((count as number) / totalLeads) * 100 : 0
         }))
-        .sort((a, b) => b.count - a.count)
+        .sort((a, b) => (b.count as number) - (a.count as number))
         .slice(0, 5);
 
       // Source analysis (mock data)

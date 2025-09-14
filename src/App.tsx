@@ -4,7 +4,6 @@ import './index.css';
 import '@/styles/accessibility.css';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { Toaster } from '@/components/ui/toaster';
-import { GlobalErrorBoundary } from '@/shared/components/GlobalErrorBoundary';
 import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
 import { stripLovableToken, hasLovableToken } from '@/app/stripToken';
 import { performDevCleanup } from '@/pwa/cleanup';
@@ -13,7 +12,7 @@ import { NetworkDiagnostics } from '@/components/debug/NetworkDiagnostics';
 import { DebugToggle } from '@/components/debug/DebugToggle';
 import { autoConfigureEnvironment } from '@/utils/environmentDiagnostics';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
-import { logger } from '@/utils/logger';
+import { log } from '@/utils/logger';
 // Import i18n configuration
 import '@/lib/i18n/index';
 import { ContextualHelp } from '@/components/guidance/ContextualHelp';
@@ -23,57 +22,41 @@ import { AuthPage } from '@/pages/AuthPage';
 import { ApiStatusBanner } from '@/components/ApiStatusBanner';
 import { EnvironmentChecker } from '@/components/EnvironmentChecker';
 import { SystemStatusBanner } from '@/shared/components/SystemStatusBanner';
+import NotFound from '@/components/system/NotFound';
 
 import { usePageViews } from '@/lib/analytics/react';
 
 import HomePage from '@/pages/HomePage';
 
-console.log('[APP] App component initializing...');
-
 function App() {
-  console.log('[APP] App function called, starting usePageViews...');
   try {
     usePageViews(); // auto-track SPA navigation
-    console.log('[APP] usePageViews completed successfully');
   } catch (error) {
-    console.error('[APP] usePageViews failed:', error);
+    log.error('[APP] usePageViews failed:', error);
   }
 
   // Initialize app cleanup on mount
   useEffect(() => {
-    console.log('[APP] useEffect starting...');
     const initializeApp = async () => {
       try {
-        console.log('[APP] Initializing app...');
         // Auto-configure environment
         autoConfigureEnvironment();
-        console.log('[APP] Environment configured');
-        
-        // Force HashRouter for Lovable environments
-        const forceHashRouter = window.location.hostname.includes('lovable') || 
-                                window.location.hostname.includes('sandbox') ||
-                                import.meta.env.VITE_USE_HASHROUTER === 'true';
-        
-        console.log('[APP] Router config - forceHashRouter:', forceHashRouter);
         
         // Log initial state for debugging
         if (import.meta.env.DEV) {
-          logger.info('App initializing:', {
+          log.info('App initializing:', {
             hasToken: hasLovableToken(),
-            forceHashRouter,
             hostname: window.location.hostname
           });
         }
         
         // Clean up lovable token from URL
         stripLovableToken();
-        console.log('[APP] Token stripped');
         
         // Perform dev/preview cleanup
         await performDevCleanup();
-        console.log('[APP] Dev cleanup completed');
       } catch (error) {
-        console.error('[APP] App initialization failed:', error);
+        log.error('[APP] App initialization failed:', error);
       }
     };
     
@@ -81,31 +64,30 @@ function App() {
   }, []);
 
   return (
-    <GlobalErrorBoundary>
-      <I18nProvider>
-        <SystemStatusBanner />
-        <EnvironmentChecker />
-        <ConnectionStatus />
-        <ApiStatusBanner />
-        <Routes>
-          <Route path="/auth" element={<RouteErrorBoundary routeName="Autentisering"><AuthPage /></RouteErrorBoundary>} />
-          <Route path="/login" element={<Navigate to="/auth" replace />} />
-          <Route path="/" element={<RouteErrorBoundary routeName="Forside"><HomePage /></RouteErrorBoundary>} />
-          <Route path="/*" element={
-            <SiteLayout>
-              <RouteErrorBoundary routeName="Applikasjon">
-                <SimpleRouter />
-              </RouteErrorBoundary>
-              <ContextualHelp />
-              <DebugToggle />
-              <AppDiagnostics />
-              <NetworkDiagnostics />
-            </SiteLayout>
-          } />
-        </Routes>
-        <Toaster />
-      </I18nProvider>
-    </GlobalErrorBoundary>
+    <I18nProvider>
+      <SystemStatusBanner />
+      <EnvironmentChecker />
+      <ConnectionStatus />
+      <ApiStatusBanner />
+      <Routes>
+        <Route path="/auth" element={<RouteErrorBoundary routeName="Autentisering"><AuthPage /></RouteErrorBoundary>} />
+        <Route path="/login" element={<Navigate to="/auth" replace />} />
+        <Route path="/" element={<RouteErrorBoundary routeName="Forside"><HomePage /></RouteErrorBoundary>} />
+        <Route path="/*" element={
+          <SiteLayout>
+            <RouteErrorBoundary routeName="Applikasjon">
+              <SimpleRouter />
+            </RouteErrorBoundary>
+            <ContextualHelp />
+            <DebugToggle />
+            <AppDiagnostics />
+            <NetworkDiagnostics />
+          </SiteLayout>
+        } />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Toaster />
+    </I18nProvider>
   );
 }
 
