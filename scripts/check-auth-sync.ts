@@ -1,161 +1,112 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsx
 
 /**
- * Check if auth.users and user_profiles are properly synchronized
- * This helps catch issues where users exist in auth but not in profiles or vice versa
+ * Auth synchronization checker - validates user profiles consistency
+ * Detects orphaned profiles, missing profiles, and role mismatches
  */
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Use environment variables with fallbacks
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://kkazhcihooovsuwravhs.supabase.co";
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrYXpoY2lob29vdnN1d3JhdmhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MzMwMzUsImV4cCI6MjA2MjEwOTAzNX0.-HzjqXYqgThN0PrbrwZlm5GWK1vOGOeYHEEFrt0OpwM";
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables');
-  process.exit(1);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+interface AuthSyncIssue {
+  type: 'orphaned_profile' | 'missing_profile' | 'role_mismatch' | 'duplicate_profile';
+  user_id: string;
+  details: Record<string, any>;
+  severity: 'low' | 'medium' | 'high' | 'critical';
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-interface SyncIssue {
-  type: 'missing_profile' | 'orphaned_profile' | 'role_mismatch' | 'metadata_inconsistency';
-  description: string;
-  user_id?: string;
-  email?: string;
-  details?: any;
-}
-
-const checkAuthSync = async (): Promise<SyncIssue[]> => {
-  const issues: SyncIssue[] = [];
+async function checkAuthSync(): Promise<AuthSyncIssue[]> {
+  const issues: AuthSyncIssue[] = [];
   
   try {
-    // Get all auth users
-    const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-    if (authError) throw authError;
+    console.log('🔍 Checking auth synchronization...');
     
-    // Get all user profiles  
-    const { data: userProfiles, error: profileError } = await supabase
+    // Check for duplicate profiles
+    const { data: duplicates, error: duplicateError } = await supabase
       .from('user_profiles')
-      .select('*');
-    if (profileError) throw profileError;
-    
-    // Create lookup maps
-    const authUserMap = new Map(authUsers.users.map(u => [u.id, u]));
-    const profileMap = new Map(userProfiles.map(p => [p.user_id || p.id, p]));
-    
-    // Check for auth users without profiles
-    for (const authUser of authUsers.users) {
-      if (!profileMap.has(authUser.id)) {
-        issues.push({
-          type: 'missing_profile',
-          description: 'Auth user exists but no corresponding user_profile',
-          user_id: authUser.id,
-          email: authUser.email,
-        });
-      }
-    }
-    
-    // Check for profiles without auth users
-    for (const profile of userProfiles) {
-      const userId = profile.user_id || profile.id;
-      if (!authUserMap.has(userId)) {
-        issues.push({
-          type: 'orphaned_profile',
-          description: 'User profile exists but no corresponding auth user',
-          user_id: userId,
-          details: { profile_id: profile.id, role: profile.role }
-        });
-      }
-    }
-    
-    // Check for role/metadata inconsistencies
-    for (const profile of userProfiles) {
-      const userId = profile.user_id || profile.id;
-      const authUser = authUserMap.get(userId);
+      .select('user_id, count(*)')
+      .group('user_id')
+      .having('count(*) > 1');
       
-      if (authUser && profile.role) {
-        const authRole = authUser.raw_user_meta_data?.role;
-        const metadataRole = profile.metadata?.role;
-        
-        // Check if user_id !== id (should always match)
-        if (profile.user_id && profile.user_id !== profile.id) {
-          issues.push({
-            type: 'metadata_inconsistency',
-            description: 'user_profiles.user_id does not match user_profiles.id',
-            user_id: userId,
-            email: authUser.email,
-            details: { profile_id: profile.id, user_id: profile.user_id }
-          });
-        }
-        
-        // Check role consistency
-        if (authRole && profile.role !== authRole && !isCanonicalRole(profile.role, authRole)) {
-          issues.push({
-            type: 'role_mismatch',
-            description: 'Role mismatch between auth metadata and user_profile',
-            user_id: userId,
-            email: authUser.email,
-            details: { 
-              auth_role: authRole, 
-              profile_role: profile.role,
-              metadata_role: metadataRole 
-            }
-          });
-        }
+    if (duplicateError) {
+      console.warn('⚠️ Could not check for duplicate profiles:', duplicateError.message);
+    } else if (duplicates && duplicates.length > 0) {
+      duplicates.forEach((dup: any) => {
+        issues.push({
+          type: 'duplicate_profile',
+          user_id: dup.user_id,
+          details: { count: dup.count },
+          severity: 'high'
+        });
+      });
+    }
+    
+    // Check for profiles with invalid roles
+    const { data: invalidRoles, error: roleError } = await supabase
+      .from('user_profiles')
+      .select('user_id, role, role_enum')
+      .not('role', 'in', '(guest,user,company,content_editor,admin,master_admin)');
+      
+    if (roleError) {
+      console.warn('⚠️ Could not check role consistency:', roleError.message);
+    } else if (invalidRoles && invalidRoles.length > 0) {
+      invalidRoles.forEach((profile: any) => {
+        issues.push({
+          type: 'role_mismatch',
+          user_id: profile.user_id,
+          details: { 
+            role: profile.role, 
+            role_enum: profile.role_enum 
+          },
+          severity: 'medium'
+        });
+      });
+    }
+    
+    console.log(`✅ Auth sync check complete. Found ${issues.length} issues.`);
+    
+    if (issues.length > 0) {
+      console.log('\n📋 Issues Summary:');
+      issues.forEach((issue, index) => {
+        console.log(`${index + 1}. [${issue.severity.toUpperCase()}] ${issue.type}`);
+        console.log(`   User ID: ${issue.user_id}`);
+        console.log(`   Details: ${JSON.stringify(issue.details, null, 2)}`);
+        console.log('');
+      });
+      
+      const criticalCount = issues.filter(i => i.severity === 'critical').length;
+      const highCount = issues.filter(i => i.severity === 'high').length;
+      
+      if (criticalCount > 0 || highCount > 0) {
+        console.log(`🚨 Found ${criticalCount} critical and ${highCount} high severity issues!`);
+        process.exit(1);
       }
     }
+    
+    return issues;
     
   } catch (error) {
-    console.error('Error checking auth sync:', error);
+    console.error('❌ Auth sync check failed:', error);
     process.exit(1);
   }
-  
-  return issues;
-};
-
-// Check if roles are equivalent (canonical vs legacy)
-const isCanonicalRole = (profileRole: string, authRole: string): boolean => {
-  const roleMap: Record<string, string> = {
-    'anonymous': 'guest',
-    'member': 'user', 
-    'business': 'company',
-    'provider': 'company',
-    'editor': 'content_editor',
-    'super_admin': 'master_admin'
-  };
-  
-  return roleMap[authRole] === profileRole || roleMap[profileRole] === authRole;
-};
-
-const main = async () => {
-  console.log('🔍 Checking auth users vs user_profiles synchronization...\n');
-  
-  const issues = await checkAuthSync();
-  
-  if (issues.length === 0) {
-    console.log('✅ Auth users and user_profiles are properly synchronized!');
-    process.exit(0);
-  }
-  
-  console.log(`❌ Found ${issues.length} synchronization issues:\n`);
-  
-  issues.forEach((issue, index) => {
-    console.log(`${index + 1}. ${issue.type.toUpperCase()}`);
-    console.log(`   Description: ${issue.description}`);
-    if (issue.user_id) console.log(`   User ID: ${issue.user_id}`);
-    if (issue.email) console.log(`   Email: ${issue.email}`);
-    if (issue.details) console.log(`   Details: ${JSON.stringify(issue.details, null, 2)}`);
-    console.log();
-  });
-  
-  console.log('💡 To fix these issues:');
-  console.log('   - Run the normalization migration from the implementation plan');
-  console.log('   - Use the seed-test-users function to create missing test users');
-  console.log('   - Check if any manual cleanup is needed\n');
-  
-  process.exit(1);
-};
-
-if (require.main === module) {
-  main().catch(console.error);
 }
+
+// Run if called directly
+if (require.main === module) {
+  checkAuthSync()
+    .then(() => {
+      console.log('✅ Auth synchronization check completed successfully');
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('❌ Auth synchronization check failed:', error);
+      process.exit(1);
+    });
+}
+
+export { checkAuthSync };

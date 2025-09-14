@@ -38,6 +38,9 @@ packageJson.scripts = {
   "migrations:check": "ts-node scripts/checkMigrations.ts",
   "migrations:generate-downs": "ts-node scripts/generateDownMigrations.ts",
   "repo:health": "ts-node scripts/repo-health.ts",
+  "check:auth-sync": "tsx scripts/check-auth-sync.ts",
+  "validate:env": "tsx scripts/environment-validator.ts",
+  "health:connections": "tsx scripts/connection-health-check.ts",
 
   // DX Utilities
   "seed:users": "ts-node scripts/seedTestUsers.ts",

@@ -24,6 +24,10 @@ jobs:
         run: npm ci
 
       - name: Run Master Prompt Quality Check
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔍 Running Master Prompt v2.1 Quality Gates..."
           
