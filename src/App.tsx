@@ -78,7 +78,10 @@ function App() {
         <Route path="/*" element={
           <SiteLayout>
             <RouteErrorBoundary routeName="Applikasjon">
-              <SimpleRouter />
+              <Routes>
+                <Route path="/*" element={<SimpleRouter />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </RouteErrorBoundary>
             <ContextualHelp />
             <DebugToggle />
@@ -86,7 +89,6 @@ function App() {
             <NetworkDiagnostics />
           </SiteLayout>
         } />
-        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
     </I18nProvider>
