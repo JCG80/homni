@@ -27,14 +27,14 @@ export const useAuthSession = () => {
 
     // EMERGENCY: Add ultra-aggressive timeout to prevent infinite loading
     const emergencyTimeout = setTimeout(() => {
-      console.log('[EMERGENCY useAuthSession] Emergency timeout reached (300ms), forcing loading to false');
+      console.log('[EMERGENCY useAuthSession] Emergency timeout reached (1000ms), forcing loading to false');
       if (mounted) {
         setAuthState(prev => ({
           ...prev,
           isLoading: false
         }));
       }
-    }, 300); // Ultra-aggressive 300ms timeout
+    }, 1000); // Ultra-aggressive 1 second timeout
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
