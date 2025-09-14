@@ -3761,6 +3761,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: number
       }
+      get_user_security_context: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       grant_role: {
         Args: {
           _context?: string
