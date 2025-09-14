@@ -1,93 +1,123 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
+import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { logger } from '@/utils/logger';
 
-interface RouteErrorBoundaryProps {
-  children: React.ReactNode;
+interface RouteErrorFallbackProps extends FallbackProps {
+  routeName?: string;
 }
 
-interface RouteErrorState {
-  hasError: boolean;
-  error?: Error;
-  errorInfo?: React.ErrorInfo;
-}
-
-export class RouteErrorBoundary extends React.Component<RouteErrorBoundaryProps, RouteErrorState> {
-  constructor(props: RouteErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): RouteErrorState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    logger.error('Route Error Boundary caught an error:', { errorInfo }, error);
-    this.setState({ error, errorInfo });
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <RouteErrorFallback error={this.state.error} />;
-    }
-
-    return this.props.children;
-  }
-}
-
-function RouteErrorFallback({ error }: { error?: Error }) {
-  const location = useLocation();
-  
-  const handleReload = () => {
-    window.location.reload();
+/**
+ * Error fallback component for route-specific errors
+ */
+const RouteErrorFallback: React.FC<RouteErrorFallbackProps> = ({
+  error,
+  resetErrorBoundary,
+  routeName = 'ukjent rute'
+}) => {
+  const handleGoHome = () => {
+    window.location.href = '/';
   };
 
-  const handleRetry = () => {
-    window.history.back();
-  };
+  const errorMessage = error instanceof Error ? error.message : 'Ukjent feil oppstod';
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-      <div className="space-y-6 max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <Card className="w-full max-w-md p-6 text-center space-y-4">
         <div className="flex justify-center">
-          <AlertTriangle className="h-16 w-16 text-destructive" />
+          <AlertTriangle className="h-12 w-12 text-destructive" />
         </div>
         
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-foreground">Noe gikk galt</h1>
+          <h2 className="text-2xl font-semibold text-foreground">
+            Noe gikk galt
+          </h2>
           <p className="text-muted-foreground">
-            Det oppstod en feil ved lasting av denne siden.
+            Det oppstod en feil i {routeName}
           </p>
         </div>
 
-        {error && import.meta.env.DEV && (
-          <div className="bg-muted p-4 rounded-lg text-left">
-            <p className="text-sm font-mono text-destructive">{error.message}</p>
-            <p className="text-xs text-muted-foreground mt-1">Rute: {location.pathname}</p>
+        {import.meta.env.MODE === 'development' && (
+          <div className="text-left p-3 bg-muted rounded-md">
+            <p className="text-sm font-mono text-destructive break-words">
+              {errorMessage}
+            </p>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button onClick={handleReload} className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Last på nytt
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button 
+            variant="outline" 
+            onClick={resetErrorBoundary}
+            className="flex-1"
+          >
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Prøv igjen
           </Button>
-          
-          <Button variant="outline" onClick={handleRetry} className="flex items-center gap-2">
-            Gå tilbake
-          </Button>
-          
-          <Button variant="outline" asChild className="flex items-center gap-2">
-            <Link to="/">
-              <Home className="h-4 w-4" />
-              Hjem
-            </Link>
+          <Button 
+            onClick={handleGoHome}
+            className="flex-1"
+          >
+            <Home className="mr-2 h-4 w-4" />
+            Til forsiden
           </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
+};
+
+interface RouteErrorBoundaryProps {
+  children: React.ReactNode;
+  routeName?: string;
 }
+
+/**
+ * Route-specific error boundary with enhanced error handling
+ */
+export const RouteErrorBoundary: React.FC<RouteErrorBoundaryProps> = ({
+  children,
+  routeName
+}) => {
+  const handleError = (error: Error, errorInfo: { componentStack: string }) => {
+    // Log error with route context
+    logger.error(`Route error in ${routeName}`, {
+      module: 'routing',
+      component: 'RouteErrorBoundary',
+      routeName,
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString()
+    });
+
+    // In development, also log to console for debugging
+    if (import.meta.env.MODE === 'development') {
+      console.group(`🚨 Route Error: ${routeName}`);
+      console.error('Error:', error);
+      console.error('Component Stack:', errorInfo.componentStack);
+      console.groupEnd();
+    }
+  };
+
+  return (
+    <ErrorBoundary
+      FallbackComponent={(props) => (
+        <RouteErrorFallback {...props} routeName={routeName} />
+      )}
+      onError={handleError}
+      onReset={() => {
+        // Clear any error state when resetting
+        logger.info(`Route error boundary reset`, {
+          module: 'routing',
+          component: 'RouteErrorBoundary',
+          routeName
+        });
+      }}
+    >
+      {children}
+    </ErrorBoundary>
+  );
+};

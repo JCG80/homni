@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { logApiStatusWarnings, getApiStatus } from '@/services/apiStatus';
+import { logEnvironmentValidation } from '@/services/environmentValidator';
+import { initializeDevTools, monitorPerformance } from '@/utils/devTools';
 import { logger } from '@/utils/logger';
 
 /**
@@ -10,11 +12,22 @@ export const EnvironmentChecker: React.FC = () => {
     const checkEnvironment = () => {
       const apiStatus = getApiStatus();
       
-      // Log status to console
+      // Enhanced environment validation
+      logEnvironmentValidation();
+      
+      // Initialize development tools in dev mode
+      initializeDevTools();
+      
+      // Start performance monitoring in dev mode
+      monitorPerformance();
+      
+      // Legacy API status logging for compatibility
       logApiStatusWarnings();
       
       // Structured logging for debugging
-      logger.info('Environment Check Complete', {
+      logger.info('Enhanced Environment Check Complete', {
+        module: 'environment',
+        component: 'EnvironmentChecker',
         isOperational: apiStatus.isOperational,
         missingConfigs: apiStatus.missingConfigs,
         warnings: apiStatus.warnings,
