@@ -1,0 +1,35 @@
+name: 'Dev Doctor'
+description: 'Comprehensive development environment validation for HOMNI platform'
+author: 'HOMNI Development Team'
+
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  package-path:
+    description: 'Path to package.json file'
+    required: false
+    default: './package.json'
+  
+  fail-on-warnings:
+    description: 'Fail the action on warnings (not just errors)'
+    required: false
+    default: 'false'
+
+outputs:
+  status:
+    description: 'Overall validation status: success, warning, or error'
+  
+  has-version-conflicts:
+    description: 'Whether version conflicts were detected'
+  
+  corrupted-packages:
+    description: 'Number of corrupted packages found'
+  
+  misplaced-packages:
+    description: 'Number of misplaced packages found'
+
+runs:
+  using: 'node20'
+  main: 'index.js'

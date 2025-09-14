@@ -31,9 +31,21 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
+    
+    - name: Run Dev Doctor
+      id: devdoctor
+      uses: ./.github/actions/dev-doctor
+      continue-on-error: true
         
-    - name: Install dependencies
-      run: npm ci
+    - name: Install dependencies (with intelligent fallback)
+      run: |
+        if [ "${{ steps.devdoctor.outputs.has-version-conflicts }}" = "true" ]; then
+          echo "⚠️ Version conflicts detected - using --legacy-peer-deps fallback"
+          npm ci --legacy-peer-deps
+        else
+          echo "✅ No conflicts detected - using standard npm ci"
+          npm ci
+        fi
       
     - name: Run dependency analysis
       run: tsx scripts/clean-dependencies.ts

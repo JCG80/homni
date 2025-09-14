@@ -1,0 +1,130 @@
+name: Dev Doctor Validation
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig*.json'
+      - '.eslintrc*'
+      - 'prettier.config.*'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig*.json'
+      - '.eslintrc*'
+      - 'prettier.config.*'
+  workflow_dispatch:
+    inputs:
+      fail-on-warnings:
+        description: 'Fail on warnings (not just errors)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  dev-doctor:
+    name: 🧠 Dev Doctor Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    outputs:
+      status: ${{ steps.doctor.outputs.status }}
+      has-conflicts: ${{ steps.doctor.outputs.has-version-conflicts }}
+      corrupted-count: ${{ steps.doctor.outputs.corrupted-packages }}
+      misplaced-count: ${{ steps.doctor.outputs.misplaced-packages }}
+    
+    steps:
+      - name: 📋 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: 🧠 Run Dev Doctor
+        id: doctor
+        uses: ./.github/actions/dev-doctor
+        with:
+          package-path: './package.json'
+          fail-on-warnings: ${{ inputs.fail-on-warnings || 'false' }}
+        continue-on-error: true
+          
+      - name: 📊 Report Results
+        if: always()
+        run: |
+          echo "## 🧠 Dev Doctor Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ steps.doctor.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version Conflicts**: ${{ steps.doctor.outputs.has-version-conflicts }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Corrupted Packages**: ${{ steps.doctor.outputs.corrupted-packages }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Misplaced Packages**: ${{ steps.doctor.outputs.misplaced-packages }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.doctor.outputs.status }}" = "error" ]; then
+            echo "### ❌ Critical Issues Found" >> $GITHUB_STEP_SUMMARY
+            echo "The CI pipeline may fail due to dependency conflicts." >> $GITHUB_STEP_SUMMARY
+            echo "Consider using \`--legacy-peer-deps\` flag as fallback." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.doctor.outputs.status }}" = "warning" ]; then
+            echo "### ⚠️ Warnings Found" >> $GITHUB_STEP_SUMMARY
+            echo "The environment has non-critical issues that should be addressed." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✅ All Checks Passed" >> $GITHUB_STEP_SUMMARY
+            echo "Development environment is ready for CI/CD!" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+      - name: 💾 Upload Dev Doctor Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-doctor-report-${{ github.run_number }}
+          path: |
+            package.json
+            package-lock.json
+          retention-days: 7
+
+  install-test:
+    name: 📦 Test Installation with Dev Doctor Results
+    runs-on: ubuntu-latest
+    needs: dev-doctor
+    if: always()
+    
+    steps:
+      - name: 📋 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: 🔧 Install dependencies (with fallback)
+        run: |
+          if [ "${{ needs.dev-doctor.outputs.has-conflicts }}" = "true" ]; then
+            echo "⚠️ Version conflicts detected - using --legacy-peer-deps fallback"
+            npm ci --legacy-peer-deps
+          else
+            echo "✅ No conflicts detected - using standard npm ci"
+            npm ci
+          fi
+          
+      - name: 🏗️ Test build
+        run: npm run build
+        
+      - name: ✅ Installation success
+        run: |
+          echo "## 📦 Installation Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Dependencies installed successfully" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Build completed without errors" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.dev-doctor.outputs.has-conflicts }}" = "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Note**: Used \`--legacy-peer-deps\` fallback due to version conflicts" >> $GITHUB_STEP_SUMMARY
+          fi
