@@ -3703,6 +3703,14 @@ export type Database = {
           tier_name: string
         }[]
       }
+      get_rls_status: {
+        Args: { tables: string[] }
+        Returns: {
+          is_rls_enabled: boolean
+          is_rls_forced: boolean
+          table_name: string
+        }[]
+      }
       get_role_default_modules: {
         Args: { user_role: string }
         Returns: string[]

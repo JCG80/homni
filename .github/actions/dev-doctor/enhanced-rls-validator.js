@@ -34,6 +34,17 @@ async function checkSupabasePoliciesActual(config) {
       fetch = globalThis.fetch;
     }
 
+    // Check FORCE RLS status
+    const forceRLSIssues = await checkForceRLS(url, key, config, fetch);
+    if (forceRLSIssues.length > 0) {
+      results.criticalIssues.push({
+        type: 'missing_force_rls',
+        tables: forceRLSIssues,
+        message: `🚨 FORCE RLS mangler på: ${forceRLSIssues.map(t => t.table_name).join(', ')}`
+      });
+      results.success = false;
+    }
+
     // Check tables without RLS
     const tablesWithoutRLS = await checkTablesWithoutRLS(url, key, config, fetch);
     if (tablesWithoutRLS.length > 0) {
@@ -233,10 +244,34 @@ async function checkTruePolicies(url, key, config, fetch) {
   return [];
 }
 
+async function checkForceRLS(url, key, config, fetch) {
+  try {
+    const response = await fetch(`${url}/rest/v1/rpc/get_rls_status`, {
+      method: 'POST',
+      headers: {
+        'apikey': key,
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ tables: config.sensitiveTables })
+    });
+
+    if (response.ok) {
+      const statusList = await response.json();
+      return statusList.filter(t => !t.is_rls_enabled || !t.is_rls_forced);
+    }
+  } catch (error) {
+    console.warn('Failed to check FORCE RLS status:', error.message);
+  }
+
+  return [];
+}
+
 module.exports = {
   checkSupabasePoliciesActual,
   checkTablesWithoutRLS,
   checkOpenAnonPolicies,
   checkAdminPoliciesWithAnon,
-  checkTruePolicies
+  checkTruePolicies,
+  checkForceRLS
 };

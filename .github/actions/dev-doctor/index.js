@@ -359,6 +359,62 @@ async function checkAdminPoliciesWithAnon(supabaseUrl, serviceRoleKey, config) {
   }
 }
 
+async function checkForceRLS(config) {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    warn('Supabase URL eller SERVICE_ROLE_KEY mangler – kan ikke sjekke FORCE RLS');
+    return;
+  }
+
+  info('Sjekker FORCE RLS-status på sensitive tabeller…');
+
+  try {
+    // Initialize fetch
+    if (!globalThis.fetch) {
+      const { default: nodeFetch } = await import('node-fetch');
+      fetch = nodeFetch;
+    } else {
+      fetch = globalThis.fetch;
+    }
+
+    // Hent tabellinfo fra Supabase metadata
+    const res = await fetch(`${url}/rest/v1/rpc/get_rls_status`, {
+      method: 'POST',
+      headers: { 
+        apikey: key, 
+        Authorization: `Bearer ${key}`, 
+        'Content-Type': 'application/json' 
+      },
+      body: JSON.stringify({ tables: config.sensitiveTables })
+    });
+
+    if (!res.ok) {
+      fail(`Kunne ikke hente RLS-status: ${res.status} ${res.statusText}`);
+      return;
+    }
+    
+    const statusList = await res.json();
+    const withoutForce = statusList.filter(t => !t.is_rls_enabled || !t.is_rls_forced);
+    
+    if (withoutForce.length > 0) {
+      fail(`🚨 FORCE RLS mangler på: ${withoutForce.map(t => t.table_name).join(', ')}`);
+      
+      // Add to report for notifications
+      report.supabase.critical_security_issues.push({
+        type: 'missing_force_rls',
+        tables: withoutForce,
+        message: `FORCE RLS mangler på: ${withoutForce.map(t => t.table_name).join(', ')}`
+      });
+    } else {
+      success('✅ FORCE RLS er aktivert på alle sensitive tabeller');
+    }
+    
+  } catch (error) {
+    fail(`FORCE RLS sjekk feilet: ${error.message}`);
+  }
+}
+
 async function checkLovableIntegration() {
   core.startGroup('💜 Checking Lovable Integration');
   
@@ -468,6 +524,7 @@ async function run() {
     // 7. Supabase RLS Policy Validation (if environment is available)
     if (hasSupabaseEnv) {
       await checkSupabaseRLSPolicies(config);
+      await checkForceRLS(config);
     }
     
     // 8. Lovable Integration Check

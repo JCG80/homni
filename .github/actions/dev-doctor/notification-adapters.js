@@ -36,13 +36,28 @@ async function sendSlackNotification(report, webhookUrl) {
 
   // Add security issues if any
   if (report.supabase.critical_security_issues.length > 0) {
-    fields.push({
-      title: "🚨 Kritiske sikkerhetsproblemer",
-      value: report.supabase.critical_security_issues.map(issue => 
-        `• ${issue.message || issue.type}`
-      ).join('\n'),
-      short: false
-    });
+    const forceRlsIssues = report.supabase.critical_security_issues.filter(issue => issue.type === 'missing_force_rls');
+    const otherIssues = report.supabase.critical_security_issues.filter(issue => issue.type !== 'missing_force_rls');
+    
+    if (forceRlsIssues.length > 0) {
+      fields.push({
+        title: "🚨 FORCE RLS MANGLER",
+        value: forceRlsIssues.map(issue => 
+          `• ${issue.message || issue.type}`
+        ).join('\n'),
+        short: false
+      });
+    }
+    
+    if (otherIssues.length > 0) {
+      fields.push({
+        title: "🚨 Andre kritiske sikkerhetsproblemer",
+        value: otherIssues.map(issue => 
+          `• ${issue.message || issue.type}`
+        ).join('\n'),
+        short: false
+      });
+    }
   }
 
   const payload = {
@@ -115,12 +130,26 @@ async function sendTeamsNotification(report, webhookUrl) {
 
   // Add security issues section
   if (report.supabase.critical_security_issues.length > 0) {
-    payload.sections.push({
-      activityTitle: "🚨 Kritiske Sikkerhetsproblemer",
-      text: report.supabase.critical_security_issues.map(issue => 
-        `• ${issue.message || issue.type}`
-      ).join('\n\n')
-    });
+    const forceRlsIssues = report.supabase.critical_security_issues.filter(issue => issue.type === 'missing_force_rls');
+    const otherIssues = report.supabase.critical_security_issues.filter(issue => issue.type !== 'missing_force_rls');
+    
+    if (forceRlsIssues.length > 0) {
+      payload.sections.push({
+        activityTitle: "🚨 FORCE RLS MANGLER",
+        text: forceRlsIssues.map(issue => 
+          `• ${issue.message || issue.type}`
+        ).join('\n\n')
+      });
+    }
+    
+    if (otherIssues.length > 0) {
+      payload.sections.push({
+        activityTitle: "🚨 Andre Kritiske Sikkerhetsproblemer",
+        text: otherIssues.map(issue => 
+          `• ${issue.message || issue.type}`
+        ).join('\n\n')
+      });
+    }
   }
 
   // Add action if GitHub context available
@@ -184,13 +213,28 @@ async function sendDiscordNotification(report, webhookUrl) {
 
   // Add security issues if any
   if (report.supabase.critical_security_issues.length > 0) {
-    embed.fields.push({
-      name: "🚨 Kritiske Sikkerhetsproblemer",
-      value: report.supabase.critical_security_issues.map(issue => 
-        `• ${issue.message || issue.type}`
-      ).join('\n').substring(0, 1024), // Discord limit
-      inline: false
-    });
+    const forceRlsIssues = report.supabase.critical_security_issues.filter(issue => issue.type === 'missing_force_rls');
+    const otherIssues = report.supabase.critical_security_issues.filter(issue => issue.type !== 'missing_force_rls');
+    
+    if (forceRlsIssues.length > 0) {
+      embed.fields.push({
+        name: "🚨 FORCE RLS MANGLER",
+        value: forceRlsIssues.map(issue => 
+          `• ${issue.message || issue.type}`
+        ).join('\n').substring(0, 1024), // Discord limit
+        inline: false
+      });
+    }
+    
+    if (otherIssues.length > 0) {
+      embed.fields.push({
+        name: "🚨 Andre Kritiske Sikkerhetsproblemer", 
+        value: otherIssues.map(issue => 
+          `• ${issue.message || issue.type}`
+        ).join('\n').substring(0, 1024), // Discord limit
+        inline: false
+      });
+    }
   }
 
   const payload = {
