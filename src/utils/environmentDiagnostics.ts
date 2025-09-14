@@ -17,12 +17,12 @@ export interface EnvironmentDiagnostics {
 
 export function getEnvironmentDiagnostics(): EnvironmentDiagnostics {
   const isLovableHost = isLovablePreviewHost();
-  const routerMode = import.meta.env.VITE_ROUTER_MODE || 'browser';
+  const routerMode = process.env.VITE_ROUTER_MODE || 'browser';
   const shouldUseHashRouter = routerMode === 'hash' || isLovableHost;
   
   // Check for required environment variables
   const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
-  const missingEnvVars = requiredEnvVars.filter(varName => !import.meta.env[varName]);
+  const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
   
   return {
     routerMode,
@@ -36,7 +36,7 @@ export function getEnvironmentDiagnostics(): EnvironmentDiagnostics {
 }
 
 export function logEnvironmentDiagnostics(): void {
-  if (!import.meta.env.DEV) return;
+  if (process.env.NODE_ENV !== 'development') return;
   
   const diagnostics = getEnvironmentDiagnostics();
   
@@ -65,7 +65,7 @@ export function autoConfigureEnvironment(): void {
   // Auto-set router mode for Lovable hosts if not explicitly set
   const diagnostics = getEnvironmentDiagnostics();
   
-  if (diagnostics.isLovableHost && !import.meta.env.VITE_ROUTER_MODE) {
+  if (diagnostics.isLovableHost && !process.env.VITE_ROUTER_MODE) {
     console.info('🔧 Auto-configuring hash router for Lovable preview');
   }
   

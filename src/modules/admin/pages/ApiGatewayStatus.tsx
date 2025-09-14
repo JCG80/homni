@@ -47,7 +47,7 @@ export const ApiGatewayStatus: React.FC = () => {
       responseTime: 45,
       uptime: 99.9,
       lastCheck: '2024-01-15 14:32:00',
-      endpoint: process.env.VITE_SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co'
+      endpoint: process.env.VITE_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co'
     },
     {
       id: 'auth-service',

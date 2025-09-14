@@ -112,7 +112,7 @@ export const BulkLeadImporter = () => {
         throw new Error('Du må være logget inn for å importere data');
       }
 
-      const supabaseUrl = process.env.VITE_SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co';
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co';
       const response = await fetch(
         `${supabaseUrl}/functions/v1/bulk-import-leads`,
         {

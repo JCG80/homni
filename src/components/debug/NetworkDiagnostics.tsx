@@ -78,7 +78,7 @@ export function NetworkDiagnostics() {
     runDiagnostics();
   }, []);
 
-  if (!import.meta.env.DEV || !isVisible) return null;
+  if (process.env.NODE_ENV !== 'development' || !isVisible) return null;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -124,7 +124,7 @@ export function NetworkDiagnostics() {
         </div>
 
         <div className="text-xs text-muted-foreground mt-2">
-          Env: {import.meta.env.VITE_SUPABASE_URL ? '✅' : '❌'} URL | {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅' : '❌'} Key
+          Env: {(process.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL) ? '✅' : '❌'} URL | {(process.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY) ? '✅' : '❌'} Key
         </div>
       </div>
     </div>

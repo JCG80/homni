@@ -24,7 +24,7 @@ export const WebhookManager = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co';
+  const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co';
   const webhookUrl = `${supabaseUrl}/functions/v1/webhook-lead-receiver`;
 
   // Generate a simple API key (in production, this should be more secure)
