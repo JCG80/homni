@@ -41,6 +41,12 @@ Since package.json is read-only, these scripts need to be added manually:
     "update:supabase-imports": "node scripts/updateSupabaseImports.js",
     "types:generate": "supabase gen types typescript --project-id ${SUPABASE_PROJECT_ID:-kkazhcihooovsuwravhs} > src/integrations/supabase/types.ts",
     "test:env": "tsx scripts/run-environment-tests.ts",
+    
+    // Enhanced CI/CD Scripts
+    "env:check": "tsx scripts/validate-env.ts",
+    "boot:smoke": "node scripts/boot-smoke.js",
+    "ci:log": "tsx scripts/ci-log.ts",
+    "test:e2e": "playwright test",
 
     // Phase complete
     "phase:complete": "npm run repo:health && echo '✅ Phase marked as SHIPPABLE'"

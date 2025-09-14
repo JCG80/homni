@@ -8,8 +8,9 @@ on:
 
 env:
   NODE_VERSION: '20'
-  SUPABASE_PROJECT_ID: kkazhcihooovsuwravhs
-  SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrYXpoY2lob29vdnN1d3JhdmhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MzMwMzUsImV4cCI6MjA2MjEwOTAzNX0.-HzjqXYqgThN0PrbrwZlm5GWK1vOGOeYHEEFrt0OpwM
+  # Supabase credentials moved to GitHub secrets for security
+  SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
 jobs:
   # Code Quality & Security
@@ -28,6 +29,24 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
+      
+    - name: Log CI job start
+      run: npm run ci:log start
+      
+    - name: Boot smoke test
+      run: npm run boot:smoke
+      
+    - name: Validate environment
+      run: npm run env:check
+      
+    - name: Validate Supabase secrets
+      run: |
+        if [ -z "${{ secrets.SUPABASE_PROJECT_ID }}" ] || [ -z "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
+          echo "❌ Supabase secrets are missing or invalid"
+          echo "Please configure SUPABASE_PROJECT_ID and SUPABASE_ANON_KEY in GitHub secrets"
+          exit 1
+        fi
+        echo "✅ Supabase secrets are present"
       
     - name: Lint check
       run: npm run lint
@@ -78,6 +97,9 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+    - name: Log CI job start
+      run: npm run ci:log start
+      
     - name: Setup Supabase CLI
       uses: supabase/setup-cli@v1
       with:
@@ -111,8 +133,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+    - name: Log CI job start
+      run: npm run ci:log start
+      
     - name: Seed test data
-      run: npm run seed:test-users
+      run: npm run seed:users
       
     - name: Run unit tests
       run: npm run test:unit -- --coverage --reporter=verbose
