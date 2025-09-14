@@ -53,25 +53,25 @@ export const AdminBreadcrumbs: React.FC = () => {
   const breadcrumbs = getBreadcrumbs(location.pathname);
   
   return (
-    <nav className="flex items-center space-x-1 text-sm text-slate-600 dark:text-slate-300 mb-6">
+    <nav className="flex items-center space-x-1 text-sm text-muted-foreground mb-6">
       <Home className="h-4 w-4" />
       
       {breadcrumbs.map((crumb, index) => (
         <React.Fragment key={index}>
-          {index > 0 && <ChevronRight className="h-3 w-3 text-slate-400" />}
+          {index > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
           
           {crumb.href ? (
             <Link 
               to={crumb.href}
               className={cn(
-                "hover:text-slate-900 dark:hover:text-white transition-colors",
+                "hover:text-foreground transition-colors",
                 index === 0 && "font-medium"
               )}
             >
               {crumb.label}
             </Link>
           ) : (
-            <span className="text-slate-900 dark:text-white font-medium">
+            <span className="text-foreground font-medium">
               {crumb.label}
             </span>
           )}
