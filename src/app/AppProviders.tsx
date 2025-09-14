@@ -1,5 +1,4 @@
 import { AnalyticsProvider } from '@/lib/analytics/react';
-import { AuthProvider } from '@/modules/auth/context';
 import { ProfileContextProvider } from '@/contexts/ProfileContextProvider';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { RolePreviewProvider } from '@/contexts/RolePreviewContext';
@@ -9,10 +8,7 @@ import { AccessibilityProvider } from '@/components/accessibility/AccessibilityP
 
 const queryClient = new QueryClient();
 
-// FIXED: Separate wrapper that doesn't create circular dependency
 const AuthDependentWrapper = ({ children }: { children: React.ReactNode }) => {
-  console.log('[EMERGENCY AuthDependentWrapper] Rendering without circular dependency');
-  
   return (
     <RoleProvider>
       <RolePreviewProvider canUsePreview={false}>
@@ -25,8 +21,6 @@ const AuthDependentWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
-  console.log('[EMERGENCY AppProviders] Starting provider initialization');
-  
   return (
     <AccessibilityProvider>
       <ThemeProvider
@@ -34,13 +28,11 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         storageKey="vite-react-tailwind-theme"
       >
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <AnalyticsProvider>
-              <AuthDependentWrapper>
-                {children}
-              </AuthDependentWrapper>
-            </AnalyticsProvider>
-          </AuthProvider>
+          <AnalyticsProvider>
+            <AuthDependentWrapper>
+              {children}
+            </AuthDependentWrapper>
+          </AnalyticsProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </AccessibilityProvider>

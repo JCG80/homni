@@ -1,6 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { DirectLoginPage } from '@/components/direct/DirectLoginPage';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from '@/pages/HomePage';
 
 /**
@@ -8,16 +7,14 @@ import HomePage from '@/pages/HomePage';
  * Handles only critical routes to ensure they always work
  */
 export const SimpleRouter = () => {
-  console.log('[SIMPLE ROUTER] Rendering minimal route structure');
-
   return (
     <Routes>
       {/* Critical routes that must always work */}
-      <Route path="/login" element={<DirectLoginPage />} />
+      <Route path="/login" element={<Navigate to="/auth" replace />} />
       <Route path="/" element={<HomePage />} />
       
       {/* Fallback route */}
-      <Route path="*" element={<DirectLoginPage />} />
+      <Route path="*" element={<Navigate to="/auth" replace />} />
     </Routes>
   );
 };

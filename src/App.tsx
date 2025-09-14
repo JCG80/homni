@@ -18,7 +18,6 @@ import '@/lib/i18n/index';
 import { ContextualHelp } from '@/components/guidance/ContextualHelp';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
 import { SimpleRouter } from '@/components/routing/SimpleRouter';
-import { DirectLoginPage } from '@/components/direct/DirectLoginPage';
 import { AuthPage } from '@/pages/AuthPage';
 import { ApiStatusBanner } from '@/components/ApiStatusBanner';
 import { EnvironmentChecker } from '@/components/EnvironmentChecker';
@@ -64,8 +63,8 @@ function App() {
         <ApiStatusBanner />
         <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
           <Routes>
-            <Route path="/login" element={<DirectLoginPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/login" element={<Navigate to="/auth" replace />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/*" element={
               <SiteLayout>

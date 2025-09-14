@@ -23,13 +23,13 @@ export const getApiStatus = (): ApiStatus => {
   const warnings: string[] = [];
   
   // Check for Supabase URL
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   if (!supabaseUrl || supabaseUrl === 'placeholder' || supabaseUrl === 'your-supabase-url-here') {
     missingConfigs.push('VITE_SUPABASE_URL');
   }
   
   // Check for Supabase Anon Key
-  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   if (!supabaseKey || supabaseKey === 'placeholder' || supabaseKey === 'your-supabase-anon-key-here') {
     missingConfigs.push('VITE_SUPABASE_ANON_KEY');
   }
@@ -56,8 +56,8 @@ export const getApiStatus = (): ApiStatus => {
  */
 export const getEnvironmentConfig = (): EnvironmentConfig => {
   return {
-    supabaseUrl: process.env.VITE_SUPABASE_URL,
-    supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY
+    supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
+    supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY
   };
 };
 
