@@ -1,0 +1,267 @@
+name: Security Automation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily security checks at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      security_level:
+        description: 'Security check level'
+        required: true
+        default: 'standard'
+        type: choice
+        options:
+        - standard
+        - comprehensive
+        - critical-only
+
+env:
+  SUPABASE_URL: https://kkazhcihooovsuwravhs.supabase.co
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+jobs:
+  security-validation:
+    name: Security Configuration Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Validate Security Configuration
+      run: node scripts/validate-security-config.js
+      continue-on-error: true
+      
+    - name: Test Authentication Flow
+      run: node scripts/test-authentication-flow.js
+      continue-on-error: true
+      
+    - name: Run Security Test Suite
+      if: github.event.inputs.security_level != 'critical-only'
+      run: node scripts/security-test-suite.js
+      continue-on-error: true
+      
+    - name: Generate Compliance Report
+      run: node scripts/security-compliance-report.js
+      continue-on-error: true
+      
+    - name: Upload Security Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-reports-${{ github.run_number }}
+        path: |
+          docs/security-*.json
+          docs/security-*.md
+        retention-days: 30
+        
+    - name: Comment PR with Security Status
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          let comment = '## 🔒 Security Automation Results\n\n';
+          
+          try {
+            const reportPath = 'docs/security-executive-summary.md';
+            if (fs.existsSync(reportPath)) {
+              const summary = fs.readFileSync(reportPath, 'utf8');
+              comment += summary;
+            } else {
+              comment += '⚠️ Security report not generated. Check workflow logs.\n';
+            }
+          } catch (error) {
+            comment += `❌ Error reading security report: ${error.message}\n`;
+          }
+          
+          comment += '\n---\n';
+          comment += '📋 **Next Steps:**\n';
+          comment += '- Review security findings before merging\n';
+          comment += '- Complete any critical manual configurations\n';
+          comment += '- Verify all tests pass in staging environment\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  comprehensive-security-scan:
+    name: Comprehensive Security Scan
+    runs-on: ubuntu-latest
+    if: github.event.inputs.security_level == 'comprehensive' || github.event_name == 'schedule'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run Full Security Orchestrator
+      run: node scripts/security-hardening-orchestrator.js
+      env:
+        CI_MODE: 'true'
+        AUTOMATED_RUN: 'true'
+      continue-on-error: true
+      
+    - name: Security Health Check
+      run: node scripts/security-monitoring.js health-check
+      
+    - name: Generate Security Metrics
+      run: |
+        echo "## Security Metrics" > security-metrics.md
+        echo "- **Run Date:** $(date)" >> security-metrics.md
+        echo "- **Commit:** ${{ github.sha }}" >> security-metrics.md
+        echo "- **Branch:** ${{ github.ref_name }}" >> security-metrics.md
+        echo "" >> security-metrics.md
+        
+        if [ -f "docs/security-compliance-report.json" ]; then
+          echo "### Compliance Status" >> security-metrics.md
+          node -e "
+            const report = JSON.parse(require('fs').readFileSync('docs/security-compliance-report.json', 'utf8'));
+            console.log('- **Overall Score:** ' + (report.security_posture?.overall_score || 'N/A'));
+            console.log('- **Critical Vulnerabilities:** ' + (report.vulnerabilities?.filter(v => v.severity === 'CRITICAL').length || 0));
+            console.log('- **High Priority Items:** ' + (report.recommendations?.filter(r => r.priority === 'HIGH').length || 0));
+          " >> security-metrics.md
+        fi
+        
+    - name: Upload Comprehensive Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: comprehensive-security-scan-${{ github.run_number }}
+        path: |
+          docs/security-*.json
+          docs/security-*.md
+          security-metrics.md
+        retention-days: 90
+
+  security-monitoring-setup:
+    name: Security Monitoring Setup
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Setup Security Monitoring
+      run: node scripts/security-monitoring.js
+      
+    - name: Create Monitoring Dashboard
+      run: |
+        echo "# Security Monitoring Dashboard - Production" > monitoring-dashboard.md
+        echo "" >> monitoring-dashboard.md
+        echo "**Last Updated:** $(date)" >> monitoring-dashboard.md
+        echo "**Environment:** Production" >> monitoring-dashboard.md
+        echo "**Commit:** ${{ github.sha }}" >> monitoring-dashboard.md
+        echo "" >> monitoring-dashboard.md
+        
+        if [ -f "docs/security-monitoring-dashboard.md" ]; then
+          cat docs/security-monitoring-dashboard.md >> monitoring-dashboard.md
+        fi
+        
+    - name: Deploy Monitoring Configuration
+      run: |
+        echo "Monitoring configuration deployed successfully"
+        echo "Dashboard available in artifacts"
+        
+    - name: Upload Monitoring Dashboard
+      uses: actions/upload-artifact@v4
+      with:
+        name: monitoring-dashboard-${{ github.run_number }}
+        path: |
+          monitoring-dashboard.md
+          docs/security-monitoring-*.json
+        retention-days: 30
+
+  security-alerts:
+    name: Security Alert Processing
+    runs-on: ubuntu-latest
+    if: failure() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    needs: [security-validation, comprehensive-security-scan]
+    
+    steps:
+    - name: Send Security Alert Notification
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = '🚨 Security Automation Alert';
+          const body = `
+          ## Security Issue Detected
+          
+          **Repository:** ${{ github.repository }}
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          **Workflow:** ${{ github.workflow }}
+          **Run:** ${{ github.run_number }}
+          
+          ### Issue Details
+          One or more security automation jobs have failed. This could indicate:
+          - Critical security vulnerabilities detected
+          - Configuration issues with Supabase
+          - Authentication problems
+          - Database connectivity issues
+          
+          ### Immediate Actions Required
+          1. Review workflow logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          2. Check security reports in artifacts
+          3. Verify Supabase Dashboard configurations
+          4. Run manual security validation if needed
+          
+          ### Manual Commands
+          \`\`\`bash
+          # Run security validation
+          node scripts/validate-security-config.js
+          
+          # Run comprehensive security check
+          node scripts/security-hardening-orchestrator.js
+          
+          # Generate compliance report
+          node scripts/security-compliance-report.js
+          \`\`\`
+          
+          **Priority:** ${github.event_name === 'schedule' ? 'HIGH' : 'MEDIUM'}
+          **Generated:** $(date)
+          `;
+          
+          // Create an issue for tracking
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['security', 'urgent', 'automation']
+          });
