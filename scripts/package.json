@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "seed": "tsx seedTestUsers.ts",
-    "fix-imports": "node fix-remaining-usetoast-imports.js"
+    "fix-imports": "node fix-remaining-usetoast-imports.js",
+    "lint:doctor": "node lint-doctor.js"
   }
 }
