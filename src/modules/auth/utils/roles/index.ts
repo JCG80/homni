@@ -1,6 +1,7 @@
 
 /**
- * Unified exports for role-related functionality
+ * SINGLE SOURCE OF TRUTH: Role system exports
+ * Enhanced with new database-driven role management
  */
 
 // Re-export types
@@ -9,7 +10,7 @@ export type { UserRole } from './types';
 // Re-export constants
 export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from './types';
 
-// Re-export functions
+// Re-export enhanced functions (includes new async database functions)
 export { 
   isUserRole, 
   isValidRole,
@@ -18,7 +19,12 @@ export {
   hasRequiredRole,
   isAdminRole,
   isContentEditorRole,
-  getAllowedPathsForRole
+  getAllowedPathsForRole,
+  // New enhanced async functions
+  hasRole,
+  hasRoleLevel, 
+  isAdminAsync,
+  isMasterAdminAsync
 } from './guards';
 
 // Re-export determination functions
@@ -32,3 +38,6 @@ export { getRolePermissions, getAllowedModulesForRole, getAccessibleModules } fr
 
 // Re-export legacy compatibility functions
 export { normalizeRole, isLegacyRole, getRoleDisplayName as getLegacyRoleDisplayName } from '../../normalizeRole';
+
+// Re-export new role management service
+export { RoleManagementService } from '@/services/roleManagementService';

@@ -1,5 +1,6 @@
 
 import { UserRole, ALL_ROLES } from '../../normalizeRole';
+import { RoleManagementService } from '@/services/roleManagementService';
 
 /**
  * Type guard to check if a value is a valid UserRole
@@ -107,4 +108,37 @@ export function getAllowedPathsForRole(role: UserRole | null): string[] {
     default:
       return ['/login', '/register'];
   }
+}
+
+/**
+ * Enhanced role checking using database functions
+ * These functions provide real-time role validation with expiration and active status
+ */
+
+/**
+ * Check if user has specific role using enhanced database function
+ */
+export async function hasRole(userId: string, role: UserRole): Promise<boolean> {
+  return RoleManagementService.hasRole(userId, role);
+}
+
+/**
+ * Check if user has minimum role level using database function
+ */
+export async function hasRoleLevel(userId: string, minLevel: number): Promise<boolean> {
+  return RoleManagementService.hasRoleLevel(userId, minLevel);
+}
+
+/**
+ * Check if user is admin (async version using database)
+ */
+export async function isAdminAsync(userId: string): Promise<boolean> {
+  return RoleManagementService.isAdmin(userId);
+}
+
+/**
+ * Check if user is master admin (async version using database)
+ */
+export async function isMasterAdminAsync(userId: string): Promise<boolean> {
+  return RoleManagementService.isMasterAdmin(userId);
 }
