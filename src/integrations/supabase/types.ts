@@ -3320,19 +3320,34 @@ export type Database = {
       user_roles: {
         Row: {
           created_at: string
+          expires_at: string | null
+          granted_at: string | null
+          granted_by: string | null
           id: string
+          is_active: boolean | null
+          revoked_at: string | null
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
           created_at?: string
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
           id?: string
+          is_active?: boolean | null
+          revoked_at?: string | null
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
           created_at?: string
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
           id?: string
+          is_active?: boolean | null
+          revoked_at?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
@@ -3541,6 +3556,10 @@ export type Database = {
       check_security_health: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      cleanup_expired_roles: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       clear_company_context: {
         Args: Record<PropertyKey, never>
@@ -3765,27 +3784,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
-      grant_role: {
+      grant_user_role: {
         Args: {
-          _context?: string
           _expires_at?: string
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
-        Returns: {
-          context: string | null
-          created_at: string
-          expires_at: string | null
-          granted_at: string
-          granted_by: string | null
-          id: string
-          is_active: boolean
-          metadata: Json
-          revoked_at: string | null
-          role: Database["public"]["Enums"]["app_role"]
-          updated_at: string
-          user_id: string
-        }
+        Returns: undefined
       }
       has_contact_access: {
         Args: { p_company_id: string; p_lead_id: string }
@@ -3913,9 +3918,8 @@ export type Database = {
           title: string
         }[]
       }
-      revoke_role: {
+      revoke_user_role: {
         Args: {
-          _context?: string
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
