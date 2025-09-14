@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { GlobalErrorBoundary } from '@/shared/components/GlobalErrorBoundary';
 import { log } from '@/utils/logger';
 
 interface RouteErrorFallbackProps {
@@ -76,8 +76,8 @@ export const RouteErrorBoundary: React.FC<RouteErrorBoundaryProps> = ({
   const fallback = <RouteErrorFallback routeName={routeName} />;
 
   return (
-    <ErrorBoundary fallback={fallback}>
+    <GlobalErrorBoundary fallback={fallback}>
       {children}
-    </ErrorBoundary>
+    </GlobalErrorBoundary>
   );
 };

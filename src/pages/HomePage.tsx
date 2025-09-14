@@ -11,7 +11,7 @@ import { ValuePropositionSection } from '@/components/landing/enhanced/ValueProp
 import { CallToAction } from '@/components/landing/CallToAction';
 import { TestimonialSection } from '@/components/testimonials/TestimonialSection';
 import { Footer } from '@/components/layout/Footer';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { GlobalErrorBoundary } from '@/shared/components/GlobalErrorBoundary';
 import { abTesting, AB_TESTS } from '@/lib/abTesting/abTestingFramework';
 import { SystemIntegrationTest } from '@/components/testing/SystemIntegrationTest';
 import { useAuth } from '@/modules/auth/hooks';
@@ -77,9 +77,9 @@ const HomePage: React.FC = () => {
           {/* Hero Section with Wizard */}
           <section id="wizard" className="py-16 bg-gradient-to-b from-background to-muted/30">
             <div className="container mx-auto px-4">
-              <ErrorBoundary>
+              <GlobalErrorBoundary>
                 <VisitorWizard />
-              </ErrorBoundary>
+              </GlobalErrorBoundary>
             </div>
           </section>
           
@@ -138,9 +138,9 @@ const HomePage: React.FC = () => {
           {import.meta.env.DEV && (
             <section className="py-16 bg-muted/30">
               <div className="container mx-auto px-4">
-                <ErrorBoundary>
+                <GlobalErrorBoundary>
                   <SystemIntegrationTest />
-                </ErrorBoundary>
+                </GlobalErrorBoundary>
               </div>
             </section>
           )}

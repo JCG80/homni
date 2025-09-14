@@ -4,7 +4,7 @@ import './index.css';
 import '@/styles/accessibility.css';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { Toaster } from '@/components/ui/toaster';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { GlobalErrorBoundary } from '@/shared/components/GlobalErrorBoundary';
 import { ConnectionStatus } from '@/components/loading/UniversalLoadingStates';
 import { stripLovableToken, hasLovableToken } from '@/app/stripToken';
 import { performDevCleanup } from '@/pwa/cleanup';
@@ -80,7 +80,7 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
+    <GlobalErrorBoundary>
       <I18nProvider>
         <EnvironmentChecker />
         <ConnectionStatus />
@@ -103,7 +103,7 @@ function App() {
         </Routes>
         <Toaster />
       </I18nProvider>
-    </ErrorBoundary>
+    </GlobalErrorBoundary>
   );
 }
 

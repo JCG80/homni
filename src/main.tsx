@@ -6,19 +6,32 @@ import './index.css';
 import App from './App.tsx';
 import { AppProviders } from './app/AppProviders';
 import { AuthProvider } from '@/modules/auth/context';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { GlobalErrorBoundary } from '@/shared/components/GlobalErrorBoundary';
 import { validateEnvironment } from '@/utils/envCheck';
+import { logger } from '@/utils/logger';
 
-// Log environment and startup details
-console.info('🚀 Homni Platform starting...');
+// Bootstrap sequence with proper error handling
+const startApp = () => {
+  try {
+    // Early environment validation
+    const envReport = validateEnvironment();
+    logger.info('🚀 Homni Platform starting...', {
+      mode: import.meta.env.MODE,
+      environment: envReport,
+      timestamp: new Date().toISOString(),
+    });
 
-// Validate environment early
-try {
-  const envReport = validateEnvironment();
-  console.info('Environment check:', envReport);
-} catch (error) {
-  console.error('Environment validation failed:', error);
-}
+    if (!envReport.ok) {
+      logger.warn('Environment issues detected:', envReport.missing);
+    }
+  } catch (error) {
+    logger.error('Environment validation failed:', {}, error);
+    // Continue with degraded functionality
+  }
+};
+
+// Initialize app
+startApp();
 
 // Force HashRouter for Lovable preview environments
 const useHashRouter = import.meta.env.VITE_USE_HASHROUTER === 'true' || 
@@ -37,7 +50,7 @@ const root = createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <ErrorBoundary>
+    <GlobalErrorBoundary showToast={true} trackErrors={true}>
       <AppProviders>
         <AuthProvider>
           <Router>
@@ -45,6 +58,6 @@ root.render(
           </Router>
         </AuthProvider>
       </AppProviders>
-    </ErrorBoundary>
+    </GlobalErrorBoundary>
   </React.StrictMode>
 );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { GlobalErrorBoundary } from '@/shared/components/GlobalErrorBoundary';
 import { log } from '@/utils/logger';
 
 // HOC for adding debug information in development
@@ -21,9 +21,9 @@ export function withDebugInfo<P extends object>(
     );
 
     return (
-      <ErrorBoundary fallback={debugFallback}>
+      <GlobalErrorBoundary fallback={debugFallback}>
         <Component {...props} />
-      </ErrorBoundary>
+      </GlobalErrorBoundary>
     );
   };
 }
