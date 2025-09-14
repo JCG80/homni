@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const contextValue: AuthContextType = {
     // Core state
-    user: authState.user,
+    user: authState.user ? { id: authState.user.id, email: authState.user.email } : null,
     profile: authState.profile,
     isLoading: authState.isLoading,
     error: authState.error,
