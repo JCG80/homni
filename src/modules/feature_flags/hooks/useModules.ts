@@ -99,11 +99,19 @@ export const useModuleAccess = (moduleName: string) => {
           return;
         }
         
-        // Fallback to RPC call
+        // Fallback to RPC call - EMERGENCY: Add timeout
+        const timeoutId = setTimeout(() => {
+          console.log('[EMERGENCY useModuleAccess] RPC timeout, assuming no access');
+          setHasAccess(false);
+          setIsLoading(false);
+        }, 2000);
+        
         const { data, error: rpcError } = await supabase
           .rpc('has_module_access', {
             module_name: moduleName
           });
+        
+        clearTimeout(timeoutId);
         
         if (rpcError) throw rpcError;
         

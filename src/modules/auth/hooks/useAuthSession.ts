@@ -11,6 +11,7 @@ import { logger } from '@/utils/logger';
  * Hook that manages the auth session state and listens for changes
  */
 export const useAuthSession = () => {
+  console.log('[EMERGENCY useAuthSession] Hook initialized');
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     profile: null,
@@ -27,16 +28,18 @@ export const useAuthSession = () => {
     // Initialize auth state - increased timeout for better stability
     const authTimeout = setTimeout(() => {
       if (mounted && authState.isLoading) {
+        console.log('[EMERGENCY useAuthSession] Auth timeout reached, stopping loading');
         setAuthState(prev => ({
           ...prev,
           isLoading: false,
           error: null // Don't show error for timeout, just stop loading
         }));
       }
-    }, 3000); // Increased to 3 seconds for better stability
+    }, 1500); // EMERGENCY: Reduced to 1.5 seconds
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('[EMERGENCY useAuthSession] Auth state change:', { event, hasUser: !!session?.user });
 
       if (event === 'INITIAL_SESSION') {
         // We'll handle this in the getSession call
@@ -109,6 +112,7 @@ export const useAuthSession = () => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[EMERGENCY useAuthSession] Got existing session:', { hasUser: !!session?.user });
       
       if (session?.user && mounted) {
         const user: AuthUser = {

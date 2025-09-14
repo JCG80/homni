@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Mock useAuth used by the hook
+// Mock useAuth used by the hook - UPDATED to test new API
 vi.mock('@/modules/auth/hooks/useAuth', () => ({
   useAuth: () => ({ user: { id: 'test-user' } }),
 }));
@@ -28,7 +28,7 @@ const createQueryClient = () => new QueryClient({
 });
 
 function HookProbe() {
-  const { data } = useModuleAccessQuery();
+  const { data } = useModuleAccessQuery({ user: { id: 'test-user' } });
   return (
     <div>
       <div data-testid="modules">{JSON.stringify(data?.moduleAccess ?? [])}</div>
@@ -48,12 +48,8 @@ describe('useModuleAccessQuery - database validation', () => {
   });
 
   it('returns defaults when no user', async () => {
-    // Override auth mock to simulate no user
-    vi.doMock('@/modules/auth/hooks/useAuth', () => ({ useAuth: () => ({ user: null }) }));
-    const { useModuleAccessQuery: useHook } = await import('@/modules/auth/hooks/useModuleAccessQuery');
-
     function NoUserProbe() {
-      const { data } = useHook();
+      const { data } = useModuleAccessQuery({ user: null });
       return (
         <>
           <div data-testid="modules">{JSON.stringify(data?.moduleAccess ?? [])}</div>

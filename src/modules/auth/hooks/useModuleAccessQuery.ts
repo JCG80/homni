@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
 import { logger } from '@/utils/logger';
 
 interface ModuleAccessResult {
@@ -8,12 +7,17 @@ interface ModuleAccessResult {
   isInternalAdmin: boolean;
 }
 
+interface UseModuleAccessQueryOptions {
+  user?: { id: string } | null;
+}
+
 /**
  * Hook to fetch user's module access from database
  * This replaces the metadata-based approach for proper security
+ * FIXED: Accepts user as parameter to break circular dependency with useAuth
  */
-export const useModuleAccessQuery = () => {
-  const { user } = useAuth();
+export const useModuleAccessQuery = ({ user }: UseModuleAccessQueryOptions = {}) => {
+  console.log('[EMERGENCY useModuleAccessQuery] Hook called with user:', { userId: user?.id });
 
   return useQuery({
     queryKey: ['module-access', user?.id],

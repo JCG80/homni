@@ -37,10 +37,19 @@ interface AuthProviderProps {
 
 // Auth Provider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  console.log('[EMERGENCY AuthProvider] Starting auth provider initialization');
   const authState = useAuthState();
+  console.log('[EMERGENCY AuthProvider] Got auth state:', { 
+    isLoading: authState.isLoading,
+    hasUser: !!authState.user,
+    role: authState.role 
+  });
+  
   const roleChecks = useRoleCheck({ role: authState.role });
   const devAuth = useDevAuth();
-  const moduleAccessQuery = useModuleAccessQuery();
+  
+  // FIXED: Pass user directly to avoid circular dependency
+  const moduleAccessQuery = useModuleAccessQuery({ user: authState.user });
   
   logger.info('AuthProvider role properly connected', {
     authStateRole: authState.role,
