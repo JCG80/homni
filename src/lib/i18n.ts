@@ -1,287 +1,129 @@
-/**
- * i18n (Internationalization) setup for Homni
- * Supports Norwegian (NO) and English (EN)
- */
-
-import { logger } from '@/utils/logger';
-
-export type SupportedLocale = 'no' | 'en' | 'se' | 'dk';
-
-export interface TranslationMessages {
-  navigation: Record<string, string>;
-  roles: Record<string, string>;
-  auth: Record<string, string>;
-  leads: Record<string, any>;
-  companies: Record<string, any>;
-  users: Record<string, any>;
-  forms: Record<string, string>;
-  messages: Record<string, string>;
-  errors: Record<string, string>;
-  actions: Record<string, string>;
-  status: Record<string, string>;
-}
-
-// Default locale
-export const DEFAULT_LOCALE: SupportedLocale = 'no';
-
-// Available locales
-export const SUPPORTED_LOCALES: SupportedLocale[] = ['no', 'en', 'se', 'dk'];
-
-// Translation cache
-const translationCache = new Map<SupportedLocale, TranslationMessages>();
-
-/**
- * Get current locale from browser/storage
- */
-export function getCurrentLocale(): SupportedLocale {
-  // Check localStorage first
-  const stored = localStorage.getItem('homni-locale') as SupportedLocale;
-  if (stored && SUPPORTED_LOCALES.includes(stored)) {
-    return stored;
-  }
-
-  // Check browser language
-  const browserLang = navigator.language.toLowerCase();
-  if (browserLang.startsWith('no') || browserLang.startsWith('nb') || browserLang.startsWith('nn')) {
-    return 'no';
-  }
-  if (browserLang.startsWith('en')) {
-    return 'en';
-  }
-  if (browserLang.startsWith('se') || browserLang.startsWith('sv')) {
-    return 'se';
-  }
-  if (browserLang.startsWith('dk') || browserLang.startsWith('da')) {
-    return 'dk';
-  }
-
-  return DEFAULT_LOCALE;
-}
-
-/**
- * Set locale and persist to localStorage
- */
-export function setLocale(locale: SupportedLocale): void {
-  if (!SUPPORTED_LOCALES.includes(locale)) {
-    logger.warn(`Unsupported locale: ${locale}, falling back to ${DEFAULT_LOCALE}`, {
-      module: 'i18n',
-      locale,
-      fallback: DEFAULT_LOCALE
-    });
-    locale = DEFAULT_LOCALE;
-  }
-  
-  localStorage.setItem('homni-locale', locale);
-  
-  // Update document lang attribute
-  const langMap: Record<SupportedLocale, string> = {
-    no: 'nb-NO',
-    en: 'en-US', 
-    se: 'sv-SE',
-    dk: 'da-DK'
-  };
-  document.documentElement.lang = langMap[locale];
-  
-  // Trigger custom event for components that need to react
-  window.dispatchEvent(new CustomEvent('localechange', { detail: { locale } }));
-}
-
-/**
- * Load translation messages for a locale
- */
-export async function loadMessages(locale: SupportedLocale): Promise<TranslationMessages> {
-  // Return cached if available
-  if (translationCache.has(locale)) {
-    return translationCache.get(locale)!;
-  }
-
-  try {
-    // Dynamic import of locale files
-    const messages = await import(`../../locales/${locale}/common.json`);
-    const translationMessages = messages.default as TranslationMessages;
-    
-    // Cache the messages
-    translationCache.set(locale, translationMessages);
-    
-    return translationMessages;
-  } catch (error) {
-    logger.error(`Failed to load locale ${locale}:`, {
-      module: 'i18n',
-      locale
-    }, error as Error);
-    
-    // Fallback to default locale if loading fails
-    if (locale !== DEFAULT_LOCALE) {
-      return loadMessages(DEFAULT_LOCALE);
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+// Simple language detector without external dependency
+const languageDetector = {
+  type: 'languageDetector' as const,
+  init: () => {},
+  detect: () => {
+    const saved = localStorage.getItem('homni-language');
+    if (saved && Object.keys(SUPPORTED_LANGUAGES).includes(saved)) {
+      return saved;
     }
-    
-    // Return empty structure as last resort
-    return {
-      navigation: {},
-      roles: {},
-      auth: {},
-      leads: {},
-      companies: {},
-      users: {},
-      forms: {},
-      messages: {},
-      errors: {},
-      actions: {},
-      status: {}
-    };
+    const browserLang = navigator.language.split('-')[0];
+    return Object.keys(SUPPORTED_LANGUAGES).includes(browserLang) ? browserLang : 'no';
+  },
+  cacheUserLanguage: (lng: string) => {
+    localStorage.setItem('homni-language', lng);
   }
-}
+};
 
-/**
- * Translation function
- */
-export function createTranslator(messages: TranslationMessages) {
-  return function t(key: string, params?: Record<string, any>): string {
-    // Split key by dots to access nested objects
-    const keys = key.split('.');
-    let value: any = messages;
+// Import translation files
+import enTranslations from '@/locales/en.json';
+import noTranslations from '@/locales/no.json';
+
+// Define supported languages
+export const SUPPORTED_LANGUAGES = {
+  en: 'English',
+  no: 'Norsk'
+} as const;
+
+export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
+
+// Language detection is handled above
+
+// Initialize i18next  
+i18n
+  .use(initReactI18next)
+  .init({
+    // Available languages
+    supportedLngs: Object.keys(SUPPORTED_LANGUAGES),
+    fallbackLng: 'no', // Default to Norwegian
     
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        // Key not found, return the key itself
-        logger.warn(`Translation key not found: ${key}`, {
-          module: 'i18n',
-          key
-        });
-        return key;
+    // Language detection
+    detection: {
+      order: ['customDetector', 'localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage'],
+    },
+
+    // Resources
+    resources: {
+      en: {
+        translation: enTranslations
+      },
+      no: {
+        translation: noTranslations
       }
-    }
-    
-    // If value is not a string, return the key
-    if (typeof value !== 'string') {
-      logger.warn(`Translation value is not a string: ${key}`, {
-        module: 'i18n',
-        key,
-        value
-      });
-      return key;
-    }
-    
-    // Replace parameters in the string
-    if (params) {
-      return value.replace(/\{\{(\w+)\}\}/g, (match, paramKey) => {
-        return params[paramKey] !== undefined ? params[paramKey] : match;
-      });
-    }
-    
-    return value;
-  };
-}
-
-/**
- * Format date according to locale
- */
-export function formatDate(date: Date | string, locale: SupportedLocale): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  };
-  
-  const localeMap: Record<SupportedLocale, string> = {
-    no: 'nb-NO',
-    en: 'en-US',
-    se: 'sv-SE', 
-    dk: 'da-DK'
-  };
-  
-  return new Intl.DateTimeFormat(localeMap[locale], options).format(d);
-}
-
-/**
- * Format time according to locale
- */
-export function formatTime(date: Date | string, locale: SupportedLocale): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  
-  const options: Intl.DateTimeFormatOptions = {
-    hour: '2-digit',
-    minute: '2-digit'
-  };
-  
-  const localeMap: Record<SupportedLocale, string> = {
-    no: 'nb-NO',
-    en: 'en-US',
-    se: 'sv-SE',
-    dk: 'da-DK'
-  };
-  
-  return new Intl.DateTimeFormat(localeMap[locale], options).format(d);
-}
-
-/**
- * Format number according to locale
- */
-export function formatNumber(number: number, locale: SupportedLocale): string {
-  const localeMap: Record<SupportedLocale, string> = {
-    no: 'nb-NO',
-    en: 'en-US',
-    se: 'sv-SE',
-    dk: 'da-DK'
-  };
-  return new Intl.NumberFormat(localeMap[locale]).format(number);
-}
-
-/**
- * Format currency according to locale  
- */
-export function formatCurrency(amount: number, locale: SupportedLocale, currency: string = 'NOK'): string {
-  const localeMap: Record<SupportedLocale, string> = {
-    no: 'nb-NO',
-    en: 'en-US',
-    se: 'sv-SE',
-    dk: 'da-DK'
-  };
-  
-  const options: Intl.NumberFormatOptions = {
-    style: 'currency',
-    currency: currency
-  };
-  
-  return new Intl.NumberFormat(localeMap[locale], options).format(amount);
-}
-
-/**
- * Get display name for locale
- */
-export function getLocaleDisplayName(locale: SupportedLocale, inLocale: SupportedLocale = locale): string {
-  const names: Record<SupportedLocale, Record<SupportedLocale, string>> = {
-    no: {
-      no: 'Norsk',
-      en: 'Engelsk',
-      se: 'Svensk', 
-      dk: 'Dansk'
     },
-    en: {
-      no: 'Norwegian', 
-      en: 'English',
-      se: 'Swedish',
-      dk: 'Danish'
-    },
-    se: {
-      no: 'Norska',
-      en: 'Engelska',
-      se: 'Svenska',
-      dk: 'Danska'
-    },
-    dk: {
-      no: 'Norsk',
-      en: 'Engelsk', 
-      se: 'Svensk',
-      dk: 'Dansk'
-    }
-  };
-  
-  return names[inLocale]?.[locale] || locale;
-}
 
-// Remove temporary hook - will be replaced by proper hook from I18nProvider
+    // Interpolation
+    interpolation: {
+      escapeValue: false, // React already escapes values
+      format: (value, format) => {
+        if (format === 'uppercase') return value.toUpperCase();
+        if (format === 'lowercase') return value.toLowerCase();
+        if (format === 'capitalize') {
+          return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+        return value;
+      }
+    },
+
+    // React specific options
+    react: {
+      useSuspense: false, // We'll handle loading states ourselves
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
+      transEmptyNodeValue: '',
+      transSupportBasicHtmlNodes: true,
+      transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'em', 'b', 'u'],
+    },
+
+    // Development options
+    debug: import.meta.env.MODE === 'development',
+    
+    // Key separator
+    keySeparator: '.',
+    nsSeparator: false, // We're not using namespaces
+    
+    // Missing key handling
+    saveMissing: import.meta.env.MODE === 'development',
+    missingKeyHandler: (lng, ns, key, fallbackValue) => {
+      if (import.meta.env.MODE === 'development') {
+        console.warn(`Missing translation key: ${key} for language: ${lng}`);
+      }
+    },
+
+    // Pluralization
+    pluralSeparator: '_',
+    contextSeparator: '_',
+
+    // Performance
+    load: 'languageOnly', // Don't load country-specific variations
+    preload: ['no', 'en'], // Preload main languages
+    
+    // Backend options (for future dynamic loading)
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    }
+  });
+
+// Helper functions
+export const changeLanguage = (lng: SupportedLanguage) => {
+  i18n.changeLanguage(lng);
+};
+
+export const getCurrentLanguage = (): SupportedLanguage => {
+  return (i18n.language || 'no') as SupportedLanguage;
+};
+
+export const getLanguageDirection = (lng?: SupportedLanguage): 'ltr' | 'rtl' => {
+  // All supported languages are left-to-right
+  return 'ltr';
+};
+
+export const formatTranslationKey = (key: string): string => {
+  // Helper to format translation keys consistently
+  return key.toLowerCase().replace(/\s+/g, '_');
+};
+
+export default i18n;
