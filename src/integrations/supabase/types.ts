@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_action_challenges: {
+        Row: {
+          action: string
+          admin_id: string
+          consumed_at: string | null
+          created_at: string | null
+          expires_at: string
+          id: string
+          otp_code: string
+          payload: Json
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          consumed_at?: string | null
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          otp_code: string
+          payload: Json
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          consumed_at?: string | null
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          otp_code?: string
+          payload?: Json
+        }
+        Relationships: []
+      }
       admin_actions_log: {
         Row: {
           action: string
@@ -371,6 +404,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      audit_locks: {
+        Row: {
+          id: boolean
+          is_locked: boolean
+          locked_at: string | null
+          locked_by: string | null
+          reason: string | null
+        }
+        Insert: {
+          id?: boolean
+          is_locked?: boolean
+          locked_at?: string | null
+          locked_by?: string | null
+          reason?: string | null
+        }
+        Update: {
+          id?: boolean
+          is_locked?: boolean
+          locked_at?: string | null
+          locked_by?: string | null
+          reason?: string | null
+        }
+        Relationships: []
       }
       audit_log: {
         Row: {
@@ -2605,6 +2662,48 @@ export type Database = {
           },
         ]
       }
+      role_audit_log: {
+        Row: {
+          action: string
+          actor: string | null
+          created_at: string | null
+          id: number
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          role: string | null
+          scope_key: string | null
+          target_user: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          created_at?: string | null
+          id?: number
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          role?: string | null
+          scope_key?: string | null
+          target_user?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          created_at?: string | null
+          id?: number
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          role?: string | null
+          scope_key?: string | null
+          target_user?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       role_grants: {
         Row: {
           context: string | null
@@ -2650,6 +2749,69 @@ export type Database = {
         }
         Relationships: []
       }
+      role_requests: {
+        Row: {
+          created_at: string | null
+          decided_at: string | null
+          decided_by: string | null
+          decision_reason: string | null
+          id: string
+          justification: string | null
+          requester: string
+          role: string
+          scope_key: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_reason?: string | null
+          id?: string
+          justification?: string | null
+          requester: string
+          role: string
+          scope_key?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_reason?: string | null
+          id?: string
+          justification?: string | null
+          requester?: string
+          role?: string
+          scope_key?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      role_scopes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          key: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key?: string
+        }
+        Relationships: []
+      }
       role_switch_audit: {
         Row: {
           created_at: string
@@ -2668,6 +2830,89 @@ export type Database = {
           id?: string
           new_mode?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      role_template_items: {
+        Row: {
+          expires_days: number | null
+          id: string
+          role: string
+          scope_key: string | null
+          template_id: string | null
+        }
+        Insert: {
+          expires_days?: number | null
+          id?: string
+          role: string
+          scope_key?: string | null
+          template_id?: string | null
+        }
+        Update: {
+          expires_days?: number | null
+          id?: string
+          role?: string
+          scope_key?: string | null
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_template_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "role_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_templates: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      roles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          is_assignable: boolean | null
+          level: number
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          is_assignable?: boolean | null
+          level: number
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          is_assignable?: boolean | null
+          level?: number
+          name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -2830,6 +3075,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sod_conflicts: {
+        Row: {
+          created_at: string | null
+          reason: string
+          role_a: string
+          role_b: string
+        }
+        Insert: {
+          created_at?: string | null
+          reason: string
+          role_a: string
+          role_b: string
+        }
+        Update: {
+          created_at?: string | null
+          reason?: string
+          role_a?: string
+          role_b?: string
+        }
+        Relationships: []
       }
       system_health: {
         Row: {
@@ -3327,6 +3593,7 @@ export type Database = {
           is_active: boolean | null
           revoked_at: string | null
           role: Database["public"]["Enums"]["app_role"]
+          scope_key: string | null
           user_id: string
         }
         Insert: {
@@ -3338,6 +3605,7 @@ export type Database = {
           is_active?: boolean | null
           revoked_at?: string | null
           role: Database["public"]["Enums"]["app_role"]
+          scope_key?: string | null
           user_id: string
         }
         Update: {
@@ -3349,6 +3617,7 @@ export type Database = {
           is_active?: boolean | null
           revoked_at?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          scope_key?: string | null
           user_id?: string
         }
         Relationships: []
@@ -3792,6 +4061,26 @@ export type Database = {
         }
         Returns: undefined
       }
+      gtrgm_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: { "": unknown }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
       has_contact_access: {
         Args: { p_company_id: string; p_lead_id: string }
         Returns: string
@@ -3932,6 +4221,18 @@ export type Database = {
       set_internal_admin_status: {
         Args: { is_admin?: boolean; user_email: string }
         Returns: string
+      }
+      set_limit: {
+        Args: { "": number }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: { "": string }
+        Returns: string[]
       }
       system_health_check: {
         Args: Record<PropertyKey, never>
