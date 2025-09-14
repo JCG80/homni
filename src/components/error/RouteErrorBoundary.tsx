@@ -1,11 +1,11 @@
 import React from 'react';
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { logger } from '@/utils/logger';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { log } from '@/utils/logger';
 
-interface RouteErrorFallbackProps extends FallbackProps {
+interface RouteErrorFallbackProps {
   routeName?: string;
 }
 
@@ -13,15 +13,15 @@ interface RouteErrorFallbackProps extends FallbackProps {
  * Error fallback component for route-specific errors
  */
 const RouteErrorFallback: React.FC<RouteErrorFallbackProps> = ({
-  error,
-  resetErrorBoundary,
   routeName = 'ukjent rute'
 }) => {
   const handleGoHome = () => {
     window.location.href = '/';
   };
 
-  const errorMessage = error instanceof Error ? error.message : 'Ukjent feil oppstod';
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
@@ -39,18 +39,10 @@ const RouteErrorFallback: React.FC<RouteErrorFallbackProps> = ({
           </p>
         </div>
 
-        {import.meta.env.MODE === 'development' && (
-          <div className="text-left p-3 bg-muted rounded-md">
-            <p className="text-sm font-mono text-destructive break-words">
-              {errorMessage}
-            </p>
-          </div>
-        )}
-
         <div className="flex flex-col sm:flex-row gap-2">
           <Button 
             variant="outline" 
-            onClick={resetErrorBoundary}
+            onClick={handleReload}
             className="flex-1"
           >
             <RotateCcw className="mr-2 h-4 w-4" />
@@ -81,42 +73,10 @@ export const RouteErrorBoundary: React.FC<RouteErrorBoundaryProps> = ({
   children,
   routeName
 }) => {
-  const handleError = (error: Error, errorInfo: { componentStack: string }) => {
-    // Log error with route context
-    logger.error(`Route error in ${routeName}`, {
-      module: 'routing',
-      component: 'RouteErrorBoundary',
-      routeName,
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString()
-    });
-
-    // In development, also log to console for debugging
-    if (import.meta.env.MODE === 'development') {
-      console.group(`🚨 Route Error: ${routeName}`);
-      console.error('Error:', error);
-      console.error('Component Stack:', errorInfo.componentStack);
-      console.groupEnd();
-    }
-  };
+  const fallback = <RouteErrorFallback routeName={routeName} />;
 
   return (
-    <ErrorBoundary
-      FallbackComponent={(props) => (
-        <RouteErrorFallback {...props} routeName={routeName} />
-      )}
-      onError={handleError}
-      onReset={() => {
-        // Clear any error state when resetting
-        logger.info(`Route error boundary reset`, {
-          module: 'routing',
-          component: 'RouteErrorBoundary',
-          routeName
-        });
-      }}
-    >
+    <ErrorBoundary fallback={fallback}>
       {children}
     </ErrorBoundary>
   );
