@@ -37,11 +37,13 @@ const mockSupabaseClient = {
 
 // Mock Supabase module
 vi.mock('@/lib/supabaseClient', () => ({
-  supabase: mockSupabaseClient
+  supabase: mockSupabaseClient,
+  getSupabase: vi.fn(() => mockSupabaseClient)
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: mockSupabaseClient
+  supabase: mockSupabaseClient,
+  getSupabase: vi.fn(() => mockSupabaseClient)
 }));
 
 // Mock window.matchMedia

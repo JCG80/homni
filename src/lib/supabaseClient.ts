@@ -29,5 +29,10 @@ export function getSupabase(): SupabaseClient {
   return _client;
 }
 
-// Legacy export for backward compatibility
-export const supabase = getSupabase();
+// Legacy export for backward compatibility - now also lazy
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(target, prop) {
+    const client = getSupabase();
+    return client[prop as keyof SupabaseClient];
+  }
+});

@@ -17,6 +17,7 @@ import { log } from '@/utils/logger';
 import '@/lib/i18n/index';
 import { ContextualHelp } from '@/components/guidance/ContextualHelp';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
+import { DegradedModeBanner } from '@/components/ui/DegradedModeBanner';
 import { SimpleRouter } from '@/components/routing/SimpleRouter';
 import { AuthPage } from '@/pages/AuthPage';
 import { ApiStatusBanner } from '@/components/ApiStatusBanner';
@@ -69,6 +70,7 @@ function App() {
       <EnvironmentChecker />
       <ConnectionStatus />
       <ApiStatusBanner />
+      <DegradedModeBanner />
       <Routes>
         <Route path="/auth" element={<RouteErrorBoundary routeName="Autentisering"><AuthPage /></RouteErrorBoundary>} />
         <Route path="/login" element={<Navigate to="/auth" replace />} />
