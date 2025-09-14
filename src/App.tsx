@@ -27,34 +27,53 @@ import { usePageViews } from '@/lib/analytics/react';
 
 import HomePage from '@/pages/HomePage';
 
+console.log('[APP] App component initializing...');
+
 function App() {
-  usePageViews(); // auto-track SPA navigation
+  console.log('[APP] App function called, starting usePageViews...');
+  try {
+    usePageViews(); // auto-track SPA navigation
+    console.log('[APP] usePageViews completed successfully');
+  } catch (error) {
+    console.error('[APP] usePageViews failed:', error);
+  }
 
   // Initialize app cleanup on mount
   useEffect(() => {
+    console.log('[APP] useEffect starting...');
     const initializeApp = async () => {
-      // Auto-configure environment
-      autoConfigureEnvironment();
-      
-      // Force HashRouter for Lovable environments
-      const forceHashRouter = window.location.hostname.includes('lovable') || 
-                              window.location.hostname.includes('sandbox') ||
-                              import.meta.env.VITE_USE_HASHROUTER === 'true';
-      
-      // Log initial state for debugging
-      if (import.meta.env.DEV) {
-        logger.info('App initializing:', {
-          hasToken: hasLovableToken(),
-          forceHashRouter,
-          hostname: window.location.hostname
-        });
+      try {
+        console.log('[APP] Initializing app...');
+        // Auto-configure environment
+        autoConfigureEnvironment();
+        console.log('[APP] Environment configured');
+        
+        // Force HashRouter for Lovable environments
+        const forceHashRouter = window.location.hostname.includes('lovable') || 
+                                window.location.hostname.includes('sandbox') ||
+                                import.meta.env.VITE_USE_HASHROUTER === 'true';
+        
+        console.log('[APP] Router config - forceHashRouter:', forceHashRouter);
+        
+        // Log initial state for debugging
+        if (import.meta.env.DEV) {
+          logger.info('App initializing:', {
+            hasToken: hasLovableToken(),
+            forceHashRouter,
+            hostname: window.location.hostname
+          });
+        }
+        
+        // Clean up lovable token from URL
+        stripLovableToken();
+        console.log('[APP] Token stripped');
+        
+        // Perform dev/preview cleanup
+        await performDevCleanup();
+        console.log('[APP] Dev cleanup completed');
+      } catch (error) {
+        console.error('[APP] App initialization failed:', error);
       }
-      
-      // Clean up lovable token from URL
-      stripLovableToken();
-      
-      // Perform dev/preview cleanup
-      await performDevCleanup();
     };
     
     initializeApp();
