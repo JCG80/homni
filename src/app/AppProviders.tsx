@@ -6,18 +6,16 @@ import { RolePreviewProvider } from '@/contexts/RolePreviewContext';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
-import { useAuth } from '@/modules/auth/hooks';
 
 const queryClient = new QueryClient();
 
-// Separate component that consumes auth and provides dependent contexts
-const AuthDependentProviders = ({ children }: { children: React.ReactNode }) => {
-  const { isAdmin, isMasterAdmin } = useAuth();
-  const canUsePreview = isAdmin || isMasterAdmin;
-
+// FIXED: Separate wrapper that doesn't create circular dependency
+const AuthDependentWrapper = ({ children }: { children: React.ReactNode }) => {
+  console.log('[EMERGENCY AuthDependentWrapper] Rendering without circular dependency');
+  
   return (
     <RoleProvider>
-      <RolePreviewProvider canUsePreview={canUsePreview}>
+      <RolePreviewProvider canUsePreview={false}>
         <ProfileContextProvider>
           {children}
         </ProfileContextProvider>
@@ -27,6 +25,8 @@ const AuthDependentProviders = ({ children }: { children: React.ReactNode }) => 
 };
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  console.log('[EMERGENCY AppProviders] Starting provider initialization');
+  
   return (
     <AccessibilityProvider>
       <ThemeProvider
@@ -36,9 +36,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <AnalyticsProvider>
-              <AuthDependentProviders>
+              <AuthDependentWrapper>
                 {children}
-              </AuthDependentProviders>
+              </AuthDependentWrapper>
             </AnalyticsProvider>
           </AuthProvider>
         </QueryClientProvider>

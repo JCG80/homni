@@ -35,7 +35,7 @@ export const useAuthSession = () => {
           error: null // Don't show error for timeout, just stop loading
         }));
       }
-    }, 1500); // EMERGENCY: Reduced to 1.5 seconds
+    }, 1000); // EMERGENCY: Reduced to 1 second - more aggressive
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
