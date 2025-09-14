@@ -31,14 +31,31 @@ interface LogEntry {
 
 class ProductionLogger {
   private minLevel: LogLevel;
-  private isDevelopment: boolean;
+  private isDevelopment: boolean | null = null;
 
   constructor() {
-    this.isDevelopment = import.meta.env.MODE === 'development';
-    this.minLevel = this.isDevelopment ? LogLevel.DEBUG : LogLevel.INFO;
+    // Lazy initialization to avoid import.meta.env issues during module loading
+    // This will be initialized on first use
+  }
+
+  private initializeIfNeeded(): void {
+    if (this.isDevelopment === null) {
+      try {
+        // Safe access to import.meta.env with fallback
+        const mode = import.meta.env.MODE || 'production';
+        this.isDevelopment = mode === 'development';
+        this.minLevel = this.isDevelopment ? LogLevel.DEBUG : LogLevel.INFO;
+      } catch (error) {
+        // Fallback for environments where import.meta is not available
+        this.isDevelopment = false;
+        this.minLevel = LogLevel.INFO;
+        console.warn('Logger: Failed to access import.meta.env, defaulting to production mode');
+      }
+    }
   }
 
   private shouldLog(level: LogLevel): boolean {
+    this.initializeIfNeeded();
     return level >= this.minLevel;
   }
 
@@ -60,6 +77,7 @@ class ProductionLogger {
       error
     };
 
+    this.initializeIfNeeded();
     if (this.isDevelopment) {
       // Development: use console for immediate feedback
       const formatted = this.formatMessage(entry);
@@ -126,12 +144,14 @@ class ProductionLogger {
 
   // Performance logging
   time(label: string): void {
+    this.initializeIfNeeded();
     if (this.isDevelopment) {
       console.time(label);
     }
   }
 
   timeEnd(label: string): void {
+    this.initializeIfNeeded();
     if (this.isDevelopment) {
       console.timeEnd(label);
     }
