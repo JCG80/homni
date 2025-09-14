@@ -81,6 +81,11 @@ async function validateSecurityConfig() {
       console.log(chalk.orange('⚠️  Database function test incomplete:', healthError.message));
     }
 
+    // 5. Check for vulnerable Postgres version (informational)
+    console.log(chalk.yellow('🔍 Checking for database version indicators...'));
+    console.log(chalk.orange('⚠️  CRITICAL: Ensure Postgres version > supabase-postgres-15.8.1.093'));
+    console.log(chalk.blue('   → Check in Supabase Dashboard → Settings → General → Database'));
+
   } catch (error) {
     console.error(chalk.red('❌ Validation error:', error.message));
   }
@@ -111,7 +116,7 @@ async function validateSecurityConfig() {
   console.log('  • OTP Expiry: Check in Auth → Security (should be ≤ 15 min)');
   console.log('  • Leaked Password Protection: Should be enabled');
   console.log('  • MFA Options: TOTP should be available');
-  console.log('  • Database Version: Should be latest patch');
+  console.log(chalk.red('  • DATABASE VERSION: CRITICAL - Must be > supabase-postgres-15.8.1.093'));
   
   return results;
 }

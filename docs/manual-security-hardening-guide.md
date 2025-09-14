@@ -46,20 +46,29 @@
 
 ---
 
-### 4. Database Upgrade (5-10 min)
+### 4. Database Upgrade (5-10 min) - **KRITISK**
 
 **Navigasjon**: Settings → General → Database
+
+**Aktuell status**: `supabase-postgres-15.8.1.093` har tilgjengelige sikkerhetspatcher
 
 **Steg:**
 1. Gå til **Settings** → **General** → **Database**
 2. Finn **"Database Version"** seksjonen
-3. Hvis det finnes en nyere patch-versjon:
-   - Klikk **"Upgrade"**
-   - **Viktig**: Les upgrade-notater nøye
-   - Bekreft upgrade
-4. Vent på at oppgraderingen fullføres (5-10 min)
+3. **KRITISK**: Oppgrader fra `supabase-postgres-15.8.1.093` til nyeste patch-versjon
+   - Klikk **"Upgrade"** knappen
+   - **Viktig**: Les upgrade-notater nøye før du fortsetter
+   - Bekreft upgrade med **"Confirm Upgrade"**
+4. **Overvåk oppgraderingen**: Vent på at prosessen fullføres (5-10 min)
+   - Status vil vise "Upgrading..." under prosessen
+   - **Ikke forlat siden** under oppgraderingen
 
-**Sikkerhetshensikt**: Sikrer at du har de nyeste sikkerhetspatchene for Postgres.
+**Sikkerhetshensikt**: 
+- Fikser kjente sikkerhetssårbarheter i Postgres 15.8.1.093
+- Beskytter mot potensielle database-exploits
+- **Høyeste prioritet** - denne sårbarheten er ekstern-vendt
+
+**Forventet utfall**: Database versjon oppgradert til nyeste patch (15.8.1.094+ eller nyere)
 
 ---
 
@@ -94,8 +103,14 @@ npm run build
 ## Forventet Tidsbruk
 - **Total tid**: 15-20 minutter
 - **Auth konfigurering**: 10 minutter
-- **Database upgrade**: 5-10 minutter  
+- **Database upgrade**: 5-10 minutter (**KRITISK - høyeste prioritet**)
 - **Testing**: 5 minutter
+
+⚠️ **VIKTIGHETSREKKEFØLGE:**
+1. **Database Upgrade** (kritisk sikkerhetssårbarhet)
+2. Auth OTP Expiry  
+3. Leaked Password Protection
+4. MFA aktivering
 
 ## Sikkerhetsnivå
 **Før**: 🔴 Kritiske sårbarheter
@@ -114,9 +129,13 @@ npm run build
 2. Nye brukere kan velge å aktivere MFA i profilen sin
 
 ### Hvis database upgrade feiler:
-1. Sjekk for aktive connections
-2. Vurder å kjøre upgrade utenfor arbeidstid
-3. Ta backup før upgrade hvis kritisk data
+1. **Sjekk aktive connections** - Disconnect alle klienter midlertidig
+2. **Prøv på nytt** - Upgrades kan feile pga. timing
+3. **Kontakt Supabase support** hvis gentatte feil
+4. **IKKE utsett** - `supabase-postgres-15.8.1.093` har kjente sårbarheter
+5. Vurder å kjøre upgrade utenfor arbeidstid for minimal downtime
+
+**Backup informasjon**: Supabase tar automatisk backup før major upgrades
 
 ---
 
