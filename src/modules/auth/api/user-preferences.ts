@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import { ApiError } from '@/utils/apiHelpers';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
 import { ServiceCategory, LeadSubmissionPreferences } from '@/types/service-types';
 

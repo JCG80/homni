@@ -14,7 +14,7 @@ import { useAuthState } from '@/modules/auth/hooks/useAuthState';
 import { useUserModules } from '@/modules/feature_flags/hooks/useModules';
 import { moduleRegistry } from '@/modules/system/ModuleRegistry';
 import { toggleUserModule, getCoreModulesForRole, getOptionalModulesForRole } from '@/modules/system/ModuleInitializer';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle, AlertTriangle, Info } from 'lucide-react';
 import { logger } from '@/utils/logger';
 

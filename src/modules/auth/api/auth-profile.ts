@@ -1,7 +1,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { Profile } from '../types/types';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { parseUserProfile } from '../utils/parseUserProfile';
 import { UserRole } from '../utils/roles';
 import { handleApiError, showErrorToast, showSuccessToast } from './auth-base';

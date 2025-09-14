@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Zap, Activity, Trash2, RefreshCw, CheckCircle } from 'lucide-react';
 import { usePerformanceOptimization } from '@/modules/performance/hooks/usePerformanceOptimization';
 import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 export const PerformanceOptimizer = () => {
   const { metrics, isOptimizing, optimizeBundleLoading, cleanupMemory } = usePerformanceOptimization();

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Bell, Download, Wifi, WifiOff, Smartphone } from 'lucide-react';
 import { usePWA } from '@/hooks/usePWA';
 import { useServiceWorker } from '@/hooks/useServiceWorker';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 export const PWAInstallPrompt = () => {
   const { canInstall, promptInstall, dismissInstall, isStandalone } = usePWA();

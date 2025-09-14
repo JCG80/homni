@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { FileText, Download, Calendar, TrendingUp, Users, DollarSign, Target, Zap } from 'lucide-react';
 import { analyticsService } from '@/lib/analytics/analyticsService';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
 
 interface BIReport {

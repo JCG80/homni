@@ -14,7 +14,7 @@ import { useAuthState } from '@/modules/auth/hooks/useAuthState';
 import { moduleRegistry } from '@/modules/system/ModuleRegistry';
 import { getOptionalModulesForRole, toggleUserModule } from '@/modules/system/ModuleInitializer';
 import { logger } from '@/utils/logger';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { useModuleAwareDashboard } from '@/hooks/useModuleAwareDashboard';
 import { useNavigate } from 'react-router-dom';
 import { 

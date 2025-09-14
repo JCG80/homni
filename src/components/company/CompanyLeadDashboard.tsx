@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Clock, DollarSign, TrendingUp, AlertCircle, Phone, Mail, MessageSquare, User, Calendar, Target } from "lucide-react";
 import { useCompanyLeadsData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
 
 interface Lead {

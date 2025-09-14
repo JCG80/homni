@@ -1,7 +1,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Key, Mail } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { logger } from '@/utils/logger';
 

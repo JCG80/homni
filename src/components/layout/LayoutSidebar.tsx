@@ -1,7 +1,7 @@
 
 import React, { ReactNode, CSSProperties } from 'react';
 import { useAuth } from '@/modules/auth/hooks';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { 
   RoleBasedSection,
   ServicesSection,

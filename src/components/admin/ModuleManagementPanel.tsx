@@ -13,7 +13,7 @@ import { AlertTriangle, CheckCircle, XCircle, Info, Settings } from 'lucide-reac
 import { useModuleManagement } from '@/hooks/useModuleNavigation';
 import { moduleRegistry, type ModuleMetadata } from '@/modules/system/ModuleRegistry';
 import { cn } from '@/lib/utils';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 interface ModuleManagementPanelProps {
   className?: string;

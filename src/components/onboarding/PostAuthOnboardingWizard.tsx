@@ -7,7 +7,7 @@ import { CheckCircle, ArrowRight, Loader2, Link as LinkIcon } from 'lucide-react
 import { useAuth } from '@/modules/auth/hooks';
 import { useLinkAnonymousLeads } from '@/hooks/useLinkAnonymousLeads';
 import { motion } from 'framer-motion';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
 
 interface PostAuthOnboardingWizardProps {

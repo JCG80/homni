@@ -9,7 +9,7 @@ import { PricingStep } from './steps/PricingStep';
 import { CompletionStep } from './steps/CompletionStep';
 import { useAuth } from '@/modules/auth/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
 
 export type UserType = 'user' | 'company';

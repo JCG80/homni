@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { setupTestUsers } from '../utils/setupTestUsers';
 import { UserRole, normalizeRole } from '@/modules/auth/normalizeRole';
 import { motion } from 'framer-motion';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
 
 interface QuickLoginProps {

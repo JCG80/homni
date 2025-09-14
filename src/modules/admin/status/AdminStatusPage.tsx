@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { FileText, Edit, Eye, RefreshCw, Upload, Download, Wand2, AlertCircle, Activity } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 // Import the status content directly
 import statusMd from '@/content/status/status-latest.md?raw';
