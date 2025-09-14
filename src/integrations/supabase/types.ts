@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      _migration_log: {
+        Row: {
+          error_message: string | null
+          executed_at: string | null
+          id: number
+          migration_name: string | null
+          success: boolean | null
+        }
+        Insert: {
+          error_message?: string | null
+          executed_at?: string | null
+          id?: number
+          migration_name?: string | null
+          success?: boolean | null
+        }
+        Update: {
+          error_message?: string | null
+          executed_at?: string | null
+          id?: number
+          migration_name?: string | null
+          success?: boolean | null
+        }
+        Relationships: []
+      }
       admin_actions_log: {
         Row: {
           action: string
@@ -1970,6 +1994,42 @@ export type Database = {
           name?: string
           updated_at?: string
           version?: string
+        }
+        Relationships: []
+      }
+      payment_records: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          payment_method: string | null
+          status: string
+          transaction_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
