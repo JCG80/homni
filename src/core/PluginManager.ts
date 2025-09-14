@@ -80,7 +80,14 @@ export class PluginManager {
 
       // Store in memory for fast access
       applicableFlags.forEach(flag => {
-        this.featureFlags.set(flag.name, flag);
+        // Cast the flag to proper type, ensuring target_roles are valid
+        const typedFlag: FeatureFlag = {
+          ...flag,
+          target_roles: (flag.target_roles || []).filter(role => 
+            ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'].includes(role)
+          ) as FeatureFlag['target_roles']
+        };
+        this.featureFlags.set(flag.name, typedFlag);
       });
 
       console.log(`🎌 Loaded ${applicableFlags.length} feature flags for role: ${user.role}`);
