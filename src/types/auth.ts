@@ -20,7 +20,16 @@ export { ALL_ROLES, PUBLIC_ROLES, AUTHENTICATED_ROLES } from '@/modules/auth/nor
 export type { UserProfile };
 
 /**
+ * Lightweight user type to avoid Supabase SDK type leakage
+ */
+export type LightUser = {
+  id: string;
+  email?: string | null;
+};
+
+/**
  * User session information
+ * @deprecated Use LightUser instead
  */
 export interface AuthUser {
   id: string;
@@ -66,7 +75,7 @@ export interface DevUserProfile {
  * Auth state interface - uses imported UserProfile from unified-types
  */
 export interface AuthState {
-  user: AuthUser | null;
+  user: LightUser | null;
   profile: UserProfile | null;
   isLoading: boolean;
   error: Error | null;
@@ -92,6 +101,7 @@ export interface AuthContextType extends AuthState {
   
   // Role checking methods
   hasRole: (role: UserRole | UserRole[]) => boolean;
+  hasRoleLevel: (minLevel: number) => boolean;
   
   // Access control methods
   canAccessModule: (moduleId: string) => boolean;

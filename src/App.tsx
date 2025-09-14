@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './index.css';
 import '@/styles/accessibility.css';
+import { AuthProvider } from '@/modules/auth/context/AuthProvider';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { Toaster } from '@/components/ui/toaster';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
@@ -49,34 +50,26 @@ function App() {
     initializeApp();
   }, []);
 
-  // EMERGENCY: Use DirectLoginPage for login routes - NO LAZY LOADING
-  if (window.location.pathname === '/login' || window.location.hash === '#/login') {
-    return (
+  return (
+    <AuthProvider>
       <ErrorBoundary>
         <I18nProvider>
           <ConnectionStatus />
-          <DirectLoginPage />
+          {(window.location.pathname === '/login' || window.location.hash === '#/login') ? (
+            <DirectLoginPage />
+          ) : (
+            <SiteLayout>
+              <SimpleRouter />
+              <ContextualHelp />
+              <DebugToggle />
+              <AppDiagnostics />
+              <NetworkDiagnostics />
+            </SiteLayout>
+          )}
           <Toaster />
         </I18nProvider>
       </ErrorBoundary>
-    );
-  }
-
-  return (
-    <ErrorBoundary>
-      <I18nProvider>
-        <ConnectionStatus />
-        <SiteLayout>
-          <SimpleRouter />
-          <ContextualHelp />
-          
-          <Toaster />
-          <DebugToggle />
-          <AppDiagnostics />
-          <NetworkDiagnostics />
-        </SiteLayout>
-      </I18nProvider>
-    </ErrorBoundary>
+    </AuthProvider>
   );
 }
 

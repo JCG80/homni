@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useAuthContext } from './useAuthContext';
+import { useAuth } from '@/modules/auth/context';
 import { useRoleContext } from '@/contexts/RoleContext';
 import { useRolePreview } from '@/contexts/RolePreviewContext';
 import type { UserRole } from '@/modules/auth/normalizeRole';
@@ -50,7 +50,7 @@ interface IntegratedAuthContext {
  * Integrated hook that combines the original auth context with mode switching
  */
 export const useIntegratedAuth = (): IntegratedAuthContext => {
-  const authContext = useAuthContext();
+  const authContext = useAuth();
   const roleContext = useRoleContext();
   const { previewRole, isPreviewMode } = useRolePreview();
   

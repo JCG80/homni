@@ -17,6 +17,7 @@ export const AuthContext = createContext<AuthContextType>({
   isContentEditor: false,
   isGuest: true,
   hasRole: () => false,
+  hasRoleLevel: () => false,
   canAccess: () => false,
   canAccessModule: () => false,
   canPerform: () => false,
