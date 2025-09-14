@@ -100,15 +100,24 @@ export const SystemStatusBanner: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div className="flex items-center gap-2 text-sm">
                 <ShieldCheck className="h-4 w-4" />
-                <span className="text-muted-foreground">CI Status:</span>
+                <span className="text-muted-foreground">Dev Doctor:</span>
                 <Badge 
-                  variant={status.ciStatus === 'success' ? 'default' : 'destructive'}
+                  variant={
+                    status.devDoctorStatus === 'success' ? 'default' : 
+                    status.devDoctorStatus === 'warning' ? 'secondary' : 
+                    status.devDoctorStatus === 'error' ? 'destructive' : 'outline'
+                  }
                   className="text-xs"
                 >
-                  {status.ciStatus === 'success' ? 'Suksess' : 
-                   status.ciStatus === 'failed' ? 'Feilet' :
-                   status.ciStatus === 'pending' ? 'Venter' : 'Ukjent'}
+                  {status.devDoctorStatus === 'success' ? 'OK' : 
+                   status.devDoctorStatus === 'warning' ? 'Advarsler' :
+                   status.devDoctorStatus === 'error' ? 'Feil' : 'Ukjent'}
                 </Badge>
+                {status.devDoctorSummary && (
+                  <span className="text-xs text-muted-foreground">
+                    ({status.devDoctorSummary.passed}/{status.devDoctorSummary.total_checks})
+                  </span>
+                )}
               </div>
               
               <div className="flex items-center gap-2 text-sm">

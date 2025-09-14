@@ -39,19 +39,65 @@ const CORRUPTED_PACKAGES = [
 ];
 
 const pkgPath = path.resolve(process.cwd(), 'package.json');
+
+// JSON Report Structure
+const report = {
+  timestamp: new Date().toISOString(),
+  version: '2.0.0',
+  environment: {
+    node_version: process.version,
+    platform: process.platform,
+    ci: false
+  },
+  summary: {
+    status: 'success',
+    total_checks: 0,
+    passed: 0,
+    warnings: 0,
+    errors: 0
+  },
+  dependencies: {
+    version_conflicts: false,
+    corrupted_packages: 0,
+    misplaced_packages: 0,
+    details: []
+  },
+  supabase: {
+    environment_configured: false,
+    rls_policies_checked: false,
+    critical_security_issues: [],
+    warnings: []
+  },
+  lovable: {
+    integration_complete: false,
+    missing_packages: [],
+    structure_issues: []
+  },
+  recommendations: [],
+  artifacts: []
+};
+
 let hasErrors = false;
+let hasWarnings = false;
 
 function fail(msg) {
   console.error(`❌ ${msg}`);
   hasErrors = true;
+  report.summary.errors++;
+  report.summary.total_checks++;
 }
 
 function warn(msg) {
   console.warn(`⚠️  ${msg}`);
+  hasWarnings = true;
+  report.summary.warnings++;
+  report.summary.total_checks++;
 }
 
 function success(msg) {
   console.log(`✅ ${msg}`);
+  report.summary.passed++;
+  report.summary.total_checks++;
 }
 
 function info(msg) {
@@ -231,19 +277,7 @@ function run() {
       }
     });
 
-    // Final summary
-    console.log('\n📊 Dev Doctor Summary:');
-    if (hasErrors) {
-      console.log('❌ Kritiske feil funnet - CI kan feile');
-      console.log('💡 Kjør med --legacy-peer-deps som fallback i CI');
-      process.exit(1);
-    } else {
-      success('Alle kritiske sjekker bestått');
-      console.log('🚀 Utviklingsmiljøet er klart for CI/CD');
-      process.exit(0);
-    }
-
-    // 9. Supabase Environment Check (local)
+    // Supabase Environment Check
     console.log('🔧 Checking Supabase environment...');
     const supabaseEnvVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'];
     const missingEnv = supabaseEnvVars.filter(envVar => !process.env[envVar]);
@@ -251,12 +285,15 @@ function run() {
     if (missingEnv.length > 0) {
       warn(`Supabase environment variables missing: ${missingEnv.join(', ')}`);
       info('Set these in your .env.local file for full functionality');
+      report.supabase.environment_configured = false;
+      report.supabase.warnings.push(`Missing environment variables: ${missingEnv.join(', ')}`);
     } else {
       success('Supabase environment variables configured');
+      report.supabase.environment_configured = true;
     }
     console.log();
 
-    // 10. Project Structure Validation
+    // Project Structure Validation
     console.log('📁 Validating project structure...');
     const requiredDirs = [
       'src/components',
@@ -278,6 +315,7 @@ function run() {
       } else {
         warn(`Missing directory: ${dir}`);
         structureIssues++;
+        report.lovable.structure_issues.push(`Missing directory: ${dir}`);
       }
     });
     
@@ -287,14 +325,39 @@ function run() {
       } else {
         warn(`Missing file: ${file}`);
         structureIssues++;
+        report.lovable.structure_issues.push(`Missing file: ${file}`);
       }
     });
     
     if (structureIssues === 0) {
       success('Project structure validation passed');
+      report.lovable.integration_complete = true;
     } else {
       info(`Found ${structureIssues} project structure issues`);
     }
+    console.log();
+
+    // Update final report summary
+    report.summary.status = hasErrors ? 'error' : hasWarnings ? 'warning' : 'success';
+    
+    // Generate JSON report
+    const reportPath = path.resolve(process.cwd(), 'dev-doctor-report.json');
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+    
+    // Final summary
+    console.log('\n📊 Dev Doctor Summary:');
+    if (hasErrors) {
+      console.log('❌ Kritiske feil funnet - CI kan feile');
+      console.log('💡 Kjør med --legacy-peer-deps som fallback i CI');
+      console.log(`📄 JSON Report: dev-doctor-report.json`);
+      process.exit(1);
+    } else {
+      success('Alle kritiske sjekker bestått');
+      console.log('🚀 Utviklingsmiljøet er klart for CI/CD');
+      console.log(`📄 JSON Report: dev-doctor-report.json`);
+      process.exit(0);
+    }
+
 
   } catch (error) {
     fail(`Feil ved lesing av package.json: ${error.message}`);

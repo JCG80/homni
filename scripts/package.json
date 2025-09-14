@@ -6,6 +6,7 @@
     "fix-imports": "node fix-remaining-usetoast-imports.js",
     "dev:doctor": "node dev-doctor.js",
     "dev:doctor:ci": "node dev-doctor.js --ci",
+    "dev:doctor:json": "node dev-doctor.js && echo 'JSON report generated: dev-doctor-report.json'",
     "rls:validate": "node supabase-rls-validator.js",
     "security:full": "npm run dev:doctor && npm run rls:validate",
     "health:full": "npm run dev:doctor && npm run ci-health",

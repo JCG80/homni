@@ -88,9 +88,28 @@ jobs:
         with:
           name: dev-doctor-report-${{ github.run_number }}
           path: |
+            dev-doctor-report.json
             package.json
             package-lock.json
           retention-days: 7
+          
+      - name: 📊 Display JSON Report Summary
+        if: always()
+        run: |
+          if [ -f "dev-doctor-report.json" ]; then
+            echo "## 📊 Dev Doctor JSON Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            jq '.summary' dev-doctor-report.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || cat dev-doctor-report.json
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            
+            # Add recommendations if any
+            if jq -e '.recommendations | length > 0' dev-doctor-report.json >/dev/null 2>&1; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### 💡 Recommendations" >> $GITHUB_STEP_SUMMARY
+              jq -r '.recommendations[] | "- **" + .category + "**: " + .message' dev-doctor-report.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
+            fi
+          fi
 
   install-test:
     name: 📦 Test Installation with Dev Doctor Results
