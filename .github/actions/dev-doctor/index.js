@@ -2,6 +2,17 @@ const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
 
+// Add fetch for Supabase API calls
+let fetch;
+(async () => {
+  if (!globalThis.fetch) {
+    const { default: nodeFetch } = await import('node-fetch');
+    fetch = nodeFetch;
+  } else {
+    fetch = globalThis.fetch;
+  }
+})();
+
 // Expected dev dependencies that should NOT be in production dependencies
 const DEV_DEPENDENCIES = [
   '@typescript-eslint/eslint-plugin',
@@ -127,6 +138,176 @@ function checkCorruptedPackages(pkg) {
   return corrupted;
 }
 
+async function checkSupabaseEnvironment() {
+  core.startGroup('🔧 Checking Supabase Environment');
+  
+  const requiredEnv = [
+    'SUPABASE_URL',
+    'SUPABASE_ANON_KEY', 
+    'SUPABASE_SERVICE_ROLE_KEY'
+  ];
+  
+  const missing = requiredEnv.filter(key => !process.env[key]);
+  
+  if (missing.length > 0) {
+    warn(`Missing Supabase environment variables: ${missing.join(', ')}`);
+    core.endGroup();
+    return false;
+  }
+  
+  success('All Supabase environment variables are configured');
+  core.endGroup();
+  return true;
+}
+
+async function checkSupabaseRLSPolicies() {
+  core.startGroup('🔐 Validating Supabase RLS Policies');
+  
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (!supabaseUrl || !serviceRoleKey) {
+    warn('Supabase URL or SERVICE_ROLE_KEY missing - skipping RLS policy validation');
+    core.endGroup();
+    return;
+  }
+  
+  try {
+    // Initialize fetch if not available
+    if (!fetch) {
+      const { default: nodeFetch } = await import('node-fetch');
+      fetch = nodeFetch;
+    }
+    
+    info('Fetching RLS policies from Supabase...');
+    
+    // Query information_schema for RLS policies
+    const query = `
+      SELECT 
+        schemaname,
+        tablename,
+        policyname,
+        permissive,
+        roles,
+        cmd,
+        qual,
+        with_check
+      FROM pg_policies 
+      WHERE schemaname = 'public'
+      ORDER BY tablename, policyname
+    `;
+    
+    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/get_policies`, {
+      method: 'POST',
+      headers: {
+        'apikey': serviceRoleKey,
+        'Authorization': `Bearer ${serviceRoleKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query_text: query })
+    });
+    
+    if (!response.ok) {
+      // Fallback: try direct query to information schema
+      const fallbackResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
+        method: 'POST',
+        headers: {
+          'apikey': serviceRoleKey,
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          sql: `SELECT tablename, policyname, roles, cmd, qual FROM pg_policies WHERE schemaname = 'public' AND roles @> '{anon}'`
+        })
+      });
+      
+      if (!fallbackResponse.ok) {
+        warn(`Could not fetch RLS policies: ${response.status} ${response.statusText}`);
+        core.endGroup();
+        return;
+      }
+    }
+    
+    // Alternative approach: Check for common security issues
+    const securityChecks = [
+      {
+        name: 'Anonymous SELECT policies',
+        description: 'Policies that allow anonymous users to SELECT data',
+        check: 'potential security risk'
+      },
+      {
+        name: 'Wide-open policies', 
+        description: 'Policies with "true" conditions',
+        check: 'critical security risk'
+      }
+    ];
+    
+    // Since we can't easily query policies without proper RPC setup,
+    // we'll provide warnings about common RLS security issues
+    warn('RLS Policy validation requires custom RPC function setup');
+    info('Common RLS security issues to check manually:');
+    info('1. Policies allowing anonymous SELECT on user data tables');
+    info('2. Policies with "true" conditions (wide-open access)');
+    info('3. Missing policies on tables with sensitive data');
+    info('4. Policies not checking auth.uid() for user-specific data');
+    
+    // Check if there are any obvious configuration issues
+    success('Basic Supabase connectivity verified');
+    
+  } catch (error) {
+    warn(`RLS policy validation failed: ${error.message}`);
+    info('This is non-critical - manual RLS policy review recommended');
+  }
+  
+  core.endGroup();
+}
+
+async function checkLovableIntegration() {
+  core.startGroup('💜 Checking Lovable Integration');
+  
+  const pkgPath = path.resolve(process.cwd(), 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+  
+  // Check for Lovable-specific packages
+  const lovablePackages = [
+    '@supabase/supabase-js',
+    'react-router-dom',
+    '@tanstack/react-query',
+    'tailwindcss'
+  ];
+  
+  let missingPackages = [];
+  lovablePackages.forEach(pkg => {
+    if (deps[pkg]) {
+      success(`${pkg} v${deps[pkg]} installed`);
+    } else {
+      missingPackages.push(pkg);
+    }
+  });
+  
+  if (missingPackages.length > 0) {
+    warn(`Recommended packages missing: ${missingPackages.join(', ')}`);
+  }
+  
+  // Check for common Lovable project structure
+  const requiredFiles = [
+    'src/integrations/supabase/client.ts',
+    'tailwind.config.ts',
+    'tsconfig.json'
+  ];
+  
+  requiredFiles.forEach(file => {
+    if (fs.existsSync(file)) {
+      success(`Required file present: ${file}`);
+    } else {
+      warn(`Missing recommended file: ${file}`);
+    }
+  });
+  
+  core.endGroup();
+}
+
 async function run() {
   try {
     console.log('🧠 Dev Doctor - GitHub Actions Integration\n');
@@ -182,6 +363,17 @@ async function run() {
       }
     }
     core.endGroup();
+
+    // 6. Supabase Environment Validation
+    const hasSupabaseEnv = await checkSupabaseEnvironment();
+    
+    // 7. Supabase RLS Policy Validation (if environment is available)
+    if (hasSupabaseEnv) {
+      await checkSupabaseRLSPolicies();
+    }
+    
+    // 8. Lovable Integration Check
+    await checkLovableIntegration();
 
     // Set outputs
     core.setOutput('has-version-conflicts', versionConflicts.toString());

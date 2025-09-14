@@ -53,6 +53,10 @@ jobs:
         with:
           package-path: './package.json'
           fail-on-warnings: ${{ inputs.fail-on-warnings || 'false' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         continue-on-error: true
           
       - name: 📊 Report Results
@@ -113,6 +117,9 @@ jobs:
             echo "✅ No conflicts detected - using standard npm ci"
             npm ci
           fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           
       - name: 🏗️ Test build
         run: npm run build

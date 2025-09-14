@@ -243,6 +243,59 @@ function run() {
       process.exit(0);
     }
 
+    // 9. Supabase Environment Check (local)
+    console.log('🔧 Checking Supabase environment...');
+    const supabaseEnvVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+    const missingEnv = supabaseEnvVars.filter(envVar => !process.env[envVar]);
+    
+    if (missingEnv.length > 0) {
+      warn(`Supabase environment variables missing: ${missingEnv.join(', ')}`);
+      info('Set these in your .env.local file for full functionality');
+    } else {
+      success('Supabase environment variables configured');
+    }
+    console.log();
+
+    // 10. Project Structure Validation
+    console.log('📁 Validating project structure...');
+    const requiredDirs = [
+      'src/components',
+      'src/pages', 
+      'src/integrations/supabase'
+    ];
+    
+    const requiredFiles = [
+      'src/integrations/supabase/client.ts',
+      'tailwind.config.ts',
+      'components.json'
+    ];
+    
+    let structureIssues = 0;
+    
+    requiredDirs.forEach(dir => {
+      if (fs.existsSync(dir)) {
+        info(`Directory exists: ${dir}`);
+      } else {
+        warn(`Missing directory: ${dir}`);
+        structureIssues++;
+      }
+    });
+    
+    requiredFiles.forEach(file => {
+      if (fs.existsSync(file)) {
+        info(`File exists: ${file}`);
+      } else {
+        warn(`Missing file: ${file}`);
+        structureIssues++;
+      }
+    });
+    
+    if (structureIssues === 0) {
+      success('Project structure validation passed');
+    } else {
+      info(`Found ${structureIssues} project structure issues`);
+    }
+
   } catch (error) {
     fail(`Feil ved lesing av package.json: ${error.message}`);
     process.exit(1);
