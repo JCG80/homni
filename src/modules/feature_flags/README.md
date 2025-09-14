@@ -55,11 +55,14 @@ npx supabase gen types typescript --project-id ${SUPABASE_PROJECT_ID} > src/inte
 
 5. **Rollback Plan**: If needed, you can roll back
    ```bash
-   # Roll back to a specific migration
-   supabase migration down --db-url <SUPABASE_DB_URL> -n 1
-   
-   # Or restore from backup
-   cat backup_before_feature_flags.sql | supabase db restore --db-url <SUPABASE_DB_URL>
+# Roll back one migration
+supabase db reset --db-url <DATABASE_URL>
+
+# List migrations to see what's available
+supabase migration list --db-url <DATABASE_URL>
+
+# Restore from backup using psql
+psql <DATABASE_URL> < backup_before_feature_flags.sql
    ```
 
 ## CI/CD Integration
@@ -73,7 +76,7 @@ Add these steps to your GitHub Actions workflow:
     SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
 
 - name: Regenerate Types
-  run: npx supabase gen types typescript --project-id ${SUPABASE_PROJECT_ID} > src/integrations/supabase/types.ts
+  run: npx supabase gen types typescript --project-id ${VITE_SUPABASE_PROJECT_ID} > src/integrations/supabase/types.ts
 
 - name: Run Tests
   run: npm run test

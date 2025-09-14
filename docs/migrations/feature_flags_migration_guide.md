@@ -46,7 +46,8 @@ supabase migration up 20250519_add_helper_functions.sql --db-url $SUPABASE_DB_UR
 ### 4. Regenerate TypeScript Types
 
 ```bash
-npx supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts
+# Use environment variable instead of hardcoded project ID
+npx supabase gen types typescript --project-id ${VITE_SUPABASE_PROJECT_ID:-kkazhcihooovsuwravhs} > src/integrations/supabase/types.ts
 ```
 
 Verify that the new types are available:
@@ -120,11 +121,15 @@ npm run test
 If issues are encountered, you can roll back the migrations:
 
 ```bash
-# Roll back the most recent migration
-supabase migration down --db-url $SUPABASE_DB_URL -n 1
+# Roll back one migration
+supabase db reset --db-url $DATABASE_URL
 
-# Or restore from backup
-cat backup_20250519.sql | supabase db restore --db-url $SUPABASE_DB_URL
+# Roll back to specific migration (replace with actual migration name)
+supabase migration list --db-url $DATABASE_URL  # List migrations first
+supabase db reset --to 20250519_add_feature_modules --db-url $DATABASE_URL
+
+# Restore from backup using psql (supabase db restore does not exist)
+psql $DATABASE_URL < backup_20250519.sql
 ```
 
 ## CI/CD Integration
@@ -159,7 +164,7 @@ jobs:
           
       - name: Regenerate Types
         run: |
-          npx supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts
+          npx supabase gen types typescript --project-id ${VITE_SUPABASE_PROJECT_ID} > src/integrations/supabase/types.ts
           
       - name: Commit updated types
         uses: stefanzweifel/git-auto-commit-action@v4

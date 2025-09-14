@@ -86,6 +86,29 @@ jobs:
       - name: Unit Tests with Coverage
         run: npm run test:coverage
 
+      - name: Post-Migration Testing
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🧪 Running post-migration multi-role validation..."
+          # Test authentication for different roles
+          if [ -f "scripts/test-role-access.ts" ]; then
+            npm run test:roles
+          fi
+          
+          # Test module visibility
+          if [ -f "scripts/test-module-access.ts" ]; then
+            npm run test:modules
+          fi
+          
+          # Validate RLS policies
+          echo "🔒 Running RLS policy validation..."
+          if [ -f "scripts/checkRls.ts" ]; then
+            npm run guard:rls
+          fi
+
       - name: Coverage Gate (90% minimum)
         run: |
           # This will be implemented once vitest coverage is configured
@@ -104,6 +127,23 @@ jobs:
         run: |
           npm audit --audit-level high
           echo "Security scan completed"
+
+      - name: RLS Security Validation
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔐 Running comprehensive RLS security validation..."
+          # Check for anonymous access policies
+          if [ -f "scripts/security-audit.ts" ]; then
+            npm run security:audit
+          fi
+          
+          # Validate sensitive data exposure
+          if [ -f "scripts/check-data-exposure.ts" ]; then
+            npm run security:check-exposure
+          fi
 
       - name: Repository Health Check
         run: |

@@ -5,8 +5,8 @@
 ### 🔧 Critical Fixes Applied
 
 1. **✅ Supabase Client Configuration**
-   - Updated `src/lib/supabaseClient.ts` to use `process.env` with `import.meta.env` fallbacks
-   - Ensures compatibility across different environments and build systems
+   - Updated `src/lib/supabaseClient.ts` to use `import.meta.env` for Vite compatibility
+   - **KRITISK:** Vite krever `import.meta.env` - `process.env` fungerer ikke i frontend
 
 2. **✅ Hardcoded URL Replacement**
    - Fixed `src/modules/admin/pages/ApiGatewayStatus.tsx`
@@ -32,7 +32,8 @@
 
 6. **✅ Test File Updates**
    - Fixed `src/modules/auth/__tests__/authRoles.test.ts`
-   - Replaced `import.meta.env` with `process.env` for broader compatibility
+   - **Node.js tests**: Bruk `process.env` i test-filer (Node.js miljø)
+   - **Vite frontend**: Bruk `import.meta.env` i alle frontend-komponenter
 
 ### 📋 Validation Scripts Created
 
@@ -96,7 +97,7 @@ The hybrid Bytt.no × Boligmappa.no × Propr.no platform now has:
 - ✅ Dynamic service connections (no more hardcoded URLs)  
 - ✅ Comprehensive validation and health checking
 - ✅ Production-ready CI/CD configuration
-- ✅ Debug components using process.env instead of import.meta.env
+- ✅ Miljøvariabler korrekt konfigurert for Vite (`import.meta.env`) og Node.js (`process.env`)
 - ⚠️ Package scripts ready (need manual addition due to read-only limitation)
 
 **Status:** 🟢 **ENVIRONMENT MIGRATION COMPLETE**
