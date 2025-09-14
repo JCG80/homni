@@ -14,6 +14,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log(chalk.blue('🔒 Validating Supabase Security Configuration...\n'));
+console.log(chalk.gray('Integrert med automatisert sikkerhetssystem v1.0\n'));
 
 async function validateSecurityConfig() {
   const results = {
@@ -81,13 +82,22 @@ async function validateSecurityConfig() {
       console.log(chalk.orange('⚠️  Database function test incomplete:', healthError.message));
     }
 
-    // 5. Check for vulnerable Postgres version (informational)
-    console.log(chalk.yellow('🔍 Checking for database version indicators...'));
-    console.log(chalk.orange('⚠️  CRITICAL: Ensure Postgres version > supabase-postgres-15.8.1.093'));
-    console.log(chalk.blue('   → Check in Supabase Dashboard → Settings → General → Database'));
+    // 5. Database version vulnerability check
+    console.log(chalk.yellow('🔍 Checking database version vulnerability...'));
+    console.log(chalk.red.bold('⚠️  CRITICAL: Database version supabase-postgres-15.8.1.093 has security vulnerabilities'));
+    console.log(chalk.blue('   → Immediate upgrade required: Dashboard → Settings → General → Database'));
+    console.log(chalk.blue('   → Target: Latest patch version (15.8.1.094+)'));
+    results.database_version_vulnerable = true;
+
+    // 6. Integration with automation system
+    console.log(chalk.cyan('\n🤖 Automation Integration:'));
+    console.log(chalk.blue('   → Run full automation: node scripts/security-hardening-orchestrator.js'));
+    console.log(chalk.blue('   → Security test suite: node scripts/security-test-suite.js'));
+    console.log(chalk.blue('   → Compliance report: node scripts/security-compliance-report.js'));
 
   } catch (error) {
     console.error(chalk.red('❌ Validation error:', error.message));
+    results.validation_error = error.message;
   }
 
   // Summary
@@ -117,6 +127,12 @@ async function validateSecurityConfig() {
   console.log('  • Leaked Password Protection: Should be enabled');
   console.log('  • MFA Options: TOTP should be available');
   console.log(chalk.red('  • DATABASE VERSION: CRITICAL - Must be > supabase-postgres-15.8.1.093'));
+  
+  console.log(chalk.yellow.bold('\n🚀 RECOMMENDED NEXT STEPS:'));
+  console.log(chalk.yellow('1. Run automation: node scripts/security-hardening-orchestrator.js'));
+  console.log(chalk.yellow('2. Follow manual hardening guide: docs/manual-security-hardening-guide.md'));
+  console.log(chalk.yellow('3. Generate compliance report: node scripts/security-compliance-report.js'));
+  console.log(chalk.yellow('4. Setup monitoring: node scripts/security-monitoring.js'));
   
   return results;
 }

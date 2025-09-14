@@ -14,6 +14,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log(chalk.blue('🔐 Testing Authentication Flow Post-Hardening...\n'));
+console.log(chalk.gray('Del av automatisert sikkerhetssystem v1.0\n'));
 
 async function testAuthFlow() {
   const results = {
@@ -152,6 +153,12 @@ async function testAuthFlow() {
   console.log('  • Verify test users were created (if any)'); 
   console.log('  • Check Authentication → Settings → Security for applied changes');
   console.log('  • Test actual login/signup in your app UI');
+  
+  console.log(chalk.cyan.bold('\n🤖 AUTOMATION INTEGRATION:'));
+  console.log(chalk.blue('• Full security automation: node scripts/security-hardening-orchestrator.js'));
+  console.log(chalk.blue('• Comprehensive security tests: node scripts/security-test-suite.js'));
+  console.log(chalk.blue('• Compliance reporting: node scripts/security-compliance-report.js'));
+  console.log(chalk.blue('• Security monitoring: node scripts/security-monitoring.js'));
   
   return results;
 }
