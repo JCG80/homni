@@ -3789,6 +3789,23 @@ export type Database = {
       }
     }
     Functions: {
+      _execute_batch_grant: {
+        Args: { _payload: Json }
+        Returns: undefined
+      }
+      _execute_grant_role: {
+        Args: {
+          _expires_at: string
+          _role: string
+          _scope_key: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      _execute_revoke_role: {
+        Args: { _role: string; _scope_key: string; _user_id: string }
+        Returns: undefined
+      }
       aggregate_user_daily_activity: {
         Args: { target_date?: string }
         Returns: undefined
@@ -3825,6 +3842,10 @@ export type Database = {
       check_security_health: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      check_sod_conflicts: {
+        Args: { _role: string; _user_id: string }
+        Returns: boolean
       }
       cleanup_expired_roles: {
         Args: Record<PropertyKey, never>
@@ -3886,6 +3907,18 @@ export type Database = {
           company_id: string
           success: boolean
         }[]
+      }
+      enhanced_is_admin: {
+        Args: { _uid?: string }
+        Returns: boolean
+      }
+      enhanced_is_master_admin: {
+        Args: { _uid?: string }
+        Returns: boolean
+      }
+      ensure_not_locked: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       ensure_user_profile: {
         Args: { p_company_id?: string; p_role?: string; p_user_id: string }
@@ -4108,6 +4141,10 @@ export type Database = {
         Args: { _min_level: number; _user_id: string }
         Returns: boolean
       }
+      init_admin_action_challenge: {
+        Args: { _action: string; _payload: Json }
+        Returns: string
+      }
       initialize_user_module_access: {
         Args: { target_user_id: string }
         Returns: undefined
@@ -4207,6 +4244,10 @@ export type Database = {
           title: string
         }[]
       }
+      request_role: {
+        Args: { _justification?: string; _role: string; _scope_key?: string }
+        Returns: string
+      }
       revoke_user_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -4256,6 +4297,10 @@ export type Database = {
           profile_user_id: string
         }
         Returns: undefined
+      }
+      verify_and_execute_admin_action: {
+        Args: { _challenge_id: string; _otp_code: string }
+        Returns: Json
       }
     }
     Enums: {
