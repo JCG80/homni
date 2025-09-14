@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 import '@/styles/accessibility.css';
@@ -24,8 +24,7 @@ import { EnvironmentChecker } from '@/components/EnvironmentChecker';
 
 import { usePageViews } from '@/lib/analytics/react';
 
-// Lazy load HomePage to improve initial bundle size
-const HomePage = React.lazy(() => import('@/pages/HomePage'));
+import HomePage from '@/pages/HomePage';
 
 function App() {
   usePageViews(); // auto-track SPA navigation
@@ -61,22 +60,20 @@ function App() {
         <EnvironmentChecker />
         <ConnectionStatus />
         <ApiStatusBanner />
-        <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/login" element={<Navigate to="/auth" replace />} />
-            <Route path="/" element={<HomePage />} />
-            <Route path="/*" element={
-              <SiteLayout>
-                <SimpleRouter />
-                <ContextualHelp />
-                <DebugToggle />
-                <AppDiagnostics />
-                <NetworkDiagnostics />
-              </SiteLayout>
-            } />
-          </Routes>
-        </Suspense>
+        <Routes>
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/login" element={<Navigate to="/auth" replace />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/*" element={
+            <SiteLayout>
+              <SimpleRouter />
+              <ContextualHelp />
+              <DebugToggle />
+              <AppDiagnostics />
+              <NetworkDiagnostics />
+            </SiteLayout>
+          } />
+        </Routes>
         <Toaster />
       </I18nProvider>
     </ErrorBoundary>

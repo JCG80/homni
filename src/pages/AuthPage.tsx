@@ -6,7 +6,7 @@ import { RegisterForm } from '@/modules/auth/components/RegisterForm';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, UserCircle, Building } from 'lucide-react';
-import { useAuth } from '@/modules/auth/context';
+import { useAuth } from '@/modules/auth/hooks';
 
 export const AuthPage = () => {
   const [searchParams] = useSearchParams();

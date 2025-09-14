@@ -6,9 +6,6 @@ import App from './App.tsx'
 import './index.css'
 import { AuthProvider } from '@/modules/auth/context/AuthProvider';
 import { AppProviders } from './app/AppProviders';
-import { PluginSystemProvider } from '@/lib/core/PluginSystemProvider';
-import { LocalizationProvider } from '@/lib/localization/LocalizationProvider';
-import { FeatureFlagProvider } from '@/lib/feature-flags/FeatureFlagProvider';
 import { logApiStatusWarnings } from '@/services/apiStatus';
 
 // Sjekk API-status ved oppstart
@@ -22,15 +19,9 @@ createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AppProviders>
       <AuthProvider>
-        <PluginSystemProvider>
-          <LocalizationProvider defaultLocale="no">
-            <FeatureFlagProvider>
-              <Router>
-                <App />
-              </Router>
-            </FeatureFlagProvider>
-          </LocalizationProvider>
-        </PluginSystemProvider>
+        <Router>
+          <App />
+        </Router>
       </AuthProvider>
     </AppProviders>
   </React.StrictMode>
