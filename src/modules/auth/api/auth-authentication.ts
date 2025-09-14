@@ -41,12 +41,19 @@ export const signInWithEmail = async (email: string, password: string) => {
 
 /**
  * Sign up user with email and password
+ * CRITICAL: Always includes emailRedirectTo for proper authentication flow
  */
-export const signUpWithEmail = async (email: string, password: string) => {
+export const signUpWithEmail = async (email: string, password: string, redirectUrl?: string) => {
   try {
+    // CRITICAL: Always set emailRedirectTo - this is NOT optional
+    const emailRedirectTo = redirectUrl || `${window.location.origin}/`;
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo
+      }
     });
     
     if (error) {

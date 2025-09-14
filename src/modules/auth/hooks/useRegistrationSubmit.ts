@@ -29,7 +29,9 @@ export const useRegistrationSubmit = () => {
     setIsSubmitting(true);
 
     try {
-      const { user } = await signUpWithEmail(data.email, data.password);
+      // Include redirect URL for proper email verification flow
+      const redirectUrl = `${window.location.origin}${data.redirectTo}`;
+      const { user } = await signUpWithEmail(data.email, data.password, redirectUrl);
       
       if (user) {
         // Set the appropriate role using type guard

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
 import type { UserProfile } from '../types/unified-types';
 import type { UserRole } from '../normalizeRole';
@@ -15,6 +15,7 @@ interface AuthProviderProps {
 
 interface AuthState {
   user: User | null;
+  session: Session | null; // Added session state
   profile: UserProfile | null;
   isLoading: boolean;
   error: Error | null;
@@ -36,6 +37,7 @@ const roleLevels: Record<UserRole, number> = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
+    session: null, // Initialize session state
     profile: null,
     isLoading: true,
     error: null,
@@ -53,6 +55,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     let mounted = true;
     
+    // Fetch profile helper with proper error handling
     const fetchProfile = async (userId: string) => {
       if (!shouldAttemptApiCall()) {
         logger.warn('API ikke operativt - hopper over profil-henting');
@@ -77,15 +80,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }));
         }
       } catch (error) {
-        console.error('Profile fetch error:', error);
+        logger.error('Profile fetch error:', error);
       }
     };
 
+    // Set up auth state listener FIRST (critical for proper initialization)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!mounted) return;
+        
+        // Only synchronous state updates here to prevent deadlocks
+        setAuthState(prev => ({
+          ...prev,
+          session,
+          user: session?.user ?? null,
+          isLoading: false,
+        }));
+
+        // Defer profile fetching with setTimeout to avoid deadlocks
+        if (session?.user) {
+          setTimeout(() => {
+            if (mounted) {
+              fetchProfile(session.user.id);
+            }
+          }, 0);
+        } else {
+          setAuthState(prev => ({ ...prev, profile: null }));
+        }
+      }
+    );
+
+    // THEN check for existing session
     const initAuth = async () => {
       try {
-        // Check API status before attempting auth calls
         if (!shouldAttemptApiCall()) {
-          logger.warn('API ikke operativt - hopper over autentisering');
+          logger.warn('API ikke operativt - hopper över autentisering');
           if (mounted) {
             setAuthState(prev => ({
               ...prev,
@@ -101,16 +130,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (mounted) {
           setAuthState(prev => ({
             ...prev,
+            session,
             user: session?.user || null,
             isLoading: false,
           }));
-        }
 
-        if (session?.user && mounted) {
-          fetchProfile(session.user.id);
+          // Defer profile fetching to avoid potential deadlocks
+          if (session?.user) {
+            setTimeout(() => {
+              if (mounted) {
+                fetchProfile(session.user.id);
+              }
+            }, 0);
+          }
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        logger.error('Auth initialization error:', error);
         if (mounted) {
           setAuthState(prev => ({
             ...prev,
@@ -121,24 +156,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      
-      setAuthState(prev => ({
-        ...prev,
-        user: session?.user || null,
-        isLoading: false,
-      }));
-
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setAuthState(prev => ({ ...prev, profile: null }));
-      }
-    });
-
+    // Initialize auth after setting up listener
     initAuth();
     
+    // Fallback timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (mounted) {
         setAuthState(prev => ({ ...prev, isLoading: false }));
@@ -147,7 +168,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     return () => {
       mounted = false;
-      subscription?.unsubscribe(); // Optional chaining
+      subscription?.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);

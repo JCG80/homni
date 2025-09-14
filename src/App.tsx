@@ -19,10 +19,14 @@ import { ContextualHelp } from '@/components/guidance/ContextualHelp';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
 import { SimpleRouter } from '@/components/routing/SimpleRouter';
 import { DirectLoginPage } from '@/components/direct/DirectLoginPage';
+import { AuthPage } from '@/pages/AuthPage';
 import { ApiStatusBanner } from '@/components/ApiStatusBanner';
 import { EnvironmentChecker } from '@/components/EnvironmentChecker';
 
 import { usePageViews } from '@/lib/analytics/react';
+
+// Lazy load HomePage to improve initial bundle size
+const HomePage = React.lazy(() => import('@/pages/HomePage'));
 
 function App() {
   usePageViews(); // auto-track SPA navigation
@@ -61,6 +65,8 @@ function App() {
         <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
           <Routes>
             <Route path="/login" element={<DirectLoginPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/*" element={
               <SiteLayout>
                 <SimpleRouter />
