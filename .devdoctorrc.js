@@ -17,7 +17,11 @@ module.exports = {
     'properties',
     'documents',
     'payment_records',
-    'admin_audit_log'
+    'admin_audit_log',
+    'user_roles',
+    'role_grants',
+    'admin_actions_log',
+    '_migration_log'
   ],
   
   // Required environment variables for your project

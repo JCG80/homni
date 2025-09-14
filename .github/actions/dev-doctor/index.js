@@ -263,41 +263,50 @@ async function checkSupabaseRLSPolicies(config) {
   }
   
   try {
-    // Initialize fetch if not available
-    if (!fetch) {
-      const { default: nodeFetch } = await import('node-fetch');
-      fetch = nodeFetch;
+    // Use enhanced RLS validator
+    const { checkSupabasePoliciesActual } = require('./enhanced-rls-validator');
+    const results = await checkSupabasePoliciesActual(config);
+    
+    if (!results.success) {
+      results.criticalIssues.forEach(issue => {
+        fail(issue.message);
+        report.supabase.critical_security_issues.push(issue);
+      });
     }
     
-    info('Validating RLS security best practices...');
-    
-    // Enhanced security validation
-    await checkTablesWithoutRLS(supabaseUrl, serviceRoleKey, config);
-    await checkOpenAnonPolicies(supabaseUrl, serviceRoleKey, config);
-    await checkAdminPoliciesWithAnon(supabaseUrl, serviceRoleKey, config);
+    results.warnings.forEach(warning => {
+      warn(warning.message);
+      report.supabase.warnings.push(warning.message);
+    });
     
     report.supabase.rls_policies_checked = true;
     
     // Add comprehensive security recommendations
     report.recommendations.push({
       category: 'security',
-      priority: 'high',
-      message: 'Comprehensive RLS security audit completed',
+      priority: results.success ? 'medium' : 'critical',
+      message: results.success ? 
+        'RLS security audit completed - no critical issues' :
+        'Critical RLS security issues found - immediate action required',
       tables: config.sensitiveTables,
       checks: [
         'Verify all sensitive tables have RLS enabled',
-        'Ensure policies check auth.uid() for user-specific data',
+        'Ensure policies check auth.uid() for user-specific data', 
         'Avoid policies with "true" conditions on sensitive tables',
         'Restrict anonymous access to user data',
         'Test policies with different user roles',
         'Review admin policies for excessive permissions'
-      ]
+      ],
+      criticalIssues: results.criticalIssues
     });
     
   } catch (error) {
-    warn(`RLS policy validation failed: ${error.message}`);
-    report.supabase.warnings.push(`Policy validation error: ${error.message}`);
-    info('This is non-critical - manual RLS policy review recommended');
+    fail(`RLS policy validation failed: ${error.message}`);
+    report.supabase.critical_security_issues.push({
+      type: 'validation_error',
+      message: `RLS validation failed: ${error.message}`
+    });
+    info('This is critical - manual RLS policy review required');
   }
   
   core.endGroup();
@@ -498,6 +507,14 @@ async function run() {
     const reportPath = path.resolve(process.cwd(), 'dev-doctor-report.json');
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     core.info(`Generated JSON report: ${reportPath}`);
+    
+    // Send notifications if configured
+    try {
+      const { sendNotifications } = require('./notification-adapters');
+      await sendNotifications(config);
+    } catch (error) {
+      warn(`Failed to send notifications: ${error.message}`);
+    }
     
     console.log(`\n📊 Dev Doctor Summary: ${status.toUpperCase()}`);
     console.log(`📄 JSON Report: dev-doctor-report.json`);
