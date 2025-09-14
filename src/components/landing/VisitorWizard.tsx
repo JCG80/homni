@@ -14,29 +14,12 @@ import { useEnhancedAnalytics } from '@/hooks/useEnhancedAnalytics';
 import { createAnonymousLead } from '@/lib/leads/anonymousLead';
 import { toast } from 'sonner';
 import { logger } from '@/utils/logger';
-
-export type UserRole = 'private' | 'business';
+import { WizardRole, WizardFormData } from '@/types/wizard-types';
 
 interface VisitorWizardProps {
   className?: string;
 }
 
-interface FormData {
-  role: UserRole;
-  service: string;
-  postalCode: string;
-  propertyType: string;
-  propertyAge?: string;
-  propertyCondition?: string;
-  specialNeeds?: string[];
-  consumption?: string;
-  employees?: string;
-  name: string;
-  email: string;
-  phone: string;
-  companyName?: string;
-  consent: boolean;
-}
 
 export const VisitorWizard = ({ className }: VisitorWizardProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,7 +57,7 @@ export const VisitorWizard = ({ className }: VisitorWizardProps) => {
 
   const totalSteps = 4;
 
-  const handleRoleChange = (role: UserRole) => {
+  const handleRoleChange = (role: WizardRole) => {
     updateFormData({ role });
     localStorage.setItem('visitor_role', role);
     trackEvent('visitor_role_selected', { role });

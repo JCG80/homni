@@ -1,28 +1,11 @@
 import { useState, useEffect } from 'react';
-import { UserRole } from '@/components/landing/VisitorWizard';
+import { WizardFormData } from '@/types/wizard-types';
 import { logger } from '@/utils/logger';
-
-interface FormData {
-  role: UserRole;
-  service: string;
-  postalCode: string;
-  propertyType: string;
-  propertyAge?: string;
-  propertyCondition?: string;
-  specialNeeds?: string[];
-  consumption?: string;
-  employees?: string;
-  name: string;
-  email: string;
-  phone: string;
-  companyName?: string;
-  consent: boolean;
-}
 
 const STORAGE_KEY = 'visitor_wizard_progress';
 
 export const useWizardProgress = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<WizardFormData>({
     role: 'private',
     service: '',
     postalCode: '',
@@ -67,7 +50,7 @@ export const useWizardProgress = () => {
     return () => clearTimeout(timeoutId);
   }, [formData, currentStep, hasRestoredProgress]);
 
-  const updateFormData = (updates: Partial<FormData>) => {
+  const updateFormData = (updates: Partial<WizardFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useAnalytics } from '@/lib/analytics/react';
-import { UserRole } from '@/components/landing/VisitorWizard';
+import { WizardRole } from '@/types/wizard-types';
 import { logger } from '@/utils/logger';
 
 export const useEnhancedAnalytics = () => {
@@ -10,7 +10,7 @@ export const useEnhancedAnalytics = () => {
     track(eventName, data);
   }, [track]);
   
-  const trackStepPerformance = useCallback((step: number, role: UserRole, timeSpent: number) => {
+  const trackStepPerformance = useCallback((step: number, role: WizardRole, timeSpent: number) => {
     // Track step completion time for optimization - store locally for now
     logger.debug(`Step ${step} performance:`, { role, timeSpent: Math.round(timeSpent / 1000) });
     
@@ -42,7 +42,7 @@ export const useEnhancedAnalytics = () => {
     track('form_validation_error', { step, field, error });
   }, [track]);
 
-  const trackDropoff = useCallback((step: number, role: UserRole) => {
+  const trackDropoff = useCallback((step: number, role: WizardRole) => {
     const dropoffEvent = {
       event: 'visitor_dropoff',
       step,
@@ -58,7 +58,7 @@ export const useEnhancedAnalytics = () => {
     localStorage.setItem('visitor_dropoffs', JSON.stringify(dropoffs.slice(-50))); // Keep last 50
   }, [track]);
 
-  const trackConversionFunnel = useCallback((role: UserRole, service: string) => {
+  const trackConversionFunnel = useCallback((role: WizardRole, service: string) => {
     const funnelData = {
       role,
       service,

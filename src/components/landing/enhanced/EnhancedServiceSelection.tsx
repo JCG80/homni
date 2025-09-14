@@ -19,10 +19,10 @@ import {
   Sun,
   Thermometer
 } from 'lucide-react';
-import { UserRole } from '@/components/landing/VisitorWizard';
+import { WizardRole } from '@/types/wizard-types';
 
 interface EnhancedServiceSelectionProps {
-  role: UserRole;
+  role: WizardRole;
   selectedService: string;
   onServiceSelect: (service: string) => void;
 }

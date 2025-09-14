@@ -1,12 +1,11 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building2, Home } from 'lucide-react';
-
-export type UserRole = 'private' | 'business';
+import { WizardRole } from '@/types/wizard-types';
 
 interface RoleToggleProps {
-  selectedRole: UserRole;
-  onRoleChange: (role: UserRole) => void;
+  selectedRole: WizardRole;
+  onRoleChange: (role: WizardRole) => void;
   className?: string;
 }
 
@@ -14,7 +13,7 @@ export const RoleToggle = ({ selectedRole, onRoleChange, className }: RoleToggle
   return (
     <Tabs 
       value={selectedRole} 
-      onValueChange={(value) => onRoleChange(value as UserRole)}
+      onValueChange={(value) => onRoleChange(value as WizardRole)}
       className={className}
     >
       <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-12">
