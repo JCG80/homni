@@ -1,4 +1,3 @@
-
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication flow', () => {
@@ -18,8 +17,6 @@ test.describe('Authentication flow', () => {
     await expect(page.getByRole('heading', { name: /ingen tilgang/i })).toBeVisible();
     await expect(page.getByText(/du har ikke tilgang til denne siden/i)).toBeVisible();
   });
-
-  // More authentication tests would be added here
 
   test('unauthenticated user is redirected to /login for all admin routes', async ({ page }) => {
     const adminPaths = [

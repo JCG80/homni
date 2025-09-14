@@ -9,7 +9,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}', 'scripts/**/*.{test,spec}.{js,ts}'],
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'e2e-tests'],
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'tests/e2e'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -22,7 +22,7 @@ export default defineConfig({
         '**/coverage/**',
         '**/dist/**',
         '**/build/**',
-        'e2e-tests/',
+        'tests/e2e/',
         'public/'
       ],
       thresholds: {
