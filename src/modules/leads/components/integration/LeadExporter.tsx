@@ -69,8 +69,9 @@ export const LeadExporter = () => {
       if (filters.category) params.append('category', filters.category);
 
       // Call the export edge function
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL || 'https://kkazhcihooovsuwravhs.supabase.co';
       const response = await fetch(
-        `https://kkazhcihooovsuwravhs.supabase.co/functions/v1/export-leads?${params.toString()}`,
+        `${supabaseUrl}/functions/v1/export-leads?${params.toString()}`,
         {
           method: 'GET',
           headers: {

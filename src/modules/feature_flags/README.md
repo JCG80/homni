@@ -23,7 +23,7 @@ Additionally, existing tables have been extended:
 To regenerate the Supabase types after applying these migrations, run:
 
 ```bash
-npx supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts
+npx supabase gen types typescript --project-id ${SUPABASE_PROJECT_ID} > src/integrations/supabase/types.ts
 ```
 
 ## Migration Roadmap
@@ -73,7 +73,7 @@ Add these steps to your GitHub Actions workflow:
     SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
 
 - name: Regenerate Types
-  run: npx supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts
+  run: npx supabase gen types typescript --project-id ${SUPABASE_PROJECT_ID} > src/integrations/supabase/types.ts
 
 - name: Run Tests
   run: npm run test
