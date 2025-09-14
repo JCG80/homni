@@ -5,21 +5,16 @@ import { AuthPage } from '@/pages/AuthPage';
 import DashboardPage from '@/pages/DashboardPage';
 
 /**
- * SIMPLE ROUTER - OPTIMIZED FOR LOVABLE SANDBOX
- * Handles all critical routes without complex filtering
+ * SIMPLE ROUTER - INTERNAL ROUTES ONLY
+ * Handles dashboard and other internal routes after auth
  */
 export const SimpleRouter = () => {
   return (
     <Routes>
-      {/* Auth routes */}
-      <Route path="/auth" element={<AuthPage />} />
-      <Route path="/login" element={<Navigate to="/auth" replace />} />
-      
-      {/* Main routes */}
-      <Route path="/" element={<HomePage />} />
+      {/* Dashboard and internal routes */}
       <Route path="/dashboard" element={<DashboardPage />} />
       
-      {/* Fallback route */}
+      {/* Fallback for unmatched routes */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

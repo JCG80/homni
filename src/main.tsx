@@ -11,8 +11,10 @@ import { logApiStatusWarnings } from '@/services/apiStatus';
 // Sjekk API-status ved oppstart
 logApiStatusWarnings();
 
-// Router toggle: Use HashRouter for Lovable sandbox/preview environments
-const useHashRouter = import.meta.env.VITE_USE_HASHROUTER === 'true';
+// Force HashRouter for Lovable preview environments
+const useHashRouter = import.meta.env.VITE_USE_HASHROUTER === 'true' || 
+                      window.location.hostname.includes('lovable') || 
+                      window.location.hostname.includes('sandbox');
 const Router = useHashRouter ? HashRouter : BrowserRouter;
 
 createRoot(document.getElementById("root")!).render(
