@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders(req.headers.get('origin') || undefined) });
   }
 
-  const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? 'https://kkazhcihooovsuwravhs.supabase.co';
+  const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? Deno.env.get('VITE_SUPABASE_URL') ?? 'https://kkazhcihooovsuwravhs.supabase.co';
   const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if (!SERVICE_ROLE_KEY) {
     return new Response(JSON.stringify({ error: 'Missing service role key' }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders(req.headers.get('origin') || undefined) } });

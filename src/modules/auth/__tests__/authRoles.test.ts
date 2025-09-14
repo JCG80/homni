@@ -67,14 +67,14 @@ describe('Auth role determination', () => {
     
     // We have to mock import.meta.env.MODE for these tests
     // This is a simplification that assumes development mode
-    const originalMode = import.meta.env.MODE;
-    import.meta.env.MODE = 'development';
+    const originalMode = process.env.NODE_ENV || 'development';
+    process.env.NODE_ENV = 'development';
     
     expect(determineUserRole(adminUserData)).toBe('master_admin');
     expect(determineUserRole(companyUserData)).toBe('company');
     expect(determineUserRole(regularUserData)).toBe('user');
     
     // Restore the original mode
-    import.meta.env.MODE = originalMode;
+    process.env.NODE_ENV = originalMode;
   });
 });

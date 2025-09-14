@@ -45,7 +45,8 @@ packageJson.scripts = {
   // DX Utilities
   "seed:users": "ts-node scripts/seedTestUsers.ts",
   "update:supabase-imports": "node scripts/updateSupabaseImports.js",
-  "types:generate": "supabase gen types typescript --project-id kkazhcihooovsuwravhs > src/integrations/supabase/types.ts",
+  "types:generate": "supabase gen types typescript --project-id ${SUPABASE_PROJECT_ID:-kkazhcihooovsuwravhs} > src/integrations/supabase/types.ts",
+  "test:env": "tsx scripts/run-environment-tests.ts",
 
   // Phase complete
   "phase:complete": "npm run repo:health && echo '✅ Phase marked as SHIPPABLE'"
