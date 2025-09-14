@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useAdminFullData } from '@/hooks/useLeadsData';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2, Building2, DollarSign, Target, Mail, Phone } from 'lucide-react';
 import { logger } from '@/utils/logger';
 

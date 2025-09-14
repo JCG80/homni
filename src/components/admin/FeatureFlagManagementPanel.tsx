@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Edit, Trash2, Users, Percent, Flag } from 'lucide-react';
 import { useFeatureFlagManagement } from '@/hooks/useFeatureFlagNavigation';
 import { cn } from '@/lib/utils';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 interface FeatureFlagConfig {
   name: string;

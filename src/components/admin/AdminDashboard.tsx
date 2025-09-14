@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, TrendingUp, Users, FileText, DollarSign, Clock, Target } from "lucide-react";
 import { useAdminFullData } from "@/hooks/useLeadsData";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { DashboardMetrics } from '@/types/metrics';
 import { logger } from '@/utils/logger';
 

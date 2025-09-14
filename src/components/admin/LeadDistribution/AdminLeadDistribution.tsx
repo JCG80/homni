@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2, Play, Pause, TestTube, BarChart3 } from 'lucide-react';
 import { DistributionStrategy, DISTRIBUTION_STRATEGIES } from '@/modules/leads/strategies/strategyFactory';
 import { processUnassignedLeads } from '@/modules/leads/utils/processLeads';
