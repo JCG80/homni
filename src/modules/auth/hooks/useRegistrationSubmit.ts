@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUpWithEmail, createProfile } from '../api';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { UserRole, isUserRole } from '../utils/roles';
 import { supabase } from '@/lib/supabaseClient';
 import { Profile } from '../types/types';

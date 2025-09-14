@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { Profile } from '../types/types';
 import { useAuth } from './useAuth';
 import { useAuthRetry } from './useAuthRetry';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { logger } from '@/utils/logger';
 
 interface ProfileUpdateOptions {
