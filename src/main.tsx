@@ -1,12 +1,36 @@
 
+// DEBUGGING: Testing minimal imports to isolate the issue
+console.log('[MAIN] Testing import: React');
 import React from 'react';
-import { createRoot } from 'react-dom/client'
+console.log('[MAIN] ✅ React imported');
+
+console.log('[MAIN] Testing import: createRoot');
+import { createRoot } from 'react-dom/client';
+console.log('[MAIN] ✅ createRoot imported');
+
+console.log('[MAIN] Testing import: router');
 import { BrowserRouter, HashRouter } from 'react-router-dom';
-import App from './App.tsx'
-import './index.css'
-import { AuthProvider } from '@/modules/auth/context';
+console.log('[MAIN] ✅ Router imported');
+
+console.log('[MAIN] Testing import: index.css');
+import './index.css';
+console.log('[MAIN] ✅ CSS imported');
+
+console.log('[MAIN] Testing import: App');
+import App from './App.tsx';
+console.log('[MAIN] ✅ App imported');
+
+console.log('[MAIN] Testing import: AppProviders');
 import { AppProviders } from './app/AppProviders';
+console.log('[MAIN] ✅ AppProviders imported');
+
+console.log('[MAIN] Testing import: AuthProvider - THIS MIGHT FAIL');
+import { AuthProvider } from '@/modules/auth/context';
+console.log('[MAIN] ✅ AuthProvider imported');
+
+console.log('[MAIN] Testing import: apiStatus');
 import { logApiStatusWarnings } from '@/services/apiStatus';
+console.log('[MAIN] ✅ All imports successful');
 
 // Add debugging logs to understand what's happening
 console.log('[MAIN] Starting app initialization');
