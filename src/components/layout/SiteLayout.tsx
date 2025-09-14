@@ -12,7 +12,10 @@ export function SiteLayout({ children }: SiteLayoutProps) {
   const location = useLocation();
   
   // Don't render Header for admin routes - AdminLayout handles its own header
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  // Check both pathname and hash for admin routes (supports hash routing)
+  const isAdminRoute = location.pathname.startsWith('/admin') || 
+                       location.hash.startsWith('#/admin') ||
+                       (location.pathname.includes('/admin'));
   
   if (isAdminRoute) {
     // For admin routes, just render children (AdminLayout will handle header/sidebar)
