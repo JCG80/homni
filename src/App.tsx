@@ -67,12 +67,12 @@ function App() {
         <ConnectionStatus />
         <ApiStatusBanner />
         <Routes>
-          <Route path="/auth" element={<RouteErrorBoundary><AuthPage /></RouteErrorBoundary>} />
+          <Route path="/auth" element={<RouteErrorBoundary routeName="Autentisering"><AuthPage /></RouteErrorBoundary>} />
           <Route path="/login" element={<Navigate to="/auth" replace />} />
-          <Route path="/" element={<RouteErrorBoundary><HomePage /></RouteErrorBoundary>} />
+          <Route path="/" element={<RouteErrorBoundary routeName="Forside"><HomePage /></RouteErrorBoundary>} />
           <Route path="/*" element={
             <SiteLayout>
-              <RouteErrorBoundary>
+              <RouteErrorBoundary routeName="Applikasjon">
                 <SimpleRouter />
               </RouteErrorBoundary>
               <ContextualHelp />
