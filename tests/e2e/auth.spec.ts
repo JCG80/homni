@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Authentication flow', () => {
-  test('should redirect unauthenticated user to login page', async ({ page }) => {
+  test('should redirect unauthenticated user to login page', async ({ page }: { page: Page }) => {
     // Try to access a protected page
     await page.goto('/leads/my');
     
@@ -9,7 +9,7 @@ test.describe('Authentication flow', () => {
     await expect(page).toHaveURL(/.*login/);
   });
 
-  test('should display unauthorized page when accessing restricted content', async ({ page }) => {
+  test('should display unauthorized page when accessing restricted content', async ({ page }: { page: Page }) => {
     // Directly access unauthorized page
     await page.goto('/unauthorized');
     
@@ -18,7 +18,7 @@ test.describe('Authentication flow', () => {
     await expect(page.getByText(/du har ikke tilgang til denne siden/i)).toBeVisible();
   });
 
-  test('unauthenticated user is redirected to /login for all admin routes', async ({ page }) => {
+  test('unauthenticated user is redirected to /login for all admin routes', async ({ page }: { page: Page }) => {
     const adminPaths = [
       '/admin/companies',
       '/admin/members',

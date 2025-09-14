@@ -1,17 +1,17 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Marketplace functionality', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: { page: Page }) => {
     // Mock authentication - in real implementation this would be handled by test helpers
     await page.goto('/marketplace');
   });
 
-  test('marketplace dashboard loads correctly', async ({ page }) => {
+  test('marketplace dashboard loads correctly', async ({ page }: { page: Page }) => {
     // Check if we're redirected to login (expected for unauthenticated users)
     await expect(page).toHaveURL(/.*login/);
   });
 
-  test('admin can access package management', async ({ page }) => {
+  test('admin can access package management', async ({ page }: { page: Page }) => {
     // Navigate to packages page
     await page.goto('/marketplace/packages');
     
@@ -19,7 +19,7 @@ test.describe('Marketplace functionality', () => {
     await expect(page).toHaveURL(/.*login/);
   });
 
-  test('buyer can access lead pipeline', async ({ page }) => {
+  test('buyer can access lead pipeline', async ({ page }: { page: Page }) => {
     // Navigate to pipeline page  
     await page.goto('/marketplace/pipeline');
     

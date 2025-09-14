@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Router functionality', () => {
-  test('should handle deeplink refresh correctly', async ({ page }) => {
+  test('should handle deeplink refresh correctly', async ({ page }: { page: Page }) => {
     // Navigate to root
     await page.goto('/');
     
@@ -15,7 +15,7 @@ test.describe('Router functionality', () => {
     await expect(page).not.toHaveURL(/404/);
   });
 
-  test('login route should work directly', async ({ page }) => {
+  test('login route should work directly', async ({ page }: { page: Page }) => {
     // Direct access to login page
     await page.goto('/login');
     
@@ -27,7 +27,7 @@ test.describe('Router functionality', () => {
     await expect(page).toHaveURL(/.*login/);
   });
 
-  test('should handle hash routing in sandbox mode', async ({ page }) => {
+  test('should handle hash routing in sandbox mode', async ({ page }: { page: Page }) => {
     // This test would be more relevant in actual sandbox environment
     await page.goto('/');
     
