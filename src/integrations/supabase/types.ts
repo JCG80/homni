@@ -4289,6 +4289,7 @@ export type Database = {
       search_users: {
         Args: { term: string }
         Returns: {
+          active_roles: Database["public"]["Enums"]["app_role"][]
           email: string
           full_name: string
           id: string
