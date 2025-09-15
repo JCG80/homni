@@ -25,23 +25,23 @@ export const useAuthSession = () => {
   useEffect(() => {
     let mounted = true;
 
-    // EMERGENCY: Add ultra-aggressive timeout to prevent infinite loading
+    // EMERGENCY: Add safety timeout to prevent infinite loading - increased for stability
     const emergencyTimeout = setTimeout(() => {
-      console.log('[EMERGENCY useAuthSession] Emergency timeout reached (1000ms), forcing loading to false');
+      console.log('[EMERGENCY useAuthSession] Emergency timeout reached (5000ms), forcing loading to false');
       if (mounted) {
         setAuthState(prev => ({
           ...prev,
           isLoading: false
         }));
       }
-    }, 1000); // Ultra-aggressive 1 second timeout
+    }, 5000); // More stable 5 second timeout
 
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Set up auth state listener with improved race condition handling
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[EMERGENCY useAuthSession] Auth state change:', { event, hasUser: !!session?.user });
 
       if (event === 'INITIAL_SESSION') {
-        // We'll handle this in the getSession call
+        // We'll handle this in the getSession call to avoid duplicate processing
         return;
       }
 
@@ -58,45 +58,43 @@ export const useAuthSession = () => {
             user,
             isLoading: true
           }));
-        }
 
-        // Use setTimeout to avoid potential deadlock with Supabase auth
-        setTimeout(async () => {
-          try {
-            const profile = await fetchProfile(user.id);
-            
-            if (mounted) {
-              // Update user with role from profile if available
-              if (profile?.role || profile?.metadata?.role) {
-                user.role = normalizeRole(profile.role || profile.metadata?.role);
+          // Fetch profile with sequential handling to avoid race conditions
+          fetchProfile(user.id)
+            .then(profile => {
+              if (mounted) {
+                // Update user with role from profile if available
+                if (profile?.role || profile?.metadata?.role) {
+                  user.role = normalizeRole(profile.role || profile.metadata?.role);
+                }
+                
+                setAuthState(prev => ({
+                  ...prev,
+                  user,
+                  profile,
+                  isLoading: false,
+                  error: null
+                }));
               }
+            })
+            .catch(error => {
+              logger.error('Error after auth state change', { error });
               
-              setAuthState(prev => ({
-                ...prev,
-                user,
-                profile,
-                isLoading: false,
-                error: null
-              }));
-            }
-          } catch (error) {
-            logger.error('Error after auth state change', { error });
-            
-            if (mounted) {
-              setAuthState(prev => ({
-                ...prev,
-                isLoading: false,
-                error: error instanceof Error ? error : new Error("Failed to fetch profile")
-              }));
-              
-              toast({
-                title: "Authentication Error",
-                description: "There was a problem loading your profile",
-                variant: "destructive"
-              });
-            }
-          }
-        }, 0);
+              if (mounted) {
+                setAuthState(prev => ({
+                  ...prev,
+                  isLoading: false,
+                  error: error instanceof Error ? error : new Error("Failed to fetch profile")
+                }));
+                
+                toast({
+                  title: "Authentication Error",
+                  description: "There was a problem loading your profile",
+                  variant: "destructive"
+                });
+              }
+            });
+        }
       } else {
         if (mounted) {
           setAuthState({
