@@ -266,6 +266,12 @@ const masterAdminNavigation: NavigationItem[] = [
     description: 'Fullstendig systemkontroll'
   },
   {
+    href: '/admin/roles',
+    title: 'Rolleadministrasjon',
+    icon: Users,
+    description: 'Administrer brukerroller og tilganger'
+  },
+  {
     href: '/admin/modules',
     title: 'Moduladministrasjon',
     icon: Database,
