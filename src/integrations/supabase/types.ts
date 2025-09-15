@@ -4117,10 +4117,10 @@ export type Database = {
           | {
               _expires_date?: string
               _role: Database["public"]["Enums"]["app_role"]
-              _scope_key?: string
+              _scope?: string
               _user_id: string
             }
-        Returns: undefined
+        Returns: Json
       }
       gtrgm_compress: {
         Args: { "": unknown }
@@ -4280,11 +4280,11 @@ export type Database = {
         Args:
           | {
               _role: Database["public"]["Enums"]["app_role"]
-              _scope_key?: string
+              _scope?: string
               _user_id: string
             }
           | { _role: Database["public"]["Enums"]["app_role"]; _user_id: string }
-        Returns: undefined
+        Returns: Json
       }
       search_users: {
         Args: { term: string }
@@ -4340,7 +4340,7 @@ export type Database = {
       }
       verify_and_execute_admin_action: {
         Args: { _challenge_id: string; _otp_code: string }
-        Returns: Json
+        Returns: undefined
       }
     }
     Enums: {

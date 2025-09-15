@@ -8,6 +8,7 @@ const AdminLeads = React.lazy(() => import('@/pages/admin/AdminLeads'));
 const AdminCompanies = React.lazy(() => import('@/pages/admin/AdminCompanies'));
 const AdminMembers = React.lazy(() => import('@/pages/admin/AdminMembers'));
 const FeatureFlagsManagement = React.lazy(() => import('@/modules/admin/pages/FeatureFlagsManagement'));
+const RoleOverview = React.lazy(() => import('@/modules/admin/roles/RoleOverview'));
 
 export const adminRouteObjects: AppRoute[] = [
   {
@@ -44,6 +45,11 @@ export const adminRouteObjects: AppRoute[] = [
         path: 'feature-flags',
         element: <FeatureFlagsManagement />,
         roles: ['master_admin']
+      },
+      {
+        path: 'roles',
+        element: <RoleOverview />,
+        roles: ['admin', 'master_admin']
       }
     ]
   }
