@@ -101,7 +101,7 @@ const userNavigation: NavigationItem[] = [
     description: 'Administrer konto og profil'
   },
   {
-    href: '/sales',
+    href: '/diy-sales',
     title: 'navigation.diy_sales',
     icon: DollarSign,
     description: 'Selg eiendom selv med Propr'
@@ -162,7 +162,7 @@ const companyNavigation: NavigationItem[] = [
     description: 'Oversikt over alle eiendommer'
   },
   {
-    href: '/sales/pipeline',
+    href: '/diy-sales/pipeline',
     title: 'navigation.sales_pipeline',
     icon: DollarSign,
     description: 'Salgsaktiviteter og fremgang'
@@ -440,18 +440,18 @@ export const getNextSuggestions = (currentRoute: string, role: UserRole): Naviga
   if (currentRoute === '/leads' && ['user', 'company'].includes(role)) {
     suggestions.push(
       { href: '/properties', title: 'Registrer eiendom', icon: Building },
-      { href: '/sales', title: 'Start salg', icon: DollarSign }
+      { href: '/diy-sales', title: 'Start salg', icon: DollarSign }
     );
   }
 
   if (currentRoute === '/properties' && ['user', 'company'].includes(role)) {
     suggestions.push(
-      { href: '/sales', title: 'Opprett salg', icon: DollarSign },
+      { href: '/diy-sales', title: 'Opprett salg', icon: DollarSign },
       { href: '/leads', title: 'Finn flere leads', icon: Target }
     );
   }
 
-  if (currentRoute === '/sales' && ['user', 'company'].includes(role)) {
+  if (currentRoute === '/diy-sales' && ['user', 'company'].includes(role)) {
     suggestions.push(
       { href: '/properties', title: 'Oppdater eiendom', icon: Building },
       { href: '/leads', title: 'Finn nye leads', icon: Target }
