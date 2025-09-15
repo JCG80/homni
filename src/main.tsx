@@ -46,11 +46,11 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <RouterProvider>
-        <AppProviders>
-          <AuthProvider>
+        <AuthProvider>
+          <AppProviders>
             <App />
-          </AuthProvider>
-        </AppProviders>
+          </AppProviders>
+        </AuthProvider>
       </RouterProvider>
     </ErrorBoundary>
   </React.StrictMode>

@@ -19,7 +19,7 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
     }
   }, []);
 
-  // Enhanced timeout with auth state integration
+  // Enhanced timeout with auth state integration - more aggressive approach
   useEffect(() => {
     console.log('[AuthWrapper] Enhanced loading control - auth loading:', isLoading);
     
@@ -29,11 +29,11 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
       return;
     }
     
-    // Set emergency timeout for auth loading states
+    // Set emergency timeout for auth loading states - reduced for faster response
     const forceTimeout = setTimeout(() => {
-      console.log('[AuthWrapper] Emergency timeout reached (3000ms) - rendering children');
+      console.log('[AuthWrapper] Emergency timeout reached (2000ms) - rendering children');
       setForceRender(true);
-    }, 3000); // Increased from 500ms to 3000ms for better stability
+    }, 2000); // Balanced timeout - faster than 3000ms but stable
     
     return () => clearTimeout(forceTimeout);
   }, [isLoading]);
