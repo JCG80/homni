@@ -18,7 +18,7 @@ import '@/lib/i18n/index';
 import { ContextualHelp } from '@/components/guidance/ContextualHelp';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
 import { DegradedModeBanner } from '@/components/ui/DegradedModeBanner';
-import { SimpleRouter } from '@/components/routing/SimpleRouter';
+import { EnhancedRouter } from '@/components/routing/EnhancedRouter';
 import { AuthPage } from '@/pages/AuthPage';
 import { ApiStatusBanner } from '@/components/ApiStatusBanner';
 import { EnvironmentChecker } from '@/components/EnvironmentChecker';
@@ -79,7 +79,7 @@ function App() {
           <SiteLayout>
             <RouteErrorBoundary routeName="Applikasjon">
               <Routes>
-                <Route path="/*" element={<SimpleRouter />} />
+                <Route path="/*" element={<EnhancedRouter />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </RouteErrorBoundary>

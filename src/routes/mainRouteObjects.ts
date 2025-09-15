@@ -9,6 +9,9 @@ import { marketplaceRouteObjects } from './marketplaceRouteObjects';
 import { featureRouteObjects } from './featureRouteObjects';
 import { coreModuleRoutes } from './coreModuleRoutes';
 import { servicesRouteObjects } from './serviceRoutes';
+import { adminRouteObjects } from './adminRouteObjects';
+import { docsRouteObjects } from './docsRouteObjects';
+import { maintenanceRouteObjects } from './maintenanceRouteObjects';
 
 // Lazy load all page components
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -41,6 +44,7 @@ const DashboardRouter = lazy(() => import('@/modules/dashboard/DashboardRouter')
 const PropertyDetailsModulePage = lazy(() => import('@/modules/property/pages/PropertyDetailsPage').then(m => ({ default: m.PropertyDetailsPage })));
 
 const SimpleTestPage = lazy(() => import('@/components/debug/SimpleTestPage').then(m => ({ default: m.SimpleTestPage })));
+const SiteMapPage = lazy(() => import('@/pages/SiteMapPage').then(m => ({ default: m.SiteMapPage })));
 
 export const mainRouteObjects: AppRoute[] = [
   // EMERGENCY: Add simple test route at the top
@@ -192,12 +196,11 @@ export const mainRouteObjects: AppRoute[] = [
     element: createElement(SettingsRedirect),
     roles: ['user', 'company', 'content_editor', 'admin', 'master_admin']
   },
-  // PWA Dashboard
   {
-    path: '/pwa',
-    element: createElement(PWADashboard),
+    path: '/sitemap',
+    element: createElement(SiteMapPage),
     roles: ['user', 'company', 'content_editor', 'admin', 'master_admin'],
-    navKey: 'pwa'
+    navKey: 'sitemap'
   },
   
   // Merge all route objects into main routes
@@ -209,4 +212,7 @@ export const mainRouteObjects: AppRoute[] = [
   ...featureRouteObjects,
   ...servicesRouteObjects,
   ...coreModuleRoutes,
+  ...adminRouteObjects,
+  ...docsRouteObjects,
+  ...maintenanceRouteObjects,
 ];
