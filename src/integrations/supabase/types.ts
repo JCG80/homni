@@ -2916,6 +2916,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_settings: {
+        Row: {
+          created_at: string | null
+          enforce_bypass_only_in_dev: boolean | null
+          id: boolean
+          otp_bypass_code: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enforce_bypass_only_in_dev?: boolean | null
+          id?: boolean
+          otp_bypass_code?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enforce_bypass_only_in_dev?: boolean | null
+          id?: boolean
+          otp_bypass_code?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       service_modules: {
         Row: {
           created_at: string
