@@ -16,6 +16,10 @@ export const ROLE_LEVELS: Record<AppRole, number> = {
   master_admin: 100,
 } as const;
 
+// Minimum levels for admin access
+export const ADMIN_MIN_LEVEL = 80;
+export const MASTER_MIN_LEVEL = 100;
+
 // All available roles
 export const ALL_ROLES: AppRole[] = [
   'guest',

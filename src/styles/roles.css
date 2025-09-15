@@ -1,0 +1,108 @@
+/* Role management UI styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.modal {
+  background: hsl(var(--background));
+  border-radius: 12px;
+  padding: 16px;
+  width: 600px;
+  max-width: 95vw;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid hsl(var(--border));
+}
+
+.modal h2 {
+  color: hsl(var(--foreground));
+  margin: 0 0 16px 0;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 8px;
+  color: hsl(var(--foreground));
+}
+
+.modal label span {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.modal input:focus,
+.modal select:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+}
+
+.autocomplete-list {
+  margin-top: 8px;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--background));
+}
+
+.autocomplete-list li {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: hsl(var(--foreground));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.autocomplete-list li:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-list li:hover,
+.autocomplete-list li[aria-selected="true"] {
+  background: hsl(var(--muted));
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-actions button:hover {
+  background: hsl(var(--muted));
+}
+
+.modal-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-actions button:disabled:hover {
+  background: hsl(var(--background));
+}
