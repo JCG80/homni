@@ -76,13 +76,6 @@ export const mainRouteObjects: AppRoute[] = [
     flag: 'debug:enabled',
     navKey: 'debug'
   },
-  {
-    path: '/login',
-    element: createElement(LoginPage),
-    roles: ['guest', 'user', 'company', 'content_editor', 'admin', 'master_admin'],
-    navKey: 'login',
-    alwaysAvailable: true
-  },
   // Note: /signin and /auth redirects handled at nginx/netlify level via _redirects
   {
     path: '/dashboard',
